@@ -1,0 +1,2 @@
+m=1024 k=4096 n=16 blocks=640 threads=8 direct_io=1 block_bytes=8388608
+ERROR: CUDA: no CUDA-capable device is detected

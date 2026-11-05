@@ -1,0 +1,6 @@
+m=8192 k=4096 n=4 blocks=80 threads=8 direct_io=1 block_bytes=67108864
+GPU=NVIDIA GeForce RTX 3050 Laptop GPU cc=8.6 async_engines=1
+driver_api=13050 runtime=12040 free_vram_bytes=3462660096 total_vram_bytes=4294508544
+mode,repeat,bytes,read_ms,read_GiB_s,h2d_ms,h2d_GiB_s,compute_ms,compute_TFLOP_s,d2h_ms,total_ms,effective_GiB_s,checked,max_abs_error,m,k,n,block_bytes,cache_mib,read_bytes,h2d_bytes,cache_hits,pinned_peak_bytes,device_alloc_bytes,gpu_used_bytes,rss_peak_bytes
+cache_setup_bytes=0 cache_setup_ms=0.053496
+async,0,5368709120,1476.122699,3.387252,416.633761,12.000948,54.324640,0.395306,19.239040,1501.480075,3.330048,2560,0.000000,8192,4096,4,67108864,0,5368709120,5368709120,0,134479872,134512640,989134848,510668800

@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420">
+<rect width="1100" height="420" fill="white"/>
+<text x="25" y="25" font-family="sans-serif" font-size="18">5 GiB BF16 — median total time (seconds), 10 passes; cache=0</text>
+<text x="155" y="55" font-family="sans-serif">n=1</text>
+<path d="M55,330.0h300" stroke="#ddd"/>
+<text x="23" y="334.0" font-size="11" font-family="sans-serif">0.0</text>
+<path d="M55,265.0h300" stroke="#ddd"/>
+<text x="23" y="269.0" font-size="11" font-family="sans-serif">1.4</text>
+<path d="M55,200.0h300" stroke="#ddd"/>
+<text x="23" y="204.0" font-size="11" font-family="sans-serif">2.8</text>
+<path d="M55,135.0h300" stroke="#ddd"/>
+<text x="23" y="139.0" font-size="11" font-family="sans-serif">4.2</text>
+<path d="M55,70.0h300" stroke="#ddd"/>
+<text x="23" y="74.0" font-size="11" font-family="sans-serif">5.5</text>
+<rect x="55" y="203.5749444434728" width="14" height="126.42505555652721" fill="#64748b"/>
+<path d="M62,221.46821181052326V202.4492161794013" stroke="#222"/>
+<rect x="71" y="103.91304347826085" width="14" height="226.08695652173915" fill="#d97706"/>
+<path d="M78,177.24392850187647V76.2895752675557" stroke="#222"/>
+<rect x="87" y="230.1266234037231" width="14" height="99.87337659627691" fill="#16a34a"/>
+<path d="M94,235.74282575407247V215.52566656341065" stroke="#222"/>
+<text x="55" y="350" font-size="12" font-family="sans-serif">4</text>
+<rect x="115" y="230.0823636004797" width="14" height="99.9176363995203" fill="#64748b"/>
+<path d="M122,241.77230646851837V226.1537324082219" stroke="#222"/>
+<rect x="131" y="198.2027810199885" width="14" height="131.7972189800115" fill="#d97706"/>
+<path d="M138,217.6828320823218V98.74216125713491" stroke="#222"/>
+<rect x="147" y="242.5378273063307" width="14" height="87.4621726936693" fill="#16a34a"/>
+<path d="M154,250.2552013193893V233.13789819255595" stroke="#222"/>
+<text x="115" y="350" font-size="12" font-family="sans-serif">8</text>
+<rect x="175" y="239.82683922557786" width="14" height="90.17316077442214" fill="#64748b"/>
+<path d="M182,245.55167919586646V233.80654679042692" stroke="#222"/>
+<rect x="191" y="210.30347532161562" width="14" height="119.69652467838438" fill="#d97706"/>
+<path d="M198,220.74976715891927V201.95174833309525" stroke="#222"/>
+<rect x="207" y="241.0756327482111" width="14" height="88.92436725178891" fill="#16a34a"/>
+<path d="M214,249.6402198117405V232.15774257362517" stroke="#222"/>
+<text x="175" y="350" font-size="12" font-family="sans-serif">16</text>
+<rect x="235" y="248.58899128329514" width="14" height="81.41100871670486" fill="#64748b"/>
+<path d="M242,250.32651020246743V245.93048547363196" stroke="#222"/>
+<rect x="251" y="226.79240121719914" width="14" height="103.20759878280084" fill="#d97706"/>
+<path d="M258,236.82947031003488V218.58252386052428" stroke="#222"/>
+<rect x="267" y="252.72350377790934" width="14" height="77.27649622209066" fill="#16a34a"/>
+<path d="M274,258.62656702939364V248.35198329388294" stroke="#222"/>
+<text x="235" y="350" font-size="12" font-family="sans-serif">32</text>
+<rect x="295" y="249.70683876717527" width="14" height="80.29316123282473" fill="#64748b"/>
+<path d="M302,256.4328039255996V249.21551930405366" stroke="#222"/>
+<rect x="311" y="229.4186161472415" width="14" height="100.58138385275852" fill="#d97706"/>
+<path d="M318,238.24798863954828V222.98225531728764" stroke="#222"/>
+<rect x="327" y="257.3273356359096" width="14" height="72.67266436409038" fill="#16a34a"/>
+<path d="M334,262.1685666371934V252.83140571694256" stroke="#222"/>
+<text x="295" y="350" font-size="12" font-family="sans-serif">64</text>
+<text x="130" y="375" font-size="12" font-family="sans-serif">buffer per slot (MiB)</text>
+<text x="505" y="55" font-family="sans-serif">n=4</text>
+<path d="M405,330.0h300" stroke="#ddd"/>
+<text x="373" y="334.0" font-size="11" font-family="sans-serif">0.0</text>
+<path d="M405,265.0h300" stroke="#ddd"/>
+<text x="373" y="269.0" font-size="11" font-family="sans-serif">1.4</text>
+<path d="M405,200.0h300" stroke="#ddd"/>
+<text x="373" y="204.0" font-size="11" font-family="sans-serif">2.8</text>
+<path d="M405,135.0h300" stroke="#ddd"/>
+<text x="373" y="139.0" font-size="11" font-family="sans-serif">4.2</text>
+<path d="M405,70.0h300" stroke="#ddd"/>
+<text x="373" y="74.0" font-size="11" font-family="sans-serif">5.5</text>
+<rect x="405" y="204.79769862597283" width="14" height="125.20230137402719" fill="#64748b"/>
+<path d="M412,219.35474856741956V197.5286254571298" stroke="#222"/>
+<rect x="421" y="167.41480193672004" width="14" height="162.58519806327996" fill="#d97706"/>
+<path d="M428,208.05435743322164V122.11888641173601" stroke="#222"/>
+<rect x="437" y="226.8895120588901" width="14" height="103.1104879411099" fill="#16a34a"/>
+<path d="M444,235.09044910093246V212.9361668765097" stroke="#222"/>
+<text x="405" y="350" font-size="12" font-family="sans-serif">4</text>
+<rect x="465" y="223.4944199566289" width="14" height="106.50558004337111" fill="#64748b"/>
+<path d="M472,229.848772698811V217.43349761865184" stroke="#222"/>
+<rect x="481" y="198.36642387578038" width="14" height="131.63357612421962" fill="#d97706"/>
+<path d="M488,219.90478862979035V140.27760629750662" stroke="#222"/>
+<rect x="497" y="234.8653003318404" width="14" height="95.1346996681596" fill="#16a34a"/>
+<path d="M504,247.62566483147393V228.07712180874424" stroke="#222"/>
+<text x="465" y="350" font-size="12" font-family="sans-serif">8</text>
+<rect x="525" y="197.43448378518502" width="14" height="132.56551621481498" fill="#64748b"/>
+<path d="M532,207.26410646739396V193.28062044932528" stroke="#222"/>
+<rect x="541" y="211.66045253890832" width="14" height="118.3395474610917" fill="#d97706"/>
+<path d="M548,218.0651128690032V201.42848559142644" stroke="#222"/>
+<rect x="557" y="249.69211289983167" width="14" height="80.30788710016834" fill="#16a34a"/>
+<path d="M564,255.79084803022553V245.7568472272963" stroke="#222"/>
+<text x="525" y="350" font-size="12" font-family="sans-serif">16</text>
+<rect x="585" y="236.24441534704596" width="14" height="93.75558465295404" fill="#64748b"/>
+<path d="M592,239.44367687019766V232.27514871399853" stroke="#222"/>
+<rect x="601" y="227.63614304398666" width="14" height="102.36385695601334" fill="#d97706"/>
+<path d="M608,232.24460121344782V219.7630529016518" stroke="#222"/>
+<rect x="617" y="258.3826626562689" width="14" height="71.61733734373111" fill="#16a34a"/>
+<path d="M624,261.73922972768844V255.08331307286022" stroke="#222"/>
+<text x="585" y="350" font-size="12" font-family="sans-serif">32</text>
+<rect x="645" y="241.56077545781835" width="14" height="88.43922454218165" fill="#64748b"/>
+<path d="M652,243.0249654662113V240.55702403128663" stroke="#222"/>
+<rect x="661" y="227.76705583149277" width="14" height="102.23294416850725" fill="#d97706"/>
+<path d="M668,237.60274915420354V224.60773396033468" stroke="#222"/>
+<rect x="677" y="258.8897745844254" width="14" height="71.11022541557458" fill="#16a34a"/>
+<path d="M684,261.20060903992623V256.6242713169124" stroke="#222"/>
+<text x="645" y="350" font-size="12" font-family="sans-serif">64</text>
+<text x="480" y="375" font-size="12" font-family="sans-serif">buffer per slot (MiB)</text>
+<text x="855" y="55" font-family="sans-serif">n=16</text>
+<path d="M755,330.0h300" stroke="#ddd"/>
+<text x="723" y="334.0" font-size="11" font-family="sans-serif">0.0</text>
+<path d="M755,265.0h300" stroke="#ddd"/>
+<text x="723" y="269.0" font-size="11" font-family="sans-serif">1.4</text>
+<path d="M755,200.0h300" stroke="#ddd"/>
+<text x="723" y="204.0" font-size="11" font-family="sans-serif">2.8</text>
+<path d="M755,135.0h300" stroke="#ddd"/>
+<text x="723" y="139.0" font-size="11" font-family="sans-serif">4.2</text>
+<path d="M755,70.0h300" stroke="#ddd"/>
+<text x="723" y="74.0" font-size="11" font-family="sans-serif">5.5</text>
+<rect x="755" y="153.14341803385037" width="14" height="176.85658196614963" fill="#64748b"/>
+<path d="M762,169.92347589105728V146.38183421945624" stroke="#222"/>
+<rect x="771" y="142.14495901647373" width="14" height="187.85504098352627" fill="#d97706"/>
+<path d="M778,185.14751459007636V90.40248006667966" stroke="#222"/>
+<rect x="787" y="214.24213499140257" width="14" height="115.75786500859743" fill="#16a34a"/>
+<path d="M794,231.75728440731234V210.78026950430905" stroke="#222"/>
+<text x="755" y="350" font-size="12" font-family="sans-serif">4</text>
+<rect x="815" y="190.68857721802578" width="14" height="139.31142278197422" fill="#64748b"/>
+<path d="M822,199.84411736340323V179.92124667969819" stroke="#222"/>
+<rect x="831" y="200.05976394922664" width="14" height="129.94023605077336" fill="#d97706"/>
+<path d="M838,222.1544970856737V146.27426575499652" stroke="#222"/>
+<rect x="847" y="238.71123780828555" width="14" height="91.28876219171445" fill="#16a34a"/>
+<path d="M854,251.09677620676243V236.5559057072834" stroke="#222"/>
+<text x="815" y="350" font-size="12" font-family="sans-serif">8</text>
+<rect x="875" y="183.4513330485678" width="14" height="146.5486669514322" fill="#64748b"/>
+<path d="M882,184.2673784873712V181.95293550893086" stroke="#222"/>
+<rect x="891" y="216.58561142402394" width="14" height="113.41438857597606" fill="#d97706"/>
+<path d="M898,228.351425072577V202.90629786367325" stroke="#222"/>
+<rect x="907" y="248.21505766250263" width="14" height="81.78494233749737" fill="#16a34a"/>
+<path d="M914,253.557743937679V243.97931431601012" stroke="#222"/>
+<text x="875" y="350" font-size="12" font-family="sans-serif">16</text>
+<rect x="935" y="188.8462244150673" width="14" height="141.1537755849327" fill="#64748b"/>
+<path d="M942,194.86677950456354V182.94447793173575" stroke="#222"/>
+<rect x="951" y="227.34193338261196" width="14" height="102.65806661738803" fill="#d97706"/>
+<path d="M958,231.4653667588498V218.52735541900984" stroke="#222"/>
+<rect x="967" y="256.7369705637627" width="14" height="73.26302943623726" fill="#16a34a"/>
+<path d="M974,260.25170485302573V243.8230163251108" stroke="#222"/>
+<text x="935" y="350" font-size="12" font-family="sans-serif">32</text>
+<rect x="995" y="202.81247331053692" width="14" height="127.18752668946308" fill="#64748b"/>
+<path d="M1002,205.54274882754635V199.5902706327751" stroke="#222"/>
+<rect x="1011" y="232.40598486172155" width="14" height="97.59401513827845" fill="#d97706"/>
+<path d="M1018,240.65319682174425V225.3951600485246" stroke="#222"/>
+<rect x="1027" y="260.8051905377316" width="14" height="69.19480946226841" fill="#16a34a"/>
+<path d="M1034,263.9027393123164V258.6717558729466" stroke="#222"/>
+<text x="995" y="350" font-size="12" font-family="sans-serif">64</text>
+<text x="830" y="375" font-size="12" font-family="sans-serif">buffer per slot (MiB)</text>
+<rect x="350" y="395" width="12" height="12" fill="#64748b"/><text x="367" y="406" font-family="sans-serif" font-size="12">cpu</text>
+<rect x="470" y="395" width="12" height="12" fill="#d97706"/><text x="487" y="406" font-family="sans-serif" font-size="12">sync</text>
+<rect x="590" y="395" width="12" height="12" fill="#16a34a"/><text x="607" y="406" font-family="sans-serif" font-size="12">async</text>
+</svg>

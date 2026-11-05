@@ -1,0 +1,58 @@
+[
+    {
+        "Number":  1,
+        "FriendlyName":  "Msft Virtual Disk",
+        "BusType":  "File Backed Virtual",
+        "Size":  33554432,
+        "OperationalStatus":  "Online"
+    },
+    {
+        "Number":  0,
+        "FriendlyName":  "Samsung SSD 990 EVO 2TB",
+        "BusType":  "NVMe",
+        "Size":  2000398934016,
+        "OperationalStatus":  "Online"
+    }
+]
+[
+    {
+        "DiskNumber":  1,
+        "PartitionNumber":  1,
+        "DriveLetter":  null,
+        "Size":  33488896
+    },
+    {
+        "DiskNumber":  0,
+        "PartitionNumber":  1,
+        "DriveLetter":  null,
+        "Size":  471859200
+    },
+    {
+        "DiskNumber":  0,
+        "PartitionNumber":  2,
+        "DriveLetter":  null,
+        "Size":  104857600
+    },
+    {
+        "DiskNumber":  0,
+        "PartitionNumber":  3,
+        "DriveLetter":  null,
+        "Size":  134217728
+    },
+    {
+        "DiskNumber":  0,
+        "PartitionNumber":  4,
+        "DriveLetter":  "C",
+        "Size":  1798804865024
+    },
+    {
+        "DiskNumber":  0,
+        "PartitionNumber":  5,
+        "DriveLetter":  null,
+        "Size":  842006528
+    }
+]
+{
+    "DistributionName":  "Ubuntu",
+    "BasePath":  "C:\\Users\\franc\\AppData\\Local\\wsl\\{62044ba3-1e2c-4b7f-a9f7-e009245169c7}"
+}

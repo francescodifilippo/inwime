@@ -1,0 +1,75 @@
+62 configurations x 10 passes; dataset reused read-only
+Exception in thread Thread-1 (safety):
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/threading.py", line 1082, in _bootstrap_inner
+    self._context.run(self.run)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/lib/python3.14/threading.py", line 1024, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/benchmark_v2.py", line 121, in safety
+    if rows and float(rows[-1][' temperature.gpu']) >= 85:
+                ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+DONE n4-b16-c0-cpu: 10 passes, peak RSS 121.3 MiB
+DONE n16-b4-c0-cpu: 10 passes, peak RSS 110.4 MiB
+DONE n1-b64-c0-cpu: 10 passes, peak RSS 169.4 MiB
+DONE n16-b8-c64-async: 10 passes, peak RSS 346.0 MiB
+DONE n4-b32-c0-cpu: 10 passes, peak RSS 137.5 MiB
+DONE n16-b64-c0-async: 10 passes, peak RSS 468.4 MiB
+DONE n1-b4-c0-io: 10 passes, peak RSS 108.2 MiB
+DONE n1-b32-c0-sync: 10 passes, peak RSS 409.5 MiB
+DONE n1-b16-c0-async: 10 passes, peak RSS 377.4 MiB
+DONE n4-b64-c0-sync: 10 passes, peak RSS 466.2 MiB
+DONE n1-b4-c0-sync: 10 passes, peak RSS 356.8 MiB
+DONE n1-b16-c0-sync: 10 passes, peak RSS 377.5 MiB
+DONE n4-b32-c0-sync: 10 passes, peak RSS 393.5 MiB
+DONE n4-b8-c256-async: 10 passes, peak RSS 345.5 MiB
+DONE n4-b8-c64-sync: 10 passes, peak RSS 345.1 MiB
+DONE n4-b8-c0-cpu: 10 passes, peak RSS 113.7 MiB
+DONE n1-b8-c256-sync: 10 passes, peak RSS 361.5 MiB
+DONE n16-b32-c0-cpu: 10 passes, peak RSS 137.8 MiB
+DONE n4-b16-c0-sync: 10 passes, peak RSS 361.3 MiB
+DONE n16-b8-c0-sync: 10 passes, peak RSS 345.7 MiB
+DONE n4-b8-c0-async: 10 passes, peak RSS 345.4 MiB
+DONE n16-b8-c256-sync: 10 passes, peak RSS 346.0 MiB
+DONE n1-b8-c0-async: 10 passes, peak RSS 361.6 MiB
+DONE n16-b16-c0-sync: 10 passes, peak RSS 362.0 MiB
+DONE n16-b8-c256-async: 10 passes, peak RSS 345.6 MiB
+DONE n4-b8-c0-sync: 10 passes, peak RSS 345.5 MiB
+DONE n4-b32-c0-async: 10 passes, peak RSS 393.7 MiB
+DONE n1-b8-c0-sync: 10 passes, peak RSS 361.5 MiB
+DONE n4-b64-c0-cpu: 10 passes, peak RSS 169.5 MiB
+DONE n4-b8-c256-sync: 10 passes, peak RSS 345.3 MiB
+DONE n4-b4-c0-sync: 10 passes, peak RSS 356.5 MiB
+DONE n1-b32-c0-async: 10 passes, peak RSS 409.3 MiB
+DONE n4-b64-c0-async: 10 passes, peak RSS 465.9 MiB
+DONE n1-b32-c0-io: 10 passes, peak RSS 136.4 MiB
+DONE n4-b4-c0-cpu: 10 passes, peak RSS 110.1 MiB
+DONE n1-b32-c0-cpu: 10 passes, peak RSS 137.4 MiB
+DONE n1-b4-c0-async: 10 passes, peak RSS 356.7 MiB
+DONE n1-b16-c0-cpu: 10 passes, peak RSS 121.3 MiB
+DONE n16-b8-c0-cpu: 10 passes, peak RSS 113.9 MiB
+DONE n16-b64-c0-sync: 10 passes, peak RSS 468.6 MiB
+DONE n1-b4-c0-cpu: 10 passes, peak RSS 110.1 MiB
+DONE n16-b64-c0-cpu: 10 passes, peak RSS 170.0 MiB
+DONE n1-b8-c0-cpu: 10 passes, peak RSS 113.4 MiB
+DONE n1-b16-c0-io: 10 passes, peak RSS 120.5 MiB
+DONE n4-b8-c64-async: 10 passes, peak RSS 345.5 MiB
+DONE n16-b16-c0-async: 10 passes, peak RSS 362.1 MiB
+DONE n1-b64-c0-sync: 10 passes, peak RSS 473.3 MiB
+DONE n16-b8-c64-sync: 10 passes, peak RSS 345.8 MiB
+DONE n16-b8-c0-async: 10 passes, peak RSS 346.0 MiB
+DONE n16-b16-c0-cpu: 10 passes, peak RSS 121.6 MiB
+DONE n1-b8-c0-io: 10 passes, peak RSS 112.2 MiB
+DONE n1-b64-c0-io: 10 passes, peak RSS 168.3 MiB
+DONE n16-b32-c0-async: 10 passes, peak RSS 395.0 MiB
+DONE n4-b16-c0-async: 10 passes, peak RSS 361.5 MiB
+DONE n4-b4-c0-async: 10 passes, peak RSS 355.9 MiB
+DONE n16-b32-c0-sync: 10 passes, peak RSS 394.6 MiB
+DONE n1-b8-c256-async: 10 passes, peak RSS 361.3 MiB
+DONE n16-b4-c0-async: 10 passes, peak RSS 356.3 MiB
+DONE n1-b8-c64-sync: 10 passes, peak RSS 361.6 MiB
+DONE n1-b64-c0-async: 10 passes, peak RSS 473.6 MiB
+DONE n1-b8-c64-async: 10 passes, peak RSS 361.5 MiB
+DONE n16-b4-c0-sync: 10 passes, peak RSS 360.3 MiB

@@ -1,0 +1,4 @@
+m=1024 k=4096 n=4 blocks=640 threads=8 direct_io=1 block_bytes=8388608
+GPU=NVIDIA GeForce RTX 3050 Laptop GPU cc=8.6 async_engines=1
+driver_api=13050 runtime=12040 free_vram_bytes=3462660096 total_vram_bytes=4294508544
+cache_setup_bytes=268435456 cache_setup_ms=122.596

@@ -1,0 +1,6 @@
+n=1 sync: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified
+n=1 async: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified
+n=4 sync: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified
+n=4 async: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified
+n=16 sync: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified
+n=16 async: verified=False GPU/host timestamp correlation outside expected pipeline; overlap not verified

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="240" viewBox="0 0 1050 240">
+<rect width="1050" height="240" fill="white"/>
+<text x="15" y="22" font-family="sans-serif" font-size="16">CUPTI GPU timeline — first 40 ms</text>
+<text x="10" y="60" font-family="sans-serif">h2d</text>
+<rect x="110.0" y="45" width="29.15343" height="22" fill="#d97706"/>
+<rect x="307.5615875" y="45" width="29.06703" height="22" fill="#d97706"/>
+<rect x="480.3581225" y="45" width="29.35431" height="22" fill="#d97706"/>
+<rect x="636.952565" y="45" width="29.0324475" height="22" fill="#d97706"/>
+<rect x="812.7032375" y="45" width="29.69847" height="22" fill="#d97706"/>
+<rect x="975.7222175" y="45" width="29.02887" height="22" fill="#d97706"/>
+<text x="10" y="100" font-family="sans-serif">kernel</text>
+<rect x="174.3850775" y="85" width="2.4429375" height="22" fill="#16a34a"/>
+<rect x="340.480595" y="85" width="2.4450975" height="22" fill="#16a34a"/>
+<rect x="512.7925700000001" y="85" width="2.45808" height="22" fill="#16a34a"/>
+<rect x="669.5367725" y="85" width="2.4429375" height="22" fill="#16a34a"/>
+<rect x="845.949125" y="85" width="2.46816" height="22" fill="#16a34a"/>
+<rect x="1008.829865" y="85" width="1.170135" height="22" fill="#16a34a"/>
+<text x="10" y="140" font-family="sans-serif">d2h</text>
+<rect x="178.710815" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="342.9998525" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="515.3240900000001" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="672.05531" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="848.490005" y="125" width="0.2" height="22" fill="#9333ea"/>
+<text x="110.0" y="225" font-family="sans-serif" font-size="11">0 ms</text>
+<text x="222.5" y="225" font-family="sans-serif" font-size="11">5 ms</text>
+<text x="335.0" y="225" font-family="sans-serif" font-size="11">10 ms</text>
+<text x="447.5" y="225" font-family="sans-serif" font-size="11">15 ms</text>
+<text x="560.0" y="225" font-family="sans-serif" font-size="11">20 ms</text>
+<text x="672.5" y="225" font-family="sans-serif" font-size="11">25 ms</text>
+<text x="785.0" y="225" font-family="sans-serif" font-size="11">30 ms</text>
+<text x="897.5" y="225" font-family="sans-serif" font-size="11">35 ms</text>
+<text x="1010.0" y="225" font-family="sans-serif" font-size="11">40 ms</text>
+</svg>

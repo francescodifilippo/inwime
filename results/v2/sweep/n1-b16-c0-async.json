@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/build/bf16_stream",
+    "--file",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/data/weights-5GiB.bf16",
+    "--m",
+    "2048",
+    "--k",
+    "4096",
+    "--n",
+    "1",
+    "--blocks",
+    "320",
+    "--cache-mib",
+    "0",
+    "--mode",
+    "async",
+    "--threads",
+    "8",
+    "--repeats",
+    "10"
+  ],
+  "repeats": 10,
+  "executable_sha256": "3ce352807037731e33bf9ffa03fa02f0cf28f5f0eb2313ecf5301de7b79b2d86",
+  "dataset_bytes": 5368709120,
+  "dataset_stat": [
+    33188,
+    639339,
+    2096,
+    1,
+    1000,
+    1000,
+    5368709120,
+    1793887609,
+    1793887542,
+    1793887542
+  ],
+  "start_time": 1793890568.2949088,
+  "swap_before": {
+    "pswpin": 3,
+    "pswpout": 10
+  },
+  "end_time": 1793890589.376656,
+  "swap_after": {
+    "pswpin": 3,
+    "pswpout": 10
+  },
+  "process_peaks_bytes": {
+    "VmRSS": 396505088,
+    "VmHWM": 396505088,
+    "VmSwap": 0,
+    "VmPin": 0,
+    "VmLck": 0
+  }
+}

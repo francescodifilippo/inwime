@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="240" viewBox="0 0 1050 240">
+<rect width="1050" height="240" fill="white"/>
+<text x="15" y="22" font-family="sans-serif" font-size="16">CUPTI GPU timeline — first 40 ms</text>
+<text x="10" y="60" font-family="sans-serif">h2d</text>
+<rect x="110.0" y="45" width="7.3115775" height="22" fill="#d97706"/>
+<rect x="308.48681" y="45" width="7.3490175" height="22" fill="#d97706"/>
+<rect x="375.969305" y="45" width="7.2878175" height="22" fill="#d97706"/>
+<rect x="437.4362225" y="45" width="7.2834975" height="22" fill="#d97706"/>
+<rect x="493.044545" y="45" width="7.2863775" height="22" fill="#d97706"/>
+<rect x="544.739645" y="45" width="7.2957375" height="22" fill="#d97706"/>
+<rect x="597.2649275" y="45" width="7.2892575" height="22" fill="#d97706"/>
+<rect x="649.11773" y="45" width="7.325235" height="22" fill="#d97706"/>
+<rect x="705.4632875" y="45" width="7.28496" height="22" fill="#d97706"/>
+<rect x="753.3258725" y="45" width="7.2856575" height="22" fill="#d97706"/>
+<rect x="806.7446525" y="45" width="7.2928575" height="22" fill="#d97706"/>
+<rect x="862.3291925" y="45" width="7.2892575" height="22" fill="#d97706"/>
+<rect x="915.754475" y="45" width="7.7968575" height="22" fill="#d97706"/>
+<rect x="968.569895" y="45" width="7.2971775" height="22" fill="#d97706"/>
+<text x="10" y="100" font-family="sans-serif">kernel</text>
+<rect x="239.251115" y="85" width="1.0065375" height="22" fill="#16a34a"/>
+<rect x="249.34763" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="316.830125" y="85" width="1.02384" height="22" fill="#16a34a"/>
+<rect x="317.902205" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="384.2248025" y="85" width="1.01304" height="22" fill="#16a34a"/>
+<rect x="385.2760025" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="446.80988" y="85" width="1.02888" height="22" fill="#16a34a"/>
+<rect x="447.8762" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="502.20074" y="85" width="1.00728" height="22" fill="#16a34a"/>
+<rect x="503.24546" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="552.8504224999999" y="85" width="1.02456" height="22" fill="#16a34a"/>
+<rect x="553.9131425" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="607.0835225000001" y="85" width="1.008" height="22" fill="#16a34a"/>
+<rect x="608.1304025" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="657.265925" y="85" width="1.02456" height="22" fill="#16a34a"/>
+<rect x="658.326485" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="713.501345" y="85" width="1.01664" height="22" fill="#16a34a"/>
+<rect x="714.566945" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="762.33377" y="85" width="1.0288575" height="22" fill="#16a34a"/>
+<rect x="763.41305" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="814.97855" y="85" width="1.01376" height="22" fill="#16a34a"/>
+<rect x="816.03119" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="870.48389" y="85" width="1.02528" height="22" fill="#16a34a"/>
+<rect x="871.55381" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="925.0878125" y="85" width="1.0065375" height="22" fill="#16a34a"/>
+<rect x="926.13107" y="85" width="0.2" height="22" fill="#16a34a"/>
+<rect x="978.4338725" y="85" width="1.01736" height="22" fill="#16a34a"/>
+<rect x="979.4893925" y="85" width="0.2" height="22" fill="#16a34a"/>
+<text x="10" y="140" font-family="sans-serif">d2h</text>
+<rect x="249.48227" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="318.044765" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="385.4286425" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="448.03388" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="503.38298" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="554.0521025" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="608.2636024999999" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="658.462565" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="714.702305" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="763.5498275" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="816.19103" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="871.70573" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="926.27291" y="125" width="0.2" height="22" fill="#9333ea"/>
+<rect x="979.6247525" y="125" width="0.2" height="22" fill="#9333ea"/>
+<text x="110.0" y="225" font-family="sans-serif" font-size="11">0 ms</text>
+<text x="222.5" y="225" font-family="sans-serif" font-size="11">5 ms</text>
+<text x="335.0" y="225" font-family="sans-serif" font-size="11">10 ms</text>
+<text x="447.5" y="225" font-family="sans-serif" font-size="11">15 ms</text>
+<text x="560.0" y="225" font-family="sans-serif" font-size="11">20 ms</text>
+<text x="672.5" y="225" font-family="sans-serif" font-size="11">25 ms</text>
+<text x="785.0" y="225" font-family="sans-serif" font-size="11">30 ms</text>
+<text x="897.5" y="225" font-family="sans-serif" font-size="11">35 ms</text>
+<text x="1010.0" y="225" font-family="sans-serif" font-size="11">40 ms</text>
+</svg>
