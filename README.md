@@ -177,3 +177,40 @@ registra attività kernel/copie e letture host nella stessa base temporale.
 La sovrapposizione si calcola per intersezione delle unioni degli intervalli,
 senza dedurla dal solo speedup. Un trace senza attività reali GPU non è considerato
 una verifica di sovrapposizione. Non eseguire il profiler contemporaneamente allo sweep.
+
+## Confronto con disco USB
+
+`BENCHMARK_V2_STORAGE.md` documenta il confronto mirato scelto dall'utente: I/O
+e GPU async n=1, buffer 64 MiB, cache disabilitata, 10 ripetizioni, stesso file
+da 5 GiB su ext4 WSL, C:/DrvFS e D:/USB/DrvFS. I dati sono separati in
+`results/v2/storage/`; `COMPARISON.md` e i risultati dello sweep V2 restano invariati.
+
+Lo script di setup locale crea due copie esclusive, verifica SHA256 e registra
+le directory temporanee in `datasets.json`: massimo 10 GiB aggiuntivi, da rimuovere
+alla fine. Non eseguirlo di nuovo se il manifest esiste. I nomi dei volumi del
+setup sono specifici del Katana: verificare l'audit prima di riusarlo altrove.
+Il confronto è riprendibile con i file temporanei ancora presenti e il medesimo
+binario. Le opzioni `--buffers`, `--ns`, `--modes` della suite selezionano sottoinsiemi
+senza cambiare il benchmark C++.
+
+```bash
+# Su una nuova directory risultati, dopo audit e setup:
+# python3 tools/storage_setup.py
+python3 tools/storage_compare.py
+python3 tools/report_storage.py
+python3 tools/report_v2.py
+# Solo dopo tutte le 60 passate:
+python3 tools/storage_cleanup.py
+```
+
+Le query standard WMI forniscono contatori globali di lettura dei dischi Windows.
+La diagnostica nativa opzionale in `tools/diagnostics/windows_storage.ps1` è stata
+bloccata dall'antivirus e non è usata per i risultati: non sono state modificate
+le protezioni o installate nuove dipendenze. Velocità USB negoziata e baseline
+Windows nativa senza cache restano non disponibili.
+
+`storage_compare.py` avvia anche la calibrazione I/O iniziale se non esistono suoi
+file; se è già in esecuzione la attende. Dopo la pulizia i dataset temporanei non
+sono più disponibili: per una nuova acquisizione preservare prima l'intera cartella
+`results/v2/storage` con un nome diverso, poi rifare audit e setup. Non sovrascrivere
+risultati storici e non riutilizzare un manifest appartenente a file rimossi.

@@ -1,0 +1,57 @@
+[
+    {
+        "KeyName":  "DEVPKEY_Device_HardwareIds",
+        "Data":  [
+                     "USB\\VID_0BDA\u0026PID_9210\u0026REV_F001",
+                     "USB\\VID_0BDA\u0026PID_9210"
+                 ]
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_Service",
+        "Data":  "UASPStor"
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_LocationInfo",
+        "Data":  "Port_#0015.Hub_#0001"
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_Parent",
+        "Data":  "USB\\ROOT_HUB30\\4\u00261d0069f4\u00260\u00260"
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_BusReportedDeviceDesc",
+        "Data":  "Sabrent"
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_PhysicalDeviceLocation",
+        "Data":  [
+                     130,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     1,
+                     0,
+                     128,
+                     2,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0
+                 ]
+    },
+    {
+        "KeyName":  "DEVPKEY_Device_LocationPaths",
+        "Data":  [
+                     "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(15)",
+                     "ACPI(_SB_)#ACPI(PC00)#ACPI(XHCI)#ACPI(RHUB)#ACPI(SS03)"
+                 ]
+    }
+]

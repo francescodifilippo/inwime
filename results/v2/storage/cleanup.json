@@ -1,0 +1,10 @@
+{
+  "time": 1793908593.0394878,
+  "removed": [
+    "/mnt/c/Users/franc/AppData/Local/Temp/inwime-benchmark-7xvep4zt/weights-5GiB.bf16",
+    "/mnt/d/inwime-benchmark-8h1n114a/weights-5GiB.bf16"
+  ],
+  "errors": [],
+  "remaining_bytes": 0,
+  "all_clean": true
+}

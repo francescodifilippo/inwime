@@ -163,7 +163,7 @@ def main():
                   '- `Get-Partition` mappa C: sul disco 0; `Get-Disk` identifica il disco 0 come '
                   '**Samsung SSD 990 EVO 2TB, BusType NVMe, 2.000.398.934.016 byte**. '
                   'Quindi è il percorso NVMe interno → NTFS/VHDX → ext4 WSL2.',
-                  '- Nessun disco USB esterno è elencato da Windows al momento dell’audit. '
+                  '- Nessun disco USB esterno era elencato da Windows al momento dell’audit iniziale. '
                   'Non è possibile misurare unità USB o velocità negoziata senza collegarla. '
                   'Nemmeno un confronto Linux nativo/raw NVMe è disponibile da questa sessione WSL. '
                   'Non sono stati smontati VHDX, aperti dischi raw o duplicati 5 GiB su DrvFS.',
@@ -218,6 +218,10 @@ def main():
                   '`'+hashlib.sha256((ROOT/'results/COMPARISON.md').read_bytes()).hexdigest()+'`.', '',
                   'Riferimenti: [CUDA su WSL](https://docs.nvidia.com/cuda/archive/12.4.0/wsl-user-guide/index.html), '
                   '[CUPTI Toolkit 12.4](https://developer.nvidia.com/cupti-ctk12_4).'])
+    storage=ROOT/'BENCHMARK_V2_STORAGE.md'
+    if storage.exists():
+        lines.extend(['','---','',storage.read_text().replace('# Confronto storage — disco esterno collegato',
+                      '## Aggiornamento: disco esterno collegato').replace('\n## ','\n### ')])
     (ROOT/'BENCHMARK_V2.md').write_text('\n'.join(lines)+'\n')
     print('BENCHMARK_V2.md updated; complete:',complete)
 

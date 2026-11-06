@@ -1,0 +1,69 @@
+{
+  "command": [
+    "python3",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/benchmark_v2.py",
+    "--file",
+    "/mnt/c/Users/franc/AppData/Local/Temp/inwime-benchmark-7xvep4zt/weights-5GiB.bf16",
+    "--output",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/results/v2/storage/internal-drvfs/sweep",
+    "--buffers",
+    "64",
+    "--stage",
+    "buffers",
+    "--repeats",
+    "10",
+    "--ns",
+    "1",
+    "--modes",
+    "io",
+    "async"
+  ],
+  "source_sha256": "fbfd729651af3054f46600bd042c08f71d87f5a915479af9329bd6617a2c8c0b",
+  "start_time": 1793907859.288341,
+  "before": [
+    {
+      "Name": "0 C:",
+      "DiskReadBytesPersec": 6485483440640,
+      "DiskWriteBytesPersec": 1070146042880
+    },
+    {
+      "Name": "1",
+      "DiskReadBytesPersec": 2701312,
+      "DiskWriteBytesPersec": 1659392
+    },
+    {
+      "Name": "2 D:",
+      "DiskReadBytesPersec": 113476958720,
+      "DiskWriteBytesPersec": 5513695744
+    },
+    {
+      "Name": "_Total",
+      "DiskReadBytesPersec": 6598963100672,
+      "DiskWriteBytesPersec": 1075661398016
+    }
+  ],
+  "end_time": 1793908498.4298353,
+  "after": [
+    {
+      "Name": "0 C:",
+      "DiskReadBytesPersec": 6597796377088,
+      "DiskWriteBytesPersec": 1070748199424
+    },
+    {
+      "Name": "1",
+      "DiskReadBytesPersec": 2701312,
+      "DiskWriteBytesPersec": 1659392
+    },
+    {
+      "Name": "2 D:",
+      "DiskReadBytesPersec": 113477034496,
+      "DiskWriteBytesPersec": 5513806336
+    },
+    {
+      "Name": "_Total",
+      "DiskReadBytesPersec": 6711276112896,
+      "DiskWriteBytesPersec": 1076263665152
+    }
+  ],
+  "exit_code": 0
+}

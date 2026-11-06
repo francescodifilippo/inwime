@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/build/bf16_stream",
+    "--file",
+    "/mnt/d/inwime-benchmark-8h1n114a/weights-5GiB.bf16",
+    "--m",
+    "8192",
+    "--k",
+    "4096",
+    "--n",
+    "1",
+    "--blocks",
+    "80",
+    "--cache-mib",
+    "0",
+    "--mode",
+    "async",
+    "--threads",
+    "8",
+    "--repeats",
+    "10"
+  ],
+  "repeats": 10,
+  "executable_sha256": "3ce352807037731e33bf9ffa03fa02f0cf28f5f0eb2313ecf5301de7b79b2d86",
+  "dataset_bytes": 5368709120,
+  "dataset_stat": [
+    33279,
+    1407374883556467,
+    71,
+    1,
+    1000,
+    1000,
+    5368709120,
+    1793895611,
+    1793895611,
+    1793895611
+  ],
+  "start_time": 1793907319.2582707,
+  "swap_before": {
+    "pswpin": 0,
+    "pswpout": 0
+  },
+  "end_time": 1793907851.6324973,
+  "swap_after": {
+    "pswpin": 0,
+    "pswpout": 0
+  },
+  "process_peaks_bytes": {
+    "VmRSS": 496783360,
+    "VmHWM": 496783360,
+    "VmSwap": 0,
+    "VmPin": 0,
+    "VmLck": 0
+  }
+}

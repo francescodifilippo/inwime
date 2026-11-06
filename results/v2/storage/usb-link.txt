@@ -1,0 +1,7 @@
+In riga:1 car:1
++ & {
++ ~~~
+Questo script include contenuto dannoso ed � stato bloccato dal software antivirus.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : ScriptContainedMaliciousContent
+ 

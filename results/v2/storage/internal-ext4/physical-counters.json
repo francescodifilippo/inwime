@@ -1,0 +1,69 @@
+{
+  "command": [
+    "python3",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/benchmark_v2.py",
+    "--file",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/data/weights-5GiB.bf16",
+    "--output",
+    "/home/francesco/GIT/francescodifilippo/ooc-inference/results/v2/storage/internal-ext4/sweep",
+    "--buffers",
+    "64",
+    "--stage",
+    "buffers",
+    "--repeats",
+    "10",
+    "--ns",
+    "1",
+    "--modes",
+    "io",
+    "async"
+  ],
+  "source_sha256": "fbfd729651af3054f46600bd042c08f71d87f5a915479af9329bd6617a2c8c0b",
+  "start_time": 1793908502.7810073,
+  "before": [
+    {
+      "Name": "0 C:",
+      "DiskReadBytesPersec": 6597809225216,
+      "DiskWriteBytesPersec": 1070748503040
+    },
+    {
+      "Name": "1",
+      "DiskReadBytesPersec": 2701312,
+      "DiskWriteBytesPersec": 1659392
+    },
+    {
+      "Name": "2 D:",
+      "DiskReadBytesPersec": 113477034496,
+      "DiskWriteBytesPersec": 5513806336
+    },
+    {
+      "Name": "_Total",
+      "DiskReadBytesPersec": 6711288961024,
+      "DiskWriteBytesPersec": 1076263968768
+    }
+  ],
+  "end_time": 1793908536.8105288,
+  "after": [
+    {
+      "Name": "0 C:",
+      "DiskReadBytesPersec": 6706675053568,
+      "DiskWriteBytesPersec": 1070776248320
+    },
+    {
+      "Name": "1",
+      "DiskReadBytesPersec": 2701312,
+      "DiskWriteBytesPersec": 1659392
+    },
+    {
+      "Name": "2 D:",
+      "DiskReadBytesPersec": 113477034496,
+      "DiskWriteBytesPersec": 5513806336
+    },
+    {
+      "Name": "_Total",
+      "DiskReadBytesPersec": 6820154789376,
+      "DiskWriteBytesPersec": 1076291714048
+    }
+  ],
+  "exit_code": 0
+}

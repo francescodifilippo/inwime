@@ -86,6 +86,9 @@ def main():
     parser.add_argument('--repeats', type=int, default=10)
     parser.add_argument('--threads', type=int, default=8)
     parser.add_argument('--stage', choices=['buffers', 'cache', 'all'], default='all')
+    parser.add_argument('--buffers', nargs='+', type=int, choices=[4,8,16,32,64], default=[4,8,16,32,64])
+    parser.add_argument('--modes', nargs='+', choices=['io','cpu','sync','async'], default=['io','cpu','sync','async'])
+    parser.add_argument('--ns', nargs='+', type=int, choices=[1,4,16], default=[1,4,16])
     args = parser.parse_args()
     if args.repeats < 10:
         parser.error('V2 requires at least 10 repetitions')
@@ -95,14 +98,15 @@ def main():
     env['LD_LIBRARY_PATH'] = '/usr/lib/wsl/lib' + (':'+env['LD_LIBRARY_PATH'] if env.get('LD_LIBRARY_PATH') else '')
     configurations = []
     if args.stage in ['buffers', 'all']:
-        for mib in [4, 8, 16, 32, 64]:
-            configurations.append((1, mib, 0, 'io'))
-            for n in [1, 4, 16]:
-                configurations += [(n, mib, 0, mode) for mode in ['cpu', 'sync', 'async']]
+        for mib in args.buffers:
+            if 'io' in args.modes:
+                configurations.append((1, mib, 0, 'io'))
+            for n in args.ns:
+                configurations += [(n, mib, 0, mode) for mode in ['cpu', 'sync', 'async'] if mode in args.modes]
     if args.stage in ['cache', 'all']:
-        for n in [1, 4, 16]:
+        for n in args.ns:
             for cache in [64, 256]:
-                configurations += [(n, 8, cache, mode) for mode in ['sync', 'async']]
+                configurations += [(n, 8, cache, mode) for mode in ['sync', 'async'] if mode in args.modes]
     random.Random(20261105).shuffle(configurations)
     sha = hashlib.sha256((ROOT/'build/bf16_stream').read_bytes()).hexdigest()
     print(f'{len(configurations)} configurations x {args.repeats} passes; dataset reused read-only', flush=True)

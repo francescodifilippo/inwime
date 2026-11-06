@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Summarize completed V2 runs, preserving raw data and the original COMPARISON.md."""
+import argparse
 import csv
 from datetime import datetime
 import json
@@ -13,8 +14,15 @@ MIB = 1024**2
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--input',type=Path,default=SWEEP)
+    parser.add_argument('--output',type=Path,default=ROOT/'results/v2')
+    args=parser.parse_args()
+    sweep=args.input
+    output=args.output
+    output.mkdir(parents=True,exist_ok=True)
     gpu = []
-    for file in SWEEP.glob('gpu-*.csv'):
+    for file in sweep.glob('gpu-*.csv'):
         with file.open() as f:
             for r in csv.DictReader(f):
                 try:
@@ -26,7 +34,7 @@ def main():
                 except (ValueError, TypeError, AttributeError):
                     continue
     summaries = []
-    for file in sorted(SWEEP.glob('*.json')):
+    for file in sorted(sweep.glob('*.json')):
         record = json.loads(file.read_text())
         with file.with_suffix('.csv').open() as f:
             rows = list(csv.DictReader(f))
@@ -58,15 +66,15 @@ def main():
         summaries.append(summary)
     if not summaries:
         raise RuntimeError('no completed configurations')
-    with (ROOT/'results/v2/summary.csv').open('w') as f:
+    with (output/'summary.csv').open('w') as f:
         writer = csv.DictWriter(f, fieldnames=list(summaries[0]))
         writer.writeheader()
         writer.writerows(summaries)
-    (ROOT/'results/v2/summary.json').write_text(json.dumps(summaries, indent=2)+'\n')
+    (output/'summary.json').write_text(json.dumps(summaries, indent=2)+'\n')
     # Standalone SVG: grouped bars, one panel per n, default cache disabled.
     colors = {'cpu': '#64748b', 'sync': '#d97706', 'async': '#16a34a'}
     selected = [s for s in summaries if not s['cache_mib'] and s['mode'] in colors]
-    ymax = max(s['total_ms_median'] for s in selected)*1.15
+    ymax = max((s['total_ms_median'] for s in selected),default=1)*1.15
     svg = ['<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420">',
            '<rect width="1100" height="420" fill="white"/>',
            '<text x="25" y="25" font-family="sans-serif" font-size="18">5 GiB BF16 — median total time (seconds), 10 passes; cache=0</text>']
@@ -93,7 +101,7 @@ def main():
     for i, (mode, color) in enumerate(colors.items()):
         svg.append(f'<rect x="{350+120*i}" y="395" width="12" height="12" fill="{color}"/><text x="{367+120*i}" y="406" font-family="sans-serif" font-size="12">{mode}</text>')
     svg.append('</svg>')
-    (ROOT/'results/v2/buffer-comparison.svg').write_text('\n'.join(svg))
+    (output/'buffer-comparison.svg').write_text('\n'.join(svg))
     print(f'{len(summaries)} configurations, {sum(s["count"] for s in summaries)} passes summarized')
 
 
