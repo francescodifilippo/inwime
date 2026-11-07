@@ -1,0 +1,30 @@
+{
+  "seed": 20261107,
+  "order": [
+    [
+      "external-ext4",
+      "cpu"
+    ],
+    [
+      "external-ext4",
+      "async"
+    ],
+    [
+      "external-ext4",
+      "io"
+    ],
+    [
+      "internal-ext4",
+      "async"
+    ],
+    [
+      "internal-ext4",
+      "io"
+    ],
+    [
+      "internal-ext4",
+      "cpu"
+    ]
+  ],
+  "note": "10 consecutive repetitions per case; shuffled case order, no thermal control"
+}

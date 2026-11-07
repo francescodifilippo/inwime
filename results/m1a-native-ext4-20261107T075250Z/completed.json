@@ -1,0 +1,8 @@
+{
+  "time": 1794038622.4311268,
+  "cases": 6,
+  "passes": 60,
+  "logical_timed_read_bytes": 322122547200,
+  "warmup_read_bytes": 4026531840,
+  "note": "warmup: 2 slots per async pass + 1 block per CPU pass, on both routes"
+}

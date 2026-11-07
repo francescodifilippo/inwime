@@ -1,0 +1,72 @@
+{
+  "Paging": [
+    {
+      "AllocatedBaseSize": 40960,
+      "CurrentUsage": 7019,
+      "PeakUsage": 16526
+    }
+  ],
+  "Counters": [
+    {
+      "Name": "0 C:",
+      "DiskReadBytesPersec": 7872010514432,
+      "DiskWriteBytesPersec": 1464062962688
+    },
+    {
+      "Name": "1",
+      "DiskReadBytesPersec": 2716672,
+      "DiskWriteBytesPersec": 1659392
+    },
+    {
+      "Name": "2",
+      "DiskReadBytesPersec": 282058070016,
+      "DiskWriteBytesPersec": 19996238336
+    },
+    {
+      "Name": "_Total",
+      "DiskReadBytesPersec": 8154071301120,
+      "DiskWriteBytesPersec": 1484060860416
+    }
+  ],
+  "Disks": [
+    {
+      "Number": 1,
+      "FriendlyName": "Msft Virtual Disk",
+      "Size": 33554432,
+      "UniqueId": "600224803426183AAFEC9E61EC7A093A",
+      "BusType": "File Backed Virtual",
+      "IsOffline": false
+    },
+    {
+      "Number": 0,
+      "FriendlyName": "Samsung SSD 990 EVO 2TB",
+      "Size": 2000398934016,
+      "UniqueId": "eui.002538224140CABF",
+      "BusType": "NVMe",
+      "IsOffline": false
+    },
+    {
+      "Number": 2,
+      "FriendlyName": "Sabrent SSD",
+      "Size": 512110190592,
+      "UniqueId": "3001237923792379",
+      "BusType": "USB",
+      "IsOffline": true
+    }
+  ],
+  "Memory": {
+    "AvailableMBytes": 1141,
+    "CommittedBytes": 42149830656,
+    "CommitLimit": 59850412032,
+    "PagesInputPersec": 106,
+    "PagesOutputPersec": 0
+  },
+  "Battery": [
+    {
+      "BatteryStatus": 2,
+      "EstimatedChargeRemaining": 52
+    }
+  ],
+  "Time": "2026-11-07T09:03:40.6112056+01:00",
+  "Power": "GUID combinazione risparmio energia: 381b4222-f694-41f0-9685-ff5bb260df2e  (Bilanciato)"
+}

@@ -1,0 +1,2 @@
+PASS: full reference checks, block reuse/tails, corruption, truncation, CLI validation
+GPU modes verified

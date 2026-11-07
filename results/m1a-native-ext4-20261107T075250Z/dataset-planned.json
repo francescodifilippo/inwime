@@ -1,0 +1,6 @@
+{
+  "source": "/home/francesco/GIT/francescodifilippo/ooc-inference/data/weights-5GiB.bf16",
+  "external": "/mnt/wsl/Sabrent/m1a-native-ext4-20261107T075250Z/weights-5GiB.bf16",
+  "external_uuid": "5ee418f3-419e-4434-9337-ef5267c3a403",
+  "sha256": "fbfd729651af3054f46600bd042c08f71d87f5a915479af9329bd6617a2c8c0b"
+}

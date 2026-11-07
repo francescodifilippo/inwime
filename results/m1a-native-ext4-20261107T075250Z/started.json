@@ -1,0 +1,12 @@
+{
+  "time": 1794038024.4125419,
+  "head": "727e8be7bc0e6a2aaeffc78c890273b435449c4d",
+  "binary_sha256": "3ce352807037731e33bf9ffa03fa02f0cf28f5f0eb2313ecf5301de7b79b2d86",
+  "bytes_per_pass": 5368709120,
+  "repeats": 10,
+  "buffer_mib": 64,
+  "n": 1,
+  "cache_mib": 0,
+  "threads": 8,
+  "cache_policy": "O_DIRECT, no global cache flush; host/controller cache uncontrolled"
+}

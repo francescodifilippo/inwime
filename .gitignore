@@ -1,4 +1,84 @@
+# Existing local build and dataset rules.
 build/
 data/
 *.bf16
 __pycache__/
+
+# Python environments and generated caches (at any project depth).
+.venv/
+.venv-*/
+venv/
+venv-*/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pyc
+*.pyo
+
+# Temporary files, editor swaps, and diagnostic/core dumps.
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+/tmp/
+/scratch/
+core
+core.[0-9]*
+*.core
+*.dmp
+*.hprof
+
+# Secret-bearing environment files; reviewed example/template files stay public.
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.*.example
+!.env.*.sample
+!.env.*.template
+
+# Private local launcher and the three files removed from unpublished history.
+/codex.sh
+/results/v2/storage/setup.log
+/results/v2/storage/windows-audit.txt
+
+# Raw host audits and private diagnostics/logs use explicit names/directories.
+windows-audit*.txt
+windows-audit*.json
+hardware-audit*.txt
+hardware-audit*.json
+/diagnostics/raw/
+/local-logs/
+/private/
+.private/
+/results/**/private/
+
+# Generated model payloads belong in these local directories. Gitignore cannot
+# detect file size: payloads elsewhere still require review before staging.
+/checkpoints/
+/datasets/
+/models/
+/weights/
+/artifacts/
+/output/
+
+# Approved small BF16 fixtures: explicit public exceptions, not all binary files.
+!/fixtures/reference_decoder/dense/manifest.json
+!/fixtures/reference_decoder/dense/weights-00001-of-00002.bf16.bin
+!/fixtures/reference_decoder/dense/weights-00002-of-00002.bf16.bin
+!/fixtures/reference_decoder/moe/manifest.json
+!/fixtures/reference_decoder/moe/weights-00001-of-00002.bf16.bin
+!/fixtures/reference_decoder/moe/weights-00002-of-00002.bf16.bin
+
+# Scientific evidence stays versionable. Do not blanket-ignore results/, logs,
+# JSON, binary files, or safetensors. These reviewed outputs are explicit cases.
+!/results/**/summary.csv
+!/results/**/summary.json
+!/results/**/*.svg
+!/results/**/artifact-sha256.json
+!/results/**/preserved-files.json
+!/results/**/preservation-check.json

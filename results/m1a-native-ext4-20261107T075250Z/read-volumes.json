@@ -1,0 +1,56 @@
+[
+  {
+    "route": "external-ext4",
+    "mode": "async",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 51.25,
+    "linux_block_read_GiB": 51.25,
+    "windows_USB_read_GiB": 51.25,
+    "windows_internal_read_GiB": 6.379634380340576
+  },
+  {
+    "route": "external-ext4",
+    "mode": "cpu",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 50.625,
+    "linux_block_read_GiB": 50.625,
+    "windows_USB_read_GiB": 50.625,
+    "windows_internal_read_GiB": 11.23163366317749
+  },
+  {
+    "route": "external-ext4",
+    "mode": "io",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 50,
+    "linux_block_read_GiB": 50.00000762939453,
+    "windows_USB_read_GiB": 50.00000762939453,
+    "windows_internal_read_GiB": 5.418778896331787
+  },
+  {
+    "route": "internal-ext4",
+    "mode": "async",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 51.25,
+    "linux_block_read_GiB": 51.273681640625,
+    "windows_USB_read_GiB": 0.0,
+    "windows_internal_read_GiB": 51.567291259765625
+  },
+  {
+    "route": "internal-ext4",
+    "mode": "cpu",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 50.625,
+    "linux_block_read_GiB": 50.627601623535156,
+    "windows_USB_read_GiB": 0.0,
+    "windows_internal_read_GiB": 50.71290445327759
+  },
+  {
+    "route": "internal-ext4",
+    "mode": "io",
+    "logical_timed_GiB": 50,
+    "expected_including_warmup_GiB": 50,
+    "linux_block_read_GiB": 50.00060272216797,
+    "windows_USB_read_GiB": 0.0,
+    "windows_internal_read_GiB": 50.236337184906006
+  }
+]

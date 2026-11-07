@@ -1,0 +1,39 @@
+Linux Katana 6.18.54.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Tue Oct  6 19:13:07 UTC 2026 x86_64 GNU/Linux
+TARGET           SOURCE    FSTYPE OPTIONS
+/mnt/wsl/Sabrent /dev/sdd1 ext4   rw,relatime,stripe=8191
+NAME   PATH               SIZE TYPE FSTYPE UUID                                 MOUNTPOINTS                                              MODEL        SERIAL
+sda    /dev/sda      758038528 disk ext4                                                                                                 Virtual Disk 60022480868249a0407bd58c47bd59e3
+sdb    /dev/sdb      101683200 disk ext4                                        /usr/lib/linux-tools/6.18.54.1-microsoft-standard-WSL2   Virtual Disk 60022480f6c40205e42841f4e04d5afb
+                                                                                /usr/src/linux-headers-6.18.54.1-microsoft-standard-WSL2              
+sdc    /dev/sdc     8589938688 disk swap   47188895-342b-4442-b2fd-7bf527ca7a23 [SWAP]                                                   Virtual Disk 6002248088bdccd2acca726542e78e26
+sdd    /dev/sdd   512110190592 disk                                                                                                      SSD          0000000000000000
+└─sdd1 /dev/sdd1  512066373120 part ext4   5ee418f3-419e-4434-9337-ef5267c3a403 /mnt/wsl/Sabrent                                                      
+sde    /dev/sde  1099511627776 disk ext4   97fadb9e-b537-4c38-95c6-d296c8dc8bda /snap                                                    Virtual Disk 60022480907f2274412cd36e3bf4bd6c
+                                                                                /mnt/wslg/distro                                                      
+                                                                                /                                                                     
+               total        used        free      shared  buff/cache   available
+Mem:            10Gi       868Mi       9.1Gi       6.6Mi       962Mi       9.8Gi
+Swap:          8.0Gi          0B       8.0Gi
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd1       469G  2.1M  445G   1% /mnt/wsl/Sabrent
+/dev/sde       1007G   72G  884G   8% /
+Sat Nov  7 08:52:50 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 620.67.01              KMD Version: 621.01        CUDA UMD Version: 13.5     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3050 ...    On  |   00000000:01:00.0 Off |                  N/A |
+| N/A   51C    P8              3W /   60W |      17MiB /   4096MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+

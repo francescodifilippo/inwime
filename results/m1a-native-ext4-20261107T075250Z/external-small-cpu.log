@@ -1,0 +1,3 @@
+m=32 k=128 n=7 blocks=3 threads=2 direct_io=1 block_bytes=8192
+mode,repeat,bytes,read_ms,read_GiB_s,h2d_ms,h2d_GiB_s,compute_ms,compute_TFLOP_s,d2h_ms,total_ms,effective_GiB_s,checked,max_abs_error,m,k,n,block_bytes,cache_mib,read_bytes,h2d_bytes,cache_hits,pinned_peak_bytes,device_alloc_bytes,gpu_used_bytes,rss_peak_bytes
+cpu,0,24576,1.169093,0.019578,0.000000,0.000000,0.021734,0.007915,0.000000,1.382857,0.016551,672,0.000000,32,128,7,8192,0,24576,0,0,0,0,0,109424640
