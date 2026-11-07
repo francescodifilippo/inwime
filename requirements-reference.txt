@@ -1,0 +1,8 @@
+# Increment 1 reference/test environment; not dependencies of the future runtime.
+# Verified with CPython 3.14.4 on Linux x86-64. Direct and transitive dependencies.
+numpy==2.3.5
+pytest==9.0.2
+iniconfig==2.3.1
+packaging==26.3
+pluggy==1.7.0
+Pygments==2.21.0

@@ -1,0 +1,386 @@
+{
+  "byte_order": "little",
+  "config": {
+    "context": 32,
+    "experts": 3,
+    "heads": 2,
+    "hidden": 24,
+    "layers": 2,
+    "rms_epsilon": 1e-05,
+    "top_k": 2,
+    "vocab": 31,
+    "width": 16
+  },
+  "files": {
+    "weights-00001-of-00002.bf16.bin": {
+      "nbytes": 10944,
+      "sha256": "267a9959e99e043056376d577a26b36daf22c28fe48f378c0633539f31540f55"
+    },
+    "weights-00002-of-00002.bf16.bin": {
+      "nbytes": 10336,
+      "sha256": "9963f070163ea282f36453934a7479bd6c47d55aa96fa1acb693216d19d869d1"
+    }
+  },
+  "format": "inwime-reference-bf16-v1",
+  "generator": "xorshift32-native-bf16-v1",
+  "layout": "C",
+  "seed": 20261107,
+  "tensors": {
+    "embedding": {
+      "dtype": "BF16",
+      "nbytes": 992,
+      "offset": 0,
+      "shape": [
+        31,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "final_norm": {
+      "dtype": "BF16",
+      "nbytes": 32,
+      "offset": 0,
+      "shape": [
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.experts.0.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 992,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.experts.0.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 32,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.experts.0.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 1760,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.experts.1.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 800,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.experts.1.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 2528,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.experts.1.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 1568,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.experts.2.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 3296,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.experts.2.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 2336,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.experts.2.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 4064,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.k": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 3104,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.norm1": {
+      "dtype": "BF16",
+      "nbytes": 32,
+      "offset": 4832,
+      "shape": [
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.norm2": {
+      "dtype": "BF16",
+      "nbytes": 32,
+      "offset": 3616,
+      "shape": [
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.o": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 4864,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.q": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 3648,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.0.router": {
+      "dtype": "BF16",
+      "nbytes": 96,
+      "offset": 5376,
+      "shape": [
+        3,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.0.v": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 4160,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.experts.0.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 5472,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.experts.0.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 4672,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.experts.0.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 6240,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.experts.1.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 5440,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.experts.1.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 7008,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.experts.1.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 6208,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.experts.2.down": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 7776,
+      "shape": [
+        16,
+        24
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.experts.2.gate": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 6976,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.experts.2.up": {
+      "dtype": "BF16",
+      "nbytes": 768,
+      "offset": 8544,
+      "shape": [
+        24,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.k": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 7744,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.norm1": {
+      "dtype": "BF16",
+      "nbytes": 32,
+      "offset": 9312,
+      "shape": [
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.norm2": {
+      "dtype": "BF16",
+      "nbytes": 32,
+      "offset": 8256,
+      "shape": [
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.o": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 9344,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.q": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 8288,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "layers.1.router": {
+      "dtype": "BF16",
+      "nbytes": 96,
+      "offset": 9856,
+      "shape": [
+        3,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "layers.1.v": {
+      "dtype": "BF16",
+      "nbytes": 512,
+      "offset": 8800,
+      "shape": [
+        16,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    },
+    "lm_head": {
+      "dtype": "BF16",
+      "nbytes": 992,
+      "offset": 9952,
+      "shape": [
+        31,
+        16
+      ],
+      "shard": "weights-00001-of-00002.bf16.bin"
+    },
+    "position": {
+      "dtype": "BF16",
+      "nbytes": 1024,
+      "offset": 9312,
+      "shape": [
+        32,
+        16
+      ],
+      "shard": "weights-00002-of-00002.bf16.bin"
+    }
+  },
+  "variant": "moe"
+}
