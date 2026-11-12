@@ -214,3 +214,11 @@ file; se è già in esecuzione la attende. Dopo la pulizia i dataset temporanei 
 sono più disponibili: per una nuova acquisizione preservare prima l'intera cartella
 `results/v2/storage` con un nome diverso, poi rifare audit e setup. Non sovrascrivere
 risultati storici e non riutilizzare un manifest appartenente a file rimossi.
+
+## Catalogo delle tecniche
+
+Il [catalogo delle tecniche e dei riferimenti](docs/INWIME_TECHNIQUE_WATCHLIST.md)
+è un inventario in evoluzione. Distingue gli argomenti attribuiti alle discussioni
+storiche dalle nuove voci e dagli approfondimenti della ricerca successiva,
+esplicitando le provenienze ancora da confermare. Non costituisce una roadmap
+né un'autorizzazione a modificare il runtime o avviare nuove prove.
