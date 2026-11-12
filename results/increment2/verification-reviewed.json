@@ -1,0 +1,190 @@
+{
+  "cases": {
+    "dense": {
+      "max_absolute_errors": {
+        "hidden": 2.6645352591003757e-15,
+        "kv": 1.887379141862766e-15,
+        "logits": 2.3314683517128287e-15,
+        "probabilities": 0.0
+      },
+      "reference_peak_rss_kib": 36976,
+      "runtime": {
+        "linux_status_memory_kib": {
+          "VmHWM": 21832,
+          "VmRSS": 21832
+        },
+        "process_peak_rss_kib": 21660,
+        "stats": {
+          "active_region": false,
+          "audited_retained_metadata_bytes": 17102,
+          "backend_read_calls": 21376,
+          "completed": 7248,
+          "failed": 0,
+          "inference_read_bytes": 59520,
+          "integrity_read_bytes": 11872,
+          "linux_process_io_delta": null,
+          "max_backend_read_bytes": 4,
+          "numeric_buffers_after_close": 0,
+          "numeric_buffers_live": 14,
+          "payload_bytes": 11872,
+          "peak_region_bf16_equivalent_bytes": 10,
+          "peak_region_elements": 5,
+          "released": 7248,
+          "request_state": "RELEASED",
+          "requests": 7248,
+          "required_by_category": {
+            "accumulators": 72,
+            "activations": 4048,
+            "kv": 6144,
+            "metadata": 34950,
+            "staging": 4,
+            "weights": 40,
+            "workspace": 0
+          },
+          "reserved_peak_bytes": 45258,
+          "session_failed": false,
+          "session_length": 6,
+          "tensor_read_bytes": {
+            "embedding": 192,
+            "final_norm": 192,
+            "layers.0.ffn.down": 4608,
+            "layers.0.ffn.gate": 4608,
+            "layers.0.ffn.up": 4608,
+            "layers.0.k": 3072,
+            "layers.0.norm1": 192,
+            "layers.0.norm2": 192,
+            "layers.0.o": 3072,
+            "layers.0.q": 3072,
+            "layers.0.v": 3072,
+            "layers.1.ffn.down": 4608,
+            "layers.1.ffn.gate": 4608,
+            "layers.1.ffn.up": 4608,
+            "layers.1.k": 3072,
+            "layers.1.norm1": 192,
+            "layers.1.norm2": 192,
+            "layers.1.o": 3072,
+            "layers.1.q": 3072,
+            "layers.1.v": 3072,
+            "lm_head": 5952,
+            "position": 192
+          },
+          "weight_slot_bytes": 40
+        }
+      }
+    },
+    "moe": {
+      "max_absolute_errors": {
+        "hidden": 3.552713678800501e-15,
+        "kv": 2.1094237467877974e-15,
+        "logits": 1.6930901125533637e-15,
+        "probabilities": 3.3306690738754696e-16
+      },
+      "reference_peak_rss_kib": 37136,
+      "runtime": {
+        "linux_status_memory_kib": {
+          "VmHWM": 21924,
+          "VmRSS": 21924
+        },
+        "process_peak_rss_kib": 21804,
+        "stats": {
+          "active_region": false,
+          "audited_retained_metadata_bytes": 23845,
+          "backend_read_calls": 32536,
+          "completed": 10656,
+          "failed": 0,
+          "inference_read_bytes": 88320,
+          "integrity_read_bytes": 21280,
+          "linux_process_io_delta": null,
+          "max_backend_read_bytes": 4,
+          "numeric_buffers_after_close": 0,
+          "numeric_buffers_live": 20,
+          "payload_bytes": 21280,
+          "peak_region_bf16_equivalent_bytes": 10,
+          "peak_region_elements": 5,
+          "released": 10656,
+          "request_state": "RELEASED",
+          "requests": 10656,
+          "required_by_category": {
+            "accumulators": 72,
+            "activations": 4584,
+            "kv": 6144,
+            "metadata": 52286,
+            "staging": 4,
+            "weights": 40,
+            "workspace": 32
+          },
+          "reserved_peak_bytes": 63162,
+          "session_failed": false,
+          "session_length": 6,
+          "tensor_read_bytes": {
+            "embedding": 192,
+            "final_norm": 192,
+            "layers.0.experts.0.down": 4608,
+            "layers.0.experts.0.gate": 4608,
+            "layers.0.experts.0.up": 4608,
+            "layers.0.experts.1.down": 2304,
+            "layers.0.experts.1.gate": 2304,
+            "layers.0.experts.1.up": 2304,
+            "layers.0.experts.2.down": 2304,
+            "layers.0.experts.2.gate": 2304,
+            "layers.0.experts.2.up": 2304,
+            "layers.0.k": 3072,
+            "layers.0.norm1": 192,
+            "layers.0.norm2": 192,
+            "layers.0.o": 3072,
+            "layers.0.q": 3072,
+            "layers.0.router": 576,
+            "layers.0.v": 3072,
+            "layers.1.experts.0.down": 2304,
+            "layers.1.experts.0.gate": 2304,
+            "layers.1.experts.0.up": 2304,
+            "layers.1.experts.1.down": 2304,
+            "layers.1.experts.1.gate": 2304,
+            "layers.1.experts.1.up": 2304,
+            "layers.1.experts.2.down": 4608,
+            "layers.1.experts.2.gate": 4608,
+            "layers.1.experts.2.up": 4608,
+            "layers.1.k": 3072,
+            "layers.1.norm1": 192,
+            "layers.1.norm2": 192,
+            "layers.1.o": 3072,
+            "layers.1.q": 3072,
+            "layers.1.router": 576,
+            "layers.1.v": 3072,
+            "lm_head": 5952,
+            "position": 192
+          },
+          "weight_slot_bytes": 40
+        }
+      }
+    }
+  },
+  "prefill_tokens": 3,
+  "scope": "increment2 CPU correctness, not a performance benchmark",
+  "tokens": [
+    1,
+    7,
+    4,
+    7,
+    2,
+    11
+  ],
+  "tolerances": {
+    "hidden": [
+      9.094947017729282e-13,
+      9.094947017729282e-13
+    ],
+    "kv": [
+      4.547473508864641e-13,
+      4.547473508864641e-13
+    ],
+    "logits": [
+      1.8189894035458565e-12,
+      1.8189894035458565e-12
+    ],
+    "probabilities": [
+      2.842170943040401e-14,
+      5.684341886080802e-14
+    ]
+  }
+}
