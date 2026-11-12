@@ -1,0 +1,14 @@
+{
+  "README.md": "d04c1a3420388d11b344e4dbad614f3a16fee3dde1d539afbba33e947ed4cc0d",
+  "docs/RUNTIME_CPU_INCREMENT_4.md": "17a7e6a5e50cea98b6f2a77f1860996d0bab24e077648865dc1fe17907c5463d",
+  "inwime_runtime/core.py": "f3c316e1d353dd99f2a7836a5a3e21d836b77aaaad25394a605c06615e09520a",
+  "inwime_runtime/decoder.py": "7b71dc5606eb5425cde092746365382dc1f863b80ab93cf4ed5ba4002bd83fb7",
+  "inwime_runtime/pipeline.py": "2152de6a7078512ca790959d9c2a5bcb0e04591c50eae00dd459e4cff513a254",
+  "inwime_runtime/telemetry.py": "0163fc9b58f342c07436e60a999ccec1655bd4d767f1a18d11c8eaf05abf20f1",
+  "tests/test_pipeline_cpu.py": "28f1391c83c866ecf31a02ffbe80610aab5ee9ba71dd8f07ca05364a83f3902b",
+  "tests/test_segmented_cpu.py": "1b68722c23e54288b65b985805f27bfe947672304c1ab06f0b8073f3bca65690",
+  "tools/checkpoint4.py": "090108f6da54fa90116d32a7dec08989d5929026db1d19380f15ca4dfa162ed7",
+  "tools/verify_increment4.py": "2a5c9ff45f7f0ffd0640b7779140aae580dfffb6a36361ae5ae278c71123538b",
+  "tools/decoder_increment4.py": "ba8334e71a607cc822792ab777f836bb9283d1f28338ae950af6955d8dbe4ca2",
+  "tools/benchmark_increment4.py": "1d5706265b20f8c99c4e12c86ee915c305806d2e5d50d559367b3139c8dcffed"
+}

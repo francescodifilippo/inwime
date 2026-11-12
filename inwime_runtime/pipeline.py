@@ -186,10 +186,11 @@ class PipelineCoordinator(Coordinator):
         except ValueError:
             self.backpressure += 1
             raise BackpressureError('all weight/staging/request slots are reserved') from None
+        self.logical_requested_bytes += count*2
         self.generation += 1
         r = Request(self, self.generation, slot, name, start, count)
         r.stop = threading.Event()
-        r.job = ReadJob((self.fds[tensor.shard], self.stamps[tensor.shard], offset, count,
+        r.job = ReadJob((name, start, count,
                          self.buffers[self.staging_name(slot)], r.number, slot, r.stop),
                         threading.Event())
         r.job.done.set()  # not yet dispatched: no physical user of the destination
@@ -208,22 +209,24 @@ class PipelineCoordinator(Coordinator):
             raise
         return r
 
-    def _load(self, fd, stamp, offset, count, staging, number, slot, stop):
+    def _load(self, name, start, count, staging, number, slot, stop):
         """Physical read only. No request, counters, KV or slot transitions."""
         result = Completion()
         try:
-            if signature(fd) != stamp:
-                raise CheckpointError('source changed after opening')
-            for done in range(0, count, self.plan.read_elements):
+            for shard, offset, elements, done in self.catalog.spans(
+                    name, start, count, self.plan.read_elements):
+                fd, stamp = self.fds[shard], self.stamps[shard]
+                if signature(fd) != stamp:
+                    raise CheckpointError("source changed after opening")
                 if stop.is_set():
                     break
-                size = min(self.plan.read_elements, count-done)*2
+                size = elements*2
                 view = memoryview(staging)[done*2:done*2+size]
                 result.calls += 1
                 result.max_read = max(result.max_read, size)
                 self.timeline.event('read_begin', number, slot)
                 try:
-                    n = self.backend.readinto(fd, offset+done*2, view)
+                    n = self.backend.readinto(fd, offset, view)
                 finally:
                     self.timeline.event('read_end', number, slot)
                 if type(n) is not int or not 0 <= n <= size:
@@ -231,8 +234,8 @@ class PipelineCoordinator(Coordinator):
                 result.read_bytes += n
                 if n != size:
                     raise ReadError('short read: region is incomplete')
-            if signature(fd) != stamp:
-                raise CheckpointError('source changed during reading')
+                if signature(fd) != stamp:
+                    raise CheckpointError('source changed during reading')
         except BaseException as error:
             # Drop worker traceback: it can retain views and arbitrary backend
             # locals. The completion itself remains bounded by the slot count.

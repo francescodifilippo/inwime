@@ -104,6 +104,8 @@ def test_out_of_order_completion_backpressure_and_live_leases():
         first = c.submit('embedding', 0, 5)
         second = c.submit('embedding', 5, 5)
         assert backend.entered.wait(1) and backend.later_done.wait(1)
+        # The backend event marks one syscall, not the complete multi-read job.
+        assert second.job.done.wait(1)
         c.poll()
         assert first.state == 'READING' and second.state == 'READY'
         assert c.stats()['audited_retained_metadata_bytes'] <= engine.plan.required['metadata'] + engine.plan.required['requests']

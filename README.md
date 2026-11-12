@@ -222,3 +222,13 @@ Il [catalogo delle tecniche e dei riferimenti](docs/INWIME_TECHNIQUE_WATCHLIST.m
 storiche dalle nuove voci e dagli approfondimenti della ricerca successiva,
 esplicitando le provenienze ancora da confermare. Non costituisce una roadmap
 né un'autorizzazione a modificare il runtime o avviare nuove prove.
+
+## Runtime CPU: checkpoint segmentati
+
+L'[incremento 4](docs/RUNTIME_CPU_INCREMENT_4.md) aggiunge tensori multi-shard,
+compatibilità manifest v1/v2, generazione BF16 scalabile e verifiche riproducibili.
+Dimostra accesso a un checkpoint da 12 GiB oltre la RAM WSL e scansione progressiva
+di un tensore da 6 GiB; il forward completo oltre RAM resta non dimostrato.
+Strumenti: `python3 -m tools.checkpoint4 --help` e
+`python3 -m tools.benchmark_increment4 --help`. Il generatore esegue soltanto
+l'audit senza `--execute`; payload in `checkpoints/`, fuori da Git.

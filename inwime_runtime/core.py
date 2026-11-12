@@ -7,6 +7,7 @@ stdlib arrays; interpreter/allocator overhead is observed separately as RSS.
 from array import array
 from dataclasses import dataclass, fields, is_dataclass
 from contextlib import contextmanager
+from bisect import bisect_right
 import hashlib
 import json
 import math
@@ -76,24 +77,34 @@ class Spec:
 
 
 @dataclass(frozen=True, slots=True)
-class Tensor:
-    shape: tuple
+class Segment:
+    start: int
     shard: str
     offset: int
     elements: int
 
 
+@dataclass(frozen=True, slots=True)
+class Tensor:
+    shape: tuple
+    shard: str
+    offset: int
+    elements: int
+    segments: tuple
+    starts: tuple
+
+
 class Catalog:
     """Index only. The mathematical adapter supports the increment-1 schema."""
 
-    def __init__(self, directory):
+    def __init__(self, directory, max_manifest_bytes=16*1024*1024):
         self.directory = Path(directory)
         path = self.directory / "manifest.json"
-        if path.stat().st_size > 65536:
-            raise CheckpointError("fixture manifest exceeds 64 KiB input bound")
+        if path.stat().st_size > max_manifest_bytes:
+            raise CheckpointError("manifest exceeds configured input bound")
         with path.open('rb') as source:
-            raw = source.read(65537)
-        if len(raw) > 65536:
+            raw = source.read(max_manifest_bytes+1)
+        if len(raw) > max_manifest_bytes:
             raise CheckpointError("fixture manifest grew beyond its input bound")
         def unique_pairs(pairs):
             d = {}
@@ -104,7 +115,7 @@ class Catalog:
             return d
         try:
             m = json.loads(raw, object_pairs_hook=unique_pairs)
-            if (m["format"] != "inwime-reference-bf16-v1" or m["byte_order"] != "little"
+            if (m["format"] not in ("inwime-reference-bf16-v1", "inwime-segmented-bf16-v2") or m["byte_order"] != "little"
                     or m["layout"] != "C" or m["variant"] not in ("dense", "moe")):
                 raise CheckpointError("unsupported manifest format")
             self.spec = c = Spec(**m["config"])
@@ -115,7 +126,7 @@ class Catalog:
                 raise CheckpointError("invalid decoder dimensions")
             self.variant = m["variant"]
             count = 4 + c.layers * (9 if self.variant == "dense" else 7 + 3*c.experts)
-            if len(m["tensors"]) != count or len(m["files"]) != 2:
+            if len(m["tensors"]) != count or not m["files"]:
                 raise CheckpointError("unexpected tensor/shard count")
             expected = {"embedding": (c.vocab, c.width), "position": (c.context, c.width),
                         "final_norm": (c.width,), "lm_head": (c.vocab, c.width)}
@@ -148,13 +159,29 @@ class Catalog:
                 d = m["tensors"][name]
                 elements = math.prod(shape)
                 if (d["dtype"] != "BF16" or tuple(d["shape"]) != shape
-                        or d["shard"] not in self.files or type(d["offset"]) is not int
-                        or d["offset"] < 0 or d["offset"] % 2
-                        or type(d["nbytes"]) is not int or d["nbytes"] != elements*2
-                        or d["offset"] + d["nbytes"] > self.files[d["shard"]][0]):
+                        or type(d["nbytes"]) is not int or d["nbytes"] != elements*2):
                     raise CheckpointError("invalid tensor region: " + name)
-                self.tensors[name] = Tensor(shape, d["shard"], d["offset"], elements)
-                intervals[d["shard"]].append((d["offset"], d["offset"]+d["nbytes"]))
+                descriptors = (d["segments"] if m["format"] == "inwime-segmented-bf16-v2"
+                               else [dict(start=0, shard=d["shard"], offset=d["offset"],
+                                          nbytes=d["nbytes"])])
+                segments, end = [], 0
+                for part in descriptors:
+                    start, offset, size = part["start"], part["offset"], part["nbytes"]
+                    shard = part["shard"]
+                    if (any(type(x) is not int for x in (start, offset, size))
+                            or start != end or offset < 0 or offset % 2 or size <= 0
+                            or size % 2 or shard not in self.files
+                            or offset + size > self.files[shard][0]):
+                        raise CheckpointError("missing, overlapping or invalid segment: " + name)
+                    segments.append(Segment(start, shard, offset, size//2))
+                    end += size//2
+                    intervals[shard].append((offset, offset+size))
+                if end != elements:
+                    raise CheckpointError("incomplete tensor: " + name)
+                first = segments[0]
+                self.tensors[name] = Tensor(shape, first.shard if len(segments) == 1 else None,
+                                            first.offset if len(segments) == 1 else None, elements,
+                                            tuple(segments), tuple(x.start for x in segments))
             for name, spans in intervals.items():
                 end = 0
                 for start, stop in sorted(spans):
@@ -181,7 +208,24 @@ class Catalog:
         if (type(start) is not int or type(count) is not int or start < 0
                 or count <= 0 or start + count > tensor.elements):
             raise CheckpointError("region outside tensor")
-        return tensor, tensor.offset + start*2
+        return tensor, None if tensor.offset is None else tensor.offset + start*2
+
+
+    def spans(self, name, start, count, max_elements):
+        """Lazy physical pieces (shard, byte offset, elements, destination index)."""
+        if type(max_elements) is not int or max_elements <= 0:
+            raise ValueError("positive maximum span required")
+        tensor, _ = self.region(name, start, count)
+        index = bisect_right(tensor.starts, start)-1
+        done = 0
+        while done < count:
+            part = tensor.segments[index]
+            relative = start+done-part.start
+            number = min(count-done, part.elements-relative, max_elements)
+            yield part.shard, part.offset+relative*2, number, done
+            done += number
+            if relative+number == part.elements:
+                index += 1
 
 
 CATEGORIES = ("weights", "staging", "activations", "kv", "accumulators", "workspace", "metadata",
@@ -324,7 +368,10 @@ class RegionLease:
 class Coordinator:
     """Single reservation/state authority, one synchronous region in flight."""
 
-    def __init__(self, catalog, plan, budget=None, backend=None):
+    def __init__(self, catalog, plan, budget=None, backend=None, *, integrity="full"):
+        if integrity not in ("full", "metadata"):
+            raise ValueError("integrity must be full or metadata (explicitly unverified payload)")
+        self.integrity_policy = integrity
         self.catalog, self.plan = catalog, plan
         budget = plan.budget() if budget is None else budget
         if (type(budget.total) is not int or budget.total < plan.total
@@ -338,6 +385,7 @@ class Coordinator:
         self.backend = FileBackend() if backend is None else backend
         self.generation = self.issued = self.completed = self.failed = self.released = 0
         self.read_calls = self.integrity_bytes = self.inference_bytes = self.max_read = 0
+        self.logical_requested_bytes = 0
         self.expand_ns = 0
         self.weight_peak = self.region_peak = 0
         self.active, self.closed, self.request_state = False, False, "IDLE"
@@ -358,7 +406,7 @@ class Coordinator:
                 if not stat.S_ISREG(s.st_mode) or s.st_size != size:
                     raise CheckpointError("source is not a regular file of the expected size")
                 self.stamps[name] = signature(fd)
-            for name, (size, expected) in catalog.files.items():
+            for name, (size, expected) in (catalog.files.items() if integrity == "full" else ()):
                 digest = hashlib.sha256()
                 for offset in range(0, size, plan.read_elements*2):
                     count = min(plan.read_elements*2, size-offset)
@@ -405,6 +453,7 @@ class Coordinator:
         tensor, offset = self.catalog.region(name, start, count)
         if count > self.plan.tile_elements:
             raise BudgetError("region exceeds the reserved weight slot")
+        self.logical_requested_bytes += count*2
         self.generation += 1
         self.issued += 1
         self.request_state, self.active = "READING", True
@@ -412,10 +461,11 @@ class Coordinator:
         self.timeline.event('wait_begin', self.generation)
         waited = 0
         try:
-            for done in range(0, count, self.plan.read_elements):
-                number = min(self.plan.read_elements, count-done)
+            for shard, offset, number, done in self.catalog.spans(
+                    name, start, count, self.plan.read_elements):
+                self.check_cancelled()
                 began = time.monotonic_ns()
-                raw = self._read(tensor.shard, offset+done*2, number*2)
+                raw = self._read(shard, offset, number*2)
                 waited += time.monotonic_ns()-began
                 self.tensor_bytes[name] += len(raw)
                 expand_began = time.monotonic_ns()
@@ -458,7 +508,8 @@ class Coordinator:
         metadata += deep_size({k: v for k, v in vars(self.timeline).items() if k != 'trace'})
         if 'trace' in self.buffers:
             metadata += len(self.buffers['trace'])*self.buffers['trace'].itemsize
-        return {"required_by_category": dict(self.plan.required),
+        return {"integrity_policy": self.integrity_policy,
+                "required_by_category": dict(self.plan.required),
                 "audited_retained_metadata_bytes": metadata,
                 "reserved_peak_bytes": self.plan.total,
                 "weight_slot_bytes": self.weight_peak,
@@ -469,6 +520,7 @@ class Coordinator:
                 "integrity_read_ns": self.integrity_read_ns,
                 "bf16_expand_ns": self.expand_ns,
                 "inference_read_bytes": self.inference_bytes,
+                "logical_requested_bytes": self.logical_requested_bytes,
                 "backend_read_calls": self.read_calls, "max_backend_read_bytes": self.max_read,
                 "requests": self.issued, "completed": self.completed, "failed": self.failed,
                 "released": self.released, "request_state": self.request_state,

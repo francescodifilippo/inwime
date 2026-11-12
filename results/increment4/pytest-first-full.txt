@@ -1,0 +1,27 @@
+........................................................................ [ 50%]
+..................F..................................................... [100%]
+=================================== FAILURES ===================================
+__________ test_out_of_order_completion_backpressure_and_live_leases ___________
+
+    def test_out_of_order_completion_backpressure_and_live_leases():
+        backend = ControlledBackend()
+        with make_pipeline(backend, io_workers=2, trace_capacity=100) as engine:
+            c = engine.control
+            backend.enabled = True
+            backend.first_offset = engine.catalog.tensors['embedding'].offset
+            first = c.submit('embedding', 0, 5)
+            second = c.submit('embedding', 5, 5)
+            assert backend.entered.wait(1) and backend.later_done.wait(1)
+            c.poll()
+>           assert first.state == 'READING' and second.state == 'READY'
+E           AssertionError: assert ('READING' == 'READING'
+E
+E               READING and 'READING' == 'READY'
+E
+E             - READY
+E             + READING)
+
+tests/test_pipeline_cpu.py:108: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_pipeline_cpu.py::test_out_of_order_completion_backpressure_and_live_leases
+1 failed, 143 passed in 29.02s

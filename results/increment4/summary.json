@@ -1,0 +1,154 @@
+{
+  "medium-16384": {
+    "sync": {
+      "wall_median_ms": 971.898376,
+      "wall_min_ms": 918.175919,
+      "wall_max_ms": 992.733244,
+      "peak_rss_kib": 23924,
+      "stats": {
+        "read_service_ns": 1280599,
+        "compute_ns": 518048662,
+        "data_wait_ns": 2955539,
+        "overlap_ns": 0,
+        "bf16_expand_ns": 448117734,
+        "inference_read_bytes": 4194304,
+        "backend_read_calls": 424,
+        "reserved_peak_bytes": 341367,
+        "weight_slot_bytes": 131072,
+        "peak_occupied_slots": 1
+      }
+    },
+    "pipeline": {
+      "wall_median_ms": 1143.265066,
+      "wall_min_ms": 1124.697329,
+      "wall_max_ms": 1155.219924,
+      "peak_rss_kib": 24084,
+      "stats": {
+        "read_service_ns": 310306043,
+        "compute_ns": 688949166,
+        "data_wait_ns": 10893901,
+        "overlap_ns": 213244082,
+        "bf16_expand_ns": 435408827,
+        "inference_read_bytes": 4194304,
+        "backend_read_calls": 424,
+        "reserved_peak_bytes": 537975,
+        "weight_slot_bytes": 262144,
+        "peak_occupied_slots": 2
+      }
+    }
+  },
+  "medium-65536": {
+    "sync": {
+      "wall_median_ms": 954.734073,
+      "wall_min_ms": 917.289643,
+      "wall_max_ms": 967.876517,
+      "peak_rss_kib": 24420,
+      "stats": {
+        "read_service_ns": 894261,
+        "compute_ns": 505297333,
+        "data_wait_ns": 1810272,
+        "overlap_ns": 0,
+        "bf16_expand_ns": 446536001,
+        "inference_read_bytes": 4194304,
+        "backend_read_calls": 135,
+        "reserved_peak_bytes": 832887,
+        "weight_slot_bytes": 524288,
+        "peak_occupied_slots": 1
+      }
+    },
+    "pipeline": {
+      "wall_median_ms": 1140.782632,
+      "wall_min_ms": 1114.134724,
+      "wall_max_ms": 1184.17103,
+      "peak_rss_kib": 24896,
+      "stats": {
+        "read_service_ns": 135705315,
+        "compute_ns": 688521059,
+        "data_wait_ns": 454178,
+        "overlap_ns": 23959740,
+        "bf16_expand_ns": 449135724,
+        "inference_read_bytes": 4194304,
+        "backend_read_calls": 135,
+        "reserved_peak_bytes": 1521015,
+        "weight_slot_bytes": 1048576,
+        "peak_occupied_slots": 2
+      }
+    }
+  },
+  "decoder-dense": {
+    "sync": {
+      "wall_median_ms": 1261.034495,
+      "wall_min_ms": 1257.775638,
+      "wall_max_ms": 1265.12988,
+      "peak_rss_kib": 23940,
+      "stats": {
+        "read_service_ns": 69476920,
+        "compute_ns": 430290992,
+        "data_wait_ns": 228526279,
+        "overlap_ns": 0,
+        "bf16_expand_ns": 354315597,
+        "inference_read_bytes": 3151040,
+        "backend_read_calls": 66237,
+        "reserved_peak_bytes": 371966,
+        "weight_slot_bytes": 32768,
+        "peak_occupied_slots": 1
+      }
+    },
+    "pipeline": {
+      "wall_median_ms": 6106.224663,
+      "wall_min_ms": 5999.961599,
+      "wall_max_ms": 6115.638009,
+      "peak_rss_kib": 24096,
+      "stats": {
+        "read_service_ns": 553895421,
+        "compute_ns": 807047769,
+        "data_wait_ns": 3442413119,
+        "overlap_ns": 22452123,
+        "bf16_expand_ns": 531305296,
+        "inference_read_bytes": 3151040,
+        "backend_read_calls": 66237,
+        "reserved_peak_bytes": 437502,
+        "weight_slot_bytes": 65536,
+        "peak_occupied_slots": 2
+      }
+    }
+  },
+  "decoder-moe": {
+    "sync": {
+      "wall_median_ms": 644.640563,
+      "wall_min_ms": 630.284409,
+      "wall_max_ms": 658.224927,
+      "peak_rss_kib": 23768,
+      "stats": {
+        "read_service_ns": 34729873,
+        "compute_ns": 223180729,
+        "data_wait_ns": 113941737,
+        "overlap_ns": 0,
+        "bf16_expand_ns": 181445439,
+        "inference_read_bytes": 1578688,
+        "backend_read_calls": 33790,
+        "reserved_peak_bytes": 250450,
+        "weight_slot_bytes": 32768,
+        "peak_occupied_slots": 1
+      }
+    },
+    "pipeline": {
+      "wall_median_ms": 3006.858239,
+      "wall_min_ms": 2956.833119,
+      "wall_max_ms": 3319.075489,
+      "peak_rss_kib": 23836,
+      "stats": {
+        "read_service_ns": 290269097,
+        "compute_ns": 391019645,
+        "data_wait_ns": 1704604827,
+        "overlap_ns": 9307014,
+        "bf16_expand_ns": 257669317,
+        "inference_read_bytes": 1578688,
+        "backend_read_calls": 33790,
+        "reserved_peak_bytes": 315986,
+        "weight_slot_bytes": 65536,
+        "peak_occupied_slots": 2
+      }
+    }
+  }
+}

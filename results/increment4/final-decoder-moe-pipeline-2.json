@@ -1,0 +1,378 @@
+{
+  "path": "checkpoints/inc4-moe",
+  "mode": "pipeline",
+  "output": {
+    "length": 1,
+    "logits": [
+      [
+        0.8938985708402654,
+        0.9973539047390814,
+        1.1008092386378974,
+        1.2042645725367134,
+        1.3077199064355294,
+        1.4111752403343452,
+        1.514630574233161,
+        1.6180859081319772,
+        -0.8938985708402654,
+        -0.9973539047390814,
+        -1.1008092386378974,
+        -1.2042645725367134,
+        -1.3077199064355294,
+        -1.4111752403343452,
+        -1.514630574233161,
+        -1.6180859081319772,
+        0.8938985708402654,
+        0.9973539047390814,
+        1.1008092386378974,
+        1.2042645725367134,
+        1.3077199064355294,
+        1.4111752403343452,
+        1.514630574233161,
+        1.6180859081319772,
+        -0.8938985708402654,
+        -0.9973539047390814,
+        -1.1008092386378974,
+        -1.2042645725367134,
+        -1.3077199064355294,
+        -1.4111752403343452,
+        -1.514630574233161
+      ]
+    ],
+    "hidden": [
+      [
+        [
+          0.08605942997683233,
+          0.08703599247683227,
+          0.08801255497683236,
+          0.08898911747683239,
+          0.08996567997683244,
+          0.09094224247683244,
+          0.0919188049768323,
+          0.09289536747683241,
+          0.18737807002322363,
+          0.18835463252322368,
+          0.1893311950232236,
+          0.19030775752322357,
+          0.19128432002322351,
+          0.19226088252322351,
+          0.19323744502322365,
+          0.19421400752322354
+        ]
+      ],
+      [
+        [
+          0.04176579990937563,
+          0.04274236240937566,
+          0.04371892490937585,
+          0.044695487409375935,
+          0.04567204990937577,
+          0.04664861240937596,
+          0.04762517490937577,
+          0.04860173740937591,
+          0.23167170009079807,
+          0.23264826259079804,
+          0.23362482509079785,
+          0.23460138759079777,
+          0.23557795009079793,
+          0.23655451259079774,
+          0.23753107509079793,
+          0.2385076375907978
+        ]
+      ]
+    ],
+    "kv": [
+      [
+        [
+          [
+            [
+              1.0589349782800384,
+              1.183838767554959,
+              1.3087425568298798,
+              1.4336463461048006,
+              1.558550135379721,
+              1.6834539246546416,
+              1.8083577139295623,
+              1.933261503204483
+            ]
+          ],
+          [
+            [
+              -1.0589349782800384,
+              -1.183838767554959,
+              -1.3087425568298798,
+              -1.4336463461048006,
+              -1.558550135379721,
+              -1.6834539246546416,
+              -1.8083577139295623,
+              -1.933261503204483
+            ]
+          ]
+        ],
+        [
+          [
+            [
+              1.0589349782800384,
+              1.183838767554959,
+              1.3087425568298798,
+              1.4336463461048006,
+              1.558550135379721,
+              1.6834539246546416,
+              1.8083577139295623,
+              1.933261503204483
+            ]
+          ],
+          [
+            [
+              -1.0589349782800384,
+              -1.183838767554959,
+              -1.3087425568298798,
+              -1.4336463461048006,
+              -1.558550135379721,
+              -1.6834539246546416,
+              -1.8083577139295623,
+              -1.933261503204483
+            ]
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            [
+              1.0060938358434115,
+              1.1236087862197213,
+              1.2411237365960308,
+              1.3586386869723406,
+              1.4761536373486503,
+              1.59366858772496,
+              1.7111835381012699,
+              1.8286984884775794
+            ]
+          ],
+          [
+            [
+              -1.0060938358434115,
+              -1.1236087862197213,
+              -1.2411237365960308,
+              -1.3586386869723406,
+              -1.4761536373486503,
+              -1.59366858772496,
+              -1.7111835381012699,
+              -1.8286984884775794
+            ]
+          ]
+        ],
+        [
+          [
+            [
+              1.0060938358434115,
+              1.1236087862197213,
+              1.2411237365960308,
+              1.3586386869723406,
+              1.4761536373486503,
+              1.59366858772496,
+              1.7111835381012699,
+              1.8286984884775794
+            ]
+          ],
+          [
+            [
+              -1.0060938358434115,
+              -1.1236087862197213,
+              -1.2411237365960308,
+              -1.3586386869723406,
+              -1.4761536373486503,
+              -1.59366858772496,
+              -1.7111835381012699,
+              -1.8286984884775794
+            ]
+          ]
+        ]
+      ]
+    ],
+    "routing": [
+      [
+        [
+          [
+            7,
+            6
+          ]
+        ],
+        [
+          [
+            0.5293449747673156,
+            0.4706550252326845
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            7,
+            6
+          ]
+        ],
+        [
+          [
+            0.5258407897407953,
+            0.4741592102592047
+          ]
+        ]
+      ]
+    ]
+  },
+  "stats": {
+    "integrity_policy": "full",
+    "required_by_category": {
+      "weights": 65536,
+      "staging": 16384,
+      "activations": 66368,
+      "kv": 1024,
+      "accumulators": 72,
+      "workspace": 32,
+      "metadata": 141426,
+      "output": 568,
+      "requests": 24576
+    },
+    "audited_retained_metadata_bytes": 58526,
+    "reserved_peak_bytes": 315986,
+    "weight_slot_bytes": 65536,
+    "peak_region_elements": 4096,
+    "peak_region_bf16_equivalent_bytes": 8192,
+    "payload_bytes": 6299232,
+    "integrity_read_bytes": 6299232,
+    "integrity_read_ns": 1208753,
+    "bf16_expand_ns": 257669317,
+    "inference_read_bytes": 1578688,
+    "logical_requested_bytes": 1578688,
+    "backend_read_calls": 33790,
+    "max_backend_read_bytes": 8192,
+    "requests": 33014,
+    "completed": 33014,
+    "failed": 0,
+    "released": 33014,
+    "request_state": "RELEASED",
+    "active_region": false,
+    "tensor_read_bytes": {
+      "embedding": 32,
+      "position": 32,
+      "final_norm": 32,
+      "lm_head": 992,
+      "layers.0.norm1": 32,
+      "layers.0.norm2": 32,
+      "layers.0.q": 512,
+      "layers.0.k": 512,
+      "layers.0.v": 512,
+      "layers.0.o": 512,
+      "layers.0.router": 256,
+      "layers.0.experts.0.gate": 0,
+      "layers.0.experts.0.up": 0,
+      "layers.0.experts.0.down": 0,
+      "layers.0.experts.1.gate": 0,
+      "layers.0.experts.1.up": 0,
+      "layers.0.experts.1.down": 0,
+      "layers.0.experts.2.gate": 0,
+      "layers.0.experts.2.up": 0,
+      "layers.0.experts.2.down": 0,
+      "layers.0.experts.3.gate": 0,
+      "layers.0.experts.3.up": 0,
+      "layers.0.experts.3.down": 0,
+      "layers.0.experts.4.gate": 0,
+      "layers.0.experts.4.up": 0,
+      "layers.0.experts.4.down": 0,
+      "layers.0.experts.5.gate": 0,
+      "layers.0.experts.5.up": 0,
+      "layers.0.experts.5.down": 0,
+      "layers.0.experts.6.gate": 131072,
+      "layers.0.experts.6.up": 131072,
+      "layers.0.experts.6.down": 131072,
+      "layers.0.experts.7.gate": 131072,
+      "layers.0.experts.7.up": 131072,
+      "layers.0.experts.7.down": 131072,
+      "layers.1.norm1": 32,
+      "layers.1.norm2": 32,
+      "layers.1.q": 512,
+      "layers.1.k": 512,
+      "layers.1.v": 512,
+      "layers.1.o": 512,
+      "layers.1.router": 256,
+      "layers.1.experts.0.gate": 0,
+      "layers.1.experts.0.up": 0,
+      "layers.1.experts.0.down": 0,
+      "layers.1.experts.1.gate": 0,
+      "layers.1.experts.1.up": 0,
+      "layers.1.experts.1.down": 0,
+      "layers.1.experts.2.gate": 0,
+      "layers.1.experts.2.up": 0,
+      "layers.1.experts.2.down": 0,
+      "layers.1.experts.3.gate": 0,
+      "layers.1.experts.3.up": 0,
+      "layers.1.experts.3.down": 0,
+      "layers.1.experts.4.gate": 0,
+      "layers.1.experts.4.up": 0,
+      "layers.1.experts.4.down": 0,
+      "layers.1.experts.5.gate": 0,
+      "layers.1.experts.5.up": 0,
+      "layers.1.experts.5.down": 0,
+      "layers.1.experts.6.gate": 131072,
+      "layers.1.experts.6.up": 131072,
+      "layers.1.experts.6.down": 131072,
+      "layers.1.experts.7.gate": 131072,
+      "layers.1.experts.7.up": 131072,
+      "layers.1.experts.7.down": 131072
+    },
+    "numeric_buffers_live": 22,
+    "clock": "time.monotonic_ns",
+    "origin_ns": 46272411812859,
+    "read_service_ns": 290269097,
+    "peak_concurrent_reads": 1,
+    "read_union_ns": 290269097,
+    "compute_ns": 389773300,
+    "overlap_ns": 9307014,
+    "data_wait_ns": 1704604827,
+    "occupancy_slot_ns": 5740216882,
+    "peak_occupied_slots": 2,
+    "occupied_slots": 0,
+    "trace_events": 0,
+    "trace_dropped": 0,
+    "io_mode": "pipeline",
+    "in_flight_capacity": 2,
+    "io_workers": 1,
+    "cancelled": 0,
+    "live_request_records": 0,
+    "staging_slot_bytes": 16384,
+    "backpressure_rejections": 0,
+    "session_length": 1,
+    "session_failed": false
+  },
+  "wall_ns": 3006858239,
+  "startup_ns": 8231809,
+  "peak_rss_kib": 23836,
+  "process_memory": {
+    "VmHWM": 24016,
+    "VmRSS": 24016
+  },
+  "startup_io": {
+    "rchar": 6321282,
+    "wchar": 0,
+    "syscr": 779,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "workload_io": {
+    "rchar": 1578786,
+    "wchar": 0,
+    "syscr": 33017,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "host": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "cache": "post-integrity; Linux buffered, host caches uncontrolled",
+  "gpu_allocated_bytes": 0
+}

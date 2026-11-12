@@ -78,14 +78,14 @@ class CPURuntime:
 
     def __init__(self, directory, capacity=6, tile_elements=5, read_elements=2,
                  budget=None, backend=None, *, io_mode='sync', in_flight=2, io_workers=1,
-                 trace_capacity=0):
+                 trace_capacity=0, integrity="full"):
         self.catalog = Catalog(directory)
         self.spec, self.capacity = self.catalog.spec, capacity
         self.plan = memory_plan(self.catalog, capacity, tile_elements, read_elements,
                                 io_mode=io_mode, in_flight=in_flight, io_workers=io_workers,
                                 trace_capacity=trace_capacity)
         coordinator = Coordinator if io_mode == 'sync' else PipelineCoordinator
-        self.control = coordinator(self.catalog, self.plan, budget, backend)
+        self.control = coordinator(self.catalog, self.plan, budget, backend, integrity=integrity)
         # (bank, prefix length, generation) is published as one reference update.
         self._published = (0, 0, 0)
         self.running = False

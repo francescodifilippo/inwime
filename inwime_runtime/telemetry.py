@@ -17,6 +17,7 @@ class Timeline:
         self.used = self.dropped = 0
         self.origin = self.last = time.monotonic_ns()
         self.readers = self.computers = self.occupied = self.peak = 0
+        self.peak_readers = 0
         self.read_ns = self.read_union_ns = self.compute_ns = self.overlap_ns = 0
         self.wait_ns = self.occupancy_slot_ns = 0
 
@@ -35,6 +36,7 @@ class Timeline:
             self._advance(now)
             if kind == 'read_begin':
                 self.readers += 1
+                self.peak_readers = max(self.peak_readers, self.readers)
             elif kind == 'read_end':
                 self.readers -= 1
             elif kind == 'compute_begin':
@@ -59,7 +61,7 @@ class Timeline:
         with self.lock:
             self._advance(time.monotonic_ns())
             return {'clock': 'time.monotonic_ns', 'origin_ns': self.origin,
-                    'read_service_ns': self.read_ns, 'read_union_ns': self.read_union_ns,
+                    'read_service_ns': self.read_ns, 'peak_concurrent_reads': self.peak_readers, 'read_union_ns': self.read_union_ns,
                     'compute_ns': self.compute_ns, 'overlap_ns': self.overlap_ns,
                     'data_wait_ns': self.wait_ns, 'occupancy_slot_ns': self.occupancy_slot_ns,
                     'peak_occupied_slots': self.peak, 'occupied_slots': self.occupied,
