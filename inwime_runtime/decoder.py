@@ -2,8 +2,10 @@
 
 import hashlib
 import math
+from contextlib import closing
 
 from .core import Catalog, Coordinator, memory_plan
+from .pipeline import PipelineCoordinator
 
 
 class RuntimeResult:
@@ -64,22 +66,26 @@ class RuntimeResult:
 
 
 class CPURuntime:
-    """One session and one CPU phase at a time, bounded synchronous file I/O.
+    """One session and one CPU phase at a time, bounded sync or pipelined I/O.
 
     Prefill processes tokens causally one at a time, retaining no weight cache.
     All numeric arrays are reserved at construction, including two KV banks.
     """
 
     @staticmethod
-    def minimum_plan(directory, capacity=6, tile_elements=5, read_elements=2):
-        return memory_plan(Catalog(directory), capacity, tile_elements, read_elements)
+    def minimum_plan(directory, capacity=6, tile_elements=5, read_elements=2, **io_options):
+        return memory_plan(Catalog(directory), capacity, tile_elements, read_elements, **io_options)
 
     def __init__(self, directory, capacity=6, tile_elements=5, read_elements=2,
-                 budget=None, backend=None):
+                 budget=None, backend=None, *, io_mode='sync', in_flight=2, io_workers=1,
+                 trace_capacity=0):
         self.catalog = Catalog(directory)
         self.spec, self.capacity = self.catalog.spec, capacity
-        self.plan = memory_plan(self.catalog, capacity, tile_elements, read_elements)
-        self.control = Coordinator(self.catalog, self.plan, budget, backend)
+        self.plan = memory_plan(self.catalog, capacity, tile_elements, read_elements,
+                                io_mode=io_mode, in_flight=in_flight, io_workers=io_workers,
+                                trace_capacity=trace_capacity)
+        coordinator = Coordinator if io_mode == 'sync' else PipelineCoordinator
+        self.control = coordinator(self.catalog, self.plan, budget, backend)
         # (bank, prefix length, generation) is published as one reference update.
         self._published = (0, 0, 0)
         self.running = False
@@ -102,37 +108,44 @@ class CPURuntime:
         rows, cols = tensor.shape
         acc = self.control.buffers["accumulator"]
         slot = self.spec.width//self.spec.heads
-        for row in range(rows):
-            acc[slot] = 0.
-            for start in range(0, cols, self.plan.tile_elements):
-                count = min(self.plan.tile_elements, cols-start)
-                with self.control.acquire(tensor_name, row*cols+start, count) as weights:
-                    for j in range(count):
-                        acc[slot] += weights.value(j)*source[start+j]
-            destination[offset+row] = acc[slot]
-            if not math.isfinite(destination[offset+row]):
-                raise ArithmeticError("nonfinite linear output")
+        requests = ((tensor_name, row*cols+start, min(self.plan.tile_elements, cols-start))
+                    for row in range(rows) for start in range(0, cols, self.plan.tile_elements))
+        with closing(self.control.stream(requests)) as stream:
+            for flat, count, weights in stream:
+                row, start = divmod(flat, cols)
+                if start == 0:
+                    acc[slot] = 0.
+                for j in range(count):
+                    acc[slot] += weights.value(j)*source[start+j]
+                if start+count == cols:
+                    destination[offset+row] = acc[slot]
+                    if not math.isfinite(destination[offset+row]):
+                        raise ArithmeticError("nonfinite linear output")
 
     def _embedding(self, name, row, destination, add=False):
         width = self.spec.width
-        for start in range(0, width, self.plan.tile_elements):
-            count = min(self.plan.tile_elements, width-start)
-            with self.control.acquire(name, row*width+start, count) as weights:
+        requests = ((name, row*width+start, min(self.plan.tile_elements, width-start))
+                    for start in range(0, width, self.plan.tile_elements))
+        with closing(self.control.stream(requests)) as stream:
+            for flat, count, weights in stream:
+                start = flat-row*width
                 for i in range(count):
                     value = weights.value(i)
                     destination[start+i] = destination[start+i]+value if add else value
 
     def _norm(self, source, scale_name, destination):
         c = self.spec
-        squared = 0.
-        for v in source:
-            squared += v*v
-        denominator = math.sqrt(squared/c.width + c.rms_epsilon)
-        if not math.isfinite(denominator):
-            raise ArithmeticError("nonfinite normalization denominator")
-        for start in range(0, c.width, self.plan.tile_elements):
-            count = min(self.plan.tile_elements, c.width-start)
-            with self.control.acquire(scale_name, start, count) as weights:
+        with self.control.compute():
+            squared = 0.
+            for v in source:
+                squared += v*v
+            denominator = math.sqrt(squared/c.width + c.rms_epsilon)
+            if not math.isfinite(denominator):
+                raise ArithmeticError("nonfinite normalization denominator")
+        requests = ((scale_name, start, min(self.plan.tile_elements, c.width-start))
+                    for start in range(0, c.width, self.plan.tile_elements))
+        with closing(self.control.stream(requests)) as stream:
+            for start, count, weights in stream:
                 for i in range(count):
                     destination[start+i] = source[start+i]/denominator*weights.value(i)
 
@@ -140,62 +153,65 @@ class CPURuntime:
         b = self.control.buffers
         self._linear(prefix+"gate", source, b["gate"])
         self._linear(prefix+"up", source, b["up"])
-        for i in range(self.spec.hidden):
-            z = b["gate"][i]
-            if z >= 0:
-                silu = z/(1+math.exp(-z))
-            else:
-                e = math.exp(z)
-                silu = z*e/(1+e)
-            b["gate"][i] = silu*b["up"][i]
+        with self.control.compute():
+            for i in range(self.spec.hidden):
+                z = b["gate"][i]
+                if z >= 0:
+                    silu = z/(1+math.exp(-z))
+                else:
+                    e = math.exp(z)
+                    silu = z*e/(1+e)
+                b["gate"][i] = silu*b["up"][i]
         self._linear(prefix+"down", b["gate"], destination)
 
     def _route(self, prefix):
         """Mathematical selection, independent of region loading policy."""
         b, c = self.control.buffers, self.spec
         self._linear(prefix+"router", b["norm"], b["scores"])
-        for slot in range(c.top_k):
-            chosen, best = -1, -math.inf
-            for expert in range(c.experts):
-                if any(b["selected"][j] == expert for j in range(slot)):
-                    continue
-                # Strict comparison gives the lower expert index on ties.
-                if b["scores"][expert] > best:
-                    chosen, best = expert, b["scores"][expert]
-            b["selected"][slot] = chosen
-        maximum = b["scores"][b["selected"][0]]
-        total = 0.
-        for slot in range(c.top_k):
-            p = math.exp(b["scores"][b["selected"][slot]]-maximum)
-            b["probabilities"][slot] = p
-            total += p
-        for slot in range(c.top_k):
-            b["probabilities"][slot] /= total
+        with self.control.compute():
+            for slot in range(c.top_k):
+                chosen, best = -1, -math.inf
+                for expert in range(c.experts):
+                    if any(b["selected"][j] == expert for j in range(slot)):
+                        continue
+                    # Strict comparison gives the lower expert index on ties.
+                    if b["scores"][expert] > best:
+                        chosen, best = expert, b["scores"][expert]
+                b["selected"][slot] = chosen
+            maximum = b["scores"][b["selected"][0]]
+            total = 0.
+            for slot in range(c.top_k):
+                p = math.exp(b["scores"][b["selected"][slot]]-maximum)
+                b["probabilities"][slot] = p
+                total += p
+            for slot in range(c.top_k):
+                b["probabilities"][slot] /= total
 
     def _attention(self, layer, position, candidate):
         b, c = self.control.buffers, self.spec
         dim = c.width//c.heads
-        for head in range(c.heads):
-            def score(token):
-                total = 0.
-                base = layer*2*self.capacity*c.width + token*c.width + head*dim
+        with self.control.compute():
+            for head in range(c.heads):
+                def score(token):
+                    total = 0.
+                    base = layer*2*self.capacity*c.width + token*c.width + head*dim
+                    for d in range(dim):
+                        total += b["q"][head*dim+d]*candidate[base+d]
+                    return total/math.sqrt(dim)
+                maximum = -math.inf
+                for token in range(position+1):
+                    maximum = max(maximum, score(token))
+                denominator = 0.
                 for d in range(dim):
-                    total += b["q"][head*dim+d]*candidate[base+d]
-                return total/math.sqrt(dim)
-            maximum = -math.inf
-            for token in range(position+1):
-                maximum = max(maximum, score(token))
-            denominator = 0.
-            for d in range(dim):
-                b["accumulator"][d] = 0.
-            for token in range(position+1):
-                probability = math.exp(score(token)-maximum)
-                denominator += probability
-                base = (layer*2+1)*self.capacity*c.width + token*c.width + head*dim
+                    b["accumulator"][d] = 0.
+                for token in range(position+1):
+                    probability = math.exp(score(token)-maximum)
+                    denominator += probability
+                    base = (layer*2+1)*self.capacity*c.width + token*c.width + head*dim
+                    for d in range(dim):
+                        b["accumulator"][d] += probability*candidate[base+d]
                 for d in range(dim):
-                    b["accumulator"][d] += probability*candidate[base+d]
-            for d in range(dim):
-                b["attention"][head*dim+d] = b["accumulator"][d]/denominator
+                    b["attention"][head*dim+d] = b["accumulator"][d]/denominator
 
     def _token(self, token, position, output_index, candidate):
         b, c, cap = self.control.buffers, self.spec, self.capacity
@@ -211,15 +227,17 @@ class CPURuntime:
                          ((layer*2+1)*cap+position)*c.width)
             self._attention(layer, position, candidate)
             self._linear(p+"o", b["attention"], b["delta"])
-            for i in range(c.width):
-                b["x"][i] += b["delta"][i]
+            with self.control.compute():
+                for i in range(c.width):
+                    b["x"][i] += b["delta"][i]
             self._norm(b["x"], p+"norm2", b["norm"])
             if self.catalog.variant == "dense":
                 self._ffn(b["norm"], p+"ffn.", b["delta"])
             else:
                 self._route(p)
-                for i in range(c.width):
-                    b["delta"][i] = 0.
+                with self.control.compute():
+                    for i in range(c.width):
+                        b["delta"][i] = 0.
                 for slot in range(c.top_k):
                     expert = b["selected"][slot]
                     probability = b["probabilities"][slot]
@@ -227,15 +245,17 @@ class CPURuntime:
                     b["route_ids"][trace] = expert
                     b["route_probs"][trace] = probability
                     self._ffn(b["norm"], p+f"experts.{expert}.", b["expert"])
-                    for i in range(c.width):
-                        b["delta"][i] += probability*b["expert"][i]
-            for i in range(c.width):
-                b["x"][i] += b["delta"][i]
-                b["hidden"][(layer*cap+output_index)*c.width+i] = b["x"][i]
+                    with self.control.compute():
+                        for i in range(c.width):
+                            b["delta"][i] += probability*b["expert"][i]
+            with self.control.compute():
+                for i in range(c.width):
+                    b["x"][i] += b["delta"][i]
+                    b["hidden"][(layer*cap+output_index)*c.width+i] = b["x"][i]
         self._norm(b["x"], "final_norm", b["norm"])
         self._linear("lm_head", b["norm"], b["logits"], output_index*c.vocab)
 
-    def prefill(self, tokens):
+    def prefill(self, tokens, *, cancel_event=None):
         self.control.check_thread()
         if self.closed or self.failed:
             raise RuntimeError("closed or failed session")
@@ -250,11 +270,15 @@ class CPURuntime:
         candidate = b["kv"+str(1-self.active_bank)]
         previous = self._published
         try:
+            self.control.cancel_event = cancel_event
+            self.control.check_cancelled()
             self.running = True
-            for i in range(len(active)):
-                candidate[i] = active[i]
+            with self.control.compute():
+                for i in range(len(active)):
+                    candidate[i] = active[i]
             for output_index, token in enumerate(tokens):
                 self._token(token, self.length+output_index, output_index, candidate)
+            self.control.check_cancelled()
             result = RuntimeResult(self, len(tokens), self.version+1)
             published = (1-self.active_bank, self.length+len(tokens), self.version+1)
             self.result_open = True
@@ -270,12 +294,15 @@ class CPURuntime:
             self.result_open = False
             self.failed = True
             self.running = False
+            self.control.abort()
             raise
+        finally:
+            self.control.cancel_event = None
 
-    def decode(self, token):
+    def decode(self, token, *, cancel_event=None):
         if not self.length:
             raise ValueError("decode requires a prefilled session")
-        return self.prefill([token])
+        return self.prefill([token], cancel_event=cancel_event)
 
     def state_digest(self):
         self.control.check_thread()

@@ -6,6 +6,7 @@ stdlib arrays; interpreter/allocator overhead is observed separately as RSS.
 
 from array import array
 from dataclasses import dataclass, fields, is_dataclass
+from contextlib import contextmanager
 import hashlib
 import json
 import math
@@ -15,6 +16,10 @@ import stat
 import struct
 import sys
 import threading
+import time
+from concurrent.futures import CancelledError
+
+from .telemetry import Timeline
 
 
 class BudgetError(MemoryError):
@@ -27,6 +32,18 @@ class CheckpointError(ValueError):
 
 class ReadError(OSError):
     pass
+
+
+def expand_bf16(raw, count, destination, offset=0):
+    """Exact BF16 -> FP64 expansion; rejects nonfinite checkpoint values."""
+    for i in range(count):
+        word = struct.unpack_from('<H', raw, i*2)[0]
+        exponent, fraction = (word >> 7) & 255, word & 127
+        if exponent == 255:
+            raise CheckpointError('nonfinite BF16 weight')
+        value = (math.ldexp(fraction, -133) if exponent == 0
+                 else math.ldexp(128+fraction, exponent-134))
+        destination[offset+i] = -value if word & 0x8000 else value
 
 
 def deep_size(obj, seen=None):
@@ -167,7 +184,8 @@ class Catalog:
         return tensor, tensor.offset + start*2
 
 
-CATEGORIES = ("weights", "staging", "activations", "kv", "accumulators", "workspace", "metadata")
+CATEGORIES = ("weights", "staging", "activations", "kv", "accumulators", "workspace", "metadata",
+              "output", "requests")
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,6 +201,8 @@ class Plan:
     capacity: int
     tile_elements: int
     read_elements: int
+    io_slots: int = 0
+    io_workers: int = 0
 
     @property
     def total(self):
@@ -192,28 +212,39 @@ class Plan:
         return Budget(self.total, dict(self.required))
 
 
-def memory_plan(catalog, capacity, tile_elements, read_elements):
+def memory_plan(catalog, capacity, tile_elements, read_elements, *, io_mode='sync',
+                in_flight=2, io_workers=1, trace_capacity=0):
     c = catalog.spec
     if (type(capacity) is not int or not 1 <= capacity <= c.context
             or type(tile_elements) is not int or tile_elements <= 0
             or type(read_elements) is not int or not 1 <= read_elements <= tile_elements):
         raise ValueError("invalid capacity/tile/read dimensions")
+    if (io_mode not in ('sync', 'pipeline') or type(in_flight) is not int or in_flight < 1
+            or type(io_workers) is not int or not 1 <= io_workers <= in_flight
+            or type(trace_capacity) is not int or trace_capacity < 0):
+        raise ValueError("invalid I/O mode, request/worker capacity or trace capacity")
+    slots = in_flight if io_mode == 'pipeline' else 0
     arrays = {}
     def add(name, category, count, code="d"):
         arrays[name] = (category, count, code)
     add("weights", "weights", tile_elements)
-    add("staging", "staging", read_elements*2, "B")
+    add("staging", "staging", (tile_elements if slots else read_elements)*2, "B")
+    for slot in range(1, slots):
+        add(f"weights{slot}", "weights", tile_elements)
+        add(f"staging{slot}", "staging", tile_elements*2, "B")
+    if trace_capacity:
+        add("trace", "metadata", trace_capacity*5, "q")
     for n in ("x", "norm", "q", "attention", "delta"):
         add(n, "activations", c.width)
     for n in ("gate", "up"):
         add(n, "activations", c.hidden)
-    add("logits", "activations", capacity*c.vocab)
-    add("hidden", "activations", capacity*c.layers*c.width)
+    add("logits", "output", capacity*c.vocab)
+    add("hidden", "output", capacity*c.layers*c.width)
     if catalog.variant == "moe":
         add("expert", "activations", c.width)
         add("scores", "activations", c.experts)
-        add("route_ids", "activations", capacity*c.layers*c.top_k, "q")
-        add("route_probs", "activations", capacity*c.layers*c.top_k)
+        add("route_ids", "output", capacity*c.layers*c.top_k, "q")
+        add("route_probs", "output", capacity*c.layers*c.top_k)
         add("selected", "workspace", c.top_k, "q")
         add("probabilities", "workspace", c.top_k)
     for n in ("kv0", "kv1"):
@@ -228,20 +259,27 @@ def memory_plan(catalog, capacity, tile_elements, read_elements):
     # Fixed control reservation: one request/lease/result, handles, counters,
     # bounded token arguments, scalar Python temporaries and arena descriptors.
     control = 16384 + capacity*128 + len(arrays)*256 + deep_size(counters) + deep_size(arrays)
-    required["metadata"] = max(catalog.bootstrap_bytes,
-                               catalog.retained_bytes + control + headers)
-    return Plan(arrays, required, capacity, tile_elements, read_elements)
+    required["metadata"] += max(catalog.bootstrap_bytes,
+                                catalog.retained_bytes + control + headers)
+    # Bounded descriptors, futures, completions and worker controls. Python's
+    # allocator and OS thread stacks are observed separately as process RSS.
+    required["requests"] = slots*8192 + (io_workers*8192 if slots else 0)
+    return Plan(arrays, required, capacity, tile_elements, read_elements, slots,
+                io_workers if slots else 0)
 
 
 class FileBackend:
     """Read-only local regular files; explicit offset, caller-owned destination."""
 
+    _seek_lock = threading.Lock()
+
     def readinto(self, fd, offset, destination):
         if hasattr(os, "preadv"):
             return os.preadv(fd, [destination], offset)
-        os.lseek(fd, offset, os.SEEK_SET)
-        # This synchronous fallback has no shared concurrent file position.
-        return os.readv(fd, [destination])
+        # Portable seek/readv fallback is serialized; preadv remains concurrent.
+        with self._seek_lock:
+            os.lseek(fd, offset, os.SEEK_SET)
+            return os.readv(fd, [destination])
 
 
 def signature(fd):
@@ -272,6 +310,8 @@ class RegionLease:
             self.owner.active = False
             self.owner.request_state = "RELEASED"
             self.owner.released += 1
+            self.owner.timeline.event('compute_end', self.generation)
+            self.owner.timeline.event('free', self.generation)
             self.released = True
 
     def __enter__(self):
@@ -298,12 +338,16 @@ class Coordinator:
         self.backend = FileBackend() if backend is None else backend
         self.generation = self.issued = self.completed = self.failed = self.released = 0
         self.read_calls = self.integrity_bytes = self.inference_bytes = self.max_read = 0
+        self.expand_ns = 0
         self.weight_peak = self.region_peak = 0
         self.active, self.closed, self.request_state = False, False, "IDLE"
         self.tensor_bytes = {name: 0 for name in catalog.tensors}
+        self.cancel_event = None
+        self.timeline = Timeline()
         try:
             for name, (_, count, code) in plan.arrays.items():
                 self.buffers[name] = array(code, [0])*count
+            self.timeline = Timeline(self.buffers.get('trace'))
             if array("d").itemsize != 8 or array("q").itemsize != 8:
                 raise RuntimeError("this CPU adapter requires 64-bit doubles and indices")
             self.weight_peak = len(self.buffers["weights"])*8
@@ -316,12 +360,15 @@ class Coordinator:
                 self.stamps[name] = signature(fd)
             for name, (size, expected) in catalog.files.items():
                 digest = hashlib.sha256()
-                for offset in range(0, size, len(self.buffers["staging"])):
-                    count = min(len(self.buffers["staging"]), size-offset)
+                for offset in range(0, size, plan.read_elements*2):
+                    count = min(plan.read_elements*2, size-offset)
                     view = self._read(name, offset, count, integrity=True)
                     digest.update(view)
                 if digest.hexdigest() != expected:
                     raise CheckpointError("checkpoint checksum mismatch")
+            self.integrity_read_ns = self.timeline.stats()['read_service_ns']
+            # Startup integrity traffic is reported separately from inference.
+            self.timeline = Timeline(self.buffers.get('trace'))
         except BaseException:
             self.close()
             raise
@@ -332,7 +379,11 @@ class Coordinator:
             raise CheckpointError("source changed after opening")
         view = memoryview(self.buffers["staging"])[:size]
         self.read_calls += 1
-        n = self.backend.readinto(fd, offset, view)
+        self.timeline.event('read_begin', self.generation)
+        try:
+            n = self.backend.readinto(fd, offset, view)
+        finally:
+            self.timeline.event('read_end', self.generation)
         if type(n) is not int or not 0 <= n <= size:
             raise ReadError("invalid backend completion")
         self.max_read = max(self.max_read, size)
@@ -348,6 +399,7 @@ class Coordinator:
 
     def acquire(self, name, start, count):
         self.check_thread()
+        self.check_cancelled()
         if self.closed or self.active:
             raise RuntimeError("closed coordinator or a region is still in use")
         tensor, offset = self.catalog.region(name, start, count)
@@ -356,28 +408,44 @@ class Coordinator:
         self.generation += 1
         self.issued += 1
         self.request_state, self.active = "READING", True
+        self.timeline.event('reserve', self.generation)
+        self.timeline.event('wait_begin', self.generation)
+        waited = 0
         try:
             for done in range(0, count, self.plan.read_elements):
                 number = min(self.plan.read_elements, count-done)
+                began = time.monotonic_ns()
                 raw = self._read(tensor.shard, offset+done*2, number*2)
+                waited += time.monotonic_ns()-began
                 self.tensor_bytes[name] += len(raw)
-                for i in range(number):
-                    word = struct.unpack_from("<H", raw, i*2)[0]
-                    exponent, fraction = (word >> 7) & 255, word & 127
-                    if exponent == 255:
-                        raise CheckpointError("nonfinite BF16 weight")
-                    value = (math.ldexp(fraction, -133) if exponent == 0
-                             else math.ldexp(128+fraction, exponent-134))
-                    self.buffers["weights"][done+i] = -value if word & 0x8000 else value
+                expand_began = time.monotonic_ns()
+                expand_bf16(raw, number, self.buffers['weights'], done)
+                self.expand_ns += time.monotonic_ns()-expand_began
             self.completed += 1
             self.region_peak = max(self.region_peak, count)
             self.request_state = "READY"
+            self.timeline.event('wait_end', self.generation, value=waited)
+            self.timeline.event('compute_begin', self.generation)
             return RegionLease(self, self.generation, count)
         except BaseException:
             self.active = False
             self.request_state = "FAILED"
             self.failed += 1
+            self.timeline.event('free', self.generation)
             raise
+
+    def check_cancelled(self):
+        if self.cancel_event is not None and self.cancel_event.is_set():
+            raise CancelledError('inference cancelled')
+
+    def stream(self, regions):
+        """Consume a lazy, deterministic stream without retaining an operation graph."""
+        for name, start, count in regions:
+            with self.acquire(name, start, count) as lease:
+                yield start, count, lease
+
+    def abort(self):
+        self.check_thread()
 
     def stats(self):
         self.check_thread()
@@ -387,6 +455,9 @@ class Coordinator:
             self.read_calls, self.integrity_bytes, self.inference_bytes, self.max_read,
             self.owner_thread, self.request_state))
         metadata += sum(sys.getsizeof(b)-len(b)*b.itemsize for b in self.buffers.values())
+        metadata += deep_size({k: v for k, v in vars(self.timeline).items() if k != 'trace'})
+        if 'trace' in self.buffers:
+            metadata += len(self.buffers['trace'])*self.buffers['trace'].itemsize
         return {"required_by_category": dict(self.plan.required),
                 "audited_retained_metadata_bytes": metadata,
                 "reserved_peak_bytes": self.plan.total,
@@ -395,12 +466,28 @@ class Coordinator:
                 "peak_region_bf16_equivalent_bytes": self.region_peak*2,
                 "payload_bytes": self.catalog.payload_bytes,
                 "integrity_read_bytes": self.integrity_bytes,
+                "integrity_read_ns": self.integrity_read_ns,
+                "bf16_expand_ns": self.expand_ns,
                 "inference_read_bytes": self.inference_bytes,
                 "backend_read_calls": self.read_calls, "max_backend_read_bytes": self.max_read,
                 "requests": self.issued, "completed": self.completed, "failed": self.failed,
                 "released": self.released, "request_state": self.request_state,
                 "active_region": self.active, "tensor_read_bytes": dict(self.tensor_bytes),
-                "numeric_buffers_live": len(self.buffers)}
+                "numeric_buffers_live": len(self.buffers), **self.timeline.stats()}
+
+    def trace(self):
+        self.check_thread()
+        return self.timeline.export()
+
+    @contextmanager
+    def compute(self):
+        """Numeric CPU phases outside a weight lease, on the owning thread."""
+        self.check_thread()
+        self.timeline.event('compute_begin')
+        try:
+            yield
+        finally:
+            self.timeline.event('compute_end')
 
     def close(self):
         self.check_thread()
@@ -409,6 +496,8 @@ class Coordinator:
         for fd in self.fds.values():
             os.close(fd)
         self.fds.clear()
+        with self.timeline.lock:
+            self.timeline.trace = None
         self.buffers.clear()
         self.closed = True
 
