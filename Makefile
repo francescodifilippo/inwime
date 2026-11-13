@@ -24,3 +24,12 @@ build/bf16_stream_trace: src/benchmark.cpp src/activity_trace.hpp
 trace: build/bf16_stream_trace
 
 .PHONY: all test profile trace
+
+# Standalone CPU adapter; no CUDA, BLAS, Python headers or system installation.
+build/libinwime_cpu.so: src/cpu_kernel.c
+	mkdir -p build
+	$(CC) -O3 -std=c11 -fPIC -shared -fno-fast-math -ffp-contract=off -Wall -Wextra -Wpedantic $< -o $@
+
+cpu-kernel: build/libinwime_cpu.so
+
+.PHONY: cpu-kernel

@@ -1,0 +1,42 @@
+COMMAND /usr/bin/python3 -m tools.benchmark_increment5 checkpoints/inc4-large --large --tensor embedding --address-limit-mib 2048 --output results/increment5/gemv-6g
+{"kind": "complete-gemv", "mode": "sync", "wall_ns": 9472803420, "peak_rss_kib": 1601004, "payload_bytes": 12884911776}
+{"kind": "complete-gemv", "mode": "pipeline", "wall_ns": 10422449091, "peak_rss_kib": 1603228, "payload_bytes": 12884911776}
+COMMAND /usr/bin/python3 -m tools.benchmark_increment5 checkpoints/inc5-dense-12g --large --tensor layers.0.ffn.down --tile 8191 --read 8191 --output results/increment5/gemv-reduction
+{"kind": "complete-gemv", "mode": "sync", "wall_ns": 388232287, "peak_rss_kib": 26816, "payload_bytes": 12889645056}
+{"kind": "complete-gemv", "mode": "pipeline", "wall_ns": 1372061417, "peak_rss_kib": 27152, "payload_bytes": 12889645056}
+COMMAND /usr/bin/python3 -m tools.benchmark_increment5 checkpoints/inc4-dense --samples 3 --output results/increment5/small
+sync: prefill length=2 0.039s next=7
+sync: decode length=3 0.008s next=7
+sync: decode length=4 0.008s next=7
+sync: decode length=5 0.010s next=7
+{"kind": "complete-decoder", "mode": "sync", "wall_ns": 66496401, "peak_rss_kib": 27400, "payload_bytes": 3152992}
+pipeline: prefill length=2 0.039s next=7
+pipeline: decode length=3 0.014s next=7
+pipeline: decode length=4 0.013s next=7
+pipeline: decode length=5 0.013s next=7
+{"kind": "complete-decoder", "mode": "pipeline", "wall_ns": 80376296, "peak_rss_kib": 30024, "payload_bytes": 3152992}
+pipeline: prefill length=2 0.032s next=7
+pipeline: decode length=3 0.011s next=7
+pipeline: decode length=4 0.010s next=7
+pipeline: decode length=5 0.010s next=7
+{"kind": "complete-decoder", "mode": "pipeline", "wall_ns": 63830263, "peak_rss_kib": 30056, "payload_bytes": 3152992}
+sync: prefill length=2 0.024s next=7
+sync: decode length=3 0.009s next=7
+sync: decode length=4 0.009s next=7
+sync: decode length=5 0.008s next=7
+{"kind": "complete-decoder", "mode": "sync", "wall_ns": 51419623, "peak_rss_kib": 27484, "payload_bytes": 3152992}
+sync: prefill length=2 0.024s next=7
+sync: decode length=3 0.008s next=7
+sync: decode length=4 0.008s next=7
+sync: decode length=5 0.008s next=7
+{"kind": "complete-decoder", "mode": "sync", "wall_ns": 48939160, "peak_rss_kib": 27488, "payload_bytes": 3152992}
+pipeline: prefill length=2 0.034s next=7
+pipeline: decode length=3 0.011s next=7
+pipeline: decode length=4 0.013s next=7
+pipeline: decode length=5 0.011s next=7
+{"kind": "complete-decoder", "mode": "pipeline", "wall_ns": 70755764, "peak_rss_kib": 30236, "payload_bytes": 3152992}
+COMMAND /usr/bin/python3 -m pytest -q tests/test_reference_decoder.py tests/test_runtime_cpu.py tests/test_pipeline_cpu.py tests/test_segmented_cpu.py tests/test_gemv_cpu.py tests/test_checkpoint5.py
+........................................................................ [ 39%]
+........................................................................ [ 79%]
+.....................................                                    [100%]
+181 passed in 33.37s

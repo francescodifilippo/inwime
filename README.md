@@ -232,3 +232,23 @@ di un tensore da 6 GiB; il forward completo oltre RAM resta non dimostrato.
 Strumenti: `python3 -m tools.checkpoint4 --help` e
 `python3 -m tools.benchmark_increment4 --help`. Il generatore esegue soltanto
 l'audit senza `--execute`; payload in `checkpoints/`, fuori da Git.
+
+## Runtime CPU: inferenza completa oltre RAM
+
+L'[incremento 5](docs/RUNTIME_CPU_INCREMENT_5.md) introduce un adapter CPU C opzionale
+per espansione BF16 esatta e GEMV FP64 con tile che possono attraversare righe e
+spezzare riduzioni. Il percorso Python resta disponibile; il target CPU non richiede CUDA.
+
+```bash
+make cpu-kernel
+python3 -m pytest -q tests/test_gemv_cpu.py tests/test_checkpoint5.py
+# Solo audit e preventivo; nessuna scrittura dei 12 GiB senza --execute:
+python3 -m tools.checkpoint5 checkpoints/nuovo-decoder
+# Il verificatore richiede un checkpoint già esistente e output nuovo:
+python3 -m tools.verify_increment5 checkpoints/inc5-dense-12g \
+  --mode sync --output results/nuova-inferenza.json
+```
+
+La prova usa un decoder denso sintetico completo e originale BF16, senza tokenizer
+o pesi addestrati. Il rapporto distingue pesi realmente elaborati, limite del processo,
+RAM WSL, RAM fisica host, verifiche numeriche complete e controlli parziali sul modello grande.

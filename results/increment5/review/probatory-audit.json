@@ -1,0 +1,101 @@
+{
+  "decoder": {
+    "sync": {
+      "used_weights": {
+        "bytes": 12887482368,
+        "GB": 12.887482368,
+        "GiB": 12.002403259277344
+      },
+      "full_matrices": {
+        "bytes": 12887007232,
+        "GB": 12.887007232,
+        "GiB": 12.001960754394531
+      },
+      "wsl_memtotal": {
+        "bytes": 11483848704,
+        "GB": 11.483848704,
+        "GiB": 10.695167541503906
+      },
+      "level_B_wsl": true,
+      "level_B_process": true,
+      "ru_maxrss_KiB": 53776,
+      "ru_maxrss_MiB": 52.515625,
+      "VmHWM_bytes": 55873536,
+      "VmHWM_MiB": 53.28515625,
+      "workload_read_bytes": 64437125120,
+      "prefill_ns": 193713222583,
+      "decode_ns": [
+        128200202776,
+        117563972389,
+        120128773460
+      ],
+      "decode_tokens_s": 0.008199119472714053
+    },
+    "pipeline": {
+      "used_weights": {
+        "bytes": 12887482368,
+        "GB": 12.887482368,
+        "GiB": 12.002403259277344
+      },
+      "full_matrices": {
+        "bytes": 12887007232,
+        "GB": 12.887007232,
+        "GiB": 12.001960754394531
+      },
+      "wsl_memtotal": {
+        "bytes": 11483848704,
+        "GB": 11.483848704,
+        "GiB": 10.695167541503906
+      },
+      "level_B_wsl": true,
+      "level_B_process": true,
+      "ru_maxrss_KiB": 57440,
+      "ru_maxrss_MiB": 56.09375,
+      "VmHWM_bytes": 59498496,
+      "VmHWM_MiB": 56.7421875,
+      "workload_read_bytes": 64437125120,
+      "prefill_ns": 152684589320,
+      "decode_ns": [
+        109923823601,
+        88159713747,
+        71604187085
+      ],
+      "decode_tokens_s": 0.011123976837682526
+    }
+  },
+  "checkpoint_audits": {
+    "checkpoints/inc5-dense-12g": {
+      "payload_bytes": 12889645056,
+      "allocated_bytes": 12889653248,
+      "shards": 193,
+      "non_sparse_files_checked": 193,
+      "sampled_native_bf16_words": 660,
+      "payload_sha256_verified": true,
+      "audit_payload_read_bytes": 12889645056,
+      "audit_wall_ns": 51543795400
+    },
+    "checkpoints/inc4-large": {
+      "payload_bytes": 12884911776,
+      "allocated_bytes": 12884926464,
+      "shards": 193,
+      "non_sparse_files_checked": 193,
+      "sampled_native_bf16_words": 66,
+      "payload_sha256_verified": true,
+      "audit_payload_read_bytes": 12884911776,
+      "audit_wall_ns": 90650010889
+    }
+  },
+  "level_C": false,
+  "host_physical_bytes": 16900739072,
+  "standalone_gemv_bytes": 6442450944,
+  "pipeline_wall_change_percent": {
+    "gemv-6g": 10.024969683156382,
+    "gemv-reduction": 253.41249631821577,
+    "small": 37.60459503952411
+  },
+  "limitations": [
+    "Large oracle is partial: selected rows with runtime-produced inputs.",
+    "Page cache is outside RSS; RLIMIT_AS is not a system-memory limit.",
+    "Audit SHA traffic is separate from captured inference reads."
+  ]
+}

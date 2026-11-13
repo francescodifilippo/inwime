@@ -1,0 +1,6 @@
+{
+  "binary_sha256": "fae9fc42568b68747db1c0d557faaae832cb9596ff686694c297fd1f78d7b280",
+  "independent_rebuild_sha256": "fae9fc42568b68747db1c0d557faaae832cb9596ff686694c297fd1f78d7b280",
+  "same_as_both_large_decoder_runs": true,
+  "flags": "-O3 -std=c11 -fPIC -shared -fno-fast-math -ffp-contract=off -Wall -Wextra -Wpedantic"
+}

@@ -1,0 +1,43 @@
+{
+  "checkpoint_identity": "558f35386a5c22d263bc142bac09171237fd3d55032a4bddc1d44811b4f1f3f1",
+  "bitwise_outputs_equal": true,
+  "payload_bytes": 12884911776,
+  "cases": {
+    "sync": {
+      "samples": 1,
+      "wall_median_ns": 9472803420,
+      "wall_min_ns": 9472803420,
+      "wall_max_ns": 9472803420,
+      "peak_rss_max_kib": 1601004,
+      "reserved_peak_bytes": 3641460,
+      "read_bytes": [
+        6442450944
+      ],
+      "process_read_bytes": [
+        6442450944
+      ],
+      "overlap_median_ns": 0
+    },
+    "pipeline": {
+      "samples": 1,
+      "wall_median_ns": 10422449091,
+      "wall_min_ns": 10422449091,
+      "wall_max_ns": 10422449091,
+      "peak_rss_max_kib": 1603228,
+      "reserved_peak_bytes": 6287476,
+      "read_bytes": [
+        6442450944
+      ],
+      "process_read_bytes": [
+        6442491904
+      ],
+      "overlap_median_ns": 374107870
+    }
+  },
+  "pipeline_wall_change_percent": 10.024969683156382,
+  "sync_over_pipeline_speedup": 0.9088845949058136,
+  "evidence_sha256": {
+    "sync-1.json": "c8a6c01e61ac7760c680589b6f8106dc5fdd8dd8565937911b7eb2f361b3e885",
+    "pipeline-1.json": "3211dd76104f1e6e72911d957ac7aaa48f60ce0113c47033a5f237706e32dc19"
+  }
+}

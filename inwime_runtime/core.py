@@ -358,6 +358,12 @@ class RegionLease:
             self.owner.timeline.event('free', self.generation)
             self.released = True
 
+    def linear(self, backend, source, destination, columns, start, offset=0):
+        """Synchronous trusted math adapter; the arena remains leased until return."""
+        self.value(0)  # validate ownership, generation and liveness
+        backend.linear(self.owner.buffers['weights'], self.count, source, destination,
+                       columns, start, offset)
+
     def __enter__(self):
         return self
 
@@ -368,7 +374,8 @@ class RegionLease:
 class Coordinator:
     """Single reservation/state authority, one synchronous region in flight."""
 
-    def __init__(self, catalog, plan, budget=None, backend=None, *, integrity="full"):
+    def __init__(self, catalog, plan, budget=None, backend=None, *, integrity="full",
+                 math_backend=None):
         if integrity not in ("full", "metadata"):
             raise ValueError("integrity must be full or metadata (explicitly unverified payload)")
         self.integrity_policy = integrity
@@ -383,10 +390,12 @@ class Coordinator:
         self.owner_thread = threading.get_ident()
         self.buffers, self.fds, self.stamps = {}, {}, {}
         self.backend = FileBackend() if backend is None else backend
+        self.expand = expand_bf16 if math_backend is None else math_backend.expand
         self.generation = self.issued = self.completed = self.failed = self.released = 0
         self.read_calls = self.integrity_bytes = self.inference_bytes = self.max_read = 0
         self.logical_requested_bytes = 0
         self.expand_ns = 0
+        self.gemv_ns = self.gemv_elements = 0
         self.weight_peak = self.region_peak = 0
         self.active, self.closed, self.request_state = False, False, "IDLE"
         self.tensor_bytes = {name: 0 for name in catalog.tensors}
@@ -469,7 +478,7 @@ class Coordinator:
                 waited += time.monotonic_ns()-began
                 self.tensor_bytes[name] += len(raw)
                 expand_began = time.monotonic_ns()
-                expand_bf16(raw, number, self.buffers['weights'], done)
+                self.expand(raw, number, self.buffers['weights'], done)
                 self.expand_ns += time.monotonic_ns()-expand_began
             self.completed += 1
             self.region_peak = max(self.region_peak, count)
@@ -519,6 +528,9 @@ class Coordinator:
                 "integrity_read_bytes": self.integrity_bytes,
                 "integrity_read_ns": self.integrity_read_ns,
                 "bf16_expand_ns": self.expand_ns,
+                "gemv_ns": self.gemv_ns,
+                "gemv_weight_elements": self.gemv_elements,
+                "gemv_flops": 2*self.gemv_elements,
                 "inference_read_bytes": self.inference_bytes,
                 "logical_requested_bytes": self.logical_requested_bytes,
                 "backend_read_calls": self.read_calls, "max_backend_read_bytes": self.max_read,

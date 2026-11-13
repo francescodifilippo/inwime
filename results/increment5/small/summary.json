@@ -1,0 +1,55 @@
+{
+  "checkpoint_identity": "8410bc0cd51f2d3be4bda7b35b30f4355fcf1a07c5809e98b16be2b5f59b9a25",
+  "bitwise_outputs_equal": true,
+  "payload_bytes": 3152992,
+  "cases": {
+    "sync": {
+      "samples": 3,
+      "wall_median_ns": 51419623,
+      "wall_min_ns": 48939160,
+      "wall_max_ns": 66496401,
+      "peak_rss_max_kib": 27488,
+      "reserved_peak_bytes": 2958558,
+      "read_bytes": [
+        15755200,
+        15755200,
+        15755200
+      ],
+      "process_read_bytes": [
+        3166208,
+        3166208,
+        3166208
+      ],
+      "overlap_median_ns": 0
+    },
+    "pipeline": {
+      "samples": 3,
+      "wall_median_ns": 70755764,
+      "wall_min_ns": 63830263,
+      "wall_max_ns": 80376296,
+      "peak_rss_max_kib": 30236,
+      "reserved_peak_bytes": 5604574,
+      "read_bytes": [
+        15755200,
+        15755200,
+        15755200
+      ],
+      "process_read_bytes": [
+        3166208,
+        3166208,
+        3166208
+      ],
+      "overlap_median_ns": 0
+    }
+  },
+  "pipeline_wall_change_percent": 37.60459503952411,
+  "sync_over_pipeline_speedup": 0.7267199178288853,
+  "evidence_sha256": {
+    "sync-1.json": "8c5d2064c19891c8a7e123694ea07094e7c3a2cf027daed93e1d01293f0f61de",
+    "pipeline-1.json": "12dc34e21afe5220f4cd7aff50f86affa7b2bfc2945c9e63d7d672d1d5e0bcfd",
+    "pipeline-2.json": "376adb7fb7eb9faba687892bc118d4847be4d6edbfe12dd0956026c778337f0f",
+    "sync-2.json": "3a8afb052ebb32d342589748ac4e654b727e9a8a02e6d7d86383599855e8e58b",
+    "sync-3.json": "cfb0800b25cd21337c435ad58a59220ad9c2b8fdcc275ea827639748a988499c",
+    "pipeline-3.json": "5946b6882a32cb3de7dcf0acb4f1aa92ab6a9652b76c02db227e1d566a86c444"
+  }
+}

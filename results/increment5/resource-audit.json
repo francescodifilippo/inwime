@@ -1,0 +1,8 @@
+{
+  "source": "Read-only Windows CIM/volume query before checkpoint generation, 2026-11-12",
+  "host_total_physical_memory_bytes": 16900739072,
+  "windows_system_volume_size_bytes": 1798804860928,
+  "windows_system_volume_free_before_generation_bytes": 185963954176,
+  "wsl_memtotal_bytes": 11483848704,
+  "interpretation": "WSL ext4 free-space estimate exceeds underlying Windows free space; size planning uses both."
+}

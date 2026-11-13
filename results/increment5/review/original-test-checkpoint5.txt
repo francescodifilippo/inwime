@@ -1,0 +1,76 @@
+"""Scalable dense checkpoint generation, independent bits and full small oracle."""
+import hashlib
+import json
+import math
+import struct
+
+import numpy as np
+import pytest
+
+from tools.checkpoint5 import generate
+from tests.test_gemv_cpu import native
+from inwime_runtime import CPURuntime
+from inwime_reference.checkpoint import Checkpoint, Config
+from inwime_reference.decoder import ReferenceDecoder
+from tests.test_runtime_cpu import export_reference
+from tools.verify_increment2 import runtime_export, compare
+
+
+def scalar_word(name, index, exponent):
+    seed = int.from_bytes(hashlib.sha256(name.encode()).digest()[:8], 'little')
+    mask = (1 << 64)-1
+    z = (index+seed+0x9e3779b97f4a7c15) & mask
+    z = ((z ^ (z >> 30))*0xbf58476d1ce4e5b9) & mask
+    z = ((z ^ (z >> 27))*0x94d049bb133111eb) & mask
+    z ^= z >> 31
+    return 0x3f80 if 'norm' in name else ((z >> 48) & 0x8000) | exponent << 7 | (z & 127)
+
+
+def test_generator_bits_determinism_and_small_full_forward(tmp_path, native):
+    config = dict(layers=3, width=18, heads=3, hidden=35, vocab=23, context=8)
+    paths = [tmp_path/'first', tmp_path/'second']
+    for path, chunk in zip(paths, (74, 126)):
+        generate(path, **config, shard_bytes=510, segment_bytes=46, chunk_bytes=chunk,
+                 math_backend=native, execute=True)
+    a, b = [json.loads((p/'manifest.json').read_text()) for p in paths]
+    assert a == b
+    weights = {}
+    for name, d in a['tensors'].items():
+        raw = b''.join((paths[0]/s['shard']).read_bytes()[s['offset']:s['offset']+s['nbytes']]
+                       for s in d['segments'])
+        words = struct.unpack('<'+'H'*(len(raw)//2), raw)
+        exponent = a['generation'][name]['exponent']
+        assert words == tuple(scalar_word(name, i, exponent) for i in range(len(words)))
+        values = [struct.unpack('<f', struct.pack('<I', word << 16))[0] for word in words]
+        weights[name] = np.array(values, dtype=np.float64).reshape(d['shape'])
+    for path in paths:
+        for name, entry in a['files'].items():
+            assert (path/name).stat().st_blocks*512 >= entry['nbytes']
+        with pytest.raises(FileExistsError):
+            generate(path, **config, math_backend=native, execute=True)
+    checkpoint = Checkpoint('dense', 'independent-test', weights,
+                            sum(v['nbytes'] for v in a['files'].values()), Config(**a['config']))
+    expected = ReferenceDecoder(checkpoint).prefill([1, 2, 3, 4, 5])
+    for mode in ('sync', 'pipeline'):
+        with CPURuntime(paths[0], capacity=5, tile_elements=73, read_elements=17,
+                        io_mode=mode, math_backend=native) as engine:
+            with engine.prefill([1, 2]) as r:
+                assert engine.length == 2
+            for token in (3, 4):
+                with engine.decode(token):
+                    pass
+            with engine.decode(5) as r:
+                reference = export_reference(expected)
+                reference['logits'] = reference['logits'][-1:]
+                reference['hidden'] = [layer[-1:] for layer in reference['hidden']]
+                compare([runtime_export(r)], [reference])
+            stats = engine.stats()
+            assert stats['gemv_weight_elements'] > 0
+
+
+def test_generator_dry_run_writes_nothing(tmp_path, native):
+    target = tmp_path/'dry'
+    result = generate(target, layers=2, width=32, hidden=64, heads=4,
+                      math_backend=native)
+    assert result['payload_bytes'] > 0
+    assert not target.exists()

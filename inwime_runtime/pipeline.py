@@ -11,7 +11,7 @@ import time
 import threading
 
 from .core import (Coordinator, BudgetError, CheckpointError, ReadError, signature,
-                   deep_size, expand_bf16)
+                   deep_size)
 
 
 class BackpressureError(RuntimeError):
@@ -137,6 +137,12 @@ class Lease:
             self.owner.released += 1
             self.owner._free(self.request, 'RELEASED')
             self.released = True
+
+    def linear(self, backend, source, destination, columns, start, offset=0):
+        """Synchronous trusted math adapter; physical readers cannot reuse this slot."""
+        self.value(0)
+        backend.linear(self.owner.buffers[self.owner.weight_name(self.request.slot)],
+                       self.request.count, source, destination, columns, start, offset)
 
     def __enter__(self):
         return self
@@ -293,7 +299,7 @@ class PipelineCoordinator(Coordinator):
             expand_began = time.monotonic_ns()
             raw = self.buffers[self.staging_name(r.slot)]
             weights = self.buffers[self.weight_name(r.slot)]
-            expand_bf16(raw, r.count, weights)
+            self.expand(raw, r.count, weights)
         except BaseException:
             self._fail(r)
             self._free(r, 'FAILED')

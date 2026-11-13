@@ -6,6 +6,7 @@ from contextlib import closing
 
 from .core import Catalog, Coordinator, memory_plan
 from .pipeline import PipelineCoordinator
+from .gemv import streamed_linear
 
 
 class RuntimeResult:
@@ -78,14 +79,16 @@ class CPURuntime:
 
     def __init__(self, directory, capacity=6, tile_elements=5, read_elements=2,
                  budget=None, backend=None, *, io_mode='sync', in_flight=2, io_workers=1,
-                 trace_capacity=0, integrity="full"):
+                 trace_capacity=0, integrity="full", math_backend=None):
         self.catalog = Catalog(directory)
         self.spec, self.capacity = self.catalog.spec, capacity
         self.plan = memory_plan(self.catalog, capacity, tile_elements, read_elements,
                                 io_mode=io_mode, in_flight=in_flight, io_workers=io_workers,
                                 trace_capacity=trace_capacity)
         coordinator = Coordinator if io_mode == 'sync' else PipelineCoordinator
-        self.control = coordinator(self.catalog, self.plan, budget, backend, integrity=integrity)
+        self.control = coordinator(self.catalog, self.plan, budget, backend, integrity=integrity,
+                                   math_backend=math_backend)
+        self.math_backend = math_backend
         # (bank, prefix length, generation) is published as one reference update.
         self._published = (0, 0, 0)
         self.running = False
@@ -104,6 +107,9 @@ class CPURuntime:
         return self._published[2]
 
     def _linear(self, tensor_name, source, destination, offset=0):
+        if self.math_backend is not None:
+            return streamed_linear(self.control, self.math_backend, tensor_name,
+                                   source, destination, offset)
         tensor = self.catalog.tensors[tensor_name]
         rows, cols = tensor.shape
         acc = self.control.buffers["accumulator"]
@@ -313,7 +319,9 @@ class CPURuntime:
 
     def stats(self):
         return self.control.stats() | {"session_length": self.length,
-                                       "session_failed": self.failed}
+                                       "session_failed": self.failed,
+                                       "math_backend": (self.math_backend.name if self.math_backend
+                                                        else 'python-fp64-original')}
 
     def close(self):
         if self.running:

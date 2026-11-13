@@ -1,0 +1,955 @@
+{
+  "kind": "complete-decoder",
+  "mode": "pipeline",
+  "prompt": [
+    1,
+    7
+  ],
+  "consumed_tokens": [
+    1,
+    7,
+    7,
+    7,
+    7
+  ],
+  "generated_tokens": [
+    7,
+    7,
+    7,
+    7
+  ],
+  "prefill_ns": 31586208,
+  "decode_ns": [
+    10978081,
+    10024488,
+    10015543
+  ],
+  "decode_tokens_s": 96.71768546067537,
+  "generation_tokens_s_including_prefill": 62.66619957370378,
+  "wall_ns": 63830263,
+  "startup_ns": 7144956,
+  "startup_process_io": {
+    "rchar": 3163393,
+    "wchar": 0,
+    "syscr": 11,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "workload_process_io": {
+    "rchar": 15761187,
+    "wchar": 161,
+    "syscr": 225,
+    "syscw": 4,
+    "read_bytes": 3166208,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "stats": {
+    "integrity_policy": "full",
+    "required_by_category": {
+      "weights": 4194304,
+      "staging": 1048576,
+      "activations": 262784,
+      "kv": 5120,
+      "accumulators": 72,
+      "workspace": 0,
+      "metadata": 66622,
+      "output": 2520,
+      "requests": 24576
+    },
+    "audited_retained_metadata_bytes": 31513,
+    "reserved_peak_bytes": 5604574,
+    "weight_slot_bytes": 4194304,
+    "peak_region_elements": 262144,
+    "peak_region_bf16_equivalent_bytes": 524288,
+    "payload_bytes": 3152992,
+    "integrity_read_bytes": 3152992,
+    "integrity_read_ns": 642586,
+    "bf16_expand_ns": 7244146,
+    "gemv_ns": 3904403,
+    "gemv_weight_elements": 7877040,
+    "gemv_flops": 15754080,
+    "inference_read_bytes": 15755200,
+    "logical_requested_bytes": 15755200,
+    "backend_read_calls": 222,
+    "max_backend_read_bytes": 524288,
+    "requests": 110,
+    "completed": 110,
+    "failed": 0,
+    "released": 110,
+    "request_state": "RELEASED",
+    "active_region": false,
+    "tensor_read_bytes": {
+      "embedding": 160,
+      "position": 160,
+      "final_norm": 160,
+      "lm_head": 4960,
+      "layers.0.norm1": 160,
+      "layers.0.norm2": 160,
+      "layers.0.q": 2560,
+      "layers.0.k": 2560,
+      "layers.0.v": 2560,
+      "layers.0.o": 2560,
+      "layers.0.ffn.gate": 2621440,
+      "layers.0.ffn.up": 2621440,
+      "layers.0.ffn.down": 2621440,
+      "layers.1.norm1": 160,
+      "layers.1.norm2": 160,
+      "layers.1.q": 2560,
+      "layers.1.k": 2560,
+      "layers.1.v": 2560,
+      "layers.1.o": 2560,
+      "layers.1.ffn.gate": 2621440,
+      "layers.1.ffn.up": 2621440,
+      "layers.1.ffn.down": 2621440
+    },
+    "numeric_buffers_live": 16,
+    "clock": "time.monotonic_ns",
+    "origin_ns": 63981082285168,
+    "read_service_ns": 12998882,
+    "peak_concurrent_reads": 1,
+    "read_union_ns": 12998882,
+    "compute_ns": 27655935,
+    "overlap_ns": 0,
+    "data_wait_ns": 21687326,
+    "occupancy_slot_ns": 36355677,
+    "peak_occupied_slots": 1,
+    "occupied_slots": 0,
+    "trace_events": 0,
+    "trace_dropped": 0,
+    "io_mode": "pipeline",
+    "in_flight_capacity": 2,
+    "io_workers": 1,
+    "cancelled": 0,
+    "live_request_records": 0,
+    "staging_slot_bytes": 1048576,
+    "backpressure_rejections": 0,
+    "session_length": 5,
+    "session_failed": false,
+    "math_backend": "c-fp64-ordered"
+  },
+  "phases": [
+    {
+      "kind": "prefill",
+      "forward_ns": 31586208,
+      "output": {
+        "length": 2,
+        "generated_token": 7,
+        "logits_sha256": "0079f350ddfef1e76ab7ea1b0ee64a8b835feb374723292821a7d7f28cf295fb",
+        "logits_last": [
+          0.9641333479880634,
+          1.0763322191885343,
+          1.1885310903890054,
+          1.3007299615894763,
+          1.4129288327899472,
+          1.5251277039904174,
+          1.637326575190889,
+          1.7495254463913597,
+          -0.9641333479880634,
+          -1.0763322191885343,
+          -1.1885310903890054,
+          -1.3007299615894763,
+          -1.4129288327899472,
+          -1.5251277039904174,
+          -1.637326575190889,
+          -1.7495254463913597,
+          0.9641333479880634,
+          1.0763322191885343,
+          1.1885310903890054,
+          1.3007299615894763,
+          1.4129288327899472,
+          1.5251277039904174,
+          1.637326575190889,
+          1.7495254463913597,
+          -0.9641333479880634,
+          -1.0763322191885343,
+          -1.1885310903890054,
+          -1.3007299615894763,
+          -1.4129288327899472,
+          -1.5251277039904174,
+          -1.637326575190889
+        ],
+        "kv_sha256": [
+          [
+            "52cc4f05a604225995907bfee6bdf53fd4e8d76f2f3ede2e6fe59b7a12889522",
+            "52cc4f05a604225995907bfee6bdf53fd4e8d76f2f3ede2e6fe59b7a12889522"
+          ],
+          [
+            "e906bb77e66f74cbaa7e749d20e1f61100d1ef7e44a50c68e68c95e6f0000e10",
+            "e906bb77e66f74cbaa7e749d20e1f61100d1ef7e44a50c68e68c95e6f0000e10"
+          ]
+        ],
+        "kv_prefix_preserved": true,
+        "hidden_sha256": [
+          "f3aee039c2823489151e21fffec5bc0fcbebaf7e2295d82ed988b2d6f4e5a538",
+          "9ce9e8355fdf7ef72b4990f425194f44a63bd8d1405fa67814bc7129d13a494a"
+        ]
+      },
+      "process_memory": {
+        "VmSize": 114405376,
+        "VmHWM": 30912512,
+        "VmRSS": 30912512,
+        "VmSwap": 0
+      }
+    },
+    {
+      "kind": "decode",
+      "forward_ns": 10978081,
+      "output": {
+        "length": 3,
+        "generated_token": 7,
+        "logits_sha256": "91158a8c83550e9d9c53b9e2bc124828189a517c8b6851c91edfe1d8e8adfe01",
+        "logits_last": [
+          0.9703587519571716,
+          1.083341354689337,
+          1.196323957421502,
+          1.3093065601536673,
+          1.4222891628858325,
+          1.5352717656179973,
+          1.6482543683501627,
+          1.761236971082328,
+          -0.9703587519571716,
+          -1.083341354689337,
+          -1.196323957421502,
+          -1.3093065601536673,
+          -1.4222891628858325,
+          -1.5352717656179973,
+          -1.6482543683501627,
+          -1.761236971082328,
+          0.9703587519571716,
+          1.083341354689337,
+          1.196323957421502,
+          1.3093065601536673,
+          1.4222891628858325,
+          1.5352717656179973,
+          1.6482543683501627,
+          1.761236971082328,
+          -0.9703587519571716,
+          -1.083341354689337,
+          -1.196323957421502,
+          -1.3093065601536673,
+          -1.4222891628858325,
+          -1.5352717656179973,
+          -1.6482543683501627
+        ],
+        "kv_sha256": [
+          [
+            "cded8cd0103eccce6d4ded08548b98c817b3469b16516d68d8b9ec676ef26879",
+            "cded8cd0103eccce6d4ded08548b98c817b3469b16516d68d8b9ec676ef26879"
+          ],
+          [
+            "646d72da85034f1310edd3c1bc411e970a4159384f4e6e79cf7d39f251a38aa6",
+            "646d72da85034f1310edd3c1bc411e970a4159384f4e6e79cf7d39f251a38aa6"
+          ]
+        ],
+        "kv_prefix_preserved": true,
+        "hidden_sha256": [
+          "fea338c5280acc9ca1fcaf2fcbb8acb78bef356607a29742a05829e98ade97f0",
+          "493acf76a4dc6c3c38f3212aabbd295137d65011eb6fe5251d2c09902a7f6413"
+        ]
+      },
+      "process_memory": {
+        "VmSize": 114405376,
+        "VmHWM": 30920704,
+        "VmRSS": 30920704,
+        "VmSwap": 0
+      }
+    },
+    {
+      "kind": "decode",
+      "forward_ns": 10024488,
+      "output": {
+        "length": 4,
+        "generated_token": 7,
+        "logits_sha256": "2e5f667575faae9a94fc1aa0a536ae85b986ed00b918572b36439f296220a2e8",
+        "logits_last": [
+          0.9761708880773111,
+          1.0898869860489269,
+          1.2036030840205423,
+          1.3173191819921584,
+          1.4310352799637736,
+          1.5447513779353896,
+          1.6584674759070053,
+          1.7721835738786207,
+          -0.9761708880773111,
+          -1.0898869860489269,
+          -1.2036030840205423,
+          -1.3173191819921584,
+          -1.4310352799637736,
+          -1.5447513779353896,
+          -1.6584674759070053,
+          -1.7721835738786207,
+          0.9761708880773111,
+          1.0898869860489269,
+          1.2036030840205423,
+          1.3173191819921584,
+          1.4310352799637736,
+          1.5447513779353896,
+          1.6584674759070053,
+          1.7721835738786207,
+          -0.9761708880773111,
+          -1.0898869860489269,
+          -1.2036030840205423,
+          -1.3173191819921584,
+          -1.4310352799637736,
+          -1.5447513779353896,
+          -1.6584674759070053
+        ],
+        "kv_sha256": [
+          [
+            "009928e6fa9f46314acbc1380e928a1a23ed65969320fd350bbdbacbadb1599d",
+            "009928e6fa9f46314acbc1380e928a1a23ed65969320fd350bbdbacbadb1599d"
+          ],
+          [
+            "65a07c6d2f3802924ab7d9ab1414bac87ec0bba1b17441eb9504d4a457641966",
+            "65a07c6d2f3802924ab7d9ab1414bac87ec0bba1b17441eb9504d4a457641966"
+          ]
+        ],
+        "kv_prefix_preserved": true,
+        "hidden_sha256": [
+          "5e7605613e41b1f43122cb4f60b263ac299e3ded1f75e95c411ff9d22a4f9bb4",
+          "ed8d884e27dd37e576a0b940532ddcb1ab637ebb38275b07901f8a1e79a93c1c"
+        ]
+      },
+      "process_memory": {
+        "VmSize": 114405376,
+        "VmHWM": 30920704,
+        "VmRSS": 30920704,
+        "VmSwap": 0
+      }
+    },
+    {
+      "kind": "decode",
+      "forward_ns": 10015543,
+      "output": {
+        "length": 5,
+        "generated_token": 7,
+        "logits_sha256": "9a8d9846c8bba7773e240aa75d576a72b6e82356f3c37d90c5166f0af675e4c3",
+        "logits_last": [
+          0.9815207349218509,
+          1.0959136819362945,
+          1.210306628950738,
+          1.3246995759651818,
+          1.4390925229796252,
+          1.5534854699940688,
+          1.6678784170085124,
+          1.7822713640229564,
+          -0.9815207349218509,
+          -1.0959136819362945,
+          -1.210306628950738,
+          -1.3246995759651818,
+          -1.4390925229796252,
+          -1.5534854699940688,
+          -1.6678784170085124,
+          -1.7822713640229564,
+          0.9815207349218509,
+          1.0959136819362945,
+          1.210306628950738,
+          1.3246995759651818,
+          1.4390925229796252,
+          1.5534854699940688,
+          1.6678784170085124,
+          1.7822713640229564,
+          -0.9815207349218509,
+          -1.0959136819362945,
+          -1.210306628950738,
+          -1.3246995759651818,
+          -1.4390925229796252,
+          -1.5534854699940688,
+          -1.6678784170085124
+        ],
+        "kv_sha256": [
+          [
+            "9a9f4f087243a129e15dcb1e450554ccf4c2c3befbbca154e2e20f34063e8e2b",
+            "9a9f4f087243a129e15dcb1e450554ccf4c2c3befbbca154e2e20f34063e8e2b"
+          ],
+          [
+            "dc2e3b69fb1b53d39abe7050938dee579845b11dfe02554268fb6e0286d33ef1",
+            "dc2e3b69fb1b53d39abe7050938dee579845b11dfe02554268fb6e0286d33ef1"
+          ]
+        ],
+        "kv_prefix_preserved": true,
+        "hidden_sha256": [
+          "205c47fae189c809118038319fbf43cb24a654ec45b3a6edb3ebe5698b3dbc36",
+          "8b35dbe719602bc9cff56e85b4eab531ebc41295a6072777cb171e4cfc6a6568"
+        ]
+      },
+      "process_memory": {
+        "VmSize": 114405376,
+        "VmHWM": 30920704,
+        "VmRSS": 30920704,
+        "VmSwap": 0
+      }
+    }
+  ],
+  "unique_forward_weight_bytes": 3151200,
+  "full_matrix_bytes_per_token": 3150816,
+  "sampled_source_copy_bytes": 263808,
+  "snapshot_copy_ns": 184994,
+  "memory_before_close": {
+    "VmSize": 114405376,
+    "VmHWM": 30920704,
+    "VmRSS": 30920704,
+    "VmSwap": 0
+  },
+  "resources_after_close": {
+    "fds": 0,
+    "numeric_buffers": 0,
+    "live_requests": 0
+  },
+  "independent_validation": {
+    "scope": "selected full dot products, not a full large-decoder oracle",
+    "rows": 45,
+    "tensor_count": 15,
+    "read_bytes": 197856,
+    "wall_ns": 22950611,
+    "max_absolute_error": 2.2737367544323206e-13,
+    "max_error_bound_ratio": 0.055219059670497,
+    "checks": [
+      {
+        "tensor": "layers.0.q",
+        "row": 0,
+        "actual": 1.0589349782800384,
+        "reference": 1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.q",
+        "row": 8,
+        "actual": -1.0589349782800384,
+        "reference": -1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.q",
+        "row": 15,
+        "actual": -1.933261503204483,
+        "reference": -1.933261503204483,
+        "absolute_error": 0.0,
+        "error_bound": 7.726865160524634e-15
+      },
+      {
+        "tensor": "layers.0.k",
+        "row": 0,
+        "actual": 1.0589349782800384,
+        "reference": 1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.k",
+        "row": 8,
+        "actual": -1.0589349782800384,
+        "reference": -1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.k",
+        "row": 15,
+        "actual": -1.933261503204483,
+        "reference": -1.933261503204483,
+        "absolute_error": 0.0,
+        "error_bound": 7.726865160524634e-15
+      },
+      {
+        "tensor": "layers.0.v",
+        "row": 0,
+        "actual": 1.0589349782800384,
+        "reference": 1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.v",
+        "row": 8,
+        "actual": -1.0589349782800384,
+        "reference": -1.0589349782800384,
+        "absolute_error": 0.0,
+        "error_bound": 4.232354380082793e-15
+      },
+      {
+        "tensor": "layers.0.v",
+        "row": 15,
+        "actual": -1.933261503204483,
+        "reference": -1.933261503204483,
+        "absolute_error": 0.0,
+        "error_bound": 7.726865160524634e-15
+      },
+      {
+        "tensor": "layers.0.o",
+        "row": 0,
+        "actual": -0.04675307002319565,
+        "reference": -0.046753070023195675,
+        "absolute_error": 2.7755575615628914e-17,
+        "error_bound": 5.665609804490532e-15
+      },
+      {
+        "tensor": "layers.0.o",
+        "row": 8,
+        "actual": 0.04675307002319565,
+        "reference": 0.046753070023195675,
+        "absolute_error": 2.7755575615628914e-17,
+        "error_bound": 5.665609804490532e-15
+      },
+      {
+        "tensor": "layers.0.o",
+        "row": 15,
+        "actual": 0.046753070023195564,
+        "reference": 0.046753070023195675,
+        "absolute_error": 1.1102230246251565e-16,
+        "error_bound": 1.0316417403615645e-14
+      },
+      {
+        "tensor": "layers.0.ffn.gate",
+        "row": 0,
+        "actual": 1.00609383584339,
+        "reference": 1.0060938358433902,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352401e-15
+      },
+      {
+        "tensor": "layers.0.ffn.gate",
+        "row": 8192,
+        "actual": 1.00609383584339,
+        "reference": 1.0060938358433902,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352401e-15
+      },
+      {
+        "tensor": "layers.0.ffn.gate",
+        "row": 16383,
+        "actual": -1.828698488477539,
+        "reference": -1.828698488477539,
+        "absolute_error": 0.0,
+        "error_bound": 7.30894740121797e-15
+      },
+      {
+        "tensor": "layers.0.ffn.up",
+        "row": 0,
+        "actual": 1.00609383584339,
+        "reference": 1.0060938358433902,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352401e-15
+      },
+      {
+        "tensor": "layers.0.ffn.up",
+        "row": 8192,
+        "actual": 1.00609383584339,
+        "reference": 1.0060938358433902,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352401e-15
+      },
+      {
+        "tensor": "layers.0.ffn.up",
+        "row": 16383,
+        "actual": -1.828698488477539,
+        "reference": -1.828698488477539,
+        "absolute_error": 0.0,
+        "error_bound": 7.30894740121797e-15
+      },
+      {
+        "tensor": "layers.0.ffn.down",
+        "row": 0,
+        "actual": 1.1323580961786206e-13,
+        "reference": 0.0,
+        "absolute_error": 1.1323580961786206e-13,
+        "error_bound": 5.749189513007125e-09
+      },
+      {
+        "tensor": "layers.0.ffn.down",
+        "row": 8,
+        "actual": 1.1323580961786206e-13,
+        "reference": 0.0,
+        "absolute_error": 1.1323580961786206e-13,
+        "error_bound": 5.749189513007125e-09
+      },
+      {
+        "tensor": "layers.0.ffn.down",
+        "row": 15,
+        "actual": 1.1323580961786206e-13,
+        "reference": 0.0,
+        "absolute_error": 1.1323580961786206e-13,
+        "error_bound": 5.749189513007125e-09
+      },
+      {
+        "tensor": "layers.1.q",
+        "row": 0,
+        "actual": 1.0060938358434757,
+        "reference": 1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.q",
+        "row": 8,
+        "actual": -1.0060938358434757,
+        "reference": -1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.q",
+        "row": 15,
+        "actual": -1.828698488477702,
+        "reference": -1.828698488477702,
+        "absolute_error": 0.0,
+        "error_bound": 7.308947401218622e-15
+      },
+      {
+        "tensor": "layers.1.k",
+        "row": 0,
+        "actual": 1.0060938358434757,
+        "reference": 1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.k",
+        "row": 8,
+        "actual": -1.0060938358434757,
+        "reference": -1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.k",
+        "row": 15,
+        "actual": -1.828698488477702,
+        "reference": -1.828698488477702,
+        "absolute_error": 0.0,
+        "error_bound": 7.308947401218622e-15
+      },
+      {
+        "tensor": "layers.1.v",
+        "row": 0,
+        "actual": 1.0060938358434757,
+        "reference": 1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.v",
+        "row": 8,
+        "actual": -1.0060938358434757,
+        "reference": -1.006093835843476,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 4.021158749352743e-15
+      },
+      {
+        "tensor": "layers.1.v",
+        "row": 15,
+        "actual": -1.828698488477702,
+        "reference": -1.828698488477702,
+        "absolute_error": 0.0,
+        "error_bound": 7.308947401218622e-15
+      },
+      {
+        "tensor": "layers.1.o",
+        "row": 0,
+        "actual": -0.04429363006751845,
+        "reference": -0.04429363006751841,
+        "absolute_error": 4.163336342344337e-17,
+        "error_bound": 5.367451803664948e-15
+      },
+      {
+        "tensor": "layers.1.o",
+        "row": 8,
+        "actual": 0.04429363006751845,
+        "reference": 0.04429363006751841,
+        "absolute_error": 4.163336342344337e-17,
+        "error_bound": 5.367451803664948e-15
+      },
+      {
+        "tensor": "layers.1.o",
+        "row": 15,
+        "actual": 0.04429363006751824,
+        "reference": 0.044293630067518505,
+        "absolute_error": 2.636779683484747e-16,
+        "error_bound": 9.773604195553814e-15
+      },
+      {
+        "tensor": "layers.1.ffn.gate",
+        "row": 0,
+        "actual": 0.8938985708403067,
+        "reference": 0.8938985708403067,
+        "absolute_error": 0.0,
+        "error_bound": 3.572736390095159e-15
+      },
+      {
+        "tensor": "layers.1.ffn.gate",
+        "row": 8192,
+        "actual": 0.8938985708403067,
+        "reference": 0.8938985708403067,
+        "absolute_error": 0.0,
+        "error_bound": 3.572736390095159e-15
+      },
+      {
+        "tensor": "layers.1.ffn.gate",
+        "row": 16383,
+        "actual": -1.6180859081320542,
+        "reference": -1.618085908132054,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 6.467170431706984e-15
+      },
+      {
+        "tensor": "layers.1.ffn.up",
+        "row": 0,
+        "actual": 0.8938985708403067,
+        "reference": 0.8938985708403067,
+        "absolute_error": 0.0,
+        "error_bound": 3.572736390095159e-15
+      },
+      {
+        "tensor": "layers.1.ffn.up",
+        "row": 8192,
+        "actual": 0.8938985708403067,
+        "reference": 0.8938985708403067,
+        "absolute_error": 0.0,
+        "error_bound": 3.572736390095159e-15
+      },
+      {
+        "tensor": "layers.1.ffn.up",
+        "row": 16383,
+        "actual": -1.6180859081320542,
+        "reference": -1.618085908132054,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 6.467170431706984e-15
+      },
+      {
+        "tensor": "layers.1.ffn.down",
+        "row": 0,
+        "actual": -2.2737367544323206e-13,
+        "reference": 0.0,
+        "absolute_error": 2.2737367544323206e-13,
+        "error_bound": 4.517245253138075e-09
+      },
+      {
+        "tensor": "layers.1.ffn.down",
+        "row": 8,
+        "actual": -2.2737367544323206e-13,
+        "reference": 0.0,
+        "absolute_error": 2.2737367544323206e-13,
+        "error_bound": 4.517245253138075e-09
+      },
+      {
+        "tensor": "layers.1.ffn.down",
+        "row": 15,
+        "actual": -2.2737367544323206e-13,
+        "reference": 0.0,
+        "absolute_error": 2.2737367544323206e-13,
+        "error_bound": 4.517245253138075e-09
+      },
+      {
+        "tensor": "lm_head",
+        "row": 0,
+        "actual": 0.8938985708398788,
+        "reference": 0.8938985708398787,
+        "absolute_error": 1.1102230246251565e-16,
+        "error_bound": 3.572736390093449e-15
+      },
+      {
+        "tensor": "lm_head",
+        "row": 15,
+        "actual": -1.6180859081312557,
+        "reference": -1.6180859081312557,
+        "absolute_error": 0.0,
+        "error_bound": 6.467170431703794e-15
+      },
+      {
+        "tensor": "lm_head",
+        "row": 30,
+        "actual": -1.5146305742324877,
+        "reference": -1.5146305742324875,
+        "absolute_error": 2.220446049250313e-16,
+        "error_bound": 6.053679854330887e-15
+      }
+    ],
+    "process_io": {
+      "rchar": 4607910,
+      "wchar": 0,
+      "syscr": 55,
+      "syscw": 0,
+      "read_bytes": 0,
+      "write_bytes": 0,
+      "cancelled_write_bytes": 0
+    }
+  },
+  "effective_weight_GB_s": 0.24682962688090443,
+  "effective_GFLOP_s": 0.2468120803450238,
+  "kernel_GFLOP_s": 4.0349523345822655,
+  "owner_phase_remainder_ns": 7242856,
+  "checkpoint_identity": "8410bc0cd51f2d3be4bda7b35b30f4355fcf1a07c5809e98b16be2b5f59b9a25",
+  "payload_bytes": 3152992,
+  "allocated_payload_bytes": 3166208,
+  "audit_before": {
+    "meminfo": {
+      "MemTotal": 11483848704,
+      "MemFree": 9642504192,
+      "MemAvailable": 10213584896,
+      "Buffers": 36020224,
+      "Cached": 682348544,
+      "SwapCached": 167936,
+      "Active": 480612352,
+      "Inactive": 901021696,
+      "Active(anon)": 8278016,
+      "Inactive(anon)": 667955200,
+      "Active(file)": 472334336,
+      "Inactive(file)": 233066496,
+      "Unevictable": 0,
+      "Mlocked": 0,
+      "SwapTotal": 8589934592,
+      "SwapFree": 8584060928,
+      "Dirty": 917504,
+      "Writeback": 0,
+      "AnonPages": 663531520,
+      "Mapped": 395943936,
+      "Shmem": 12918784,
+      "KReclaimable": 43081728,
+      "Slab": 140812288,
+      "SReclaimable": 43081728,
+      "SUnreclaim": 97730560,
+      "KernelStack": 9093120,
+      "PageTables": 12718080,
+      "SecPageTables": 0,
+      "NFS_Unstable": 0,
+      "Bounce": 0,
+      "WritebackTmp": 0,
+      "CommitLimit": 14331858944,
+      "Committed_AS": 3250790400,
+      "VmallocTotal": 35184372087808,
+      "VmallocUsed": 42872832,
+      "VmallocChunk": 0,
+      "Percpu": 10813440,
+      "HardwareCorrupted": 0,
+      "AnonHugePages": 0,
+      "ShmemHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FileHugePages": 117440512,
+      "FilePmdMapped": 0,
+      "Balloon": 0,
+      "HugePages_Total": 0,
+      "HugePages_Free": 0,
+      "HugePages_Rsvd": 0,
+      "HugePages_Surp": 0,
+      "Hugepagesize": 2097152,
+      "Hugetlb": 0,
+      "DirectMap4k": 53477376,
+      "DirectMap2M": 6387924992,
+      "DirectMap1G": 15032385536
+    },
+    "cgroup": {
+      "/sys/fs/cgroup/non-systemd/memory.max": "max",
+      "/sys/fs/cgroup/non-systemd/memory.current": "838352896",
+      "/sys/fs/cgroup/non-systemd/memory.swap.max": "max",
+      "/sys/fs/cgroup/memory.max": "max",
+      "/sys/fs/cgroup/memory.current": "1381617664",
+      "/sys/fs/cgroup/memory.swap.max": "max"
+    },
+    "disk_free": 922062569472,
+    "filesystem": "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/inc4-dense",
+    "rlimit_as": [
+      536870912,
+      536870912
+    ],
+    "rlimit_nofile": [
+      10240,
+      1048576
+    ]
+  },
+  "audit_after": {
+    "meminfo": {
+      "MemTotal": 11483848704,
+      "MemFree": 9634062336,
+      "MemAvailable": 10205155328,
+      "Buffers": 36020224,
+      "Cached": 682348544,
+      "SwapCached": 167936,
+      "Active": 480632832,
+      "Inactive": 902004736,
+      "Active(anon)": 8278016,
+      "Inactive(anon)": 668946432,
+      "Active(file)": 472354816,
+      "Inactive(file)": 233058304,
+      "Unevictable": 0,
+      "Mlocked": 0,
+      "SwapTotal": 8589934592,
+      "SwapFree": 8584060928,
+      "Dirty": 917504,
+      "Writeback": 0,
+      "AnonPages": 664236032,
+      "Mapped": 396709888,
+      "Shmem": 12918784,
+      "KReclaimable": 43081728,
+      "Slab": 140812288,
+      "SReclaimable": 43081728,
+      "SUnreclaim": 97730560,
+      "KernelStack": 9109504,
+      "PageTables": 12771328,
+      "SecPageTables": 0,
+      "NFS_Unstable": 0,
+      "Bounce": 0,
+      "WritebackTmp": 0,
+      "CommitLimit": 14331858944,
+      "Committed_AS": 3260018688,
+      "VmallocTotal": 35184372087808,
+      "VmallocUsed": 42856448,
+      "VmallocChunk": 0,
+      "Percpu": 10813440,
+      "HardwareCorrupted": 0,
+      "AnonHugePages": 0,
+      "ShmemHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FileHugePages": 117440512,
+      "FilePmdMapped": 0,
+      "Balloon": 0,
+      "HugePages_Total": 0,
+      "HugePages_Free": 0,
+      "HugePages_Rsvd": 0,
+      "HugePages_Surp": 0,
+      "Hugepagesize": 2097152,
+      "Hugetlb": 0,
+      "DirectMap4k": 53477376,
+      "DirectMap2M": 6387924992,
+      "DirectMap1G": 15032385536
+    },
+    "cgroup": {
+      "/sys/fs/cgroup/non-systemd/memory.max": "max",
+      "/sys/fs/cgroup/non-systemd/memory.current": "839430144",
+      "/sys/fs/cgroup/non-systemd/memory.swap.max": "max",
+      "/sys/fs/cgroup/memory.max": "max",
+      "/sys/fs/cgroup/memory.current": "1382694912",
+      "/sys/fs/cgroup/memory.swap.max": "max"
+    },
+    "disk_free": 922062569472,
+    "filesystem": "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/inc4-dense",
+    "rlimit_as": [
+      536870912,
+      536870912
+    ],
+    "rlimit_nofile": [
+      10240,
+      1048576
+    ]
+  },
+  "host": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "peak_rss_kib": 30056,
+  "process_memory": {
+    "VmSize": 109129728,
+    "VmHWM": 30777344,
+    "VmRSS": 26128384,
+    "VmSwap": 0
+  },
+  "tile_elements": 262144,
+  "read_elements": 262144,
+  "cache": "advised-cold",
+  "cache_caveat": "Linux buffered; DONTNEED advisory, Windows/device caches uncontrolled",
+  "gpu_allocated_bytes": 0,
+  "native_library_sha256": "fae9fc42568b68747db1c0d557faaae832cb9596ff686694c297fd1f78d7b280"
+}

@@ -1,0 +1,5 @@
+COMMAND python3 -m pytest -q tests/test_reference_decoder.py tests/test_runtime_cpu.py tests/test_pipeline_cpu.py tests/test_segmented_cpu.py tests/test_gemv_cpu.py tests/test_checkpoint5.py
+........................................................................ [ 39%]
+........................................................................ [ 79%]
+.....................................                                    [100%]
+181 passed in 29.50s

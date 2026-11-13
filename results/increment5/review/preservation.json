@@ -1,0 +1,10 @@
+{
+  "original_fingerprints_verified": 42,
+  "preserved_original_sources": {
+    "docs/RUNTIME_CPU_INCREMENT_5.md": "results/increment5/review/original-report.md",
+    "tests/test_checkpoint5.py": "results/increment5/review/original-test-checkpoint5.txt"
+  },
+  "giant_payloads_and_local_artifacts_ignored": true,
+  "tracked_payload_build_environment_files": 0,
+  "note": "Current report/test may evolve; their original bytes remain in the explicit evidence snapshots."
+}

@@ -1,0 +1,39 @@
+{
+  "checkpoint_identity": "c97b2a5682a40b3dd024e30bbcec3f69157bb5572ab27bf2376fd8c0448eb547",
+  "bitwise_outputs_equal": true,
+  "payload_bytes": 12889645056,
+  "cases": {
+    "sync": {
+      "samples": 1,
+      "wall_median_ns": 560039517083,
+      "wall_min_ns": 560039517083,
+      "wall_max_ns": 560039517083,
+      "peak_rss_max_kib": 53776,
+      "reserved_peak_bytes": 24022223,
+      "read_bytes": [
+        64437125120
+      ],
+      "process_read_bytes": [
+        63978094592
+      ],
+      "overlap_median_ns": 0
+    },
+    "pipeline": {
+      "samples": 1,
+      "wall_median_ns": 423019377137,
+      "wall_min_ns": 423019377137,
+      "wall_max_ns": 423019377137,
+      "peak_rss_max_kib": 57440,
+      "reserved_peak_bytes": 26668239,
+      "read_bytes": [
+        64437125120
+      ],
+      "process_read_bytes": [
+        64100728832
+      ],
+      "overlap_median_ns": 2318648562
+    }
+  },
+  "pipeline_wall_change_percent": -24.46615564910094,
+  "sync_over_pipeline_speedup": 1.3239098427910179
+}
