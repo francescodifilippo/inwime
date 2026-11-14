@@ -1,0 +1,170 @@
+{
+  "docs/REVIEW_INCREMENT_8.md": {
+    "nbytes": 9801,
+    "sha256": "a4562752894596b9024fa454f56f271d5deafa1d06f360059acd0f49c15e8f5f"
+  },
+  "results/increment8/review/README.md": {
+    "nbytes": 2851,
+    "sha256": "be6707fdc60a5f120e4b6ea898b06163bb33cd4f992978b9fc011cef9eea247d"
+  },
+  "results/increment8/review/check_integrity.py": {
+    "nbytes": 4655,
+    "sha256": "5b7c3377f8c38d62541cdfadc05cc095f3b77ecbe91c10550db35f48d73adb14"
+  },
+  "results/increment8/review/check_memory.py": {
+    "nbytes": 4800,
+    "sha256": "d7055a90708187dae231d99d00cdf0346233d2fddbaa8ca81fad20a7e33b88ed"
+  },
+  "results/increment8/review/check_oracle.py": {
+    "nbytes": 2819,
+    "sha256": "2ca6f4b0ef25ab00b4a5a8aef5ace0cdb92829c16ed53a8993b4b140c845d5a4"
+  },
+  "results/increment8/review/exact-invariants.json": {
+    "nbytes": 363,
+    "sha256": "39eb57f78881225623d5e6a9d7aac12125eb405a42586e1a380caa3e69903ee2"
+  },
+  "results/increment8/review/faults-supervisor.json": {
+    "nbytes": 812,
+    "sha256": "19681ee67702c825605b13e6a22f5d7163db8e4816c1c67caed66eadb68e3ad3"
+  },
+  "results/increment8/review/faults-supervisor.log": {
+    "nbytes": 38,
+    "sha256": "6e887e36f377f0addcd91a3303466ab5c96922efee3f9160c110ddcf0dc7d815"
+  },
+  "results/increment8/review/faults.json": {
+    "nbytes": 62389,
+    "sha256": "17af329e35b34deb32d69e658cd5dc54fc29bc7797d6067862921bdbee4959c1"
+  },
+  "results/increment8/review/gate-reviewed.json": {
+    "nbytes": 3612,
+    "sha256": "800d2b38479d398f858062489a09eb819a7d4e0ef0e4225476826a562a8ba3fa"
+  },
+  "results/increment8/review/gate-reviewed.log": {
+    "nbytes": 3612,
+    "sha256": "800d2b38479d398f858062489a09eb819a7d4e0ef0e4225476826a562a8ba3fa"
+  },
+  "results/increment8/review/gate-tests-final.txt": {
+    "nbytes": 99,
+    "sha256": "1adece850c93331798f70d50b1509112b1134066380ac65f5074ac0c11491793"
+  },
+  "results/increment8/review/gate-tests-green.txt": {
+    "nbytes": 99,
+    "sha256": "d55b9edecbfab5daacbd85aebb56380fc75911788e01a69d3528633c333b06b6"
+  },
+  "results/increment8/review/gate-tests-red.txt": {
+    "nbytes": 13530,
+    "sha256": "4304821fd5e72c240cc331aad3bd69d2a10c192501d5d21af2623c7a42b4cbb3"
+  },
+  "results/increment8/review/initial-audit.json": {
+    "nbytes": 8779,
+    "sha256": "e2d1f8798c39f4fdc6b40a3e720d1d56b21fb865fc0803060cc1171c2f59eb4b"
+  },
+  "results/increment8/review/integrity-and-coverage.json": {
+    "nbytes": 25963,
+    "sha256": "4461c05554521a393ad146f96028a38a3ab903d83c34f967c06350fa56a702e5"
+  },
+  "results/increment8/review/memory-pipeline-audit.json": {
+    "nbytes": 1247,
+    "sha256": "19404f34c47fbc70518a2973453e6a82806702bb74845e6d6966a482b52e8009"
+  },
+  "results/increment8/review/memory-pipeline.json": {
+    "nbytes": 26124,
+    "sha256": "a8dbd25b950edcee3b6222421bdbc8e6c013b3b0d1563a7742c45c3f1abbf489"
+  },
+  "results/increment8/review/memory-pipeline.log": {
+    "nbytes": 47,
+    "sha256": "058ab12a0d6e6b89bc505c3a742bc4aaa775f3fb7564f94bec2828a068d2771b"
+  },
+  "results/increment8/review/memory-sync-audit.json": {
+    "nbytes": 1247,
+    "sha256": "7532fbffcfd01ac3014856c9f148a63424c90f8ff647bac43e2e68364107ebaa"
+  },
+  "results/increment8/review/memory-sync.json": {
+    "nbytes": 25886,
+    "sha256": "e9eafec89d8ef3d8b0f410bba6c851ce428cc83e9fb2ab3d6ea47d9c116533c4"
+  },
+  "results/increment8/review/memory-sync.log": {
+    "nbytes": 43,
+    "sha256": "5d61e168743bc2459d807cae860653767af3223604752c9558be98f69694a622"
+  },
+  "results/increment8/review/negative-as64-supervisor.json": {
+    "nbytes": 891,
+    "sha256": "de1c3878c0acfbbc1f023c3c5271448941c674d0c410962d881a369084212841"
+  },
+  "results/increment8/review/negative-as64-supervisor.log": {
+    "nbytes": 1524,
+    "sha256": "5c85171454222b0f04761b12c247ca64d61b166790f4f292d43e93d7e1d26c63"
+  },
+  "results/increment8/review/oracle-exact-values-supervisor.json": {
+    "nbytes": 766,
+    "sha256": "b1b55231337ddd68c23846d4f1b6ec2911f64cf1a42ade53799e583abe33a6ee"
+  },
+  "results/increment8/review/oracle-exact-values-supervisor.log": {
+    "nbytes": 64,
+    "sha256": "f39d1857447e340298ae7d839047149a4b9c528cf6efeb5931d61ad6b0edea84"
+  },
+  "results/increment8/review/oracle-exact-values.json": {
+    "nbytes": 12212,
+    "sha256": "7b8761dfe2ddaa80ceecc9d9b22ddfdc51b0123d2204594883df65776be8a6bb"
+  },
+  "results/increment8/review/oracle-loader.txt": {
+    "nbytes": 98,
+    "sha256": "ae478244315e47c26f6a4be0e0dccac91e651f78196f17d61cba12fb42948219"
+  },
+  "results/increment8/review/oracle-precision7.txt": {
+    "nbytes": 103,
+    "sha256": "4babb65a17e815bf97c30df537b1961b6a01c693d56c1628f7d5296ff88864f4"
+  },
+  "results/increment8/review/parity-chunks.json": {
+    "nbytes": 28484,
+    "sha256": "c88e65b9e548154bf752e22d174aacc03a3afc2aa47f16084f5cb4db62c5aa93"
+  },
+  "results/increment8/review/parity-extended.json": {
+    "nbytes": 18290,
+    "sha256": "4b670a14524a449136d3f276e4bbc1bf018bd68a7eb8056e4a9c6dd76f2cd5c5"
+  },
+  "results/increment8/review/parity-original-pipeline.json": {
+    "nbytes": 52750,
+    "sha256": "4771b8ff8cfd7453e1cdce3d36d9ded243efc588b09c6ae0142203071d71fdb1"
+  },
+  "results/increment8/review/parity-original-sync.json": {
+    "nbytes": 52746,
+    "sha256": "71ce6291b5f0c173ab6ace00ba92150351e5ab582bb272b5805427d53ea179df"
+  },
+  "results/increment8/review/parity-sharded.json": {
+    "nbytes": 52743,
+    "sha256": "cd79835cef9e0e5843309b5b428d4a164ae79bbef08ce795be0f158799d14902"
+  },
+  "results/increment8/review/preservation-and-git.json": {
+    "nbytes": 600,
+    "sha256": "1b711c09210f31a092bb1a96621aaf7a90c92d05d151e257dbaa6b816ac42c26"
+  },
+  "results/increment8/review/pytest-final.txt": {
+    "nbytes": 501,
+    "sha256": "5ad7140b6293e63b8809609638410336a5a9e9a74d258af4b59bfa380d8a3b9b"
+  },
+  "results/increment8/review/regression7-gate.json": {
+    "nbytes": 2145,
+    "sha256": "8e90d86c9639ab591463b385755f675c2fc2fb4528854e0fc0541889a4808ebc"
+  },
+  "results/increment8/review/summary.json": {
+    "nbytes": 1804,
+    "sha256": "f48f22105142513565a15ae337d08684eb3da21d292e8ec15e3aecdeb51941be"
+  },
+  "results/increment8/review/worker-pipeline.json": {
+    "nbytes": 491,
+    "sha256": "695a36f739816da879da7fbd946fd32a83e4e15204ca5153d1fbb8d155d8a3d4"
+  },
+  "results/increment8/review/worker-sync.json": {
+    "nbytes": 491,
+    "sha256": "725b4a31c56bb14a43026fbf5b8763fc64ecc2cf32ee6d23162aaaa3be381bf1"
+  },
+  "tests/test_increment8.py": {
+    "nbytes": 7367,
+    "sha256": "9f811b1393df0b450c8fdced49658dc0728e1a29667310b498910532ab1f0d58"
+  },
+  "tools/report_increment8.py": {
+    "nbytes": 11552,
+    "sha256": "5a18d7ca0ece5aa84728350fc44482e16083f5eb238687b819d13a17db495b19"
+  }
+}

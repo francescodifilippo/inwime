@@ -1,0 +1,206 @@
+.............FFFFFFFFF                                                   [100%]
+=================================== FAILURES ===================================
+_ test_cached_parity_rejects_wrong_oracle_contract[contract-not_transformers] __
+
+field = 'contract', value = 'not_transformers'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...372929f9d520521cb29045f11d190d84274be2bdc', 'continuation': [7042, 30, 198], 'contract': 'not_transformers', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+_______ test_cached_parity_rejects_wrong_oracle_contract[dtype-float16] ________
+
+field = 'dtype', value = 'float16'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...21cb29045f11d190d84274be2bdc', 'continuation': [7042, 30, 198], 'contract': 'transformers_standard_float32', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+__ test_cached_parity_rejects_wrong_oracle_contract[precision_profile-full64] __
+
+field = 'precision_profile', value = 'full64'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...21cb29045f11d190d84274be2bdc', 'continuation': [7042, 30, 198], 'contract': 'transformers_standard_float32', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+_ test_cached_parity_rejects_wrong_oracle_contract[attention_implementation-sdpa] _
+
+field = 'attention_implementation', value = 'sdpa'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...21cb29045f11d190d84274be2bdc', 'continuation': [7042, 30, 198], 'contract': 'transformers_standard_float32', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+_ test_cached_parity_rejects_wrong_oracle_contract[revision-0000000000000000000000000000000000000000] _
+
+field = 'revision', value = '0000000000000000000000000000000000000000'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...21cb29045f11d190d84274be2bdc', 'continuation': [7042, 30, 198], 'contract': 'transformers_standard_float32', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+_ test_cached_parity_rejects_wrong_oracle_contract[capture_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb] _
+
+field = 'capture_sha256'
+value = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+    @pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+        ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+        ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+    def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+        directory = Path(__file__).resolve().parents[1]/'results/increment8'
+        runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+        parity = json.loads((directory/'parity-original-sync.json').read_text())
+        assert full_fp32_parity(parity, runtime)
+        parity['oracle_metadata'][field] = value
+>       assert not full_fp32_parity(parity, runtime)
+E       AssertionError: assert not True
+E        +  where True = full_fp32_parity({'atol': 0.002, 'comparisons': {'decode.0': {'argmax_equal': True, 'greedy_equal': True, 'hidden': {'count': 245760, '...bbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'continuation': [7042, 30, 198], 'contract': 'transformers_standard_float32', ...}, ...}, {'all_tensors_used': True, 'arena_by_category': {'accumulators': 520, 'activations': 212992, 'kv': 25165824, 'metadata': 952977, ...}, 'arena_plan_bytes': 41536665, 'bootstrap_estimate_bytes': 882747, ...})
+
+tests/test_increment8.py:119: AssertionError
+_____ test_aggregate_gate_rejects_incomplete_evidence[missing_regression7] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-francesco/pytest-44/test_aggregate_gate_rejects_in0')
+fault = 'missing_regression7'
+
+    @pytest.mark.parametrize('fault', ['missing_regression7', 'empty_exact', 'missing_exact_check'])
+    def test_aggregate_gate_rejects_incomplete_evidence(tmp_path, fault):
+        source = Path(__file__).resolve().parents[1]/'results/increment8'
+        directory = tmp_path/'evidence'
+        shutil.copytree(source, directory, ignore=shutil.ignore_patterns('review'))
+        if fault == 'missing_regression7':
+            (directory/'regression7-stock_fp32.json').unlink()
+        else:
+            path = directory/'exact-invariants.json'
+            exact = json.loads(path.read_text())
+            if fault == 'empty_exact':
+                exact['checks'] = {}
+            else:
+                exact['checks'].pop('kv_incremental_exact')
+            path.write_text(json.dumps(exact))
+        try:
+            result = report(directory)
+        except (ValueError, FileNotFoundError):
+            return
+>       assert not result['passed']
+E       assert not True
+
+tests/test_increment8.py:141: AssertionError
+_________ test_aggregate_gate_rejects_incomplete_evidence[empty_exact] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-francesco/pytest-44/test_aggregate_gate_rejects_in1')
+fault = 'empty_exact'
+
+    @pytest.mark.parametrize('fault', ['missing_regression7', 'empty_exact', 'missing_exact_check'])
+    def test_aggregate_gate_rejects_incomplete_evidence(tmp_path, fault):
+        source = Path(__file__).resolve().parents[1]/'results/increment8'
+        directory = tmp_path/'evidence'
+        shutil.copytree(source, directory, ignore=shutil.ignore_patterns('review'))
+        if fault == 'missing_regression7':
+            (directory/'regression7-stock_fp32.json').unlink()
+        else:
+            path = directory/'exact-invariants.json'
+            exact = json.loads(path.read_text())
+            if fault == 'empty_exact':
+                exact['checks'] = {}
+            else:
+                exact['checks'].pop('kv_incremental_exact')
+            path.write_text(json.dumps(exact))
+        try:
+            result = report(directory)
+        except (ValueError, FileNotFoundError):
+            return
+>       assert not result['passed']
+E       assert not True
+
+tests/test_increment8.py:141: AssertionError
+_____ test_aggregate_gate_rejects_incomplete_evidence[missing_exact_check] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-francesco/pytest-44/test_aggregate_gate_rejects_in2')
+fault = 'missing_exact_check'
+
+    @pytest.mark.parametrize('fault', ['missing_regression7', 'empty_exact', 'missing_exact_check'])
+    def test_aggregate_gate_rejects_incomplete_evidence(tmp_path, fault):
+        source = Path(__file__).resolve().parents[1]/'results/increment8'
+        directory = tmp_path/'evidence'
+        shutil.copytree(source, directory, ignore=shutil.ignore_patterns('review'))
+        if fault == 'missing_regression7':
+            (directory/'regression7-stock_fp32.json').unlink()
+        else:
+            path = directory/'exact-invariants.json'
+            exact = json.loads(path.read_text())
+            if fault == 'empty_exact':
+                exact['checks'] = {}
+            else:
+                exact['checks'].pop('kv_incremental_exact')
+            path.write_text(json.dumps(exact))
+        try:
+            result = report(directory)
+        except (ValueError, FileNotFoundError):
+            return
+>       assert not result['passed']
+E       assert not True
+
+tests/test_increment8.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[contract-not_transformers]
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[dtype-float16]
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[precision_profile-full64]
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[attention_implementation-sdpa]
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[revision-0000000000000000000000000000000000000000]
+FAILED tests/test_increment8.py::test_cached_parity_rejects_wrong_oracle_contract[capture_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]
+FAILED tests/test_increment8.py::test_aggregate_gate_rejects_incomplete_evidence[missing_regression7]
+FAILED tests/test_increment8.py::test_aggregate_gate_rejects_incomplete_evidence[empty_exact]
+FAILED tests/test_increment8.py::test_aggregate_gate_rejects_incomplete_evidence[missing_exact_check]
+9 failed, 13 passed in 0.36s

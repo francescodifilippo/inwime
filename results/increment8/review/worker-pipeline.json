@@ -1,0 +1,31 @@
+{
+  "pid": 5,
+  "parent_pid": 2,
+  "rlimit_as": [
+    134217728,
+    134217728
+  ],
+  "checked_checkpoint_opens": {
+    "tokenizer_config.json": [
+      134217728,
+      134217728
+    ],
+    "config.json": [
+      134217728,
+      134217728
+    ],
+    "generation_config.json": [
+      134217728,
+      134217728
+    ],
+    "safetensors.json": [
+      134217728,
+      134217728
+    ],
+    "model.safetensors": [
+      134217728,
+      134217728
+    ]
+  },
+  "all_opens_under_limit": true
+}

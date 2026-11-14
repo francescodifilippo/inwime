@@ -2,6 +2,7 @@
 from array import array
 import hashlib
 import json
+import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -10,7 +11,7 @@ import pytest
 
 from tools.benchmark_increment8 import expected_reads, save_values
 from tools.verify_increment8 import read_capture, invariants, verify
-from tools.report_increment8 import full_fp32_parity
+from tools.report_increment8 import full_fp32_parity, complete_exact_checks, report
 
 
 def test_coverage_counts_tied_head_once_for_unique_but_twice_for_reads():
@@ -88,6 +89,10 @@ def test_gate_rejects_partial_or_relaxed_parity(fault):
     comparison = dict(greedy_equal=True, argmax_equal=True,
         logits=dict(count=14, failures=0), hidden=dict(count=16, failures=0), kv=dict(count=32, failures=0))
     parity = dict(passed=True, atol=2e-3, rtol=2e-4, comparisons={'decode.0': comparison})
+    parity.update(oracle_contract='transformers_standard_float32', oracle_sha256='a'*64,
+        oracle_metadata=dict(contract='transformers_standard_float32', dtype='float32',
+            precision_profile='stock', attention_implementation='eager',
+            revision='d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b', capture_sha256='a'*64))
     assert full_fp32_parity(parity, runtime)
     if fault == 'missing_phase':
         parity['comparisons'].clear()
@@ -100,3 +105,52 @@ def test_gate_rejects_partial_or_relaxed_parity(fault):
     else:
         parity['atol'] = 1.
     assert not full_fp32_parity(parity, runtime)
+
+
+@pytest.mark.parametrize('field,value', [('contract', 'not_transformers'), ('dtype', 'float16'),
+    ('precision_profile', 'full64'), ('attention_implementation', 'sdpa'),
+    ('revision', '0'*40), ('capture_sha256', 'b'*64)])
+def test_cached_parity_rejects_wrong_oracle_contract(field, value):
+    directory = Path(__file__).resolve().parents[1]/'results/increment8'
+    runtime = json.loads((directory/'smoke-sync-1024.json').read_text())
+    parity = json.loads((directory/'parity-original-sync.json').read_text())
+    assert full_fp32_parity(parity, runtime)
+    parity['oracle_metadata'][field] = value
+    assert not full_fp32_parity(parity, runtime)
+
+
+@pytest.mark.parametrize('fault', ['missing_regression7', 'empty_exact', 'missing_exact_check'])
+def test_aggregate_gate_rejects_incomplete_evidence(tmp_path, fault):
+    source = Path(__file__).resolve().parents[1]/'results/increment8'
+    directory = tmp_path/'evidence'
+    shutil.copytree(source, directory, ignore=shutil.ignore_patterns('review'))
+    if fault == 'missing_regression7':
+        (directory/'regression7-stock_fp32.json').unlink()
+    else:
+        path = directory/'exact-invariants.json'
+        exact = json.loads(path.read_text())
+        if fault == 'empty_exact':
+            exact['checks'] = {}
+        else:
+            exact['checks'].pop('kv_incremental_exact')
+        path.write_text(json.dumps(exact))
+    try:
+        result = report(directory)
+    except (ValueError, FileNotFoundError):
+        return
+    assert not result['passed']
+
+
+@pytest.mark.parametrize('fault', ['empty', 'missing_causal', 'missing_pipeline', 'missing_shards'])
+def test_cached_exact_gate_requires_each_comparison(fault):
+    path = Path(__file__).resolve().parents[1]/'results/increment8/exact-invariants.json'
+    exact = json.loads(path.read_text())
+    assert complete_exact_checks(exact)
+    if fault == 'empty':
+        exact['checks'].clear()
+    else:
+        key = {'missing_causal': 'kv_incremental_exact',
+               'missing_pipeline': 'results/increment8/measured-pipeline-1.json_exact',
+               'missing_shards': 'results/increment8/sharded-sync.json_exact'}[fault]
+        exact['checks'].pop(key)
+    assert not complete_exact_checks(exact)

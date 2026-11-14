@@ -1,5 +1,6 @@
 """Rebuild the increment8 evidence gate without changing historical evidence."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -7,6 +8,16 @@ import statistics
 
 
 def full_fp32_parity(parity, runtime):
+    meta = parity.get('oracle_metadata', {})
+    contract = 'transformers_standard_float32'
+    digest = parity.get('oracle_sha256', '')
+    if (parity.get('oracle_contract') != contract or meta.get('contract') != contract
+            or meta.get('dtype') != 'float32' or meta.get('precision_profile') != 'stock'
+            or meta.get('attention_implementation') != 'eager'
+            or meta.get('revision') != 'd4c18ccb8a25e6e637e0609aac08a5d1a0436d1b'
+            or not re.fullmatch('[0-9a-f]{64}', digest)
+            or meta.get('capture_sha256') != digest):
+        return False
     c = runtime['config']
     expected_keys = {p['name'] for p in runtime['phases']}
     if (not parity['passed'] or (parity['atol'], parity['rtol']) != (2e-3, 2e-4)
@@ -26,8 +37,47 @@ def full_fp32_parity(parity, runtime):
     return bool(expected_keys)
 
 
+def verify_evidence_files(directory):
+    """Bind the original result inputs to their acquisition manifest.
+
+    Code/docs can be corrected in review; their original hashes remain a snapshot.
+    Only original result data/logs are inputs here. The review has its own manifest.
+    Remap canonical result names to directory so copied evidence is checked too.
+    """
+    manifest = json.loads((directory/'artifact-sha256.json').read_text())
+    prefix = 'results/increment8/'
+    required = {'regression7-stock_fp32.json', 'regression7-pure_fp64.json',
+        'regression7-standard_fp64_diagnostic.json', 'regression7-pure_fp64_pipeline.json',
+        'regression7-pure_fp64_sharded.json', 'regression7-gate.json',
+        'preservation-before.json', 'preservation-after.json', 'exact-invariants.json'}
+    entries = {name[len(prefix):]: entry for name, entry in manifest.items()
+               if name.startswith(prefix) and Path(name).suffix in ('.json', '.log', '.txt')}
+    if not required <= entries.keys():
+        raise ValueError('manifest lacks mandatory evidence inputs')
+    for name, entry in entries.items():
+        if Path(name).name != name:
+            raise ValueError('invalid evidence manifest path')
+        path = directory/name
+        with path.open('rb') as f:
+            digest = hashlib.file_digest(f, 'sha256').hexdigest()
+        if path.stat().st_size != entry['nbytes'] or digest != entry['sha256']:
+            raise ValueError('evidence size/SHA256 mismatch: '+name)
+
+
+def complete_exact_checks(exact):
+    causal = {kind+'_'+mode+'_exact' for kind in ('logits', 'hidden', 'kv')
+              for mode in ('incremental', 'chunks')}
+    checks = exact.get('checks', {})
+    formats = set(checks)-causal
+    return (exact.get('passed') is True and causal <= checks.keys() and len(formats) == 2
+            and {Path(k).name for k in formats} ==
+                {'measured-pipeline-1.json_exact', 'sharded-sync.json_exact'}
+            and all(value is True for value in checks.values()))
+
+
 def report(directory):
     d = Path(directory)
+    verify_evidence_files(d)
     def read(name):
         return json.loads((d/name).read_text())
     acquisition = read('acquisition.json')
@@ -69,15 +119,20 @@ def report(directory):
     checks['D_full_standard_fp32_parity'] = all(full_fp32_parity(p, runtime_reports[name])
                                                for name, p in parities.items())
     exact = read('exact-invariants.json')
-    checks['D_exact_modes_formats_causality'] = exact['passed'] and all(exact['checks'].values())
+    checks['D_exact_modes_formats_causality'] = complete_exact_checks(exact)
     faults = read('faults.json')
     checks['E_atomic_KV_and_failures'] = faults['passed'] and len(faults['cases']) == 6 and all(
         all(c[k] for k in ('budget_rejected_before_payload', 'old_kv_all_bytes_preserved',
                           'descriptor_preserved', 'candidate_was_modified', 'drained', 'released'))
         for c in faults['cases'])
     gate7 = read('regression7-gate.json')
+    from .report_increment7 import numerical_gate
+    labels = ('stock_fp32', 'pure_fp64', 'standard_fp64_diagnostic',
+              'pure_fp64_pipeline', 'pure_fp64_sharded')
+    rebuilt_gate7 = numerical_gate({label: read(f'regression7-{label}.json') for label in labels})
     checks['F_preserved_regressions'] = (read('preservation-after.json')['all_consolidated_unchanged']
-        and gate7['passed'] and not gate7['contracts']['standard_fp64_diagnostic']['raw_parity_passed']
+        and gate7 == rebuilt_gate7 and rebuilt_gate7['passed']
+        and not rebuilt_gate7['contracts']['standard_fp64_diagnostic']['raw_parity_passed']
         and read('regression-tests.json')['exit_code'] == 0
         and int(re.search(r'(\d+) passed', (d/'pytest-final.txt').read_text())[1]) >= 382
         and 'OK' in (d/'oracle-loader-green.txt').read_text()

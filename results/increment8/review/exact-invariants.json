@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "results/increment8/measured-pipeline-1.json_exact": true,
+    "results/increment8/sharded-sync.json_exact": true,
+    "logits_incremental_exact": true,
+    "logits_chunks_exact": true,
+    "hidden_incremental_exact": true,
+    "hidden_chunks_exact": true,
+    "kv_incremental_exact": true,
+    "kv_chunks_exact": true
+  },
+  "passed": true
+}

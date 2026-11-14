@@ -1,0 +1,62 @@
+{
+  "ready_for_commit": true,
+  "passed": true,
+  "reviewed_head": "7afcd6b2943325bbef52e724a202a33a1ee261c5",
+  "findings": [
+    {
+      "id": "S1",
+      "axis": "Standards",
+      "priority": "P2",
+      "issue": "missing historical input reports accepted",
+      "resolved": true
+    },
+    {
+      "id": "P1",
+      "axis": "Spec",
+      "priority": "P2",
+      "issue": "cached oracle contract not checked",
+      "resolved": true
+    },
+    {
+      "id": "P2",
+      "axis": "Spec",
+      "priority": "P2",
+      "issue": "empty or incomplete exact invariants accepted",
+      "resolved": true
+    }
+  ],
+  "open_findings": [],
+  "general_tests_passed": 408,
+  "oracle_tests_passed": 6,
+  "memory_proof": {
+    "rlimit_as_bytes": 134217728,
+    "unique_active_bf16_bytes": 3422752768,
+    "largest_new_runtime_rss_bytes": 92053504,
+    "largest_new_runtime_virtual_peak_bytes": 112295936,
+    "full_prefill_tokens": 5,
+    "consecutive_decode_steps": 3,
+    "runtime_observed_swap_bytes": 0
+  },
+  "oracle_exact_value_audit": {
+    "all_218_original_parameters_exact": true,
+    "stock_upstream_math": true,
+    "peak_rss_bytes": 7789563904,
+    "observed_peak_swap_bytes": 27799552,
+    "separate_process": true
+  },
+  "all_five_review_points_satisfied": true,
+  "original_runtime_and_kernel_unchanged": true,
+  "original_measurements_not_overwritten": true,
+  "historical_fp64_diagnostic_still_failed": true,
+  "limitations": [
+    "under process address-space limit, not beyond WSL or physical host RAM",
+    "original performance warm OS cache, no cold NVMe claim",
+    "1.7B full parity FP32 only; no pure FP64 1.7B oracle"
+  ],
+  "source_changes": [
+    "tools/report_increment8.py",
+    "tests/test_increment8.py"
+  ],
+  "no_agent_commit_or_push": true,
+  "increment9_not_started": true
+}

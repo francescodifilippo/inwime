@@ -1,0 +1,52 @@
+{
+  "parent_pid": 2,
+  "child_pid": 5,
+  "child_start_ticks": "22300116",
+  "worker_pid_matched": true,
+  "observed_limits": [
+    "Max address space         134217728            134217728            bytes     ",
+    "Max address space         unlimited            unlimited            bytes     "
+  ],
+  "samples": 1334,
+  "peaks_bytes": {
+    "VmPeak": 112295936,
+    "VmSize": 112295936,
+    "VmLck": 0,
+    "VmPin": 0,
+    "VmHWM": 92053504,
+    "VmRSS": 92053504,
+    "VmData": 82284544,
+    "VmStk": 139264,
+    "VmExe": 3694592,
+    "VmLib": 13848576,
+    "VmPTE": 249856,
+    "VmSwap": 0
+  },
+  "exit_code": 0,
+  "checkpoint_opens": {
+    "tokenizer_config.json": [
+      134217728,
+      134217728
+    ],
+    "config.json": [
+      134217728,
+      134217728
+    ],
+    "generation_config.json": [
+      134217728,
+      134217728
+    ],
+    "safetensors.json": [
+      134217728,
+      134217728
+    ],
+    "model.safetensors": [
+      134217728,
+      134217728
+    ]
+  },
+  "all_checkpoint_opens_under_limit": true,
+  "full_prefill_and_three_decode": true,
+  "attribution": "Only /proc/<Popen.pid> and child RUSAGE_SELF; oracle not launched",
+  "timing_limitation": "Review instrumentation, excluded from original benchmark medians"
+}

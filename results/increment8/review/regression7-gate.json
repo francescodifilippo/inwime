@@ -1,0 +1,86 @@
+{
+  "criterion": "standard FP32 parity AND genuinely FP64 parity; standard FP64 mixed precision diagnostic required",
+  "passed": true,
+  "contracts": {
+    "stock_fp32": {
+      "required_for_parity": true,
+      "executed": true,
+      "raw_parity_passed": true,
+      "max_abs": {
+        "logits": 0.0002340024085014658,
+        "hidden": 0.011014732875992195,
+        "kv": 2.164724763531467e-05
+      },
+      "failed_elements": {
+        "logits": 0,
+        "hidden": 0,
+        "kv": 0
+      },
+      "argmax_all_equal": true
+    },
+    "pure_fp64": {
+      "required_for_parity": true,
+      "executed": true,
+      "raw_parity_passed": true,
+      "max_abs": {
+        "logits": 3.375077994860476e-13,
+        "hidden": 3.637978807091713e-11,
+        "kv": 1.2079226507921703e-13
+      },
+      "failed_elements": {
+        "logits": 0,
+        "hidden": 0,
+        "kv": 0
+      },
+      "argmax_all_equal": true
+    },
+    "standard_fp64_diagnostic": {
+      "required_for_parity": false,
+      "executed": true,
+      "raw_parity_passed": false,
+      "max_abs": {
+        "logits": 2.7531860580909395e-05,
+        "hidden": 0.0016656945299473591,
+        "kv": 2.7539768119311248e-06
+      },
+      "failed_elements": {
+        "logits": 270,
+        "hidden": 41,
+        "kv": 0
+      },
+      "argmax_all_equal": true
+    },
+    "pure_fp64_pipeline": {
+      "required_for_parity": true,
+      "executed": true,
+      "raw_parity_passed": true,
+      "max_abs": {
+        "logits": 3.375077994860476e-13,
+        "hidden": 3.637978807091713e-11,
+        "kv": 1.2079226507921703e-13
+      },
+      "failed_elements": {
+        "logits": 0,
+        "hidden": 0,
+        "kv": 0
+      },
+      "argmax_all_equal": true
+    },
+    "pure_fp64_sharded": {
+      "required_for_parity": true,
+      "executed": true,
+      "raw_parity_passed": true,
+      "max_abs": {
+        "logits": 3.375077994860476e-13,
+        "hidden": 3.637978807091713e-11,
+        "kv": 1.2079226507921703e-13
+      },
+      "failed_elements": {
+        "logits": 0,
+        "hidden": 0,
+        "kv": 0
+      },
+      "argmax_all_equal": true
+    }
+  }
+}
