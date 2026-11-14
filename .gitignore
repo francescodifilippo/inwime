@@ -82,3 +82,8 @@ hardware-audit*.json
 !/results/**/artifact-sha256.json
 !/results/**/preserved-files.json
 !/results/**/preservation-check.json
+
+# Optional local Hugging Face caches; public evidence belongs in results/.
+/hf-cache/
+/.cache/huggingface/
+/.huggingface/

@@ -271,3 +271,21 @@ Le [evidenze](results/increment6/README.md) confrontano baseline, candidato v2 e
 candidato safetensors, e misurano RSS/I/O su fixture controllate. Questo supporta
 il contenitore reale, non ancora il grafo, tokenizer e logits di un modello pubblico.
 Nessun nuovo backend GPU, cache VRAM o MTP è incluso.
+
+## Primo modello pubblico: Llama / SmolLM2
+
+L'[incremento 7](docs/RUNTIME_CPU_INCREMENT_7.md) aggiunge un adapter Llama con
+RoPE, GQA, tokenizer ufficiale e greedy decoding su SmolLM2-135M BF16 originale.
+I pesi vengono letti a tile; PyTorch/Transformers servono soltanto all'oracolo
+isolato. **Gate numerico risolto:** parità completa Transformers standard FP32 e
+riferimento PyTorch realmente FP64 superate alle tolleranze iniziali. Il
+confronto standard FP64 rimane un diagnostico obbligatorio, con il precedente
+fallimento conservato: RMSNorm, RoPE e softmax upstream usano internamente FP32.
+Il runtime InWiMe non è stato modificato per imitarli. Non è una nuova prova oltre RAM fisica.
+
+```bash
+make cpu-kernel
+python3 -m pytest -q tests
+# Con tokenizers installato nel proprio ambiente e checkpoint già verificato:
+.venv-oracle7/bin/python -m tools.generate7 checkpoints/smollm2-135m-93efa2f
+```
