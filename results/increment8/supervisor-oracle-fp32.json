@@ -1,0 +1,33 @@
+{
+  "command": [
+    ".venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle8",
+    "checkpoints/smollm2-1.7b-d4c18cc",
+    "--output",
+    "artifacts/increment8/oracle-fp32.npz"
+  ],
+  "exit_code": 1,
+  "watchdog_reason": null,
+  "rss_stop_bytes": 8589934592,
+  "memavailable_stop_bytes": 536870912,
+  "sample_interval_s": 0.02,
+  "samples": 2403,
+  "sampled_peaks_bytes": {
+    "VmPeak": 14461222912,
+    "VmSize": 12447596544,
+    "VmLck": 0,
+    "VmPin": 0,
+    "VmHWM": 7163867136,
+    "VmRSS": 7163867136,
+    "VmData": 10542473216,
+    "VmStk": 139264,
+    "VmExe": 3694592,
+    "VmLib": 401723392,
+    "VmPTE": 14479360,
+    "VmSwap": 0
+  },
+  "minimum_memavailable_bytes": 1502326784,
+  "wall_s": 49.521849604003364,
+  "limitation": "20 ms sampling can miss transients; kernel VmHWM/ru_maxrss reported by child separately"
+}

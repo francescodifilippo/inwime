@@ -1,0 +1,1061 @@
+{
+  "artifacts": {
+    "artifacts/increment8/chunks/chunks.0.hidden.f64": {
+      "nbytes": 786432,
+      "sha256": "ea01002b9b5b076a4f8be64d24a3e27a8f667700ccb352925a486e938fb02035"
+    },
+    "artifacts/increment8/chunks/chunks.0.kv.f64": {
+      "nbytes": 1572864,
+      "sha256": "4e92548d7e4fdb04cbd1718c96730b42d787d5207b98cbba644c1a516bb6d1e0"
+    },
+    "artifacts/increment8/chunks/chunks.0.logits.f64": {
+      "nbytes": 786432,
+      "sha256": "450247c8957bf4e147f2a587b0d62c3bedfee6cdfbc0c582ed4c9b7194ec54cc"
+    },
+    "artifacts/increment8/chunks/chunks.1.hidden.f64": {
+      "nbytes": 1179648,
+      "sha256": "37678b5b6f665fd5da60d00fabe7297a4e0197e8cd3dae0c7266a6f9acd0ebce"
+    },
+    "artifacts/increment8/chunks/chunks.1.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment8/chunks/chunks.1.logits.f64": {
+      "nbytes": 1179648,
+      "sha256": "64c5a2b88f1441bde91a54b73565c0677475bcc803f09cdbb4b286970cd327ad"
+    },
+    "artifacts/increment8/extended/extended.0.hidden.f64": {
+      "nbytes": 3145728,
+      "sha256": "c020d278b499ef3a4b2a4a8dbe3919e61cfd8cdc911247b6d711b3f0baf947a7"
+    },
+    "artifacts/increment8/extended/extended.0.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment8/extended/extended.0.logits.f64": {
+      "nbytes": 3145728,
+      "sha256": "b75c1a5ceb891cb9f8cb819affbf0a5297203e59d4f0b1c6e7c963235bc747f4"
+    },
+    "artifacts/increment8/oracle-fp32.json": {
+      "nbytes": 2730,
+      "sha256": "bbe8d43ad552ec7d0efabfb88584a9de08760b335648a44dca4616b1f4a20386"
+    },
+    "artifacts/increment8/oracle-fp32.npz": {
+      "nbytes": 22700580,
+      "sha256": "3ec84abc3c9402531068016372929f9d520521cb29045f11d190d84274be2bdc"
+    },
+    "artifacts/increment8/oracle-sharded-fp32.json": {
+      "nbytes": 2730,
+      "sha256": "c08fcffa2b32194606557190d41caa71c60028b148c64dc90f36507664236c5c"
+    },
+    "artifacts/increment8/oracle-sharded-fp32.npz": {
+      "nbytes": 22700580,
+      "sha256": "3ec84abc3c9402531068016372929f9d520521cb29045f11d190d84274be2bdc"
+    },
+    "artifacts/increment8/original-pipeline/decode.0.hidden.f64": {
+      "nbytes": 1966080,
+      "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+    },
+    "artifacts/increment8/original-pipeline/decode.0.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment8/original-pipeline/decode.0.logits.f64": {
+      "nbytes": 1966080,
+      "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+    },
+    "artifacts/increment8/original-pipeline/decode.1.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+    },
+    "artifacts/increment8/original-pipeline/decode.1.kv.f64": {
+      "nbytes": 4718592,
+      "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+    },
+    "artifacts/increment8/original-pipeline/decode.1.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+    },
+    "artifacts/increment8/original-pipeline/decode.2.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+    },
+    "artifacts/increment8/original-pipeline/decode.2.kv.f64": {
+      "nbytes": 5505024,
+      "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+    },
+    "artifacts/increment8/original-pipeline/decode.2.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+    },
+    "artifacts/increment8/original-pipeline/decode.3.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+    },
+    "artifacts/increment8/original-pipeline/decode.3.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment8/original-pipeline/decode.3.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+    },
+    "artifacts/increment8/original-sync/decode.0.hidden.f64": {
+      "nbytes": 1966080,
+      "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+    },
+    "artifacts/increment8/original-sync/decode.0.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment8/original-sync/decode.0.logits.f64": {
+      "nbytes": 1966080,
+      "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+    },
+    "artifacts/increment8/original-sync/decode.1.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+    },
+    "artifacts/increment8/original-sync/decode.1.kv.f64": {
+      "nbytes": 4718592,
+      "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+    },
+    "artifacts/increment8/original-sync/decode.1.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+    },
+    "artifacts/increment8/original-sync/decode.2.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+    },
+    "artifacts/increment8/original-sync/decode.2.kv.f64": {
+      "nbytes": 5505024,
+      "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+    },
+    "artifacts/increment8/original-sync/decode.2.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+    },
+    "artifacts/increment8/original-sync/decode.3.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+    },
+    "artifacts/increment8/original-sync/decode.3.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment8/original-sync/decode.3.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+    },
+    "artifacts/increment8/sharded/decode.0.hidden.f64": {
+      "nbytes": 1966080,
+      "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+    },
+    "artifacts/increment8/sharded/decode.0.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment8/sharded/decode.0.logits.f64": {
+      "nbytes": 1966080,
+      "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+    },
+    "artifacts/increment8/sharded/decode.1.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+    },
+    "artifacts/increment8/sharded/decode.1.kv.f64": {
+      "nbytes": 4718592,
+      "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+    },
+    "artifacts/increment8/sharded/decode.1.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+    },
+    "artifacts/increment8/sharded/decode.2.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+    },
+    "artifacts/increment8/sharded/decode.2.kv.f64": {
+      "nbytes": 5505024,
+      "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+    },
+    "artifacts/increment8/sharded/decode.2.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+    },
+    "artifacts/increment8/sharded/decode.3.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+    },
+    "artifacts/increment8/sharded/decode.3.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment8/sharded/decode.3.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+    }
+  },
+  "oracle_metadata": {
+    "oracle-fp32.json": {
+      "contract": "transformers_standard_float32",
+      "dtype": "float32",
+      "precision_profile": "stock",
+      "attention_implementation": "eager",
+      "versions": {
+        "torch": "2.9.1+cpu",
+        "transformers": "4.57.3",
+        "numpy": "2.3.5"
+      },
+      "revision": "d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b",
+      "loader": {
+        "original_bf16_bytes": 3422752768,
+        "resident_fp32_parameter_bytes": 6845505536,
+        "maximum_source_tensor_bytes": 201326592,
+        "one_source_mapping_at_a_time": true,
+        "no_resident_bf16_model": true,
+        "tied_storage": true,
+        "load_s": 41.671830584993586
+      },
+      "scenarios": {
+        "decode": [
+          {
+            "tokens": [
+              504,
+              3575,
+              282,
+              4649,
+              314
+            ],
+            "greedy": [
+              808,
+              282,
+              260,
+              28,
+              7042
+            ]
+          },
+          {
+            "tokens": [
+              7042
+            ],
+            "greedy": [
+              30
+            ]
+          },
+          {
+            "tokens": [
+              30
+            ],
+            "greedy": [
+              198
+            ]
+          },
+          {
+            "tokens": [
+              198
+            ],
+            "greedy": [
+              198
+            ]
+          }
+        ],
+        "extended": [
+          {
+            "tokens": [
+              504,
+              3575,
+              282,
+              4649,
+              314,
+              7042,
+              30,
+              198
+            ],
+            "greedy": [
+              808,
+              282,
+              260,
+              28,
+              7042,
+              30,
+              198,
+              198
+            ]
+          }
+        ],
+        "chunks": [
+          {
+            "tokens": [
+              504,
+              3575
+            ],
+            "greedy": [
+              808,
+              282
+            ]
+          },
+          {
+            "tokens": [
+              282,
+              4649,
+              314
+            ],
+            "greedy": [
+              260,
+              28,
+              7042
+            ]
+          }
+        ]
+      },
+      "continuation": [
+        7042,
+        30,
+        198
+      ],
+      "tokenizer": [
+        {
+          "text": "The capital of France is",
+          "ids": [
+            504,
+            3575,
+            282,
+            4649,
+            314
+          ],
+          "decoded": "The capital of France is"
+        },
+        {
+          "text": "Ciao, mondo! \u00e9\n42",
+          "ids": [
+            51,
+            28467,
+            28,
+            283,
+            31917,
+            17,
+            26411,
+            198,
+            36,
+            34
+          ],
+          "decoded": "Ciao, mondo! \u00e9\n42"
+        },
+        {
+          "text": "<|endoftext|>Hello",
+          "ids": [
+            0,
+            19556
+          ],
+          "decoded": "Hello"
+        }
+      ],
+      "elapsed_s": 83.04876177498954,
+      "peak_rss_bytes": 7242657792,
+      "capture_sha256": "3ec84abc3c9402531068016372929f9d520521cb29045f11d190d84274be2bdc",
+      "limitation": "FP32 parity only for 1.7B; no full FP64 resident oracle under this WSL budget"
+    },
+    "oracle-sharded-fp32.json": {
+      "contract": "transformers_standard_float32",
+      "dtype": "float32",
+      "precision_profile": "stock",
+      "attention_implementation": "eager",
+      "versions": {
+        "torch": "2.9.1+cpu",
+        "transformers": "4.57.3",
+        "numpy": "2.3.5"
+      },
+      "revision": "d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b",
+      "loader": {
+        "original_bf16_bytes": 3422752768,
+        "resident_fp32_parameter_bytes": 6845505536,
+        "maximum_source_tensor_bytes": 201326592,
+        "one_source_mapping_at_a_time": true,
+        "no_resident_bf16_model": true,
+        "tied_storage": true,
+        "load_s": 58.58090484899003
+      },
+      "scenarios": {
+        "decode": [
+          {
+            "tokens": [
+              504,
+              3575,
+              282,
+              4649,
+              314
+            ],
+            "greedy": [
+              808,
+              282,
+              260,
+              28,
+              7042
+            ]
+          },
+          {
+            "tokens": [
+              7042
+            ],
+            "greedy": [
+              30
+            ]
+          },
+          {
+            "tokens": [
+              30
+            ],
+            "greedy": [
+              198
+            ]
+          },
+          {
+            "tokens": [
+              198
+            ],
+            "greedy": [
+              198
+            ]
+          }
+        ],
+        "extended": [
+          {
+            "tokens": [
+              504,
+              3575,
+              282,
+              4649,
+              314,
+              7042,
+              30,
+              198
+            ],
+            "greedy": [
+              808,
+              282,
+              260,
+              28,
+              7042,
+              30,
+              198,
+              198
+            ]
+          }
+        ],
+        "chunks": [
+          {
+            "tokens": [
+              504,
+              3575
+            ],
+            "greedy": [
+              808,
+              282
+            ]
+          },
+          {
+            "tokens": [
+              282,
+              4649,
+              314
+            ],
+            "greedy": [
+              260,
+              28,
+              7042
+            ]
+          }
+        ]
+      },
+      "continuation": [
+        7042,
+        30,
+        198
+      ],
+      "tokenizer": [
+        {
+          "text": "The capital of France is",
+          "ids": [
+            504,
+            3575,
+            282,
+            4649,
+            314
+          ],
+          "decoded": "The capital of France is"
+        },
+        {
+          "text": "Ciao, mondo! \u00e9\n42",
+          "ids": [
+            51,
+            28467,
+            28,
+            283,
+            31917,
+            17,
+            26411,
+            198,
+            36,
+            34
+          ],
+          "decoded": "Ciao, mondo! \u00e9\n42"
+        },
+        {
+          "text": "<|endoftext|>Hello",
+          "ids": [
+            0,
+            19556
+          ],
+          "decoded": "Hello"
+        }
+      ],
+      "elapsed_s": 148.49891055500484,
+      "peak_rss_bytes": 7246155776,
+      "capture_sha256": "3ec84abc3c9402531068016372929f9d520521cb29045f11d190d84274be2bdc",
+      "limitation": "FP32 parity only for 1.7B; no full FP64 resident oracle under this WSL budget"
+    }
+  },
+  "runtime_captures": {
+    "extended.json": {
+      "extended.0": {
+        "logits": {
+          "file": "extended.0.logits.f64",
+          "shape": [
+            8,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 3145728,
+          "sha256": "b75c1a5ceb891cb9f8cb819affbf0a5297203e59d4f0b1c6e7c963235bc747f4"
+        },
+        "hidden": {
+          "file": "extended.0.hidden.f64",
+          "shape": [
+            24,
+            8,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 3145728,
+          "sha256": "c020d278b499ef3a4b2a4a8dbe3919e61cfd8cdc911247b6d711b3f0baf947a7"
+        },
+        "kv": {
+          "file": "extended.0.kv.f64",
+          "shape": [
+            24,
+            2,
+            8,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 6291456,
+          "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+        }
+      }
+    },
+    "chunks.json": {
+      "chunks.0": {
+        "logits": {
+          "file": "chunks.0.logits.f64",
+          "shape": [
+            2,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 786432,
+          "sha256": "450247c8957bf4e147f2a587b0d62c3bedfee6cdfbc0c582ed4c9b7194ec54cc"
+        },
+        "hidden": {
+          "file": "chunks.0.hidden.f64",
+          "shape": [
+            24,
+            2,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 786432,
+          "sha256": "ea01002b9b5b076a4f8be64d24a3e27a8f667700ccb352925a486e938fb02035"
+        },
+        "kv": {
+          "file": "chunks.0.kv.f64",
+          "shape": [
+            24,
+            2,
+            2,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 1572864,
+          "sha256": "4e92548d7e4fdb04cbd1718c96730b42d787d5207b98cbba644c1a516bb6d1e0"
+        }
+      },
+      "chunks.1": {
+        "logits": {
+          "file": "chunks.1.logits.f64",
+          "shape": [
+            3,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 1179648,
+          "sha256": "64c5a2b88f1441bde91a54b73565c0677475bcc803f09cdbb4b286970cd327ad"
+        },
+        "hidden": {
+          "file": "chunks.1.hidden.f64",
+          "shape": [
+            24,
+            3,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 1179648,
+          "sha256": "37678b5b6f665fd5da60d00fabe7297a4e0197e8cd3dae0c7266a6f9acd0ebce"
+        },
+        "kv": {
+          "file": "chunks.1.kv.f64",
+          "shape": [
+            24,
+            2,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 3932160,
+          "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+        }
+      }
+    },
+    "measured-pipeline-1.json": {
+      "decode.0": {
+        "logits": {
+          "file": "decode.0.logits.f64",
+          "shape": [
+            5,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+        },
+        "hidden": {
+          "file": "decode.0.hidden.f64",
+          "shape": [
+            24,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+        },
+        "kv": {
+          "file": "decode.0.kv.f64",
+          "shape": [
+            24,
+            2,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 3932160,
+          "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+        }
+      },
+      "decode.1": {
+        "logits": {
+          "file": "decode.1.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+        },
+        "hidden": {
+          "file": "decode.1.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+        },
+        "kv": {
+          "file": "decode.1.kv.f64",
+          "shape": [
+            24,
+            2,
+            6,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 4718592,
+          "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+        }
+      },
+      "decode.2": {
+        "logits": {
+          "file": "decode.2.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+        },
+        "hidden": {
+          "file": "decode.2.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+        },
+        "kv": {
+          "file": "decode.2.kv.f64",
+          "shape": [
+            24,
+            2,
+            7,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 5505024,
+          "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+        }
+      },
+      "decode.3": {
+        "logits": {
+          "file": "decode.3.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+        },
+        "hidden": {
+          "file": "decode.3.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+        },
+        "kv": {
+          "file": "decode.3.kv.f64",
+          "shape": [
+            24,
+            2,
+            8,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 6291456,
+          "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+        }
+      }
+    },
+    "sharded-sync.json": {
+      "decode.0": {
+        "logits": {
+          "file": "decode.0.logits.f64",
+          "shape": [
+            5,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+        },
+        "hidden": {
+          "file": "decode.0.hidden.f64",
+          "shape": [
+            24,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+        },
+        "kv": {
+          "file": "decode.0.kv.f64",
+          "shape": [
+            24,
+            2,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 3932160,
+          "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+        }
+      },
+      "decode.1": {
+        "logits": {
+          "file": "decode.1.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+        },
+        "hidden": {
+          "file": "decode.1.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+        },
+        "kv": {
+          "file": "decode.1.kv.f64",
+          "shape": [
+            24,
+            2,
+            6,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 4718592,
+          "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+        }
+      },
+      "decode.2": {
+        "logits": {
+          "file": "decode.2.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+        },
+        "hidden": {
+          "file": "decode.2.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+        },
+        "kv": {
+          "file": "decode.2.kv.f64",
+          "shape": [
+            24,
+            2,
+            7,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 5505024,
+          "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+        }
+      },
+      "decode.3": {
+        "logits": {
+          "file": "decode.3.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+        },
+        "hidden": {
+          "file": "decode.3.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+        },
+        "kv": {
+          "file": "decode.3.kv.f64",
+          "shape": [
+            24,
+            2,
+            8,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 6291456,
+          "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+        }
+      }
+    },
+    "smoke-sync-1024.json": {
+      "decode.0": {
+        "logits": {
+          "file": "decode.0.logits.f64",
+          "shape": [
+            5,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+        },
+        "hidden": {
+          "file": "decode.0.hidden.f64",
+          "shape": [
+            24,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 1966080,
+          "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+        },
+        "kv": {
+          "file": "decode.0.kv.f64",
+          "shape": [
+            24,
+            2,
+            5,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 3932160,
+          "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+        }
+      },
+      "decode.1": {
+        "logits": {
+          "file": "decode.1.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+        },
+        "hidden": {
+          "file": "decode.1.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+        },
+        "kv": {
+          "file": "decode.1.kv.f64",
+          "shape": [
+            24,
+            2,
+            6,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 4718592,
+          "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+        }
+      },
+      "decode.2": {
+        "logits": {
+          "file": "decode.2.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+        },
+        "hidden": {
+          "file": "decode.2.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+        },
+        "kv": {
+          "file": "decode.2.kv.f64",
+          "shape": [
+            24,
+            2,
+            7,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 5505024,
+          "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+        }
+      },
+      "decode.3": {
+        "logits": {
+          "file": "decode.3.logits.f64",
+          "shape": [
+            1,
+            49152
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+        },
+        "hidden": {
+          "file": "decode.3.hidden.f64",
+          "shape": [
+            24,
+            1,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 393216,
+          "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+        },
+        "kv": {
+          "file": "decode.3.kv.f64",
+          "shape": [
+            24,
+            2,
+            8,
+            2048
+          ],
+          "dtype": "<f8",
+          "nbytes": 6291456,
+          "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+        }
+      }
+    }
+  },
+  "runtime_contract": "FP64 unchanged",
+  "oracle_contract": "standard Transformers FP32; resident in separate process",
+  "raw_capture_endian": "little",
+  "weights_included": false
+}

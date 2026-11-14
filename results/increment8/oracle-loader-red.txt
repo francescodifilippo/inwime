@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_original_values_buffers_tying_and_forward (__main__.LoaderTests.test_original_values_buffers_tying_and_forward)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/check_oracle8.py", line 28, in test_original_values_buffers_tying_and_forward
+    self.assertFalse(any(b.is_meta for b in loaded.buffers()))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.042s
+
+FAILED (failures=1)

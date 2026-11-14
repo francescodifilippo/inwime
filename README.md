@@ -289,3 +289,18 @@ python3 -m pytest -q tests
 # Con tokenizers installato nel proprio ambiente e checkpoint già verificato:
 .venv-oracle7/bin/python -m tools.generate7 checkpoints/smollm2-135m-93efa2f
 ```
+
+## Modello reale sotto il limite del processo
+
+L'[incremento 8](docs/RUNTIME_CPU_INCREMENT_8.md) esegue SmolLM2-1.7B originale
+BF16 (3,423 GB di pesi unici attivi) con **RLIMIT_AS 128 MiB**, CPU FP64,
+prefill di cinque token e tre decode. Parità completa Transformers standard FP32
+su logits, residui di tutti i layer e KV; risultati identici fra sync/pipeline,
+originale/multi-shard e forward completo/incrementale. **395 test PASS**;
+gate numerico del 7 preservato, incluso il FAIL diagnostico FP64 standard.
+
+Picco RSS osservato circa 92 MB, decode mediano circa 2,74 s/token, cache OS calda.
+La prova supera il limite del processo, mentre i pesi restano sotto la RAM WSL
+e quella fisica host. Nessuna quantizzazione o modifica all'adapter/kernel.
+L'oracolo 1.7B è FP32 e risiede in un processo separato; nessuna parità FP64 1.7B
+o prestazione NVMe cold dichiarata. [Evidenze e comandi](results/increment8/README.md).

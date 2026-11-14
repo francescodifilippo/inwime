@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/benchmark_increment8.py", line 210, in <module>
+    run(p.parse_args())
+    ~~~^^^^^^^^^^^^^^^^
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/benchmark_increment8.py", line 112, in run
+    with LlamaRuntime(a.checkpoint, capacity=a.capacity, tile_elements=a.tile_elements,
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      read_elements=a.tile_elements, io_mode=a.mode,
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      math_backend=NativeMath('build/libinwime_cpu.so')) as runtime:
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/inwime_runtime/llama.py", line 183, in __init__
+    self.control = coordinator(self.catalog, self.plan, budget, backend,
+                   ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                               integrity=integrity, math_backend=self.math_backend)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/francesco/GIT/francescodifilippo/ooc-inference/inwime_runtime/core.py", line 416, in __init__
+    self.buffers[name] = array(code, [0])*count
+                         ~~~~~~~~~~~~~~~~^~~~~~
+MemoryError

@@ -1,0 +1,32 @@
+{
+  "defined_before_new_model_forward": true,
+  "model": "HuggingFaceTB/SmolLM2-1.7B",
+  "revision": "d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b",
+  "runtime_contract": "original BF16 expanded exactly per tile; ordered FP64 arithmetic unchanged",
+  "fp32_comparison": {
+    "atol": 0.002,
+    "rtol": 0.0002,
+    "rule": "every element: abs(actual-reference) <= atol + rtol*abs(reference)",
+    "rationale": "Preserve the increment7 practical FP32 criterion for the same Llama graph; 24 blocks instead of 30 but wider reductions. This is an experimental acceptance threshold, not a theoretical global error bound. A failure is retained and diagnosed, never relaxed after measurement.",
+    "arrays": ["all logits", "residual outputs of all blocks", "all post-RoPE K and V"],
+    "argmax": "exact equality at every compared position",
+    "scenarios": ["five-token prefill plus three incremental greedy decodes", "full eight-token forward", "chunked prefill 2+3"]
+  },
+  "mode_format_comparison": "bitwise equality of all captured FP64 arrays and input/greedy IDs",
+  "memory": {
+    "initial_rlimit_as_bytes": 1073741824,
+    "stricter_candidates_bytes": [268435456, 134217728],
+    "rss_stop_runtime_bytes": 1073741824,
+    "rss_stop_oracle_bytes": 8589934592,
+    "minimum_memavailable_oracle_bytes": 536870912,
+    "oracle_fp32_parameter_bytes": 6845505536,
+    "oracle_fp32_peak_estimate_bytes": 8053063680,
+    "oracle_loader": "meta model, promote one original BF16 tensor at a time to FP32; unmap source before proceeding; tie head once",
+    "rejected_naive_loading": "resident BF16 model followed by .float() can combine checkpoint mappings, BF16 and FP32 residents",
+    "oracle_fp64_parameter_bytes": 13691011072,
+    "oracle_fp64_1p7b": "not attempted: parameters alone exceed total WSL RAM; increment7 full FP64 gate stays mandatory"
+  },
+  "disk": {"maximum_new_payload_and_evidence_bytes": 7116103344, "copies": "one original and one optional standard whole-tensor repack; no HF cache, no FP32 disk checkpoint"},
+  "cache": "buffered and uncontrolled; SHA before forward, per-process read_bytes recorded; no global cache eviction and no NVMe speed claims",
+  "performance": "three sequential alternating sync/pipeline pairs; initial 1 GiB smoke retained separately; no autotuning"
+}

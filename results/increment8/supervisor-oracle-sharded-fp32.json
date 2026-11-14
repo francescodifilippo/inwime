@@ -1,0 +1,33 @@
+{
+  "command": [
+    ".venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle8",
+    "checkpoints/smollm2-1.7b-d4c18cc-sharded",
+    "--output",
+    "artifacts/increment8/oracle-sharded-fp32.npz"
+  ],
+  "exit_code": 0,
+  "watchdog_reason": null,
+  "rss_stop_bytes": 8589934592,
+  "memavailable_stop_bytes": 536870912,
+  "sample_interval_s": 0.02,
+  "samples": 7698,
+  "sampled_peaks_bytes": {
+    "VmPeak": 9893900288,
+    "VmSize": 8752971776,
+    "VmLck": 0,
+    "VmPin": 0,
+    "VmHWM": 7247314944,
+    "VmRSS": 7247314944,
+    "VmData": 8257003520,
+    "VmStk": 139264,
+    "VmExe": 3694592,
+    "VmLib": 398733312,
+    "VmPTE": 14577664,
+    "VmSwap": 0
+  },
+  "minimum_memavailable_bytes": 2451320832,
+  "wall_s": 158.82202041900018,
+  "limitation": "20 ms sampling can miss transients; kernel VmHWM/ru_maxrss reported by child separately"
+}

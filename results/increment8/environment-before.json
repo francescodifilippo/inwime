@@ -1,0 +1,18 @@
+{
+  "commit": "ed166eddaa37ad5db6239d405bcbe8f7f8cdba49",
+  "branch": "main",
+  "meminfo": "MemTotal:       11214696 kB\nMemFree:         7544036 kB\nMemAvailable:    8530316 kB\nBuffers:           39356 kB\nCached:          1224260 kB\nSwapCached:          216 kB\nActive:           662672 kB\nInactive:        2506932 kB\nActive(anon):       4716 kB\nInactive(anon):  2039660 kB\nActive(file):     657956 kB\nInactive(file):   467272 kB\nUnevictable:           0 kB\nMlocked:               0 kB\nSwapTotal:       8388608 kB\nSwapFree:        8386508 kB\nDirty:               676 kB\nWriteback:             0 kB\nAnonPages:       1906780 kB\nMapped:           688880 kB\nShmem:            138088 kB\nKReclaimable:      51096 kB\nSlab:             174220 kB\nSReclaimable:      51096 kB\nSUnreclaim:       123124 kB\nKernelStack:       11184 kB\nPageTables:        25564 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    13995956 kB\nCommitted_AS:    5886156 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       44248 kB\nVmallocChunk:          0 kB\nPercpu:            10848 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:     32768 kB\nFilePmdMapped:         0 kB\nBalloon:               0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:       52224 kB\nDirectMap2M:     6238208 kB\nDirectMap1G:    14680064 kB\n",
+  "cgroup": "0::/non-systemd\n",
+  "cgroup_memory_max": "max\n",
+  "cgroup_swap_max": "max\n",
+  "filesystem_free_bytes": 915812491264,
+  "windows_volume_free_bytes": 161489018880,
+  "existing_checkpoint_inventory": "12889894912\tcheckpoints/inc5-dense-12g\n139264\tcheckpoints/inc6-reviewed\n139264\tcheckpoints/inc6-small\n139264\tcheckpoints/inc6-final\n3182592\tcheckpoints/inc4-dense\n4214784\tcheckpoints/inc6-probe\n8454144\tcheckpoints/inc4-medium\n6352896\tcheckpoints/inc4-moe\n12885106688\tcheckpoints/inc4-large\n271265792\tcheckpoints/smollm2-135m-93efa2f-sharded\n271208448\tcheckpoints/smollm2-135m-93efa2f\n26340102144\tcheckpoints\n5905588224\tdata\n197210112\tartifacts/increment7\n4096\tartifacts/increment8\n197218304\tartifacts\n",
+  "model_already_found": false,
+  "search_scope": [
+    "checkpoints",
+    "data",
+    "artifacts",
+    "/home/francesco/.cache/huggingface"
+  ]
+}

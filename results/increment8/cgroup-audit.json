@@ -1,0 +1,28 @@
+{
+  "actual_path": "0::/non-systemd\n",
+  "ancestors": [
+    {
+      "path": "/",
+      "values": {
+        "memory.max": "max",
+        "memory.high": "max",
+        "memory.current": "6096498688",
+        "memory.swap.max": "max",
+        "memory.swap.current": "900591616",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+      }
+    },
+    {
+      "path": "/non-systemd",
+      "values": {
+        "memory.max": "max",
+        "memory.high": "max",
+        "memory.current": "5349928960",
+        "memory.swap.max": "max",
+        "memory.swap.current": "812802048",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+      }
+    }
+  ],
+  "modified": false
+}

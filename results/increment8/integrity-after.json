@@ -1,0 +1,29 @@
+{
+  "original_sha256": "1193528982f4ac0c0b707ce36fd7dc03a0ef6f3e1a432deb886dce2e90c300c0",
+  "original_files_unchanged": {
+    "config.json": true,
+    "generation_config.json": true,
+    "tokenizer.json": true,
+    "tokenizer_config.json": true,
+    "special_tokens_map.json": true,
+    "README.md": true,
+    "model.safetensors": true
+  },
+  "shard_checks": {
+    "model-00001-of-00003.safetensors": true,
+    "model-00002-of-00003.safetensors": true,
+    "model-00003-of-00003.safetensors": true
+  },
+  "previous_135m_sha256": "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1",
+  "all_checks_passed": true,
+  "tensor_count": 218,
+  "all_dtypes": "BF16",
+  "payload_bytes": 3422752768,
+  "header_and_prefix_bytes": 25184,
+  "native_library_sha256": "fae9fc42568b68747db1c0d557faaae832cb9596ff686694c297fd1f78d7b280",
+  "checkpoint_original_logical_bytes": 3424897220,
+  "checkpoint_sharded_logical_bytes": 3424934162,
+  "artifact_logical_bytes": 147642780,
+  "filesystem_free_bytes": 908408254464,
+  "windows_volume_free_bytes": 152643751936
+}

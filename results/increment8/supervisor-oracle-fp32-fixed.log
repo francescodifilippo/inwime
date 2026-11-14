@@ -1,0 +1,159 @@
+{
+  "contract": "transformers_standard_float32",
+  "dtype": "float32",
+  "precision_profile": "stock",
+  "attention_implementation": "eager",
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "numpy": "2.3.5"
+  },
+  "revision": "d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b",
+  "loader": {
+    "original_bf16_bytes": 3422752768,
+    "resident_fp32_parameter_bytes": 6845505536,
+    "maximum_source_tensor_bytes": 201326592,
+    "one_source_mapping_at_a_time": true,
+    "no_resident_bf16_model": true,
+    "tied_storage": true,
+    "load_s": 41.671830584993586
+  },
+  "scenarios": {
+    "decode": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          28,
+          7042
+        ]
+      },
+      {
+        "tokens": [
+          7042
+        ],
+        "greedy": [
+          30
+        ]
+      },
+      {
+        "tokens": [
+          30
+        ],
+        "greedy": [
+          198
+        ]
+      },
+      {
+        "tokens": [
+          198
+        ],
+        "greedy": [
+          198
+        ]
+      }
+    ],
+    "extended": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314,
+          7042,
+          30,
+          198
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          28,
+          7042,
+          30,
+          198,
+          198
+        ]
+      }
+    ],
+    "chunks": [
+      {
+        "tokens": [
+          504,
+          3575
+        ],
+        "greedy": [
+          808,
+          282
+        ]
+      },
+      {
+        "tokens": [
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          260,
+          28,
+          7042
+        ]
+      }
+    ]
+  },
+  "continuation": [
+    7042,
+    30,
+    198
+  ],
+  "tokenizer": [
+    {
+      "text": "The capital of France is",
+      "ids": [
+        504,
+        3575,
+        282,
+        4649,
+        314
+      ],
+      "decoded": "The capital of France is"
+    },
+    {
+      "text": "Ciao, mondo! \u00e9\n42",
+      "ids": [
+        51,
+        28467,
+        28,
+        283,
+        31917,
+        17,
+        26411,
+        198,
+        36,
+        34
+      ],
+      "decoded": "Ciao, mondo! \u00e9\n42"
+    },
+    {
+      "text": "<|endoftext|>Hello",
+      "ids": [
+        0,
+        19556
+      ],
+      "decoded": "Hello"
+    }
+  ],
+  "elapsed_s": 83.04876177498954,
+  "peak_rss_bytes": 7242657792,
+  "capture_sha256": "3ec84abc3c9402531068016372929f9d520521cb29045f11d190d84274be2bdc",
+  "limitation": "FP32 parity only for 1.7B; no full FP64 resident oracle under this WSL budget"
+}

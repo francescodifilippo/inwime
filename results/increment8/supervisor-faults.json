@@ -1,0 +1,33 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "tools.fault_increment8",
+    "checkpoints/smollm2-1.7b-d4c18cc-sharded",
+    "--output",
+    "results/increment8/faults.json"
+  ],
+  "exit_code": 0,
+  "watchdog_reason": null,
+  "rss_stop_bytes": 1073741824,
+  "memavailable_stop_bytes": 0,
+  "sample_interval_s": 0.02,
+  "samples": 2349,
+  "sampled_peaks_bytes": {
+    "VmPeak": 199254016,
+    "VmSize": 160473088,
+    "VmLck": 0,
+    "VmPin": 0,
+    "VmHWM": 89468928,
+    "VmRSS": 77615104,
+    "VmData": 74203136,
+    "VmStk": 139264,
+    "VmExe": 3694592,
+    "VmLib": 7651328,
+    "VmPTE": 208896,
+    "VmSwap": 0
+  },
+  "minimum_memavailable_bytes": 9085476864,
+  "wall_s": 47.897567854000954,
+  "limitation": "20 ms sampling can miss transients; kernel VmHWM/ru_maxrss reported by child separately"
+}

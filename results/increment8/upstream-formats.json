@@ -1,0 +1,26 @@
+{
+  "all_arrays_bitwise_equal": true,
+  "checks": {
+    "decode.0.logits": true,
+    "decode.0.hidden": true,
+    "decode.0.kv": true,
+    "decode.1.logits": true,
+    "decode.1.hidden": true,
+    "decode.1.kv": true,
+    "decode.2.logits": true,
+    "decode.2.hidden": true,
+    "decode.2.kv": true,
+    "decode.3.logits": true,
+    "decode.3.hidden": true,
+    "decode.3.kv": true,
+    "extended.0.logits": true,
+    "extended.0.hidden": true,
+    "extended.0.kv": true,
+    "chunks.0.logits": true,
+    "chunks.0.hidden": true,
+    "chunks.0.kv": true,
+    "chunks.1.logits": true,
+    "chunks.1.hidden": true,
+    "chunks.1.kv": true
+  }
+}
