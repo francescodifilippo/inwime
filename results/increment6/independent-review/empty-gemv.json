@@ -1,0 +1,16 @@
+{
+  "sync": {
+    "error": "Buffer size too small (0 instead of at least 1 bytes)",
+    "output": [
+      123.0
+    ],
+    "inference_read_bytes": 0
+  },
+  "pipeline": {
+    "error": "Buffer size too small (0 instead of at least 1 bytes)",
+    "output": [
+      123.0
+    ],
+    "inference_read_bytes": 0
+  }
+}

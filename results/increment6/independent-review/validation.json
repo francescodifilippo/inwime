@@ -1,0 +1,19 @@
+{
+  "reviewed_commit": "268486a310ae8997ebbecd56a4f4691f4919355b",
+  "parent": "f304ee9f19b6a89907d4ad10cbdce435640352fb",
+  "tracked_worktree_changes": [],
+  "staged_files": [],
+  "historical_staging_list_matches_commit": true,
+  "commit_changed_file_count": 498,
+  "historical_sources_unchanged_in_increment6": true,
+  "new_evidence_sha256": {
+    "PROBES.md": "97c895ec34d991b3f23d8005c17782f61cdab9ae067b007596374bd1009b6932",
+    "REVIEW.md": "5a3be57c8a5694d160b749ca8c2706adb1bee150166b123da5af9ae2ef0b4d95",
+    "empty-gemv.json": "57d1fd67c42804cd245b66cd2d69f75085b7fef43c0d98f94cdd74568a9ba77b",
+    "probes.json": "5c495ef2992a98e6060b4ff177ec3170c930435871050c423ad1e64939213000",
+    "pytest-resources.json": "d046d0217591586c92db5fd2187c994a31316da986d614cf5e0d9231d0ffc647",
+    "pytest-source.txt": "f7732b06ce248f639a56fc3aa19d2fec97afd04f264840957ccff0066c35b403"
+  },
+  "no_new_commit": true,
+  "no_push": true
+}

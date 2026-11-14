@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_safetensors_source.py"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 6.915200757997809,
+  "sampled_rss_or_hwm_peak_bytes": 62607360,
+  "ru_maxrss_children_kib": 61140,
+  "sampling_seconds": 0.01,
+  "samples": 671,
+  "last_process_io": {
+    "rchar": 68614557,
+    "wchar": 23507862,
+    "syscr": 443282,
+    "syscw": 5864,
+    "read_bytes": 4321280,
+    "write_bytes": 167936,
+    "cancelled_write_bytes": 0
+  },
+  "runtime_gpu_allocations_bytes": 0,
+  "notes": "Correctness tests on tiny temporary fixtures, not performance benchmark. /proc I/O last live snapshot, includes parsing, hashes, reference reads and fixture writes; not NAND traffic. No global GPU measurement."
+}

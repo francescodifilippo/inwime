@@ -1,0 +1,39 @@
+{
+  "dense": {
+    "independent_oracle_phases": 4,
+    "peak_concurrent_reads": 2,
+    "inference_read_bytes": 59520,
+    "integrity_read_bytes": 13896,
+    "reserved_peak_bytes": 123546,
+    "cleanup": true
+  },
+  "moe": {
+    "independent_oracle_phases": 4,
+    "peak_concurrent_reads": 2,
+    "inference_read_bytes": 88320,
+    "integrity_read_bytes": 24680,
+    "reserved_peak_bytes": 160390,
+    "cleanup": true
+  },
+  "default_65_shards": "shard count bound exceeded",
+  "raised_shard_limit_low_fd": {
+    "errno": 24,
+    "message": "[Errno 24] Too many open files: '/tmp/inwime-independent-295y7q7u/many/shard-028.safetensors'"
+  },
+  "fd_counts_before_after": [
+    5,
+    5
+  ],
+  "tiny_65_shards_payload_bytes": 130,
+  "ru_maxrss_kib": 47572,
+  "process_io": {
+    "rchar": 8352087,
+    "wchar": 101171,
+    "syscr": 11111,
+    "syscw": 78,
+    "read_bytes": 20480,
+    "write_bytes": 36864,
+    "cancelled_write_bytes": 0
+  },
+  "gpu_allocations_bytes": 0
+}
