@@ -1,0 +1,363 @@
+{
+  "code_module": "/tmp/inc6-reviewed-baseline-f304ee9/inwime_runtime/decoder.py",
+  "source": "fixture",
+  "mode": "sync",
+  "checkpoint_identity": "50a6c83f47639556f3ced9603eb7591b3c89c9026ca4fe10a5574a93eff25e0e",
+  "payload_bytes": 11872,
+  "catalog_bootstrap_bytes": 50361,
+  "catalog_retained_bytes": 13572,
+  "wall_ns": 20645815,
+  "startup_ns": 2313027,
+  "index_parse_ns": 812942,
+  "index_process_io": [
+    {
+      "rchar": 7501,
+      "wchar": 0,
+      "syscr": 4,
+      "syscw": 0,
+      "read_bytes": 0,
+      "write_bytes": 0,
+      "cancelled_write_bytes": 0
+    }
+  ],
+  "startup_process_io": {
+    "rchar": 19571,
+    "wchar": 0,
+    "syscr": 468,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "workload_process_io": {
+    "rchar": 59618,
+    "wchar": 0,
+    "syscr": 2498,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "stats": {
+    "integrity_policy": "full",
+    "required_by_category": {
+      "weights": 584,
+      "staging": 26,
+      "activations": 1024,
+      "kv": 6144,
+      "accumulators": 72,
+      "workspace": 0,
+      "metadata": 50361,
+      "output": 3024,
+      "requests": 0
+    },
+    "audited_retained_metadata_bytes": 24225,
+    "reserved_peak_bytes": 61235,
+    "weight_slot_bytes": 584,
+    "peak_region_elements": 73,
+    "peak_region_bf16_equivalent_bytes": 146,
+    "payload_bytes": 11872,
+    "integrity_read_bytes": 11872,
+    "integrity_read_ns": 371267,
+    "bf16_expand_ns": 4268673,
+    "gemv_ns": 1524865,
+    "gemv_weight_elements": 29088,
+    "gemv_flops": 58176,
+    "inference_read_bytes": 59520,
+    "logical_requested_bytes": 59520,
+    "backend_read_calls": 2954,
+    "max_backend_read_bytes": 26,
+    "requests": 492,
+    "completed": 492,
+    "failed": 0,
+    "released": 492,
+    "request_state": "RELEASED",
+    "active_region": false,
+    "tensor_read_bytes": {
+      "embedding": 192,
+      "position": 192,
+      "final_norm": 192,
+      "lm_head": 5952,
+      "layers.0.norm1": 192,
+      "layers.0.norm2": 192,
+      "layers.0.q": 3072,
+      "layers.0.k": 3072,
+      "layers.0.v": 3072,
+      "layers.0.o": 3072,
+      "layers.0.ffn.gate": 4608,
+      "layers.0.ffn.up": 4608,
+      "layers.0.ffn.down": 4608,
+      "layers.1.norm1": 192,
+      "layers.1.norm2": 192,
+      "layers.1.q": 3072,
+      "layers.1.k": 3072,
+      "layers.1.v": 3072,
+      "layers.1.o": 3072,
+      "layers.1.ffn.gate": 4608,
+      "layers.1.ffn.up": 4608,
+      "layers.1.ffn.down": 4608
+    },
+    "numeric_buffers_live": 14,
+    "clock": "time.monotonic_ns",
+    "origin_ns": 164313446684003,
+    "read_service_ns": 2514858,
+    "peak_concurrent_reads": 1,
+    "read_union_ns": 2514858,
+    "compute_ns": 2994583,
+    "overlap_ns": 0,
+    "data_wait_ns": 8704878,
+    "occupancy_slot_ns": 18210223,
+    "peak_occupied_slots": 1,
+    "occupied_slots": 0,
+    "trace_events": 0,
+    "trace_dropped": 0,
+    "session_length": 6,
+    "session_failed": false,
+    "math_backend": "c-fp64-ordered"
+  },
+  "prefill_ns": 9891844,
+  "decode_ns": [
+    3823201,
+    3474545,
+    3239461
+  ],
+  "outputs": [
+    {
+      "length": 3,
+      "generated_token": 1,
+      "logits_sha256": "5719961720329bd6b239ed60f1d0e4f4995f40ffa6e164dba2d004be9be15b73",
+      "logits_last": [
+        -0.04973575920784088,
+        1.9838396386893036,
+        -0.17314605691955043,
+        1.3740492314203325,
+        0.4180516095803867,
+        0.9566255381012346,
+        -1.7364978695605042,
+        -0.3892974554713423,
+        -0.3852732315179901,
+        0.5586077987489194,
+        0.03998721906589295,
+        -1.807182050988414,
+        -0.37374198886844723,
+        -1.0370057489195745,
+        -1.1258037395062142,
+        -1.0873400038844114,
+        1.152952888099702,
+        0.49119053416529385,
+        1.6196596297700947,
+        0.05873280041303537,
+        0.751790521667849,
+        0.9693443313189766,
+        1.2863444751082278,
+        -0.6508238228851082,
+        -0.40613930374483653,
+        -0.05595273984360183,
+        -1.3403779401858205,
+        -1.209846508841834,
+        -0.9226493513957162,
+        -0.6716502536986388,
+        1.011227965946369
+      ],
+      "kv_sha256": [
+        [
+          "7eaa9f92af31139347fd0d9f67bc98e262bec1b3c0f4ae3cac010397a0068dfa",
+          "3fcb537af4c340d20fa34ebfed7f648cb09cc10107a37114894db57c71d8dc0e"
+        ],
+        [
+          "04b8d4eb3234f349d45d0f420d98ca5d970f49fafcfc185ff080a1bad5da7f3b",
+          "11e88dea63c25318e4519aac7d93608916705246fbe59cca1a1dcad8a1ca8b20"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "92aa7faee945f7f591247f33b1c23143e566f77cf385c6392b2bd37e501ee80a",
+        "1f489bd09d0f86cd2316dca40c54e3f47b2f88863650284e514df1f65d88681a"
+      ],
+      "routing_sha256": []
+    },
+    {
+      "length": 4,
+      "generated_token": 1,
+      "logits_sha256": "59156a9d9c6a57caa15f7911b5e406b2f59b9a7bd64c03eb47af07b2985cfcb5",
+      "logits_last": [
+        0.3131837794511314,
+        1.9742754715547646,
+        -0.3560695241255475,
+        0.050857846814501,
+        0.853455185371233,
+        1.6126948699270593,
+        -2.3144219801126824,
+        0.4425151774547496,
+        0.6633035040430248,
+        -0.21884607974449574,
+        -0.476946984690892,
+        -1.6090323434757958,
+        -1.33786056874865,
+        -0.28319700501349293,
+        -1.9903134589288098,
+        -1.3474218170504033,
+        -0.013689462149623719,
+        0.2961105240691157,
+        1.0853957937384568,
+        0.27167405100485675,
+        -0.39609479270116077,
+        0.8787274042598151,
+        0.5935909420388689,
+        -1.730456283906409,
+        0.07209230698950353,
+        -0.05412415049399824,
+        -2.089405151991604,
+        -2.4689067348725753,
+        0.2349217504825504,
+        -0.4090211067737583,
+        0.8191633901892139
+      ],
+      "kv_sha256": [
+        [
+          "ad725adebe212ebaedea7a805cf083c4a625cc840ed52118005eccfe18e5125c",
+          "6f1b9e64be1b9a36de7c8c23b74b05af5f30227c7132bf7af917433206020a8d"
+        ],
+        [
+          "117d9261846fbdd22bd6e1d644603d155920a77f47d2fe6b6cd429525dfb5bd3",
+          "d3e93e90ed116f9cb65de3ccf43e541bd5cf7208b1b0f20fcceaf7e88dc2593e"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "37da712c39704b56c5762520734df9d0bf0abce8799a38a9b118528bcb9bfcc6",
+        "e2c43bd939b99ef77b458444bca717f4a9200e3bdf94a028398a8d1ef6e0da8a"
+      ],
+      "routing_sha256": []
+    },
+    {
+      "length": 5,
+      "generated_token": 12,
+      "logits_sha256": "cf5686581809001d608cce23a79258da33757283b2febf7ec0977c88a04e1b9a",
+      "logits_last": [
+        0.2789797828253337,
+        -0.46020085293623636,
+        -0.6025088157244953,
+        -1.2195503223755662,
+        -0.6748346716563379,
+        0.30118070584245676,
+        0.723800870150315,
+        -1.3288340369011273,
+        -0.06307171739278561,
+        -0.866289850010099,
+        -0.484069685442064,
+        -1.4220095982718275,
+        1.7146493953440667,
+        -0.25918513420926914,
+        -0.9699780540452361,
+        0.8547605617545307,
+        0.21226451347173855,
+        -0.4144418057039994,
+        -0.4366921816594741,
+        -0.4931154938856984,
+        -0.41399153485453966,
+        1.10366086147193,
+        -0.41931272281692433,
+        -1.092190640612487,
+        0.759092998894644,
+        -1.2462032639026543,
+        0.13763972363768795,
+        0.6517120639757572,
+        1.5355780165332542,
+        1.1656675760957411,
+        -0.9573740662858418
+      ],
+      "kv_sha256": [
+        [
+          "9407bbd8cec3aa8347df1b1ad1e4b1d1028e8603ebdf5077b72880d4f6638f77",
+          "9660273fb0752823a9f5be565c864f77fd885e90363890905a67c348d49581f2"
+        ],
+        [
+          "799e884b411ae232fbbad07e98cfb6a594c452319761f3c2c5642e76719e58ac",
+          "a57a6d1019247f05278d935d60639d52feec94e1dd857a19daf1722b75f73628"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "9a6bab55b4eaa9f051310ee8e0dfcf467e2f2c5773527cfdadb3df8f6d23556b",
+        "668128961bfafd9707b5770f5c58885a210ab5e3fb4e5d61ed18db7c9905a214"
+      ],
+      "routing_sha256": []
+    },
+    {
+      "length": 6,
+      "generated_token": 28,
+      "logits_sha256": "9d37dc77ddd1522ed95424390a82f1088a7c2b42665e1755ffd9cc9eea4b2474",
+      "logits_last": [
+        0.9687360108327608,
+        -0.5503562096194549,
+        -1.25277917496208,
+        -0.9782928642101529,
+        -0.40689274509476453,
+        -0.018279286296285002,
+        0.29034753816509545,
+        -1.9228864032521495,
+        -1.0447185867957507,
+        0.20208106212916244,
+        -0.12171182583851903,
+        -0.30673283037245247,
+        1.244266184519452,
+        -0.47199609750431715,
+        -1.3752501233171799,
+        0.44755131201193643,
+        -0.08245209548164584,
+        0.07648711059313204,
+        -0.621083826168457,
+        0.2962807068015743,
+        -0.09879909714229207,
+        -0.3366264946507641,
+        -0.3426266561457782,
+        -0.066151650582456,
+        -0.28262936829988883,
+        -2.2822576887967254,
+        0.6915922383620994,
+        0.81220683842267,
+        2.574271267850544,
+        -0.1796395725707252,
+        -1.1010733276894833
+      ],
+      "kv_sha256": [
+        [
+          "471bd3b0efa2f155ef0e00945fa3ad4bf5b9220d29fa931faca924d3e800ed94",
+          "5e95a7dd9c6d5aba983e124ae612001fc44f5182b9c9677cf1fe2a159319876d"
+        ],
+        [
+          "cc217763a0b2be8dfea57ab1e2586e63c1d098515f0b7388d65fea02d773d1f1",
+          "17eece1e0155152a6548bb16a1b75f3a801d1e6453ac8e4c00e256bf8dd423ed"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "a984605b8ab4b7b42db8be0147647c8d0d0562074ffc9903161f81ccf25d0096",
+        "59505288cd981233ffe0eddd42f99df7f3dfe74531247a1551f8bec928a109f7"
+      ],
+      "routing_sha256": []
+    }
+  ],
+  "peak_rss_kib": 24728,
+  "process_memory": {
+    "VmSize": 33124352,
+    "VmHWM": 25272320,
+    "VmRSS": 25272320,
+    "VmSwap": 0
+  },
+  "gpu_allocated_bytes": 0,
+  "host_before": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "host_after": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "address_limit_bytes": 536870912,
+  "after_close": {
+    "fds": 0,
+    "buffers": 0,
+    "live_requests": 0
+  },
+  "supervisor_sampled_peak_rss_bytes": 25296896
+}

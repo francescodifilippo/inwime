@@ -1,0 +1,7 @@
+{
+  "python_no_site": true,
+  "inference_read_bytes": 29760,
+  "logits_sha256": "5719961720329bd6b239ed60f1d0e4f4995f40ffa6e164dba2d004be9be15b73",
+  "physical_names_preserved": true,
+  "gpu_allocated_bytes": 0
+}

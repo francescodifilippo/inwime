@@ -4,9 +4,50 @@ import hashlib
 import math
 from contextlib import closing
 
-from .core import Catalog, Coordinator, memory_plan
+from .core import (open_catalog as open_source, IndexedSource, CheckpointError,
+                   Coordinator, memory_plan, decoder_schema, deep_size)
 from .pipeline import PipelineCoordinator
 from .gemv import streamed_linear
+
+
+class DecoderCatalog(IndexedSource):
+    """Semantic view for this decoder only; the physical source stays unchanged."""
+
+    def __init__(self, source):
+        self.source = source
+        try:
+            descriptor = source.descriptor
+            bindings = descriptor['bindings']
+            if not isinstance(bindings, dict):
+                raise CheckpointError('decoder bindings must be an object')
+            self.variant = descriptor['variant']
+            self.spec, expected = decoder_schema(descriptor['config'], self.variant, len(bindings))
+            if (set(bindings) != set(expected) or set(bindings.values()) != set(source.tensors)
+                    or len(set(bindings.values())) != len(bindings)):
+                raise CheckpointError('invalid decoder tensor bindings')
+            self.tensors = {}
+            for name, shape in expected.items():
+                tensor = source.tensors[bindings[name]]
+                if tensor.shape != shape:
+                    raise CheckpointError('decoder binding shape mismatch: '+name)
+                self.tensors[name] = tensor
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            if isinstance(error, CheckpointError):
+                raise
+            raise CheckpointError('malformed decoder binding metadata') from error
+        # Keep both physical and semantic indices; count their overlap rather
+        # than hiding the additional model metadata from the admission budget.
+        added = deep_size((self.spec, self.variant, self.tensors, expected)) + 256
+        self.retained_bytes = source.retained_bytes + added
+        self.bootstrap_bytes = source.bootstrap_bytes + added
+
+    def __getattr__(self, name):
+        return getattr(self.source, name)
+
+
+def open_catalog(directory, *, source='fixture'):
+    catalog = open_source(directory, source=source)
+    return DecoderCatalog(catalog) if source == 'safetensors' else catalog
 
 
 class RuntimeResult:
@@ -74,13 +115,15 @@ class CPURuntime:
     """
 
     @staticmethod
-    def minimum_plan(directory, capacity=6, tile_elements=5, read_elements=2, **io_options):
-        return memory_plan(Catalog(directory), capacity, tile_elements, read_elements, **io_options)
+    def minimum_plan(directory, capacity=6, tile_elements=5, read_elements=2, *,
+                     source='fixture', **io_options):
+        return memory_plan(open_catalog(directory, source=source), capacity,
+                           tile_elements, read_elements, **io_options)
 
     def __init__(self, directory, capacity=6, tile_elements=5, read_elements=2,
                  budget=None, backend=None, *, io_mode='sync', in_flight=2, io_workers=1,
-                 trace_capacity=0, integrity="full", math_backend=None):
-        self.catalog = Catalog(directory)
+                 trace_capacity=0, integrity="full", math_backend=None, source='fixture'):
+        self.catalog = open_catalog(directory, source=source)
         self.spec, self.capacity = self.catalog.spec, capacity
         self.plan = memory_plan(self.catalog, capacity, tile_elements, read_elements,
                                 io_mode=io_mode, in_flight=in_flight, io_workers=io_workers,

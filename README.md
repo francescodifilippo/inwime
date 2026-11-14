@@ -252,3 +252,22 @@ python3 -m tools.verify_increment5 checkpoints/inc5-dense-12g \
 La prova usa un decoder denso sintetico completo e originale BF16, senza tokenizer
 o pesi addestrati. Il rapporto distingue pesi realmente elaborati, limite del processo,
 RAM WSL, RAM fisica host, verifiche numeriche complete e controlli parziali sul modello grande.
+
+## Runtime CPU: safetensors BF16 in posto
+
+L'[incremento 6](docs/RUNTIME_CPU_INCREMENT_6.md) aggiunge una sorgente safetensors
+BF16, singola o multi-shard con indice, selezionata con `source='safetensors'` in
+`CPURuntime`, `minimum_plan` e `StreamedGEMV`. Riusa letture limitate, lease, pipeline,
+aritmetica FP64 e transazioni KV. I file originali restano immutati; nessuna conversione
+o quantizzazione dei pesi. Il descriptor esterno `safetensors.json` contiene hash
+attesi, riferimenti e, per il decoder sintetico, binding e configurazione espliciti.
+
+```bash
+make cpu-kernel
+python3 -m pytest -q tests/test_safetensors_source.py
+```
+
+Le [evidenze](results/increment6/README.md) confrontano baseline, candidato v2 e
+candidato safetensors, e misurano RSS/I/O su fixture controllate. Questo supporta
+il contenitore reale, non ancora il grafo, tokenizer e logits di un modello pubblico.
+Nessun nuovo backend GPU, cache VRAM o MTP è incluso.

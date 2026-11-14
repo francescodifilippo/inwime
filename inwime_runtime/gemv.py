@@ -8,7 +8,7 @@ from contextlib import closing
 import ctypes
 import time
 
-from .core import Catalog, Coordinator, Plan, CATEGORIES
+from .core import open_catalog, Coordinator, Plan, CATEGORIES
 from .pipeline import PipelineCoordinator
 from .math_cpu import ScalarMath
 
@@ -50,11 +50,11 @@ class StreamedGEMV:
     """
     def __init__(self, directory, *, tile_elements=262144, read_elements=262144,
                  io_mode='sync', math_backend=None, budget=None, backend=None,
-                 integrity='full'):
+                 integrity='full', source='fixture'):
         if (io_mode not in ('sync', 'pipeline') or type(tile_elements) is not int
                 or type(read_elements) is not int or not 0 < read_elements <= tile_elements):
             raise ValueError('invalid GEMV tile/read/mode')
-        catalog = Catalog(directory)
+        catalog = open_catalog(directory, source=source)
         slots = 2 if io_mode == 'pipeline' else 1
         arrays = {}
         for slot in range(slots):

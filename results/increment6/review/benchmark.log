@@ -1,0 +1,18 @@
+{
+  "dense-sync": {
+    "B_vs_A_wall_percent": -6.268684525032064,
+    "C_vs_B_wall_percent": -2.9446092144036817
+  },
+  "dense-pipeline": {
+    "B_vs_A_wall_percent": 1.2103110404171558,
+    "C_vs_B_wall_percent": -1.6684457101250882
+  },
+  "moe-sync": {
+    "B_vs_A_wall_percent": 10.715806191112964,
+    "C_vs_B_wall_percent": -7.341946841617419
+  },
+  "moe-pipeline": {
+    "B_vs_A_wall_percent": -4.683121413881208,
+    "C_vs_B_wall_percent": -1.5597407030350396
+  }
+}

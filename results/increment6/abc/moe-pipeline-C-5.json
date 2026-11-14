@@ -1,0 +1,423 @@
+{
+  "code_module": "/home/francesco/GIT/francescodifilippo/ooc-inference/inwime_runtime/decoder.py",
+  "source": "safetensors",
+  "mode": "pipeline",
+  "checkpoint_identity": "1b59a3becfacd3636908c02ca0e031699d348227fccbbdeeb0b1ce279516e1f2",
+  "payload_bytes": 21280,
+  "catalog_bootstrap_bytes": 79999,
+  "catalog_retained_bytes": 17260,
+  "wall_ns": 99005604,
+  "startup_ns": 6775647,
+  "index_parse_ns": 3030020,
+  "index_process_io": [
+    {
+      "rchar": 27280,
+      "wchar": 0,
+      "syscr": 10,
+      "syscw": 0,
+      "read_bytes": 0,
+      "write_bytes": 0,
+      "cancelled_write_bytes": 0
+    }
+  ],
+  "startup_process_io": {
+    "rchar": 52158,
+    "wchar": 0,
+    "syscr": 966,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "workload_process_io": {
+    "rchar": 88419,
+    "wchar": 0,
+    "syscr": 3692,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "stats": {
+    "integrity_policy": "full",
+    "required_by_category": {
+      "weights": 1168,
+      "staging": 292,
+      "activations": 1176,
+      "kv": 6144,
+      "accumulators": 72,
+      "workspace": 32,
+      "metadata": 79999,
+      "output": 3408,
+      "requests": 24576
+    },
+    "audited_retained_metadata_bytes": 33363,
+    "reserved_peak_bytes": 116867,
+    "weight_slot_bytes": 1168,
+    "peak_region_elements": 73,
+    "peak_region_bf16_equivalent_bytes": 146,
+    "payload_bytes": 21280,
+    "source_file_bytes": 24680,
+    "source_metadata_read_bytes": 8806,
+    "source_header_bytes": 3400,
+    "integrity_read_bytes": 24680,
+    "integrity_read_ns": 930555,
+    "bf16_expand_ns": 9512426,
+    "gemv_ns": 9130765,
+    "gemv_weight_elements": 43488,
+    "gemv_flops": 86976,
+    "inference_read_bytes": 88320,
+    "logical_requested_bytes": 88320,
+    "backend_read_calls": 4640,
+    "max_backend_read_bytes": 26,
+    "requests": 720,
+    "completed": 720,
+    "failed": 0,
+    "released": 720,
+    "request_state": "RELEASED",
+    "active_region": false,
+    "tensor_read_bytes": {
+      "embedding": 192,
+      "position": 192,
+      "final_norm": 192,
+      "lm_head": 5952,
+      "layers.0.norm1": 192,
+      "layers.0.norm2": 192,
+      "layers.0.q": 3072,
+      "layers.0.k": 3072,
+      "layers.0.v": 3072,
+      "layers.0.o": 3072,
+      "layers.0.router": 576,
+      "layers.0.experts.0.gate": 4608,
+      "layers.0.experts.0.up": 4608,
+      "layers.0.experts.0.down": 4608,
+      "layers.0.experts.1.gate": 2304,
+      "layers.0.experts.1.up": 2304,
+      "layers.0.experts.1.down": 2304,
+      "layers.0.experts.2.gate": 2304,
+      "layers.0.experts.2.up": 2304,
+      "layers.0.experts.2.down": 2304,
+      "layers.1.norm1": 192,
+      "layers.1.norm2": 192,
+      "layers.1.q": 3072,
+      "layers.1.k": 3072,
+      "layers.1.v": 3072,
+      "layers.1.o": 3072,
+      "layers.1.router": 576,
+      "layers.1.experts.0.gate": 2304,
+      "layers.1.experts.0.up": 2304,
+      "layers.1.experts.0.down": 2304,
+      "layers.1.experts.1.gate": 2304,
+      "layers.1.experts.1.up": 2304,
+      "layers.1.experts.1.down": 2304,
+      "layers.1.experts.2.gate": 4608,
+      "layers.1.experts.2.up": 4608,
+      "layers.1.experts.2.down": 4608
+    },
+    "numeric_buffers_live": 22,
+    "clock": "time.monotonic_ns",
+    "origin_ns": 146420337728723,
+    "read_service_ns": 25786896,
+    "peak_concurrent_reads": 1,
+    "read_union_ns": 25786896,
+    "compute_ns": 12720876,
+    "overlap_ns": 4063993,
+    "data_wait_ns": 60614986,
+    "occupancy_slot_ns": 169492730,
+    "peak_occupied_slots": 2,
+    "occupied_slots": 0,
+    "trace_events": 0,
+    "trace_dropped": 0,
+    "io_mode": "pipeline",
+    "in_flight_capacity": 2,
+    "io_workers": 1,
+    "cancelled": 0,
+    "live_request_records": 0,
+    "staging_slot_bytes": 292,
+    "backpressure_rejections": 0,
+    "session_length": 6,
+    "session_failed": false,
+    "math_backend": "c-fp64-ordered"
+  },
+  "prefill_ns": 50076081,
+  "decode_ns": [
+    15956199,
+    16238648,
+    16529197
+  ],
+  "outputs": [
+    {
+      "length": 3,
+      "generated_token": 2,
+      "logits_sha256": "673864b88c36a2995a04d76cb683aa97cead59307f06a653edd206f79c38e49d",
+      "logits_last": [
+        -1.4662442695893447,
+        -0.6787575376222401,
+        1.7693497370220395,
+        1.0505517276805827,
+        -1.244595666932253,
+        -0.4224879076814807,
+        1.5634806216050947,
+        -0.8129676324306063,
+        0.4810260933953456,
+        -1.1025487956795812,
+        -2.9534104209431926,
+        0.1733422780114346,
+        0.19800286204863043,
+        1.76272039473609,
+        -2.2622137793717245,
+        0.48374906120646266,
+        -0.8897849252813514,
+        0.25164147138415643,
+        0.9293072095129318,
+        -0.7454461196426814,
+        0.303094081285653,
+        0.20259359758529027,
+        0.6723069776138356,
+        1.142526659354305,
+        -1.6339773188229278,
+        0.5367728503874302,
+        -1.0782880777405024,
+        0.3519153773445088,
+        0.8524677265248677,
+        1.391340930356936,
+        -1.442592997173074
+      ],
+      "kv_sha256": [
+        [
+          "a35b9f96996602d2cb2595d8b0c94b2c520722fbcfbb460f56494985e33cf8e1",
+          "ecac0e6ad37631e5db672b1e1cf87a74b5bb337bafb33ef23b6a78bd11b6d8ce"
+        ],
+        [
+          "db78e34d070b7f290820d0631f982646b3617976c2d3dcad9a0d9aaa4dd45f70",
+          "5c29db76b822f82a8dafd35bb93030a931bc44bc406e29150ad9c7c9299382a5"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "1d43243a6836dcb456237e439419f52116b7a7f327fd1d9308ac589ef0b599f9",
+        "a947ad4716b534e2b24d7ca84a158a985e891389546bad0b6a0d1357da8345ed"
+      ],
+      "routing_sha256": [
+        [
+          "bd96b221e10fae993029777635d1893d40b12811f7aee991e9ef6570bc0ad0e1",
+          "1edbe5530cd222e5abf6084a0e18e51193921bc96d44e827e0e36256dc2af95c"
+        ],
+        [
+          "80aecaeb5296bb3a4b0d0e096ac5fbcf9e4734d2d6095387d9cafe304a93bec5",
+          "9ab4e8656637743857ffb2f97c148e1e888d492481589dc6e98e7dd1f8c1e2d2"
+        ]
+      ]
+    },
+    {
+      "length": 4,
+      "generated_token": 1,
+      "logits_sha256": "c8825cda0535fed4f2ee22700b00b629b545d406f4a7c160a55a6558d6c4eff2",
+      "logits_last": [
+        -1.611265443450825,
+        1.7931541257669088,
+        -0.36511786876739694,
+        0.4681768465452985,
+        -1.3712027069378134,
+        -0.5862754206261462,
+        0.7149667752881987,
+        -0.8321763590479619,
+        -1.3409902056388263,
+        0.8801353187866547,
+        -0.8925655250405098,
+        0.13048470074123764,
+        0.7441040965694627,
+        0.8079196416303013,
+        -0.5032016594022845,
+        1.597350389446647,
+        -1.4836768830333364,
+        1.0086157062686285,
+        -0.5556047587412276,
+        -0.9313359056195603,
+        -0.9125059586845765,
+        -0.788284006799878,
+        -0.04039065963065053,
+        -0.1111184539348807,
+        0.8917614617961754,
+        -0.0848792437605498,
+        -0.016112891502184354,
+        1.5664079878908062,
+        -0.3724675863011839,
+        0.5498466359805002,
+        0.7468451988613856
+      ],
+      "kv_sha256": [
+        [
+          "36aa928a7e5aa8643469b3056f3d8eea42bad1b777ef50cd66ba76d22c9f8683",
+          "2c692c29f3b3dc20ac6d4a04723eef00135c9af73d4cbe67c7dac125b4b7307a"
+        ],
+        [
+          "c8055a2ab2a5603527f513acb7c73c0e6b4eb8e8ccd7d9484130316af51b98e4",
+          "59943691385c68bd684f3055c150cfda9fa9ab6407b3d56ae7c725c8fd8c8bca"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "35c92249b2a92c4725eb05e401e4cfe6888689a9ea3a48204652ac035bfb5d21",
+        "f2c6c3b531dac30ec80b6e4f745674a0be74443a5cde8c47a541b6d952eda91e"
+      ],
+      "routing_sha256": [
+        [
+          "c571327cb01ac1de6972713cbf6cc1fc3c2cab8b581ee0bc3fe6d8b56963fd5b",
+          "1ae33afaa8d13e20e45be1a8bbd6b87053cfc75ab5012f1175e86439e3a5186f"
+        ],
+        [
+          "66c313335fc249aefd7420b063da1bbd123fa61351b9517955aa2623eba94038",
+          "b31dc1e2c8a2d14515eb5ccfcf882cdb129a435ac1ec160b5d9cc9e3ba7bce3f"
+        ]
+      ]
+    },
+    {
+      "length": 5,
+      "generated_token": 29,
+      "logits_sha256": "a41af483976449d77b7ced5abb8f12d86ddf00c4ffea9eb96e3ddf1c44276357",
+      "logits_last": [
+        -1.32120945586688,
+        0.4652482932172648,
+        0.23080650463122687,
+        0.5586192105455445,
+        -1.191795867171465,
+        0.5565831696003567,
+        -0.03668907431014229,
+        0.20830478318715812,
+        0.5352174723599534,
+        -0.3662052702845334,
+        -1.68272088768348,
+        0.5611001674981921,
+        0.6536203241064644,
+        0.48172512300471804,
+        0.45990771296901717,
+        -0.05811505496062286,
+        0.7965429113469055,
+        -0.6651837046468936,
+        0.18028182983572255,
+        0.0694425071541398,
+        0.008131772545745097,
+        0.09706035469293878,
+        0.04876013069845031,
+        0.6020449240319569,
+        0.9016848949148448,
+        -0.8847157600216395,
+        -0.558755267275912,
+        1.6323178366895923,
+        0.06000043752246936,
+        1.7135959373153904,
+        -1.0740728690574233
+      ],
+      "kv_sha256": [
+        [
+          "3ab91f792c6c1873f884de243da081a170ae451139b8583a2c5281901a6172e5",
+          "b94ba29d54e6f8452eeac30ff53b6c6811726186ee1188846db9404433420ed9"
+        ],
+        [
+          "9101610f0aff26dc52a8f4dd9d6cb057eef9a78550f8b6358cf9950f13a33822",
+          "b12a86e50b7017a2d2fe6dd0a1f789822b1203356276ee874e5bcb5be2d209cc"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "0897a8d096c2f8889257e518d61ef8f96400bfb38ba612a0830872a9d04355a2",
+        "1b22cc5906cf9a2c4b4462a9c0f3831b4e65d2457a67d0df0ac2d3b00db3c0de"
+      ],
+      "routing_sha256": [
+        [
+          "9d34149fbd1fe777eb238799054c8cbfbce372255f219f8740838def9bfd02db",
+          "0ed2b4d3460dead25fae2da5b76180d6eb3bbd07fa2ef8888892c24a2a767285"
+        ],
+        [
+          "c571327cb01ac1de6972713cbf6cc1fc3c2cab8b581ee0bc3fe6d8b56963fd5b",
+          "aa9840cc904c834fe5d76303488ec0c2c514b69fee764c218208561ac816f674"
+        ]
+      ]
+    },
+    {
+      "length": 6,
+      "generated_token": 27,
+      "logits_sha256": "bbcf4556b9dc0af7518019cc21abedd8e0fcd47639b21759ccc951717fbc8dce",
+      "logits_last": [
+        -1.2791672307929378,
+        -1.1110663520563338,
+        1.5870566619126916,
+        1.4437655999078138,
+        -0.32982028597101176,
+        1.3095431136225992,
+        0.22460414215720997,
+        0.6965962182773286,
+        1.3056216549582726,
+        -1.2175419602406259,
+        -1.7455363726140753,
+        -0.5927953472577534,
+        -0.16571517541408565,
+        0.9480457437726063,
+        -1.2996148490155208,
+        -0.3166053474621962,
+        0.91313716038447,
+        -1.0028781645427558,
+        1.3708873842031695,
+        -1.5149205241556933,
+        -0.9697264672145092,
+        1.7817594630400049,
+        -0.16808228582599782,
+        1.443399302312859,
+        -0.22692745655180024,
+        -0.3503530532917108,
+        -1.1538341705421464,
+        1.8611745614985822,
+        -1.1113769686573391,
+        0.4367489307178457,
+        -0.6998895228097852
+      ],
+      "kv_sha256": [
+        [
+          "054c7cde1fff9cce363c5bc13288e351326a2005181914cf4b4eea4a3ce16d98",
+          "990a88f468b01500004d802428102497c3d4399dfd6256cd581fa724a8961782"
+        ],
+        [
+          "dd510e22d941a4df02f0d81f5bfbfd1fd65800f09814fcdc8da34fb4c7adbcf9",
+          "8d8f6ecc6f8bebeb5ea2b4feca2eca897d1f3aed9d398539cf58413f617b9ddd"
+        ]
+      ],
+      "kv_prefix_preserved": true,
+      "hidden_sha256": [
+        "925966684b766cce786aca7369dfa8eced0952d106f11840bf3fa212ee6f8604",
+        "1824718acc40521d19e4a7674a90d64ac608551de6adf3d72a30fd9021be2a80"
+      ],
+      "routing_sha256": [
+        [
+          "c571327cb01ac1de6972713cbf6cc1fc3c2cab8b581ee0bc3fe6d8b56963fd5b",
+          "a2b3214c014e1d68a5f12178c1bfdc07d8fb614ad259be928949376eedbb81ac"
+        ],
+        [
+          "b1535c7783ea8829b6b0cf67704539798b4d16c39bf0bfe09494c5d9f12eee30",
+          "eb21baa7b044c54cfdee42c1b147cdb33d210a37664dc096c2960104b842d648"
+        ]
+      ]
+    }
+  ],
+  "peak_rss_kib": 25408,
+  "process_memory": {
+    "VmSize": 108642304,
+    "VmHWM": 25350144,
+    "VmRSS": 25350144,
+    "VmSwap": 0
+  },
+  "gpu_allocated_bytes": 0,
+  "host_before": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "host_after": {
+    "/sys/class/power_supply/AC1/online": "1"
+  },
+  "address_limit_bytes": 536870912,
+  "after_close": {
+    "fds": 0,
+    "buffers": 0,
+    "live_requests": 0
+  },
+  "supervisor_sampled_peak_rss_bytes": 25350144
+}

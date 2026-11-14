@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_reference_decoder.py",
+    "tests/test_runtime_cpu.py",
+    "tests/test_pipeline_cpu.py",
+    "tests/test_segmented_cpu.py",
+    "tests/test_checkpoint5.py",
+    "tests/test_gemv_cpu.py",
+    "tests/test_safetensors_source.py"
+  ],
+  "wall_ns": 44312806984,
+  "sampled_peak_rss_bytes": 74649600,
+  "sample_interval_ms": 10,
+  "stop_rss_bytes": 1073741824,
+  "runtime_gpu_allocated_bytes": 0,
+  "environment": {
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

@@ -94,7 +94,68 @@ class Tensor:
     starts: tuple
 
 
-class Catalog:
+def decoder_schema(config, variant, tensor_count):
+    """Validate the existing synthetic model separately from its container."""
+    c = Spec(**config)
+    if variant not in ("dense", "moe"):
+        raise CheckpointError("unsupported decoder variant")
+    sizes = [getattr(c, f.name) for f in fields(c) if f.name != "rms_epsilon"]
+    if (any(type(n) is not int or n <= 0 for n in sizes)
+            or c.width % c.heads or c.top_k > c.experts
+            or not math.isfinite(c.rms_epsilon) or c.rms_epsilon <= 0):
+        raise CheckpointError("invalid decoder dimensions")
+    count = 4 + c.layers * (9 if variant == "dense" else 7 + 3*c.experts)
+    if tensor_count != count:
+        raise CheckpointError("unexpected tensor/shard count")
+    expected = {"embedding": (c.vocab, c.width), "position": (c.context, c.width),
+                "final_norm": (c.width,), "lm_head": (c.vocab, c.width)}
+    for layer in range(c.layers):
+        p = f"layers.{layer}."
+        for n in ("norm1", "norm2"):
+            expected[p+n] = (c.width,)
+        for n in ("q", "k", "v", "o"):
+            expected[p+n] = (c.width, c.width)
+        prefixes = [p+"ffn."] if variant == "dense" else [
+            p+f"experts.{e}." for e in range(c.experts)]
+        if variant == "moe":
+            expected[p+"router"] = (c.experts, c.width)
+        for f in prefixes:
+            expected[f+"gate"] = expected[f+"up"] = (c.hidden, c.width)
+            expected[f+"down"] = (c.width, c.hidden)
+    return c, expected
+
+
+class IndexedSource:
+    """Normalized physical tensor index consumed by both I/O coordinators."""
+
+    def region(self, name, start, count):
+        if name not in self.tensors:
+            raise CheckpointError("unknown tensor: " + name)
+        tensor = self.tensors[name]
+        if (type(start) is not int or type(count) is not int or start < 0
+                or count <= 0 or start + count > tensor.elements):
+            raise CheckpointError("region outside tensor")
+        return tensor, None if tensor.offset is None else tensor.offset + start*2
+
+
+    def spans(self, name, start, count, max_elements):
+        """Lazy physical pieces (shard, byte offset, elements, destination index)."""
+        if type(max_elements) is not int or max_elements <= 0:
+            raise ValueError("positive maximum span required")
+        tensor, _ = self.region(name, start, count)
+        index = bisect_right(tensor.starts, start)-1
+        done = 0
+        while done < count:
+            part = tensor.segments[index]
+            relative = start+done-part.start
+            number = min(count-done, part.elements-relative, max_elements)
+            yield part.shard, part.offset+relative*2, number, done
+            done += number
+            if relative+number == part.elements:
+                index += 1
+
+
+class Catalog(IndexedSource):
     """Index only. The mathematical adapter supports the increment-1 schema."""
 
     def __init__(self, directory, max_manifest_bytes=16*1024*1024):
@@ -118,33 +179,10 @@ class Catalog:
             if (m["format"] not in ("inwime-reference-bf16-v1", "inwime-segmented-bf16-v2") or m["byte_order"] != "little"
                     or m["layout"] != "C" or m["variant"] not in ("dense", "moe")):
                 raise CheckpointError("unsupported manifest format")
-            self.spec = c = Spec(**m["config"])
-            sizes = [getattr(c, f.name) for f in fields(c) if f.name != "rms_epsilon"]
-            if (any(type(n) is not int or n <= 0 for n in sizes)
-                    or c.width % c.heads or c.top_k > c.experts
-                    or not math.isfinite(c.rms_epsilon) or c.rms_epsilon <= 0):
-                raise CheckpointError("invalid decoder dimensions")
             self.variant = m["variant"]
-            count = 4 + c.layers * (9 if self.variant == "dense" else 7 + 3*c.experts)
-            if len(m["tensors"]) != count or not m["files"]:
-                raise CheckpointError("unexpected tensor/shard count")
-            expected = {"embedding": (c.vocab, c.width), "position": (c.context, c.width),
-                        "final_norm": (c.width,), "lm_head": (c.vocab, c.width)}
-            for layer in range(c.layers):
-                p = f"layers.{layer}."
-                for n in ("norm1", "norm2"):
-                    expected[p+n] = (c.width,)
-                for n in ("q", "k", "v", "o"):
-                    expected[p+n] = (c.width, c.width)
-                prefixes = [p+"ffn."] if self.variant == "dense" else [
-                    p+f"experts.{e}." for e in range(c.experts)]
-                if self.variant == "moe":
-                    expected[p+"router"] = (c.experts, c.width)
-                for f in prefixes:
-                    expected[f+"gate"] = expected[f+"up"] = (c.hidden, c.width)
-                    expected[f+"down"] = (c.width, c.hidden)
-            if set(expected) != set(m["tensors"]):
-                raise CheckpointError("unexpected tensor names")
+            self.spec, expected = decoder_schema(m["config"], self.variant, len(m["tensors"]))
+            if not m["files"] or set(expected) != set(m["tensors"]):
+                raise CheckpointError("unexpected tensor names/shards")
             self.files = {}
             for name, entry in m["files"].items():
                 if (Path(name).name != name or name in (".", "..") or "\\" in name
@@ -200,34 +238,6 @@ class Catalog:
         # JSON parser's transient internal allocator remains part of process RSS.
         self.bootstrap_bytes = (deep_size(raw) + deep_size(m) + self.retained_bytes
                                 + deep_size(expected) + deep_size(intervals))
-
-    def region(self, name, start, count):
-        if name not in self.tensors:
-            raise CheckpointError("unknown tensor: " + name)
-        tensor = self.tensors[name]
-        if (type(start) is not int or type(count) is not int or start < 0
-                or count <= 0 or start + count > tensor.elements):
-            raise CheckpointError("region outside tensor")
-        return tensor, None if tensor.offset is None else tensor.offset + start*2
-
-
-    def spans(self, name, start, count, max_elements):
-        """Lazy physical pieces (shard, byte offset, elements, destination index)."""
-        if type(max_elements) is not int or max_elements <= 0:
-            raise ValueError("positive maximum span required")
-        tensor, _ = self.region(name, start, count)
-        index = bisect_right(tensor.starts, start)-1
-        done = 0
-        while done < count:
-            part = tensor.segments[index]
-            relative = start+done-part.start
-            number = min(count-done, part.elements-relative, max_elements)
-            yield part.shard, part.offset+relative*2, number, done
-            done += number
-            if relative+number == part.elements:
-                index += 1
-
-
 CATEGORIES = ("weights", "staging", "activations", "kv", "accumulators", "workspace", "metadata",
               "output", "requests")
 
@@ -409,12 +419,16 @@ class Coordinator:
                 raise RuntimeError("this CPU adapter requires 64-bit doubles and indices")
             self.weight_peak = len(self.buffers["weights"])*8
             for name, (size, _) in catalog.files.items():
-                fd = os.open(catalog.directory / name, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+                fd = os.open(catalog.directory / name, os.O_RDONLY
+                             | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
                 self.fds[name] = fd
                 s = os.fstat(fd)
                 if not stat.S_ISREG(s.st_mode) or s.st_size != size:
                     raise CheckpointError("source is not a regular file of the expected size")
                 self.stamps[name] = signature(fd)
+                if (hasattr(catalog, 'source_stamps')
+                        and self.stamps[name] != catalog.source_stamps[name]):
+                    raise CheckpointError("source changed since metadata admission")
             for name, (size, expected) in (catalog.files.items() if integrity == "full" else ()):
                 digest = hashlib.sha256()
                 for offset in range(0, size, plan.read_elements*2):
@@ -525,6 +539,9 @@ class Coordinator:
                 "peak_region_elements": self.region_peak,
                 "peak_region_bf16_equivalent_bytes": self.region_peak*2,
                 "payload_bytes": self.catalog.payload_bytes,
+                "source_file_bytes": sum(size for size, _ in self.catalog.files.values()),
+                "source_metadata_read_bytes": getattr(self.catalog, 'metadata_read_bytes', 0),
+                "source_header_bytes": getattr(self.catalog, 'header_bytes', 0),
                 "integrity_read_bytes": self.integrity_bytes,
                 "integrity_read_ns": self.integrity_read_ns,
                 "bf16_expand_ns": self.expand_ns,
@@ -568,3 +585,13 @@ class Coordinator:
     def check_thread(self):
         if threading.get_ident() != self.owner_thread:
             raise RuntimeError("synchronous coordinator must be used by its owning thread")
+
+
+def open_catalog(directory, *, source='fixture'):
+    """Explicit container selection; no probing or payload conversion."""
+    if source == 'fixture':
+        return Catalog(directory)
+    if source == 'safetensors':
+        from .safetensors_source import SafetensorsSource
+        return SafetensorsSource(directory)
+    raise ValueError("source must be fixture or safetensors")
