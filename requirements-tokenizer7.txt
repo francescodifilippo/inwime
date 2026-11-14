@@ -1,0 +1,2 @@
+# Optional text interface only. ID-based inference needs no third-party package.
+tokenizers==0.22.1

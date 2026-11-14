@@ -1,0 +1,8 @@
+{
+  "operator": "layer0.input_layernorm",
+  "input_id": 504,
+  "stock_internal_dtype": "float32 despite double parameters/input",
+  "max_abs": 2.91557816778365e-08,
+  "rms": 2.2931728642792627e-09,
+  "nonzero": 576
+}

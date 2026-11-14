@@ -1,0 +1,18 @@
+{
+  "text": "Once upon a time",
+  "input_ids": [
+    6403,
+    1980,
+    253,
+    655
+  ],
+  "generated_ids": [
+    28,
+    665,
+    436,
+    253,
+    1838
+  ],
+  "output": "Once upon a time, there was a little",
+  "stopped_on_eos": false
+}

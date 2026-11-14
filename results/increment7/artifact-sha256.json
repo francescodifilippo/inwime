@@ -1,0 +1,166 @@
+{
+  "results/increment7/first-operator.json": {
+    "nbytes": 217,
+    "sha256": "c169cb7a86ea3052af82adba9ddf51e0b21bf0cb955a906ce0ee5697e84a4b8c"
+  },
+  "results/increment7/format-and-modes.json": {
+    "nbytes": 956,
+    "sha256": "5d67c8474758e9ae12202df4b6f05173db1bf01f3a6d6447c16d608bc7178550"
+  },
+  "results/increment7/diagnostic-rms64-final-parity.json": {
+    "nbytes": 264688,
+    "sha256": "ad5096c1e4af300c0a873016e426b3feaf5fe2d1ee3ce21bd5f472bc7d428169"
+  },
+  "results/increment7/baseline-preservation.json": {
+    "nbytes": 882,
+    "sha256": "a4c10c3bfe761e82b6bcbb5f702d9aaaea10aff78faaaa28dd37ea724fe91f98"
+  },
+  "results/increment7/parity-float32-sharded-sync.json": {
+    "nbytes": 264213,
+    "sha256": "48ddcac19bda377a577e1274569d65eb175943906e52b16f14adf6b56727a5ce"
+  },
+  "results/increment7/parity-float64-sync.json": {
+    "nbytes": 261266,
+    "sha256": "9badfd549ad5cef0a9aa0e016d80409af5b2cccfd554691876d90b54ce58c1c3"
+  },
+  "results/increment7/repack.json": {
+    "nbytes": 31993,
+    "sha256": "b8578d8200c43eb7700466e584ab54880164996687c473851ca373c6949d5ad6"
+  },
+  "results/increment7/measured-sync-2.json": {
+    "nbytes": 14763,
+    "sha256": "4e7cad70af5a825179709f7f12cf5ad4a462a4007efa45838c270f9076aba0f7"
+  },
+  "results/increment7/regression-final.txt": {
+    "nbytes": 501,
+    "sha256": "2cae980447dc4f1060f6141fdc2bde9e6960926c3b06812af3484ed9b747d81a"
+  },
+  "results/increment7/benchmark-sync-1.json": {
+    "nbytes": 14198,
+    "sha256": "983ec3d83966c6662a00337458ef3dba7a9ec5b0ea86973f90cf04a097988046"
+  },
+  "results/increment7/final-smollm2-135m-93efa2f-sync-float32.json": {
+    "nbytes": 264219,
+    "sha256": "44d13d44fcb1a21385e4683664b3e7bf0ddd73b41f3652e5447444f14fcdfcbe"
+  },
+  "results/increment7/pytest-final.txt": {
+    "nbytes": 501,
+    "sha256": "4d7fae314e63cdc02b5413e66c5365b873a95fd85de0ae616698eb2ce9bd1505"
+  },
+  "results/increment7/regression-reviewed.txt": {
+    "nbytes": 501,
+    "sha256": "999c2a3e0855078d31a0837a55c0deef0ce093ea112b247077e5165fe462a2ee"
+  },
+  "results/increment7/sharded-upstream-float32.log": {
+    "nbytes": 3208,
+    "sha256": "29aa13c7a8b448793b90e89528f62a64e2efae0625c59bf0d21ee9a730cb59f8"
+  },
+  "results/increment7/capture-manifest.json": {
+    "nbytes": 16988,
+    "sha256": "cb8bb5108f93c3f4419e979c2584c431f2fc88b0e3062b3eb451a1cac7b57f82"
+  },
+  "results/increment7/final-smollm2-135m-93efa2f-sync-float64.json": {
+    "nbytes": 264694,
+    "sha256": "e970044345d6d5d01022432383b6831e8565db7da91326a5b8234e4943446e23"
+  },
+  "results/increment7/measured-pipeline-1.json": {
+    "nbytes": 15003,
+    "sha256": "2391b1dc89c301dd13217fafa2658cea5befaf448a73131462c42b08d2ec98b3"
+  },
+  "results/increment7/generation-story.json": {
+    "nbytes": 241,
+    "sha256": "788d7dbcfb1b04b0ac85d0b15cb42101d9d56a9eb52db960fd6bdf8c5b3d8bcb"
+  },
+  "results/increment7/README.md": {
+    "nbytes": 1914,
+    "sha256": "c7340d74851a3af9aacbd0d9391d876bc4d53bf30809a2e1c7aeb5278aeda0c0"
+  },
+  "results/increment7/adapter-final.txt": {
+    "nbytes": 99,
+    "sha256": "79d0059236333601c0358bb7b72aea5e067b9ee6edfb2a47b27c99e430a0fd8a"
+  },
+  "results/increment7/oracle-float64.log": {
+    "nbytes": 3018,
+    "sha256": "2bf219063cb240eab05e3bdc1537aa67b57c2557465be48c34b0bd65b90c5cd8"
+  },
+  "results/increment7/diagnostic-rms64-final.log": {
+    "nbytes": 3047,
+    "sha256": "d12161f1f18296ac14557794e3df4f6fc409a447950e779322294ca66ea13dc8"
+  },
+  "results/increment7/generation-france.json": {
+    "nbytes": 244,
+    "sha256": "11800c1e4b10f15fc6eedf685db09d5646dd465b0ab6154ce149634d4b038a8d"
+  },
+  "results/increment7/parity-float32-pipeline.json": {
+    "nbytes": 262218,
+    "sha256": "c144de25d31b435b5aefdbd42c2e873c508b061b7db001abc04cd37405476de8"
+  },
+  "results/increment7/regression-baseline.txt": {
+    "nbytes": 421,
+    "sha256": "72ca182b0f217d99f33c205ab3ffa62193465cb88ee0bdf1f34b101d3ad2aed7"
+  },
+  "results/increment7/diagnostic-rms64-parity.json": {
+    "nbytes": 261232,
+    "sha256": "1b26177a99a7bde9c7deedaa0f25814ff7fdd4d64c07022e864eed9067f6c410"
+  },
+  "results/increment7/measured-pipeline-2.json": {
+    "nbytes": 14995,
+    "sha256": "a63fde5e67477e94843fb39cde3da14cac3c60f6be7f2fa6343aace320249456"
+  },
+  "results/increment7/adapter-reviewed.txt": {
+    "nbytes": 99,
+    "sha256": "8dc4aed9db3f049f019805c4c50893d266a530982057f31932e1b53e7ef5a017"
+  },
+  "results/increment7/diagnostic-rms64.log": {
+    "nbytes": 3019,
+    "sha256": "f3ab6cf80d99dfede1890d2d403ff730587035526661264bc7608c5cc080a46f"
+  },
+  "results/increment7/provenance.json": {
+    "nbytes": 2051,
+    "sha256": "8346fd9bb8d2490993353e9154f1cf649acbac69533623e18e7291f6dbec92ee"
+  },
+  "results/increment7/environment.json": {
+    "nbytes": 770,
+    "sha256": "c85dc908d1f6b04e84ffa5dc443503a91122327fdb6e4fbdb68b48872b933eed"
+  },
+  "results/increment7/measured-sync-3.json": {
+    "nbytes": 14762,
+    "sha256": "5bf2fb47904622cea741b9fe6e897a88f3e49dd016b911829547c8742a643e6c"
+  },
+  "results/increment7/summary.json": {
+    "nbytes": 1952,
+    "sha256": "82bec204e71097139e62cfb4330e9e8ab71c187f254217bd87f68521c2de8f7c"
+  },
+  "results/increment7/final-smollm2-135m-93efa2f-sharded-pipeline-float32.json": {
+    "nbytes": 265632,
+    "sha256": "0a4b3fccea8d6753f5b72bda47434588116d90713bf1dc9be1a2a5b0b9dc54e2"
+  },
+  "results/increment7/measured-pipeline-3.json": {
+    "nbytes": 15001,
+    "sha256": "f0437b1c0cd2c5130f30b8392da0cf632f1c3a3141a6816abcd48fbca545dfc9"
+  },
+  "results/increment7/adapter-tests.txt": {
+    "nbytes": 8205,
+    "sha256": "ede960c267678ac828746afd0417a01392b2cd14a89fcd93a8e3ebbc386116be"
+  },
+  "results/increment7/adapter-tests-final.txt": {
+    "nbytes": 99,
+    "sha256": "9dc2a7b011b8c30eefc067137d9836eef269948e2197584a148d6d21d142149d"
+  },
+  "results/increment7/final-smollm2-135m-93efa2f-pipeline-float32.json": {
+    "nbytes": 265631,
+    "sha256": "93db5fbb95de0f5f6ef6368898cd8df3422b68ba80fbdccc571381d2c9a2520b"
+  },
+  "results/increment7/upstream-float64.log": {
+    "nbytes": 3019,
+    "sha256": "08c64b7d4551a46dc14a62e58f58f77a6b4937066916bc3d191c84758b180903"
+  },
+  "results/increment7/measured-sync-1.json": {
+    "nbytes": 14762,
+    "sha256": "5a84d8e194470fa29bf1cfdb92176c3f8e7558102bb439f79d4a6c411aad1b9b"
+  },
+  "results/increment7/upstream-float32.log": {
+    "nbytes": 3019,
+    "sha256": "7e94af03789a15da6e918880e22bb61a3b5f4d7130950cc19d49133a586df051"
+  }
+}

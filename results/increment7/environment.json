@@ -1,0 +1,21 @@
+{
+  "cpu": "Intel Core i7-12700H",
+  "logical_cpus": 20,
+  "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "filesystem": "WSL ext4 /dev/sdd",
+  "free_disk_pre_download_gib": 855,
+  "wsl_available_ram_pre_download_gib": 8,
+  "ac_online": 1,
+  "cpu_temperature": "not measured",
+  "cpu_power": "not measured",
+  "gpu": "unused; NVML query failed in sandbox",
+  "runtime_gpu_allocation_bytes": 0,
+  "address_space_cap_bytes": 134217728,
+  "process_rss_acceptance_bytes": 134217728,
+  "checkpoint_sha256_after_tests": "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1",
+  "physical_tensors": 272,
+  "physical_dtype": "all BF16",
+  "payload_bytes": 269030016,
+  "source_bootstrap_estimate_bytes": 791309
+}

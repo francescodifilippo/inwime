@@ -1,0 +1,170 @@
+{
+  "tools/benchmark_increment7.py": {
+    "nbytes": 3329,
+    "sha256": "a03296fb2eb3be6f3f4f1daabb5dd363f981659b239c8f993baebb9646a77055"
+  },
+  "tools/check_oracle_precision7.py": {
+    "nbytes": 3616,
+    "sha256": "b97f598e0850956f6e393ce5b00628eb1a7b666bb21a3c038daf94ba6178d96e"
+  },
+  "tools/oracle7.py": {
+    "nbytes": 6272,
+    "sha256": "abf316e552630052a573211c4986e93b30a27558dd4b4cc67cdf79aff32a7fd4"
+  },
+  "tools/acquire_smollm7.py": {
+    "nbytes": 3422,
+    "sha256": "1ee78bee350bd423c17ff907099dc3689ba8cf8ca0b191ac7e85d64b82aeb47e"
+  },
+  "tools/repack7.py": {
+    "nbytes": 4873,
+    "sha256": "84b7989328b223135cb45d68dd20d664c05d644d9d1aab5c2232a81516b2a640"
+  },
+  "tools/oracle_precision7.py": {
+    "nbytes": 5084,
+    "sha256": "e555b77d4c121863882ee64e66dba5a15735b05660daced35a7780a35822a896"
+  },
+  "tools/generate7.py": {
+    "nbytes": 816,
+    "sha256": "aca9428b215a4910fcbf4a1855d0a45234c86676f97bc76c8da7324571a439f6"
+  },
+  "tools/report_increment7.py": {
+    "nbytes": 7596,
+    "sha256": "f839ea9428c80d3177c17bd6e603a7e3faa1309d5293ecef57cdefcf301a18b6"
+  },
+  "tools/verify_increment7.py": {
+    "nbytes": 5989,
+    "sha256": "ced3fead96aeb91c8fb821caffd4acc291cce155195c12152fb6e0346bfa8465"
+  },
+  "tools/numerics7.py": {
+    "nbytes": 10926,
+    "sha256": "26ef5d943e792b4d2d1fb629e3e5233d2451ebe108552166b20086b54b62a2f2"
+  },
+  "tools/diagnose7.py": {
+    "nbytes": 1115,
+    "sha256": "9b00fae268a2781a4664919184436217783ec20cb60727cb931a39d6b4d7eabd"
+  },
+  "tests/test_numerical_gate7.py": {
+    "nbytes": 2771,
+    "sha256": "0a047517404ef2a8afc0778d92185262c8ad5ecd7a727d97718cb62a55c097f4"
+  },
+  "results/increment7/numerical-resolution/oracle-precision-tests.txt": {
+    "nbytes": 103,
+    "sha256": "22d87b30f5f15fd27ec20179828b77d16967ff3a5f323b46e9d37b7e0538bf59"
+  },
+  "results/increment7/numerical-resolution/parity-rms64-float64-sync.json": {
+    "nbytes": 268161,
+    "sha256": "deedbb4ff14a7adf0dfdbba7ef71847789f5968d456fc66bb47850fb4dc1969c"
+  },
+  "results/increment7/numerical-resolution/operators-with-residuals.json": {
+    "nbytes": 270080,
+    "sha256": "5c56f7549f077c9db224fac16616e9e4788e621e0dd2d097ec5ec006fd448792"
+  },
+  "results/increment7/numerical-resolution/parity-full64-float64-sync.json": {
+    "nbytes": 267262,
+    "sha256": "9bde217219f5aa497746e591ccd49a0865e904c23451d9b17587e43a7dbc9aba"
+  },
+  "results/increment7/numerical-resolution/parity-full64-float64-pipeline.json": {
+    "nbytes": 268682,
+    "sha256": "170fd6c85ac1fbd41ffe3570ed27e48fe7fbcadd4e0c454b68de4627f5e4c532"
+  },
+  "results/increment7/numerical-resolution/final-gate.json": {
+    "nbytes": 2475,
+    "sha256": "466044b5241f595a5e883a9d58ee5d3e930cde9452452398266b7b3462eec4e7"
+  },
+  "results/increment7/numerical-resolution/preservation-after.json": {
+    "nbytes": 3083,
+    "sha256": "9d88284542c64b647687b2fe739046955133c716b5dbf3ec3728bf1a08dbb4d1"
+  },
+  "results/increment7/numerical-resolution/parity-rms_rope64-float64-sync.json": {
+    "nbytes": 267128,
+    "sha256": "fc61038c0e7a6932191f9ea5dcc7a85a95605facde22ac25a4b6bc41d5669ea2"
+  },
+  "results/increment7/numerical-resolution/oracle-stock-float32.log": {
+    "nbytes": 7402,
+    "sha256": "039ef39502ab80c58d476d66822f68aaaee7d31069b6ee8bddadf56d1b4b05b5"
+  },
+  "results/increment7/numerical-resolution/gate-tests-green.txt": {
+    "nbytes": 98,
+    "sha256": "58745d8011883213acd6d3ad00c73a2860f68e432f60fc956b8cb2a8bb6d8181"
+  },
+  "results/increment7/numerical-resolution/parity-full64-float64-sharded.json": {
+    "nbytes": 267258,
+    "sha256": "4b31b55dfb8cf4dfe347c19cc8ce2ee7a8d085c0239ae4acf8b6b1bdb9ffe5e4"
+  },
+  "results/increment7/numerical-resolution/pytest-final.txt": {
+    "nbytes": 501,
+    "sha256": "9dad15b43207c7a338c9985a9e95d38e33bceea76556034df641f7b2ef59d437"
+  },
+  "results/increment7/numerical-resolution/preservation-before.json": {
+    "nbytes": 6340,
+    "sha256": "e187b3424716f6bb43ac50dd7aa957a81cd05c9844c6df1ca8a6244db86f4438"
+  },
+  "results/increment7/numerical-resolution/gate-reviewed.log": {
+    "nbytes": 2475,
+    "sha256": "466044b5241f595a5e883a9d58ee5d3e930cde9452452398266b7b3462eec4e7"
+  },
+  "results/increment7/numerical-resolution/capture-manifest.json": {
+    "nbytes": 43767,
+    "sha256": "e4f3b3a55ea0941b77a87aeb1bbb23d465d709f97c41babdc1ec66a9f3948ca1"
+  },
+  "results/increment7/numerical-resolution/oracle-full64-float64.log": {
+    "nbytes": 5268,
+    "sha256": "6d574fcca6eaf283dfc5517d294161b1de364906c68a0ea5cf61b8d75523e064"
+  },
+  "results/increment7/numerical-resolution/README.md": {
+    "nbytes": 2752,
+    "sha256": "3b6141894f1a9af6bfeb8bd515c4fe3cf2611e1225f7286d0418655ed8863f1d"
+  },
+  "results/increment7/numerical-resolution/oracle-stock-float64.log": {
+    "nbytes": 6879,
+    "sha256": "5548d76ae98441547d085c7abc148f329a3de78eda19e1ed26db36fc333ed2e6"
+  },
+  "results/increment7/numerical-resolution/historical-gate-reproduced.log": {
+    "nbytes": 1952,
+    "sha256": "82bec204e71097139e62cfb4330e9e8ab71c187f254217bd87f68521c2de8f7c"
+  },
+  "results/increment7/numerical-resolution/oracle-full64.log": {
+    "nbytes": 4970,
+    "sha256": "7894484adecf74410b120bd9eb3be5a6c7715052638ca5a420b377277591c330"
+  },
+  "results/increment7/numerical-resolution/parity-full64-initial.json": {
+    "nbytes": 266968,
+    "sha256": "90f7bdaeafeb84a3ab66bf17c97abf4b84a26596cc1d659300625642f4578132"
+  },
+  "results/increment7/numerical-resolution/oracle-rms64-float64.log": {
+    "nbytes": 6545,
+    "sha256": "0c1320ff4b4cd4390279ba4a901519886cdfecd3d8247494a539774a4596a09c"
+  },
+  "results/increment7/numerical-resolution/oracle-rms_rope64-float64.log": {
+    "nbytes": 5402,
+    "sha256": "43fa2a70b28da1c7eb5777163a9e37e74b4b659b48ac5f87c062d741aa537b3f"
+  },
+  "results/increment7/numerical-resolution/attribution.json": {
+    "nbytes": 4934,
+    "sha256": "b88398e8d1ea8b5d739c154a99846e055b113a6c09d5403c734218289af90454"
+  },
+  "results/increment7/numerical-resolution/parity-stock-float64-sync.json": {
+    "nbytes": 268534,
+    "sha256": "bcade674e3db4e8ecb777d09a516e9da3099cda817ac61f48367db6759dc1d0e"
+  },
+  "results/increment7/numerical-resolution/parity-stock-float32-sync.json": {
+    "nbytes": 268584,
+    "sha256": "6f2cb31968c88845a70410178e4f992af1b9408aeb773fe86e7f54e5f30f6fbc"
+  },
+  "results/increment7/numerical-resolution/final-gate-reviewed.json": {
+    "nbytes": 2475,
+    "sha256": "466044b5241f595a5e883a9d58ee5d3e930cde9452452398266b7b3462eec4e7"
+  },
+  "results/increment7/numerical-resolution/operators.json": {
+    "nbytes": 255977,
+    "sha256": "854ba1d12a055ffaf99336e6995f339e7dd4dab4bcf0ec59d13d61b35333c6d7"
+  },
+  "results/increment7/numerical-resolution/precision-audit.json": {
+    "nbytes": 344401,
+    "sha256": "dc34c710c856ff6f412219c8e8c31dbc174e44722d9583bebf52f99f015776e7"
+  },
+  "results/increment7/numerical-resolution/gate-tests-red.txt": {
+    "nbytes": 1040,
+    "sha256": "a6664d078af96756b1068a8383cce924300dc73aef29d5af0c19626c1bc4150b"
+  }
+}

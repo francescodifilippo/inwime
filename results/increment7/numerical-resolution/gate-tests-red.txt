@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/test_numerical_gate7.py ________________
+ImportError while importing test module '/home/francesco/GIT/francescodifilippo/ooc-inference/tests/test_numerical_gate7.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_numerical_gate7.py:4: in <module>
+    from tools.report_increment7 import numerical_gate
+E   ImportError: cannot import name 'numerical_gate' from 'tools.report_increment7' (/home/francesco/GIT/francescodifilippo/ooc-inference/tools/report_increment7.py)
+=========================== short test summary info ============================
+ERROR tests/test_numerical_gate7.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.08s

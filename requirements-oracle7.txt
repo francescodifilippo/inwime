@@ -1,0 +1,7 @@
+# Isolated verification environment; Python 3.14, CPU wheel index required.
+--extra-index-url https://download.pytorch.org/whl/cpu
+transformers==4.57.3
+torch==2.9.1+cpu
+tokenizers==0.22.1
+safetensors==0.7.0
+numpy==2.3.5

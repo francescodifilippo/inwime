@@ -1,0 +1,239 @@
+{
+  "precision_profile": "full64",
+  "contract": "pytorch_pure_fp64",
+  "dtype_audit": {
+    "operations": {
+      "aten.embedding.default torch.float64 -> torch.float64": 1,
+      "aten.lift_fresh.default torch.float64 -> torch.float64": 61,
+      "aten.detach_.default torch.float64 -> torch.float64": 61,
+      "aten.where.ScalarOther torch.float64 -> torch.float64": 1,
+      "aten.unsqueeze.default torch.float64 -> torch.float64": 122,
+      "aten.expand.default torch.float64 -> torch.float64": 61,
+      "aten.to.dtype  -> torch.float64": 1,
+      "aten.matmul.default torch.float64 -> torch.float64": 61,
+      "aten.transpose.int torch.float64 -> torch.float64": 151,
+      "aten.cat.default torch.float64 -> torch.float64": 121,
+      "aten.cos.default torch.float64 -> torch.float64": 1,
+      "aten.mul.Tensor torch.float64 -> torch.float64": 304,
+      "aten.sin.default torch.float64 -> torch.float64": 1,
+      "aten.square.default torch.float64 -> torch.float64": 61,
+      "aten.mean.dim torch.float64 -> torch.float64": 61,
+      "aten.add.Tensor torch.float64 -> torch.float64": 211,
+      "aten.rsqrt.default torch.float64 -> torch.float64": 61,
+      "aten.linear.default torch.float64 -> torch.float64": 211,
+      "aten.view.default torch.float64 -> torch.float64": 90,
+      "aten.slice.Tensor torch.float64 -> torch.float64": 120,
+      "aten.neg.default torch.float64 -> torch.float64": 60,
+      "aten.reshape.default torch.float64 -> torch.float64": 90,
+      "aten.alias.default torch.float64 -> torch.float64": 31,
+      "aten.softmax.int torch.float64 -> torch.float64": 30,
+      "aten.dropout.default torch.float64 -> torch.float64": 30,
+      "aten.contiguous.default torch.float64 -> torch.float64": 30,
+      "aten.silu.default torch.float64 -> torch.float64": 30
+    },
+    "non_fp64_output_operations": {},
+    "cpu_autocast_enabled": false
+  },
+  "attention_implementation": "eager",
+  "diagnostic_rms64": false,
+  "dtype": "float64",
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "numpy": "2.3.5"
+  },
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "tokenizer": [
+    {
+      "text": "The capital of France is",
+      "ids": [
+        504,
+        3575,
+        282,
+        4649,
+        314
+      ],
+      "decoded": "The capital of France is"
+    },
+    {
+      "text": "Once upon a time",
+      "ids": [
+        6403,
+        1980,
+        253,
+        655
+      ],
+      "decoded": "Once upon a time"
+    },
+    {
+      "text": "Ciao, mondo! \u00e9\n42",
+      "ids": [
+        51,
+        28467,
+        28,
+        283,
+        31917,
+        17,
+        26411,
+        198,
+        36,
+        34
+      ],
+      "decoded": "Ciao, mondo! \u00e9\n42"
+    },
+    {
+      "text": "<|endoftext|>Hello",
+      "ids": [
+        0,
+        19556
+      ],
+      "decoded": "Hello"
+    }
+  ],
+  "scenarios": {
+    "single": [
+      {
+        "tokens": [
+          504
+        ],
+        "greedy": [
+          808
+        ]
+      }
+    ],
+    "full": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      }
+    ],
+    "chunks": [
+      {
+        "tokens": [
+          504,
+          3575
+        ],
+        "greedy": [
+          808,
+          282
+        ]
+      },
+      {
+        "tokens": [
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          260,
+          314,
+          260
+        ]
+      }
+    ],
+    "decode": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      },
+      {
+        "tokens": [
+          260
+        ],
+        "greedy": [
+          3575
+        ]
+      },
+      {
+        "tokens": [
+          3575
+        ],
+        "greedy": [
+          282
+        ]
+      },
+      {
+        "tokens": [
+          282
+        ],
+        "greedy": [
+          260
+        ]
+      }
+    ],
+    "extended": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314,
+          260,
+          3575,
+          282
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260,
+          3575,
+          282,
+          260
+        ]
+      }
+    ],
+    "repeat": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      }
+    ]
+  },
+  "continuation": [
+    260,
+    3575,
+    282
+  ],
+  "elapsed_s": 3.3862768899998628,
+  "peak_rss_bytes": 1694011392,
+  "capture_sha256": "fe7f227d084026589a705be013fcfdc7d8d7572a709585c449a7a9164787cbbf"
+}

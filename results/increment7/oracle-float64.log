@@ -1,0 +1,202 @@
+{
+  "dtype": "float64",
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "numpy": "2.3.5"
+  },
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "tokenizer": [
+    {
+      "text": "The capital of France is",
+      "ids": [
+        504,
+        3575,
+        282,
+        4649,
+        314
+      ],
+      "decoded": "The capital of France is"
+    },
+    {
+      "text": "Once upon a time",
+      "ids": [
+        6403,
+        1980,
+        253,
+        655
+      ],
+      "decoded": "Once upon a time"
+    },
+    {
+      "text": "Ciao, mondo! \u00e9\n42",
+      "ids": [
+        51,
+        28467,
+        28,
+        283,
+        31917,
+        17,
+        26411,
+        198,
+        36,
+        34
+      ],
+      "decoded": "Ciao, mondo! \u00e9\n42"
+    },
+    {
+      "text": "<|endoftext|>Hello",
+      "ids": [
+        0,
+        19556
+      ],
+      "decoded": "Hello"
+    }
+  ],
+  "scenarios": {
+    "single": [
+      {
+        "tokens": [
+          504
+        ],
+        "greedy": [
+          808
+        ]
+      }
+    ],
+    "full": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      }
+    ],
+    "chunks": [
+      {
+        "tokens": [
+          504,
+          3575
+        ],
+        "greedy": [
+          808,
+          282
+        ]
+      },
+      {
+        "tokens": [
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          260,
+          314,
+          260
+        ]
+      }
+    ],
+    "decode": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      },
+      {
+        "tokens": [
+          260
+        ],
+        "greedy": [
+          3575
+        ]
+      },
+      {
+        "tokens": [
+          3575
+        ],
+        "greedy": [
+          282
+        ]
+      },
+      {
+        "tokens": [
+          282
+        ],
+        "greedy": [
+          260
+        ]
+      }
+    ],
+    "extended": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314,
+          260,
+          3575,
+          282
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260,
+          3575,
+          282,
+          260
+        ]
+      }
+    ],
+    "repeat": [
+      {
+        "tokens": [
+          504,
+          3575,
+          282,
+          4649,
+          314
+        ],
+        "greedy": [
+          808,
+          282,
+          260,
+          314,
+          260
+        ]
+      }
+    ]
+  },
+  "continuation": [
+    260,
+    3575,
+    282
+  ],
+  "elapsed_s": 2.243050905992277,
+  "peak_rss_bytes": 1761169408,
+  "capture_sha256": "5ca52b6c8a958c6b16b8e848d33b35427e154fdc1697f88f48e2124231929552"
+}

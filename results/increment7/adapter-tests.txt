@@ -1,0 +1,159 @@
+..................FFFFF...............                                   [100%]
+=================================== FAILURES ===================================
+_____________________________ test_tokens[tokens0] _____________________________
+
+checkpoint = PosixPath('/tmp/pytest-of-francesco/pytest-33/test_tokens_tokens0_0')
+tokens = []
+
+    @pytest.mark.parametrize('tokens',[[],[-1],[16],[True],[1]*9])
+    def test_tokens(checkpoint,tokens):
+>       with LlamaRuntime(checkpoint) as r:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_llama7.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+inwime_runtime/llama.py:173: in __init__
+    self.plan = llama_plan(self.catalog, capacity, tile_elements, read_elements, io_mode)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = <inwime_runtime.llama.LlamaCatalog object at 0x75f7d6035e50>
+capacity = 16, tile_elements = 262144, read_elements = 262144, io_mode = 'sync'
+
+    def llama_plan(catalog, capacity, tile_elements, read_elements, io_mode):
+        c = catalog.spec
+        if (type(capacity) is not int or not 1 <= capacity <= c.context
+                or type(tile_elements) is not int or tile_elements <= 0
+                or type(read_elements) is not int or not 1 <= read_elements <= tile_elements
+                or io_mode not in ('sync', 'pipeline')):
+>           raise ValueError('invalid Llama capacity/tile/read/mode')
+E           ValueError: invalid Llama capacity/tile/read/mode
+
+inwime_runtime/llama.py:119: ValueError
+_____________________________ test_tokens[tokens1] _____________________________
+
+checkpoint = PosixPath('/tmp/pytest-of-francesco/pytest-33/test_tokens_tokens1_0')
+tokens = [-1]
+
+    @pytest.mark.parametrize('tokens',[[],[-1],[16],[True],[1]*9])
+    def test_tokens(checkpoint,tokens):
+>       with LlamaRuntime(checkpoint) as r:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_llama7.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+inwime_runtime/llama.py:173: in __init__
+    self.plan = llama_plan(self.catalog, capacity, tile_elements, read_elements, io_mode)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = <inwime_runtime.llama.LlamaCatalog object at 0x75f7d6027450>
+capacity = 16, tile_elements = 262144, read_elements = 262144, io_mode = 'sync'
+
+    def llama_plan(catalog, capacity, tile_elements, read_elements, io_mode):
+        c = catalog.spec
+        if (type(capacity) is not int or not 1 <= capacity <= c.context
+                or type(tile_elements) is not int or tile_elements <= 0
+                or type(read_elements) is not int or not 1 <= read_elements <= tile_elements
+                or io_mode not in ('sync', 'pipeline')):
+>           raise ValueError('invalid Llama capacity/tile/read/mode')
+E           ValueError: invalid Llama capacity/tile/read/mode
+
+inwime_runtime/llama.py:119: ValueError
+_____________________________ test_tokens[tokens2] _____________________________
+
+checkpoint = PosixPath('/tmp/pytest-of-francesco/pytest-33/test_tokens_tokens2_0')
+tokens = [16]
+
+    @pytest.mark.parametrize('tokens',[[],[-1],[16],[True],[1]*9])
+    def test_tokens(checkpoint,tokens):
+>       with LlamaRuntime(checkpoint) as r:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_llama7.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+inwime_runtime/llama.py:173: in __init__
+    self.plan = llama_plan(self.catalog, capacity, tile_elements, read_elements, io_mode)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = <inwime_runtime.llama.LlamaCatalog object at 0x75f7d61567d0>
+capacity = 16, tile_elements = 262144, read_elements = 262144, io_mode = 'sync'
+
+    def llama_plan(catalog, capacity, tile_elements, read_elements, io_mode):
+        c = catalog.spec
+        if (type(capacity) is not int or not 1 <= capacity <= c.context
+                or type(tile_elements) is not int or tile_elements <= 0
+                or type(read_elements) is not int or not 1 <= read_elements <= tile_elements
+                or io_mode not in ('sync', 'pipeline')):
+>           raise ValueError('invalid Llama capacity/tile/read/mode')
+E           ValueError: invalid Llama capacity/tile/read/mode
+
+inwime_runtime/llama.py:119: ValueError
+_____________________________ test_tokens[tokens3] _____________________________
+
+checkpoint = PosixPath('/tmp/pytest-of-francesco/pytest-33/test_tokens_tokens3_0')
+tokens = [True]
+
+    @pytest.mark.parametrize('tokens',[[],[-1],[16],[True],[1]*9])
+    def test_tokens(checkpoint,tokens):
+>       with LlamaRuntime(checkpoint) as r:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_llama7.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+inwime_runtime/llama.py:173: in __init__
+    self.plan = llama_plan(self.catalog, capacity, tile_elements, read_elements, io_mode)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = <inwime_runtime.llama.LlamaCatalog object at 0x75f7d61df3d0>
+capacity = 16, tile_elements = 262144, read_elements = 262144, io_mode = 'sync'
+
+    def llama_plan(catalog, capacity, tile_elements, read_elements, io_mode):
+        c = catalog.spec
+        if (type(capacity) is not int or not 1 <= capacity <= c.context
+                or type(tile_elements) is not int or tile_elements <= 0
+                or type(read_elements) is not int or not 1 <= read_elements <= tile_elements
+                or io_mode not in ('sync', 'pipeline')):
+>           raise ValueError('invalid Llama capacity/tile/read/mode')
+E           ValueError: invalid Llama capacity/tile/read/mode
+
+inwime_runtime/llama.py:119: ValueError
+_____________________________ test_tokens[tokens4] _____________________________
+
+checkpoint = PosixPath('/tmp/pytest-of-francesco/pytest-33/test_tokens_tokens4_0')
+tokens = [1, 1, 1, 1, 1, 1, ...]
+
+    @pytest.mark.parametrize('tokens',[[],[-1],[16],[True],[1]*9])
+    def test_tokens(checkpoint,tokens):
+>       with LlamaRuntime(checkpoint) as r:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_llama7.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+inwime_runtime/llama.py:173: in __init__
+    self.plan = llama_plan(self.catalog, capacity, tile_elements, read_elements, io_mode)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = <inwime_runtime.llama.LlamaCatalog object at 0x75f7d6035750>
+capacity = 16, tile_elements = 262144, read_elements = 262144, io_mode = 'sync'
+
+    def llama_plan(catalog, capacity, tile_elements, read_elements, io_mode):
+        c = catalog.spec
+        if (type(capacity) is not int or not 1 <= capacity <= c.context
+                or type(tile_elements) is not int or tile_elements <= 0
+                or type(read_elements) is not int or not 1 <= read_elements <= tile_elements
+                or io_mode not in ('sync', 'pipeline')):
+>           raise ValueError('invalid Llama capacity/tile/read/mode')
+E           ValueError: invalid Llama capacity/tile/read/mode
+
+inwime_runtime/llama.py:119: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_llama7.py::test_tokens[tokens0] - ValueError: invalid Llama...
+FAILED tests/test_llama7.py::test_tokens[tokens1] - ValueError: invalid Llama...
+FAILED tests/test_llama7.py::test_tokens[tokens2] - ValueError: invalid Llama...
+FAILED tests/test_llama7.py::test_tokens[tokens3] - ValueError: invalid Llama...
+FAILED tests/test_llama7.py::test_tokens[tokens4] - ValueError: invalid Llama...
+5 failed, 33 passed in 0.64s

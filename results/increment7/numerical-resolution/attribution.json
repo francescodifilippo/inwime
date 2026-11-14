@@ -1,0 +1,173 @@
+{
+  "historical_stock_captures_exact": true,
+  "historical_arrays": {
+    "float32": {
+      "single.0.logits": true,
+      "single.0.hidden": true,
+      "single.0.kv": true,
+      "full.0.logits": true,
+      "full.0.hidden": true,
+      "full.0.kv": true,
+      "chunks.0.logits": true,
+      "chunks.0.hidden": true,
+      "chunks.0.kv": true,
+      "chunks.1.logits": true,
+      "chunks.1.hidden": true,
+      "chunks.1.kv": true,
+      "decode.0.logits": true,
+      "decode.0.hidden": true,
+      "decode.0.kv": true,
+      "decode.1.logits": true,
+      "decode.1.hidden": true,
+      "decode.1.kv": true,
+      "decode.2.logits": true,
+      "decode.2.hidden": true,
+      "decode.2.kv": true,
+      "decode.3.logits": true,
+      "decode.3.hidden": true,
+      "decode.3.kv": true,
+      "extended.0.logits": true,
+      "extended.0.hidden": true,
+      "extended.0.kv": true,
+      "repeat.0.logits": true,
+      "repeat.0.hidden": true,
+      "repeat.0.kv": true
+    },
+    "float64": {
+      "single.0.logits": true,
+      "single.0.hidden": true,
+      "single.0.kv": true,
+      "full.0.logits": true,
+      "full.0.hidden": true,
+      "full.0.kv": true,
+      "chunks.0.logits": true,
+      "chunks.0.hidden": true,
+      "chunks.0.kv": true,
+      "chunks.1.logits": true,
+      "chunks.1.hidden": true,
+      "chunks.1.kv": true,
+      "decode.0.logits": true,
+      "decode.0.hidden": true,
+      "decode.0.kv": true,
+      "decode.1.logits": true,
+      "decode.1.hidden": true,
+      "decode.1.kv": true,
+      "decode.2.logits": true,
+      "decode.2.hidden": true,
+      "decode.2.kv": true,
+      "decode.3.logits": true,
+      "decode.3.hidden": true,
+      "decode.3.kv": true,
+      "extended.0.logits": true,
+      "extended.0.hidden": true,
+      "extended.0.kv": true,
+      "repeat.0.logits": true,
+      "repeat.0.hidden": true,
+      "repeat.0.kv": true
+    }
+  },
+  "ablation": {
+    "stock": {
+      "raw_passed": false,
+      "max_abs": {
+        "logits": 2.7531860580909395e-05,
+        "hidden": 0.0016656945299473591,
+        "kv": 2.7539768119311248e-06
+      },
+      "single_token_max_abs": {
+        "logits": 2.753186057913304e-05,
+        "hidden": 0.0016656945226714015,
+        "kv": 2.223691279112927e-06
+      }
+    },
+    "rms64": {
+      "raw_passed": true,
+      "max_abs": {
+        "logits": 2.770333735746533e-06,
+        "hidden": 4.265275003945135e-05,
+        "kv": 2.0863549812233373e-06
+      },
+      "single_token_max_abs": {
+        "logits": 2.512989816239042e-13,
+        "hidden": 2.7284841053187847e-11,
+        "kv": 1.2079226507921703e-13
+      }
+    },
+    "rms_rope64": {
+      "raw_passed": true,
+      "max_abs": {
+        "logits": 1.935812580677876e-06,
+        "hidden": 3.671723391107662e-05,
+        "kv": 8.461339637833021e-07
+      },
+      "single_token_max_abs": {
+        "logits": 2.512989816239042e-13,
+        "hidden": 2.7284841053187847e-11,
+        "kv": 1.2079226507921703e-13
+      }
+    },
+    "full64": {
+      "raw_passed": true,
+      "max_abs": {
+        "logits": 3.375077994860476e-13,
+        "hidden": 3.637978807091713e-11,
+        "kv": 1.2079226507921703e-13
+      },
+      "single_token_max_abs": {
+        "logits": 2.512989816239042e-13,
+        "hidden": 2.7284841053187847e-11,
+        "kv": 1.2079226507921703e-13
+      }
+    }
+  },
+  "paired_intervention_deltas": {
+    "stock -> rms64": {
+      "logits": 2.7531860758323035e-05,
+      "hidden": 0.0016656945590511896,
+      "kv": 3.3329401709636386e-06
+    },
+    "rms64 -> rms_rope64": {
+      "logits": 1.8921246471848008e-06,
+      "hidden": 2.6514528144616634e-05,
+      "kv": 2.122916818336762e-06
+    },
+    "rms_rope64 -> full64": {
+      "logits": 1.9358126501778372e-06,
+      "hidden": 3.671723425213713e-05,
+      "kv": 8.461339913168331e-07
+    }
+  },
+  "first_nonexact_operator": "layers.0.norm1",
+  "first_threshold_violation": "layers.10.residual",
+  "checkpoint_first_norm": {
+    "stock_vs_pure64": {
+      "count": 576,
+      "max_abs": 2.915578162232535e-08,
+      "rms": 2.2931728630143104e-09,
+      "max_rel_floor_1e_8": 9.194687451105535e-08,
+      "failures": 0
+    },
+    "inwime_vs_pure64": {
+      "count": 576,
+      "max_abs": 5.551115123125783e-17,
+      "rms": 5.215359652098851e-18,
+      "max_rel_floor_1e_8": 3.733489140964539e-16,
+      "failures": 0
+    },
+    "inwime_vs_decimal80": {
+      "count": 576,
+      "max_abs": 2.7755575615628914e-17,
+      "rms": 3.098782571426135e-18,
+      "max_rel_floor_1e_8": 2.202005859597036e-16,
+      "failures": 0
+    },
+    "pure64_vs_decimal80": {
+      "count": 576,
+      "max_abs": 5.551115123125783e-17,
+      "rms": 4.834885827331771e-18,
+      "max_rel_floor_1e_8": 2.4534357212052695e-16,
+      "failures": 0
+    }
+  },
+  "attribution_limit": "RMSNorm explains single-token discrepancies. RoPE and softmax also contribute for multiple tokens; errors are nonlinear and not additive."
+}

@@ -1,0 +1,17 @@
+{
+  "text": "The capital of France is",
+  "input_ids": [
+    504,
+    3575,
+    282,
+    4649,
+    314
+  ],
+  "generated_ids": [
+    260,
+    3575,
+    282
+  ],
+  "output": "The capital of France is the capital of",
+  "stopped_on_eos": false
+}
