@@ -1,0 +1,8 @@
+test_full64_profile_dtypes_and_restore (tools.check_oracle9.OracleTests.test_full64_profile_dtypes_and_restore) ... ok
+test_inwime_matches_upstream_small (tools.check_oracle9.OracleTests.test_inwime_matches_upstream_small) ... ok
+test_streamed_equals_stock_from_pretrained (tools.check_oracle9.OracleTests.test_streamed_equals_stock_from_pretrained) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.198s
+
+OK

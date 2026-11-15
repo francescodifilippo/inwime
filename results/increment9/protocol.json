@@ -1,0 +1,127 @@
+{
+  "increment": 9,
+  "written_utc": "2026-11-15T14:51:27Z",
+  "baseline_head": "68ba9f3adf3cffb89b18b19525644fa0d7c6d806",
+  "status": "preregistered before any increment-9 download, cgroup forward or oracle run",
+  "fp32_comparison": {
+    "atol": 0.002,
+    "rtol": 0.0002,
+    "rule": "abs(error) <= atol + rtol*abs(reference) for every element"
+  },
+  "fp64_comparison": {
+    "atol": 2e-05,
+    "rtol": 2e-06,
+    "rule": "same rule; increment-7 FP64 thresholds, unchanged"
+  },
+  "tolerance_policy": "increment 7/8 thresholds reused unchanged; never widened after measurement",
+  "phase_a": {
+    "model": "HuggingFaceTB/SmolLM2-1.7B",
+    "revision": "d4c18ccb8a25e6e637e0609aac08a5d1a0436d1b",
+    "file_sha256": "1193528982f4ac0c0b707ce36fd7dc03a0ef6f3e1a432deb886dce2e90c300c0",
+    "unique_active_bf16_bytes": 3422752768,
+    "cgroup": {
+      "mechanism": "systemd-run --user --scope transient unit under the delegated user manager",
+      "memory.max": 2147483648,
+      "memory.swap.max": 0,
+      "no_global_changes": [
+        "no .wslconfig/swap/sysctl/service edits",
+        "no sudo",
+        "no other cgroup touched"
+      ]
+    },
+    "sequence": {
+      "text": "The capital of France is",
+      "prefill_tokens": 5,
+      "decodes": 3,
+      "mode": "sync",
+      "tile_elements": 262144,
+      "capacity": 16,
+      "integrity": "full"
+    },
+    "conditions": {
+      "W_buffered_warm": "checkpoint resident in global page cache charged to another cgroup before start; documents that such pages are not charged to the scope",
+      "P_pressure": "POSIX_FADV_DONTNEED on the experiment file only, residency checked with fincore before start; every page the run needs is faulted under the 2 GiB scope"
+    },
+    "pass_criteria": [
+      "worker in the scope before opening weights (checked from inside)",
+      "memory.max=2147483648 and memory.swap.max=0 observed in the scope",
+      "memory.peak < 2147483648 and memory.events oom_kill=0, memory.swap.current=0",
+      "complete forward; logits/hidden/KV digests byte-identical to the increment-8 accepted captures AND full parity with the increment-8 FP32 oracle at fp32_comparison thresholds",
+      "condition P shows block reads (proc io read_bytes > 0) proving pages were (re)read under the limit"
+    ],
+    "not_a_pass": "a W-only run, a run whose pages were charged elsewhere, or any OOM kill"
+  },
+  "phase_b": {
+    "candidate": "Qwen/Qwen2.5-7B",
+    "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+    "license": "apache-2.0",
+    "shards": 4,
+    "official_safetensors_bytes": 15231271888,
+    "index_total_size": 15231233024,
+    "expected_unique_active_bf16_bytes": "payload - embedding (152064*3584*2) + embedding rows actually read; recomputed from catalog and per-tensor counters",
+    "criterion": "unique BF16 bytes actively used by the forward > MemTotal measured at the start of the same run",
+    "sequence": {
+      "text": "The capital of France is",
+      "prefill": "all prompt tokens (must be >= 2)",
+      "decodes": 3,
+      "minimum_for_E": "prefill >= 2 tokens and >= 1 complete decode",
+      "mode": "sync first; pipeline only if justified",
+      "tile_elements": 262144,
+      "capacity": 16,
+      "integrity": "full"
+    },
+    "memory": "explicit runtime arena budget = plan; RLIMIT_AS applied; optional 2 GiB scope if phase A passes; no WSL/swap reconfiguration",
+    "oracles": {
+      "implementation": "upstream Transformers Qwen2 modules executed one decoder layer at a time, weights loaded tensor-by-tensor from the original shards; no InWiMe import",
+      "contracts": {
+        "stock_fp32": "practical parity, gate F primary",
+        "full64": "Qwen2 upstream graph with RMSNorm/RoPE/softmax in FP64 (increment-7 profile) - mathematical parity",
+        "stock_fp64_diagnostic": "raw verdict always reported, never rewritten"
+      },
+      "coverage_required_for_full_pass": "all logits of every position, residual output of all 28 layers, K post-RoPE and V of all layers, argmax/greedy equality",
+      "fallback": "if any contract is infeasible, record exact coverage and mark F NOT PROVEN for that contract"
+    }
+  },
+  "io_policy": {
+    "no_drop_caches": true,
+    "eviction": "POSIX_FADV_DONTNEED on experiment files only, verified with fincore",
+    "o_direct": "not implemented in this increment",
+    "counters": [
+      "/proc/PID/io",
+      "cgroup memory.stat file/anon/kernel",
+      "global meminfo",
+      "Windows PhysicalDisk raw read bytes (global, host)"
+    ],
+    "io.stat": "unavailable: io controller not enabled in root cgroup.subtree_control"
+  },
+  "resource_safety": {
+    "stop_if_memavailable_below_bytes": 805306368,
+    "action": "cgroup.kill of the experiment scope only",
+    "oom_kill": "recorded as FAIL",
+    "no_concurrent_benchmarks": true
+  },
+  "gate": {
+    "verdicts": [
+      "PASS",
+      "FAIL",
+      "NOT PROVEN"
+    ],
+    "A": "integrity of originals",
+    "B": "phase A cgroup 2 GiB",
+    "C": "I/O characterised with correct attribution",
+    "D": "unique active BF16 > MemTotal",
+    "E": "complete prefill/decode",
+    "F": "independent numerical verification with declared coverage",
+    "G": "memory/swap within declared limits, no system OOM",
+    "H": "increments 1-8 preserved"
+  },
+  "amendments": [
+    {
+      "utc": "2026-11-15T14:56:31Z",
+      "before": "any phase A or phase B measurement",
+      "evidence": "cgroup-probe-128mib.json: 300 MB random file on ext4, scope memory.max=128 MiB, DONTNEED eviction verified (300003328 -> 0 resident), two sequential reads: memory.peak == memory.max exactly, memory.events max=219, oom_kill=0, 600 MB block reads",
+      "change": "phase_a pass criterion memory.peak < memory.max replaced by memory.peak <= memory.max with oom/oom_kill = 0 and swap 0; file cache legitimately fills the scope to the limit and is reclaimed there. Anonymous+kernel charge must stay well below the limit and is reported separately.",
+      "reason": "strict inequality would turn correct kernel enforcement into a spurious FAIL; criterion fixed before measuring the experiment"
+    }
+  ]
+}

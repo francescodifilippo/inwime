@@ -1,0 +1,13 @@
+{
+ "contract": "full64",
+ "oracle_wall_s": 439.10937202803325,
+ "peak_rss_bytes": 5832527872,
+ "upstream_greedy_matches_sequence": true,
+ "loader": {
+  "one_top_level_module_resident": true,
+  "largest_module_bytes": 4359979008,
+  "source_bf16_bytes_read": 60924932096,
+  "tensors": 339,
+  "loads_per_tensor": 4
+ }
+}

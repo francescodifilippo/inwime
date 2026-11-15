@@ -1,0 +1,41 @@
+{
+  "command": [
+    ".venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle9",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "full64",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "5,1,1,1",
+    "--output",
+    "artifacts/increment9/oracle-full64.npz"
+  ],
+  "exit_code": 0,
+  "watchdog_reason": null,
+  "rss_stop_bytes": 7516192768,
+  "memavailable_stop_bytes": 805306368,
+  "sample_interval_s": 0.02,
+  "samples": 21221,
+  "sampled_peaks_bytes": {
+    "VmPeak": 9345175552,
+    "VmSize": 9143091200,
+    "VmLck": 0,
+    "VmPin": 0,
+    "VmHWM": 5833306112,
+    "VmRSS": 5833306112,
+    "VmData": 8647122944,
+    "VmStk": 139264,
+    "VmExe": 3694592,
+    "VmLib": 398733312,
+    "VmPTE": 10338304,
+    "VmSwap": 0
+  },
+  "minimum_memavailable_bytes": 4248973312,
+  "wall_s": 450.33437618997414,
+  "limitation": "20 ms sampling can miss transients; kernel VmHWM/ru_maxrss reported by child separately"
+}

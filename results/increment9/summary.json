@@ -1,0 +1,387 @@
+{
+  "protocol_sha256": "b7da381cc83b08a712ba6e0f5b8fac4ca2a4f5fdf8f961e8e9ff7a0d630bf053",
+  "verdicts": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS",
+    "F": "PASS",
+    "G": "PASS",
+    "H": "PASS"
+  },
+  "conditions": {
+    "A": {
+      "verdict": "PASS",
+      "facts": {
+        "qwen_shards_streaming_sha_equals_lfs": true,
+        "final_rehash_all_match": true,
+        "runtime_full_integrity_bytes": {
+          "smollm": 3422777952,
+          "qwen": 15231271888
+        },
+        "runtime_integrity_covers_files": true
+      }
+    },
+    "B": {
+      "verdict": "PASS",
+      "facts": {
+        "exit_code": 0,
+        "watchdog": null,
+        "memory_max": 2147483648,
+        "swap_max": 0,
+        "memory_peak": 2147483648,
+        "swap_peak": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "max_events": 21412,
+        "scope_verified_inside": true,
+        "global_oom_kill_delta": 0,
+        "worker_read_bytes": 18567114752,
+        "startup_read_bytes": 3422781440,
+        "scope_file_peak": 2074345472,
+        "scope_anon_peak": 71458816,
+        "host_disk_delta": {
+          "0 C:": {
+            "DiskReadBytesPersec": 22765352960,
+            "DiskReadsPersec": 26089,
+            "DiskWriteBytesPersec": 1912311296
+          },
+          "1": {
+            "DiskReadBytesPersec": 0,
+            "DiskReadsPersec": 0,
+            "DiskWriteBytesPersec": 0
+          },
+          "2": {
+            "DiskReadBytesPersec": 0,
+            "DiskReadsPersec": 0,
+            "DiskWriteBytesPersec": 0
+          }
+        },
+        "resident_bytes_after_eviction": 0,
+        "file_bytes": 3422777952,
+        "digests_equal_increment8": true,
+        "prefill_tokens": 5,
+        "decodes": 3,
+        "parity_increment8_fp32_oracle": true
+      }
+    },
+    "C": {
+      "verdict": "PASS",
+      "facts": {
+        "warm": {
+          "resident_before_launch": 3422781440,
+          "file_bytes": 3422777952,
+          "worker_block_read_bytes": 0,
+          "startup_block_read_bytes": 24576,
+          "scope_memory_peak": 112832512,
+          "scope_file_peak": 39538688,
+          "logical_inference_bytes": 27382054912,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 144995328,
+              "DiskReadsPersec": 4160,
+              "DiskWriteBytesPersec": 8423936
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          }
+        },
+        "evicted": {
+          "worker_block_read_bytes": 18567114752,
+          "startup_block_read_bytes": 3422781440,
+          "scope_memory_peak": 2147483648,
+          "scope_file_peak": 2074345472,
+          "logical_inference_bytes": 27382054912,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 22765352960,
+              "DiskReadsPersec": 26089,
+              "DiskWriteBytesPersec": 1912311296
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          }
+        },
+        "qwen": {
+          "worker_block_read_bytes": 112420581376,
+          "startup_block_read_bytes": 15231524864,
+          "logical_inference_bytes": 113129963520,
+          "scope_memory_peak": 2147483648,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 130314880512,
+              "DiskReadsPersec": 80074,
+              "DiskWriteBytesPersec": 2693788160
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          }
+        },
+        "note": "host disk counters are global to the Windows physical disk"
+      }
+    },
+    "D": {
+      "verdict": "PASS",
+      "facts": {
+        "memtotal_at_start": 11483848704,
+        "runtime_unique_active_bf16_bytes": 14141295616,
+        "independent_from_official_headers": 14141295616,
+        "margin_bytes": 2657446912
+      }
+    },
+    "E": {
+      "verdict": "PASS",
+      "facts": {
+        "prefill_tokens": 5,
+        "decodes": 3,
+        "all_tensors_used": true,
+        "coverage_exact": true,
+        "layers": 28,
+        "continuation": [
+          12095,
+          13,
+          1084,
+          374
+        ],
+        "generated_text": "The capital of France is Paris. It is",
+        "lengths": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "generations": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "released": true
+      }
+    },
+    "F": {
+      "verdict": "PASS",
+      "facts": {
+        "stock_fp32": {
+          "passed": true,
+          "role": "gate contract",
+          "coverage": {
+            "positions": 8,
+            "logits_per_position": 152064,
+            "layers": 28,
+            "kv_layers": 28,
+            "full_arrays": true
+          },
+          "compared": {
+            "logits": 1216512,
+            "hidden": 802816,
+            "kv": 745472
+          },
+          "max_abs": {
+            "logits": 0.00016573590208324163,
+            "hidden": 0.003953071715841361,
+            "kv": 9.127369236239247e-05
+          },
+          "failures": {
+            "logits": 0,
+            "hidden": 0,
+            "kv": 0
+          },
+          "upstream_greedy": true
+        },
+        "full64": {
+          "passed": true,
+          "role": "gate contract",
+          "coverage": {
+            "positions": 8,
+            "logits_per_position": 152064,
+            "layers": 28,
+            "kv_layers": 28,
+            "full_arrays": true
+          },
+          "compared": {
+            "logits": 1216512,
+            "hidden": 802816,
+            "kv": 745472
+          },
+          "max_abs": {
+            "logits": 2.5490720645393594e-12,
+            "hidden": 6.298250809777528e-11,
+            "kv": 5.755396159656812e-13
+          },
+          "failures": {
+            "logits": 0,
+            "hidden": 0,
+            "kv": 0
+          },
+          "upstream_greedy": true
+        },
+        "stock_fp64": {
+          "passed": false,
+          "role": "mandatory diagnostic, raw verdict kept",
+          "coverage": {
+            "positions": 8,
+            "logits_per_position": 152064,
+            "layers": 28,
+            "kv_layers": 28,
+            "full_arrays": true
+          },
+          "compared": {
+            "logits": 1216512,
+            "hidden": 802816,
+            "kv": 745472
+          },
+          "max_abs": {
+            "logits": 1.039598474505965e-05,
+            "hidden": 0.0008420377935181023,
+            "kv": 1.327288345009947e-05
+          },
+          "failures": {
+            "logits": 0,
+            "hidden": 31,
+            "kv": 0
+          },
+          "upstream_greedy": true
+        },
+        "small_case_checks_ok": true,
+        "phase_a_parity": true,
+        "stock_fp64_diagnostic_raw_verdict": "FAIL"
+      }
+    },
+    "G": {
+      "verdict": "PASS",
+      "facts": {
+        "phase_b": {
+          "exit_code": 0,
+          "watchdog": null,
+          "memory_max": 2147483648,
+          "swap_max": 0,
+          "memory_peak": 2147483648,
+          "swap_peak": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "max_events": 63980,
+          "scope_verified_inside": true,
+          "global_oom_kill_delta": 0,
+          "worker_read_bytes": 112420581376,
+          "startup_read_bytes": 15231524864,
+          "scope_file_peak": 2040545280,
+          "scope_anon_peak": 105037824,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 130314880512,
+              "DiskReadsPersec": 80074,
+              "DiskWriteBytesPersec": 2693788160
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          }
+        },
+        "phase_b_peak_rss": 124768256,
+        "phase_b_vm_peak": 142110720,
+        "phase_b_rlimit_as": [
+          268435456,
+          268435456
+        ],
+        "phase_b_arena_plan": 43658344,
+        "phase_b_vmswap": 0,
+        "phase_a_oom_kill": [
+          0,
+          0
+        ],
+        "all_supervised_runs": {
+          "phaseA-W": {
+            "exit_code": 0,
+            "memory_peak": 112832512,
+            "memory_max": 2147483648,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "global_oom_kill_delta": 0
+          },
+          "phaseA-P": {
+            "exit_code": 0,
+            "memory_peak": 2147483648,
+            "memory_max": 2147483648,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "global_oom_kill_delta": 0
+          },
+          "phaseB-sync": {
+            "exit_code": 0,
+            "memory_peak": 2147483648,
+            "memory_max": 2147483648,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "global_oom_kill_delta": 0
+          },
+          "phaseB-pipeline": {
+            "exit_code": 0,
+            "memory_peak": 2147483648,
+            "memory_max": 2147483648,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "global_oom_kill_delta": 0
+          },
+          "faults": {
+            "exit_code": 0,
+            "memory_peak": 2147483648,
+            "memory_max": 2147483648,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "global_oom_kill_delta": 0
+          }
+        }
+      }
+    },
+    "H": {
+      "verdict": "PASS",
+      "facts": {
+        "pytest": "484 passed in 36.39s",
+        "preservation": true,
+        "modified_tracked": [
+          "README.md"
+        ],
+        "gate8_all_pass": true,
+        "gate7_passed": true
+      }
+    }
+  }
+}

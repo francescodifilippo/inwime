@@ -1,0 +1,221 @@
+{
+  "note": "local captures excluded from Git (no weights); FP64 runtime outputs and oracle NPZ",
+  "files": {
+    "artifacts/increment9/oracle-full64.json": {
+      "nbytes": 2511,
+      "sha256": "98e4ee7e1a4f9f58a0b9fa1bca98bce516f8d38e7d4d5371a946f2bb6775ef8f"
+    },
+    "artifacts/increment9/oracle-full64.npz": {
+      "nbytes": 17264851,
+      "sha256": "a9e1223a287ad3b61fb20160f97c45e08a9140915aa6983c9e687f2bcd9705b1"
+    },
+    "artifacts/increment9/oracle-stock_fp32.json": {
+      "nbytes": 2513,
+      "sha256": "fb6f80c2421a24eeeb6d3de9eb827f59b0d71db78a9e8ddce8d3e19d36bf901e"
+    },
+    "artifacts/increment9/oracle-stock_fp32.npz": {
+      "nbytes": 9649698,
+      "sha256": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef"
+    },
+    "artifacts/increment9/oracle-stock_fp64.json": {
+      "nbytes": 2196,
+      "sha256": "0eb7b4675d26aaa3891b422a45000f11b335b5199cc20d597d7c3f9903d8c866"
+    },
+    "artifacts/increment9/oracle-stock_fp64.npz": {
+      "nbytes": 17266826,
+      "sha256": "3a1adf78a6b63e5d3c17f292be2486654601c8abc9cf58cb4d717be5726f5347"
+    },
+    "artifacts/increment9/phaseA-P/decode.0.hidden.f64": {
+      "nbytes": 1966080,
+      "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+    },
+    "artifacts/increment9/phaseA-P/decode.0.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment9/phaseA-P/decode.0.logits.f64": {
+      "nbytes": 1966080,
+      "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+    },
+    "artifacts/increment9/phaseA-P/decode.1.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+    },
+    "artifacts/increment9/phaseA-P/decode.1.kv.f64": {
+      "nbytes": 4718592,
+      "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+    },
+    "artifacts/increment9/phaseA-P/decode.1.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+    },
+    "artifacts/increment9/phaseA-P/decode.2.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+    },
+    "artifacts/increment9/phaseA-P/decode.2.kv.f64": {
+      "nbytes": 5505024,
+      "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+    },
+    "artifacts/increment9/phaseA-P/decode.2.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+    },
+    "artifacts/increment9/phaseA-P/decode.3.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+    },
+    "artifacts/increment9/phaseA-P/decode.3.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment9/phaseA-P/decode.3.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+    },
+    "artifacts/increment9/phaseA-W/decode.0.hidden.f64": {
+      "nbytes": 1966080,
+      "sha256": "fb0711f33c4f29c2f8c77da01c63c7f3d675ffe5f73c46adb3c8d6423083bd91"
+    },
+    "artifacts/increment9/phaseA-W/decode.0.kv.f64": {
+      "nbytes": 3932160,
+      "sha256": "045791c6a3b19c1dea49f7e96032af2ec3a5282f677fa2f84b8494a79d8ef2d8"
+    },
+    "artifacts/increment9/phaseA-W/decode.0.logits.f64": {
+      "nbytes": 1966080,
+      "sha256": "e4df5b6cd20f14a762edd1ed2013197f568cb1b7faf6cc83db6b60a478a2036a"
+    },
+    "artifacts/increment9/phaseA-W/decode.1.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "5abc28ceb6ad3f732b3acdcaf463aace24b02b05bbff83a25a8e304557eaa0f7"
+    },
+    "artifacts/increment9/phaseA-W/decode.1.kv.f64": {
+      "nbytes": 4718592,
+      "sha256": "2780cd27c80c3e237a6845fd9a97d2d5ba1b8e429c4733081ab9899058fda719"
+    },
+    "artifacts/increment9/phaseA-W/decode.1.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "6ea2d41c0dd08c79df563b3aa98c8b55e58ee90b6d15b94bb819009388b57b48"
+    },
+    "artifacts/increment9/phaseA-W/decode.2.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "27542d00fd1e6a61ac0ecb9ac449dc400d0774a3bcc41d1f2b482b62c46245c6"
+    },
+    "artifacts/increment9/phaseA-W/decode.2.kv.f64": {
+      "nbytes": 5505024,
+      "sha256": "6a2cb50178d7d7aa5b95bff36d3e2205dbd16cddfb7021445e70a7bbe0145acc"
+    },
+    "artifacts/increment9/phaseA-W/decode.2.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "e03f04eb4e694d587dc936be531757c5bf6bdcc88b812c9cae121109ec27fda4"
+    },
+    "artifacts/increment9/phaseA-W/decode.3.hidden.f64": {
+      "nbytes": 393216,
+      "sha256": "4032f291830baabca916dbc01a2813037746de0d14bd06275775ce9f6695b993"
+    },
+    "artifacts/increment9/phaseA-W/decode.3.kv.f64": {
+      "nbytes": 6291456,
+      "sha256": "b055b9fe2c91ab9de869a24b01005fcd09192d269430117f08b7833ceb16b154"
+    },
+    "artifacts/increment9/phaseA-W/decode.3.logits.f64": {
+      "nbytes": 393216,
+      "sha256": "f2e8643aa978e305177bc76ff6cec828d56fc42c4f799442725c308f1c5b61bd"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.0.hidden.f64": {
+      "nbytes": 4014080,
+      "sha256": "a72875a56bf5b5b798632c585baa3e3a13b568c0f0b8a92671bbc24e9123ac15"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.0.kv.f64": {
+      "nbytes": 1146880,
+      "sha256": "c3533b24edd9ab6004c31d7fbc6a80626063950d297742f6c1399f2e25558f76"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.0.logits.f64": {
+      "nbytes": 6082560,
+      "sha256": "907c0fa5f0b5298a4e047af7e0adb4f69967fcd74fd603f73017846fe690f847"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.1.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "258141b714083066f30a6622f6e43bdc70575038b2f9ed701b87ebb0bef27ac1"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.1.kv.f64": {
+      "nbytes": 1376256,
+      "sha256": "1997e07ca971a1c4d3a66ff7189ddf3fe42f770965779bdfba7dd7e23c276755"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.1.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "acf1f79e3ab125001038b3a569bdc9c341cab56c9c9de5123eb7548facc0c60f"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.2.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "2eaa5fdfa3248cb7bfcd089cf54717cc7cc101d5719d8f249420e9bb1f13b4fd"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.2.kv.f64": {
+      "nbytes": 1605632,
+      "sha256": "e8682f44f76e4074a38ca4e0562665414f3ed20440aba31f91780a2375e5c6ae"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.2.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "e19a9d20297e30e6b35fc3cb991e65a78f9bf8406d21c1e54f514de128590f6e"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.3.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "db3414a0a586269067029bb0d67c5793187376a3a856151cc7157f93a7b93479"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.3.kv.f64": {
+      "nbytes": 1835008,
+      "sha256": "36e5fd24ca25245bb8a6f7f34b09705821df0a51c89c93181dadd32538ef7d07"
+    },
+    "artifacts/increment9/phaseB-pipeline/decode.3.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "061a094fee5188fa81898af14a71d9021809851cedccbc1ae4460ee51415c488"
+    },
+    "artifacts/increment9/phaseB-sync/decode.0.hidden.f64": {
+      "nbytes": 4014080,
+      "sha256": "a72875a56bf5b5b798632c585baa3e3a13b568c0f0b8a92671bbc24e9123ac15"
+    },
+    "artifacts/increment9/phaseB-sync/decode.0.kv.f64": {
+      "nbytes": 1146880,
+      "sha256": "c3533b24edd9ab6004c31d7fbc6a80626063950d297742f6c1399f2e25558f76"
+    },
+    "artifacts/increment9/phaseB-sync/decode.0.logits.f64": {
+      "nbytes": 6082560,
+      "sha256": "907c0fa5f0b5298a4e047af7e0adb4f69967fcd74fd603f73017846fe690f847"
+    },
+    "artifacts/increment9/phaseB-sync/decode.1.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "258141b714083066f30a6622f6e43bdc70575038b2f9ed701b87ebb0bef27ac1"
+    },
+    "artifacts/increment9/phaseB-sync/decode.1.kv.f64": {
+      "nbytes": 1376256,
+      "sha256": "1997e07ca971a1c4d3a66ff7189ddf3fe42f770965779bdfba7dd7e23c276755"
+    },
+    "artifacts/increment9/phaseB-sync/decode.1.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "acf1f79e3ab125001038b3a569bdc9c341cab56c9c9de5123eb7548facc0c60f"
+    },
+    "artifacts/increment9/phaseB-sync/decode.2.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "2eaa5fdfa3248cb7bfcd089cf54717cc7cc101d5719d8f249420e9bb1f13b4fd"
+    },
+    "artifacts/increment9/phaseB-sync/decode.2.kv.f64": {
+      "nbytes": 1605632,
+      "sha256": "e8682f44f76e4074a38ca4e0562665414f3ed20440aba31f91780a2375e5c6ae"
+    },
+    "artifacts/increment9/phaseB-sync/decode.2.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "e19a9d20297e30e6b35fc3cb991e65a78f9bf8406d21c1e54f514de128590f6e"
+    },
+    "artifacts/increment9/phaseB-sync/decode.3.hidden.f64": {
+      "nbytes": 802816,
+      "sha256": "db3414a0a586269067029bb0d67c5793187376a3a856151cc7157f93a7b93479"
+    },
+    "artifacts/increment9/phaseB-sync/decode.3.kv.f64": {
+      "nbytes": 1835008,
+      "sha256": "36e5fd24ca25245bb8a6f7f34b09705821df0a51c89c93181dadd32538ef7d07"
+    },
+    "artifacts/increment9/phaseB-sync/decode.3.logits.f64": {
+      "nbytes": 1216512,
+      "sha256": "061a094fee5188fa81898af14a71d9021809851cedccbc1ae4460ee51415c488"
+    }
+  }
+}

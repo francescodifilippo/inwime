@@ -1,0 +1,266 @@
+{
+  "captured_unix_s": 1794757645.1315062,
+  "kernel": "6.18.58.1-microsoft-standard-WSL2",
+  "logical_cpus": 20,
+  "wsl_meminfo_bytes": {
+    "MemTotal": 11483848704,
+    "MemFree": 2229866496,
+    "MemAvailable": 8942764032,
+    "Cached": 6904115200,
+    "Buffers": 31084544,
+    "Active(file)": 870125568,
+    "Inactive(file)": 5974843392,
+    "AnonPages": 1764478976,
+    "Shmem": 90247168,
+    "SwapTotal": 8589934592,
+    "SwapFree": 7792214016,
+    "Dirty": 491520
+  },
+  "swap_devices": [
+    "Filename\t\t\t\tType\t\tSize\t\tUsed\t\tPriority",
+    "/dev/sdc                                partition\t8388608\t\t779024\t\t-2"
+  ],
+  "swappiness": "60",
+  "cgroup_filesystem": true,
+  "cgroup_v2_mounted": true,
+  "own_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-68f8c310-d700-42a2-85cb-fdd07a304439.scope",
+  "cgroup_chain": [
+    {
+      "path": "/sys/fs/cgroup",
+      "controllers": "cpuset cpu io memory hugetlb pids rdma",
+      "subtree_control": "cpu memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice",
+      "controllers": "cpu memory pids",
+      "subtree_control": "cpu memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice",
+      "controllers": "cpu memory pids",
+      "subtree_control": "cpu memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service",
+      "controllers": "cpu memory pids",
+      "subtree_control": "cpu memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice",
+      "controllers": "cpu memory pids",
+      "subtree_control": "memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice",
+      "controllers": "memory pids",
+      "subtree_control": "memory pids",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-68f8c310-d700-42a2-85cb-fdd07a304439.scope",
+      "controllers": "memory pids",
+      "subtree_control": "",
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.swap.max": "max"
+    }
+  ],
+  "root_subtree_control": "cpu memory pids",
+  "io_controller_enabled_for_children": false,
+  "user_manager_state": "degraded",
+  "systemd_run": "/usr/bin/systemd-run",
+  "fincore": "/usr/bin/fincore",
+  "transparent_hugepage": "always [madvise] never",
+  "repository_filesystem_bytes": {
+    "total": 1081101176832,
+    "used": 133099794432,
+    "free": 893009027072
+  },
+  "mnt_c_statfs_bytes": {
+    "total": 1798804860928,
+    "used": 1662866698240,
+    "free": 135938162688
+  },
+  "windows": {
+    "TotalPhysicalMemory": 16900739072,
+    "FreePhysicalMemoryKiB": 908624,
+    "LogicalDisks": [
+      {
+        "DeviceID": "C:",
+        "FileSystem": "NTFS",
+        "Size": 1798804860928,
+        "FreeSpace": 135938162688
+      },
+      {
+        "DeviceID": "G:",
+        "FileSystem": "FAT32",
+        "Size": 1798804860928,
+        "FreeSpace": 129141252096
+      }
+    ],
+    "PhysicalDisks": [
+      {
+        "Index": 2,
+        "Model": "Disco virtuale Microsoft",
+        "Size": 32901120,
+        "InterfaceType": "SCSI"
+      },
+      {
+        "Index": 1,
+        "Model": "Sabrent SSD SCSI Disk Device",
+        "Size": 512105932800,
+        "InterfaceType": "SCSI"
+      },
+      {
+        "Index": 0,
+        "Model": "Samsung SSD 990 EVO 2TB",
+        "Size": 2000396321280,
+        "InterfaceType": "SCSI"
+      }
+    ],
+    "WslDistributions": [
+      {
+        "Name": "Ubuntu",
+        "BasePathDrive": "C:"
+      }
+    ],
+    "WslConfig": [
+      "[wsl2]",
+      "memory=11GB",
+      "swap=8GB",
+      "[experimental]",
+      "sparseVhd=true"
+    ]
+  },
+  "checkpoints": [
+    {
+      "directory": "inc4-dense",
+      "files": 5,
+      "bytes": 3163295,
+      "safetensors": []
+    },
+    {
+      "directory": "inc4-large",
+      "files": 194,
+      "bytes": 12885076934,
+      "safetensors": []
+    },
+    {
+      "directory": "inc4-medium",
+      "files": 10,
+      "bytes": 8416652,
+      "safetensors": []
+    },
+    {
+      "directory": "inc4-moe",
+      "files": 8,
+      "bytes": 6321184,
+      "safetensors": []
+    },
+    {
+      "directory": "inc5-dense-12g",
+      "files": 194,
+      "bytes": 12889871271,
+      "safetensors": []
+    },
+    {
+      "directory": "inc6-final",
+      "files": 0,
+      "bytes": 0,
+      "safetensors": []
+    },
+    {
+      "directory": "inc6-probe",
+      "files": 2,
+      "bytes": 4205883,
+      "safetensors": [
+        "model.safetensors"
+      ]
+    },
+    {
+      "directory": "inc6-reviewed",
+      "files": 0,
+      "bytes": 0,
+      "safetensors": []
+    },
+    {
+      "directory": "inc6-small",
+      "files": 0,
+      "bytes": 0,
+      "safetensors": []
+    },
+    {
+      "directory": "qwen2.5-7b-d149729",
+      "files": 15,
+      "bytes": 15242806889,
+      "safetensors": [
+        "model-00001-of-00004.safetensors",
+        "model-00002-of-00004.safetensors",
+        "model-00003-of-00004.safetensors",
+        "model-00004-of-00004.safetensors"
+      ]
+    },
+    {
+      "directory": "smollm2-1.7b-d4c18cc",
+      "files": 9,
+      "bytes": 3424897220,
+      "safetensors": [
+        "model.safetensors"
+      ]
+    },
+    {
+      "directory": "smollm2-1.7b-d4c18cc-sharded",
+      "files": 12,
+      "bytes": 3424934162,
+      "safetensors": [
+        "model-00001-of-00003.safetensors",
+        "model-00002-of-00003.safetensors",
+        "model-00003-of-00003.safetensors"
+      ]
+    },
+    {
+      "directory": "smollm2-135m-93efa2f",
+      "files": 9,
+      "bytes": 271179026,
+      "safetensors": [
+        "model.safetensors"
+      ]
+    },
+    {
+      "directory": "smollm2-135m-93efa2f-sharded",
+      "files": 12,
+      "bytes": 271227141,
+      "safetensors": [
+        "model-00001-of-00003.safetensors",
+        "model-00002-of-00003.safetensors",
+        "model-00003-of-00003.safetensors"
+      ]
+    }
+  ],
+  "huggingface_hub_cache_entries": [
+    "models--ACE-Step--Ace-Step1.5"
+  ],
+  "semantics": {
+    "MemTotal": "RAM assigned to the WSL2 VM, not host RAM",
+    "Cached": "global Linux page cache, not attributable to one process by itself",
+    "mnt_c_statfs_bytes": "Windows volume holding the WSL VHDX (verify BasePath)",
+    "repository_filesystem_bytes": "virtual ext4 size; may exceed real Windows free space"
+  }
+}
