@@ -1,6 +1,6 @@
 {
   "baseline": "68ba9f3adf3cffb89b18b19525644fa0d7c6d806",
-  "head": "68ba9f3adf3cffb89b18b19525644fa0d7c6d806",
+  "head": "6031b5263a24b350f97bab4e37874c6db61a8337",
   "modified_tracked": [
     "README.md"
   ],
@@ -9,7 +9,7 @@
   ],
   "unexpected_modifications": [],
   "deleted": [],
-  "new_untracked": [
+  "added_since_baseline": [
     "docs/RUNTIME_CPU_INCREMENT_9.md",
     "inwime_runtime/qwen2.py",
     "results/increment9/README.md",
@@ -59,6 +59,7 @@
     "results/increment9/scope48mib-135m-supervisor.final.txt",
     "results/increment9/scope48mib-135m-supervisor.json",
     "results/increment9/scope48mib-135m-supervisor.log",
+    "results/increment9/summary.json",
     "results/increment9/supervisor-faults.final.txt",
     "results/increment9/supervisor-faults.json",
     "results/increment9/supervisor-faults.log",
@@ -84,5 +85,23 @@
     "tools/report_increment9.py",
     "tools/verify_increment9.py"
   ],
+  "new_untracked": [
+    "docs/REVIEW_INCREMENT_9.md",
+    "results/increment9/integrity-final.json",
+    "results/increment9/protocol-amendment-remediation.json",
+    "results/increment9/review/gate-mutations-green.txt",
+    "results/increment9/review/gate-mutations-red.txt",
+    "results/increment9/review/mutations_green.py",
+    "results/increment9/review/mutations_red.py",
+    "results/increment9/review/parity-full64-reverified.json",
+    "results/increment9/review/parity-stock_fp32-reverified.json",
+    "results/increment9/review/parity-stock_fp64-reverified.json",
+    "results/increment9/review/tool-tests-green.txt",
+    "results/increment9/review/tool-tests-red.txt",
+    "results/increment9/sanitization-manifest.json",
+    "tests/test_increment9_review.py",
+    "tools/sanitize9.py"
+  ],
+  "staged": [],
   "passed": true
 }

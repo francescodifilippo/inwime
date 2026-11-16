@@ -5,7 +5,7 @@
   "command": [
     "python3",
     "-c",
-    "\nf=open('/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass\nf=open('/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass"
+    "\nf=open('<repo>/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass\nf=open('<repo>/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass"
   ],
   "memory_max": 134217728,
   "swap_max": 0,
@@ -67,16 +67,16 @@
     "DirectMap1G": 15032385536
   },
   "files": [
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin"
+    "<repo>/artifacts/increment9/probe.bin"
   ],
   "residency_initial": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin": {
+    "<repo>/artifacts/increment9/probe.bin": {
       "resident_bytes": 300003328,
       "size_bytes": 300000000
     }
   },
   "residency_after_eviction": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin": {
+    "<repo>/artifacts/increment9/probe.bin": {
       "resident_bytes": 0,
       "size_bytes": 300000000
     }
@@ -151,11 +151,11 @@
     "MemorySwapMax=0",
     "--",
     "/bin/sh",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/cgroup9_finalize.sh",
-    "/tmp/claude-1000/-home-francesco-GIT-francescodifilippo-ooc-inference/e631c585-76b9-4d21-8438-7f3dd82b9176/scratchpad/probe-sup.final.txt",
+    "<repo>/tools/cgroup9_finalize.sh",
+    "<scratch>/probe-sup.final.txt",
     "python3",
     "-c",
-    "\nf=open('/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass\nf=open('/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass"
+    "\nf=open('<repo>/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass\nf=open('<repo>/artifacts/increment9/probe.bin','rb',buffering=0)\nwhile f.read(1<<20): pass"
   ],
   "exit_code": 0,
   "watchdog_reason": null,
@@ -363,7 +363,7 @@
     }
   },
   "residency_after": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/artifacts/increment9/probe.bin": {
+    "<repo>/artifacts/increment9/probe.bin": {
       "resident_bytes": 128036864,
       "size_bytes": 300000000
     }

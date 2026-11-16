@@ -68,10 +68,11 @@ def evidence(tmp_path, monkeypatch):
     """Minimal coherent runtime capture + oracle for the verifier."""
     capture = tmp_path/'cap'; capture.mkdir()
     rng = np.random.default_rng(0)
-    seq, layers, vocab, width, kvw = [5, 7, 9], 2, 6, 4, 2
+    seq, layers, vocab, width, kvw = [5, 7, 9], 2, 12, 4, 2
     full = dict(logits=rng.normal(size=(3, vocab)), hidden=rng.normal(size=(layers, 3, width)),
                 kv=rng.normal(size=(layers, 2, 3, kvw)))
-    full['logits'][0, 9 % vocab] = 50; full['logits'][1, 3] = 50; full['logits'][2, 1] = 50
+    # Greedy-consistent: the choice after the prompt [5, 7] is 9, the token the decode feeds back.
+    full['logits'][0, 3] = 50; full['logits'][1, 9] = 50; full['logits'][2, 1] = 50
     phases, captures, start = [], {}, 0
     for i, ids in enumerate([[5, 7], [9]]):
         stop = start+len(ids)
@@ -102,7 +103,7 @@ def evidence(tmp_path, monkeypatch):
 
 def test_verifier_exact_pass(evidence):
     report = verify(evidence.runtime, evidence.capture, evidence.oracle, evidence.protocol)
-    assert report['passed'] and report['compared_elements']['logits'] == 18
+    assert report['passed'] and report['compared_elements']['logits'] == 36
 
 
 def rewrite(path, **changes):
@@ -147,7 +148,6 @@ def test_verifier_detects_numerical_failures(evidence, case):
 EVIDENCE = Path('results/increment9')
 
 
-@pytest.mark.skipif(not (EVIDENCE/'summary.json').exists(), reason='increment-9 evidence not acquired')
 @pytest.mark.parametrize('case,condition,expected', [
     ('oom_kill', 'G', 'FAIL'), ('missing_full64', 'F', 'NOT PROVEN'), ('unique_bytes', 'D', 'FAIL'),
     ('warm_charged', 'C', 'FAIL'), ('not_evicted', 'B', 'FAIL'), ('peak_over', 'B', 'FAIL'),
@@ -155,7 +155,7 @@ EVIDENCE = Path('results/increment9')
 def test_gate_rejects_altered_real_evidence(tmp_path, case, condition, expected):
     import shutil
     d = tmp_path/'e'
-    shutil.copytree(EVIDENCE, d)
+    shutil.copytree(EVIDENCE, d, ignore=shutil.ignore_patterns('review'))
     edit = lambda name, fn: (lambda data: (fn(data), (d/name).write_text(json.dumps(data))))(json.loads((d/name).read_text()))
     if case == 'oom_kill':
         edit('phaseB-pipeline-supervisor.json', lambda x: x['finalizer']['memory.events'].update(oom_kill=1))
@@ -171,4 +171,12 @@ def test_gate_rejects_altered_real_evidence(tmp_path, case, condition, expected)
     if case == 'pytest_failed': (d/'pytest-final.txt').write_text('1 failed, 474 passed in 1s\n')
     if case == 'one_decode_less':
         edit('phaseA-P-runtime.json', lambda x: x.update(phases=x['phases'][:3]))
-    assert gate(d)['verdicts'][condition] == expected
+    # Keep the sanitization manifest consistent and the git state fixed, so that the
+    # condition itself, not the manifest digest, has to reject the altered evidence.
+    manifest = json.loads((d/'sanitization-manifest.json').read_text())
+    for name, entry in manifest['files'].items():
+        entry['sanitized_sha256'] = hashlib.sha256((d/name).read_bytes()).hexdigest()
+    (d/'sanitization-manifest.json').write_text(json.dumps(manifest))
+    clean = dict(modified_tracked=['README.md'], deleted=[], unexpected_modifications=[])
+    report = gate(d, originals=d/'no-originals', preservation=lambda baseline, intentional: clean)
+    assert report['verdicts'][condition] == expected

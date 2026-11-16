@@ -20,8 +20,17 @@ from inwime_runtime.math_cpu import NativeMath
 from inwime_runtime.tokenizer import LlamaTokenizer
 from .benchmark_increment8 import (COUNTERS, write_json, proc_status, io_counters, delta,
                                    digest_views, kv_prefix, save_values)
+from .sanitize9 import portable
 
 FAMILIES = {'llama': LlamaRuntime, 'qwen2': Qwen2Runtime}
+
+
+def repository_path(path):
+    """Repository-relative when inside the checkout: evidence carries no absolute home path."""
+    try:
+        return str(Path(os.path.abspath(path)).relative_to(Path.cwd()))
+    except ValueError:
+        return portable(str(path))
 
 
 def meminfo():
@@ -108,7 +117,7 @@ def run(a):
     scope = verify_scope()  # before tokenizer, catalog, SHA or runtime construction
     if a.as_mib:
         resource.setrlimit(resource.RLIMIT_AS, (a.as_mib*2**20, a.as_mib*2**20))
-    report = dict(family=a.family, mode=a.mode, scenario='decode', checkpoint=str(a.checkpoint),
+    report = dict(family=a.family, mode=a.mode, scenario='decode', checkpoint=repository_path(a.checkpoint),
                   tile_elements=a.tile_elements, capacity=a.capacity, decodes=a.decodes,
                   rlimit_as_bytes=resource.getrlimit(resource.RLIMIT_AS), scope=scope,
                   meminfo_start=meminfo(), cgroup_start=cgroup_snapshot(),

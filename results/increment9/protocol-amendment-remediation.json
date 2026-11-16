@@ -1,0 +1,140 @@
+{
+  "increment": 9,
+  "document": "remediation amendment to protocol.json after the independent review of increment 9",
+  "written_utc": "2026-11-16T00:44:36Z",
+  "status": "post-measurement remediation: written after every increment-9 measurement and after the independent review; every change tightens the acceptance gate, none loosens it, no approved numerical threshold is changed",
+  "amends_protocol_sha256": "b7da381cc83b08a712ba6e0f5b8fac4ca2a4f5fdf8f961e8e9ff7a0d630bf053",
+  "protocol_json_untouched": "protocol.json is byte-identical to the committed file; the gate pins its SHA256 and reads both files",
+  "review_limit": "the review could not verify the content of protocol.json before the 14:56:31Z amendment, because that amendment was written in place; only the amended text is in Git",
+  "unchanged": {
+    "fp32_comparison": {
+      "atol": 0.002,
+      "rtol": 0.0002
+    },
+    "fp64_comparison": {
+      "atol": 2e-05,
+      "rtol": 2e-06
+    },
+    "memory.max": 2147483648,
+    "memory.swap.max": 0,
+    "stock_fp64_diagnostic": "raw verdict FAIL kept and reported; never rewritten to PASS"
+  },
+  "gate_parameters": {
+    "anon_kernel_peak_max_bytes": 268435456,
+    "worker_vmhwm_max_bytes": 268435456,
+    "resident_after_eviction_max_fraction": 0.01,
+    "phase_b_block_read_min_fraction": 0.9,
+    "minimum_pytest_passed": 613,
+    "minimum_unittest_ran": {
+      "oracle9-checks.txt": 3,
+      "check-oracle8.txt": 1,
+      "check-oracle-precision7.txt": 5
+    },
+    "intentional_modifications": [
+      "README.md"
+    ]
+  },
+  "changes": [
+    {
+      "id": "R1",
+      "area": "fail-closed gate",
+      "before": "a condition could be PASS with an evidence file missing, empty or reduced to its derived boolean",
+      "after": "a missing file or field is NOT PROVEN, a contradicted fact is FAIL; 'passed', 'all_match' and similar derived booleans are recomputed from raw per-file, per-phase and per-tensor records",
+      "kind": "tightening"
+    },
+    {
+      "id": "R2",
+      "area": "condition F",
+      "before": "only stock_fp32 and full64 reports were required",
+      "after": "the stock_fp64 diagnostic report is mandatory evidence: if missing F is NOT PROVEN; its raw FAIL does not fail F and is reported unchanged; a report whose recorded verdict differs from its own comparisons is FAIL",
+      "kind": "tightening"
+    },
+    {
+      "id": "R3",
+      "area": "binding of evidence",
+      "before": "reports were read independently",
+      "after": "parity reports must name the phase-B runtime report, revision, sequence, contract, dtype, profile, approved thresholds and complete element counts (8x152064 logits, 28x8x3584 residuals, KV prefix per phase); the worker's scope unit and output file must be the supervisor's; runtime source SHA256 must equal the official LFS digests of the preflight; per-tensor read counters must equal the official header shapes times the positions; gate 7, gate 8 and the git preservation are recomputed by their own tools; capture files are re-hashed when present locally",
+      "kind": "tightening"
+    },
+    {
+      "id": "R4",
+      "area": "condition A",
+      "before": "fact 'streaming SHA equals LFS' compared the copied official digest with itself",
+      "after": "proof is post-acquisition only: full SHA256 computed by the runtime at the start of both phase-B runs and the recorded re-hash, each compared per file with the official LFS digests of the preflight, over the complete file set (4 shards, index, SmolLM2 model). The acquisition-time check of the historical run is stated as a limitation: the code raised on mismatch, the computed digest was not recorded",
+      "kind": "tightening"
+    },
+    {
+      "id": "R5",
+      "area": "phase B eviction and reads (conditions C, D, G)",
+      "before": "only worker block reads > 0",
+      "after": "for both phaseB-sync and phaseB-pipeline: condition 'evicted'; residency after eviction <= 1% of each shard, shard set equal to the four shards and sizes equal to the hashed files; inference block reads >= 90% of logical inference bytes",
+      "measured": {
+        "resident_after_eviction_bytes": 0,
+        "sync_block_over_logical": [
+          112420581376,
+          113129963520
+        ]
+      },
+      "kind": "tightening"
+    },
+    {
+      "id": "R6",
+      "area": "cgroup memory criterion (conditions B, G)",
+      "before": "memory.peak <= memory.max (true by kernel enforcement) with oom/oom_kill = 0 and swap 0; anonymous+kernel charge 'well below the limit', reported only",
+      "after": "in addition, for every supervised run: sampled peak of memory.stat anon + kernel <= 268435456 B and worker VmHWM <= 268435456 B (the RLIMIT_AS of the worker, 12.5% of memory.max)",
+      "measured_maximum": {
+        "anon_plus_kernel_bytes": 110895104,
+        "worker_vmhwm_bytes": 125739008
+      },
+      "limit_of_evidence": "anon and kernel are sampled every 50 ms and can miss transients; VmHWM is the kernel high-water mark",
+      "kind": "tightening, chosen after measurement"
+    },
+    {
+      "id": "R7",
+      "area": "condition H parsing",
+      "before": "substring tests on the last line of pytest and unittest outputs",
+      "after": "pytest: only dotted progress lines followed by exactly 'N passed in Ts' with N >= minimum_pytest_passed (613: the 484 tests of the original increment plus 129 review regressions); unittest: 'Ran N tests' with N at least the expected count and last line exactly 'OK'; the oracle 8 and precision 7 check outputs are now required",
+      "kind": "tightening"
+    },
+    {
+      "id": "R8",
+      "area": "sanitization of Git-bound evidence",
+      "before": "supervisor and audit files contained the absolute path of the local checkout, a session scratch path, a terminal-session identifier and one Hugging Face cache entry unrelated to the project",
+      "after": "these strings are replaced by placeholders or dropped by declared mechanical rules (sanitization-manifest.json); no number is changed; originals stay local in a git-ignored directory. New gate precondition: every sanitized file must equal the digest in the manifest and, when the originals are present, must be exactly its original under the declared rules; otherwise every condition is FAIL (or NOT PROVEN if the manifest is missing)",
+      "kind": "new precondition"
+    },
+    {
+      "id": "R9",
+      "area": "protocol binding",
+      "before": "protocol.json was read but not checked",
+      "after": "precondition: protocol.json must have the committed SHA256, the approved thresholds and limits, and this amendment must carry exactly the gate parameters; otherwise every condition is FAIL (or NOT PROVEN if a file is missing)",
+      "kind": "new precondition"
+    }
+  ],
+  "unrecorded_transient_units": {
+    "source": "local systemd user journal, read-only during the remediation; the journal is not in Git",
+    "units": [
+      {
+        "local_time": "15:49:01",
+        "unit": "inwime9-probe",
+        "what": "shell printing its own cgroup limits; before the audit and the protocol"
+      },
+      {
+        "local_time": "15:55:03",
+        "unit": "inwime9-pidprobe",
+        "what": "sleep 2"
+      },
+      {
+        "local_time": "15:56:03",
+        "unit": "inwime9-probe-1794754563",
+        "what": "first launch of the 128 MiB probe, 12 s before the preserved cgroup-probe-128mib run"
+      },
+      {
+        "local_time": "15:57:32",
+        "unit": "inwime9-smoke135-1794754652",
+        "what": "pilot smoke test of the worker under cgroup9 (SmolLM2-135M, 256 MiB scope per the review; journal: 4.82 s wall, 256M memory peak), after the 14:56:31Z amendment and before phase A; its output files were in a session scratch directory that no longer exists"
+      }
+    ],
+    "status": "not preserved as evidence, not used by any gate condition"
+  }
+}

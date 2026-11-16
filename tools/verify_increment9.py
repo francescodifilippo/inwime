@@ -3,7 +3,9 @@
 Runtime phases (prefill, then decodes) are compared against the oracle's
 full-sequence arrays: logits rows, residuals of every layer and the K/V prefix
 published after each phase. Thresholds come from the preregistered protocol and
-are refused if altered. Never executes an InWiMe forward.
+are refused if altered. The upstream greedy continuation is recomputed from the
+oracle arrays and each decode input must be the runtime's previous greedy choice.
+Never executes an InWiMe forward.
 """
 import argparse
 import hashlib
@@ -51,10 +53,21 @@ def verify(runtime_path, capture_dir, oracle_path, protocol_path, revision_key='
     report = dict(contract=contract, oracle_sha256=meta['capture_sha256'], oracle_metadata=meta,
                   runtime_report=str(runtime_path), atol=atol, rtol=rtol, comparisons={},
                   compared_elements=dict(logits=0, hidden=0, kv=0))
-    passed = bool(meta['upstream_greedy_matches_sequence'])
-    report['upstream_greedy_matches_sequence'] = passed
     with np.load(oracle_path, allow_pickle=False) as oracle:
         full = {k: oracle['full.'+k] for k in ('logits', 'hidden', 'kv')}
+    # Upstream greedy is recomputed from the oracle arrays, never read from the oracle's
+    # own claim: by causality the argmax at position i is the upstream choice after
+    # prefix[:i+1]. The runtime must also have fed back exactly its own previous choice.
+    prompt = len(runtime['input_ids'])
+    upstream = full['logits'].argmax(-1).tolist()
+    recomputed = len(upstream) == len(sequence) and upstream[prompt-1:len(sequence)-1] == sequence[prompt:]
+    follows = runtime['phases'][0]['ids'] == runtime['input_ids'] and all(
+        phase['ids'] == previous['greedy'][-1:] for previous, phase in zip(runtime['phases'], runtime['phases'][1:]))
+    declared = bool(meta['upstream_greedy_matches_sequence'])
+    report['upstream_greedy'] = dict(recomputed_from_oracle_argmax=bool(recomputed), declared_by_oracle=declared,
+                                     decode_inputs_follow_runtime_greedy=bool(follows))
+    report['upstream_greedy_matches_sequence'] = bool(recomputed and declared)
+    passed = bool(recomputed and declared and follows)
     start = 0
     for index, phase in enumerate(runtime['phases']):
         stop = start+len(phase['ids'])

@@ -2,7 +2,10 @@
 
 15 novembre 2026. Base `main`, `68ba9f3adf3cffb89b18b19525644fa0d7c6d806`,
 repository `francescodifilippo/inwime` (directory locale `ooc-inference`).
-Working tree iniziale pulito. Nessun commit, staging o push.
+Working tree iniziale pulito. Nessun commit, staging o push durante l'acquisizione.
+Rapporto aggiornato il 16 novembre 2026 dalla remediation della
+[revisione indipendente](REVIEW_INCREMENT_9.md): numeri e formulazioni corretti,
+gate reso fail-closed, nessuna misura ripetuta (sezione 13).
 
 **Qwen/Qwen2.5-7B originale BF16 esegue realmente prefill di cinque token e tre
 decode con 14.141.295.616 byte unici di pesi attivi, contro `MemTotal` WSL di
@@ -11,7 +14,8 @@ transitorio con `memory.max` 2 GiB e `memory.swap.max` 0. Parità completa con u
 oracolo Transformers indipendente a blocchi: standard FP32 e FP64 puro superati,
 diagnostico FP64 standard FAIL grezzo conservato. SmolLM2-1.7B esegue
 correttamente sotto lo stesso limite di 2 GiB dopo evizione mirata della cache.
-[Gate A–H](../results/increment9/summary.json): tutte le condizioni **PASS**.
+[Gate A–H](../results/increment9/summary.json), ricalcolato dopo la remediation
+con le regole più severe: tutte le condizioni **PASS**.
 **Non dimostra** il superamento della RAM fisica host (16.900.739.072 byte) né
 un'inferenza pratica: circa 13,3 s per token in decode.
 
@@ -26,12 +30,12 @@ GEMV, kernel C e strumenti 7/8. Baseline **408 test PASS**.
 | Grandezza | Valore |
 |---|---:|
 | `MemTotal` WSL (RAM della VM, non dell'host) | 11.483.848.704 B |
-| `MemAvailable` WSL all'audit | 8.773.832.704 B |
+| `MemAvailable` WSL all'audit | 8.841.621.504 B |
 | RAM fisica host, CIM | 16.900.739.072 B |
 | RAM libera host all'audit | circa 0,5 GB |
 | Swap WSL `/dev/sdc`, invariato | 8 GiB, circa 717 MiB usati da altri processi |
-| ext4 virtuale `/dev/sdd`, libero dichiarato | 908.397.023.232 B |
-| Volume Windows C: con il VHDX (BasePath su C:) | 151.969.673.216 B liberi |
+| ext4 virtuale `/dev/sdd`, libero dichiarato | 908.396.462.080 B |
+| Volume Windows C: con il VHDX (BasePath su C:) | 151.969.796.096 B liberi |
 | `.wslconfig` (solo letto) | `memory=11GB`, `swap=8GB`, `sparseVhd=true` |
 
 Lo spazio libero dell'ext4 virtuale **non** coincide con quello reale: il VHDX
@@ -58,6 +62,29 @@ gruppo fino al limite e viene recuperata lì, senza OOM. Il criterio
 del kernel. È stato sostituito da `memory.peak <= memory.max`, con `oom=0`,
 `oom_kill=0`, swap 0 e la memoria anonima riportata separatamente.
 
+Limiti di questa parte, rilevati dalla revisione. Il criterio emendato
+`memory.peak <= memory.max` è vero per costruzione del kernel: da solo non
+discrimina. La parte informativa dell'emendamento (anon+kernel «ben sotto il
+limite») non era verificata dal gate. La
+[remediation](../results/increment9/protocol-amendment-remediation.json) aggiunge
+una soglia esplicita, scelta **dopo** le misure e dichiarata come inasprimento:
+picco campionato anon+kernel ≤ 268.435.456 B e VmHWM del worker ≤ 268.435.456 B
+per ogni prova supervisionata (massimi misurati: 110.895.104 B e 125.739.008 B).
+Il contenuto di `protocol.json` precedente all'emendamento delle 14:56:31Z non è
+verificabile: l'emendamento fu scritto nello stesso file e in Git esiste solo il
+testo emendato. Da allora il file è invariato; il gate ne fissa lo SHA256.
+
+Unità transitorie non riportate nel rapporto originale, ricostruite dal journal
+utente locale (non versionato): `inwime9-probe` alle 15:49:01 (una shell che
+stampa i propri limiti cgroup, prima di audit e protocollo), `inwime9-pidprobe`
+alle 15:55:03 (`sleep 2`), un primo lancio della sonda da 128 MiB alle 15:56:03
+e **un pilota `inwime9-smoke135` alle 15:57:32**, dopo l'emendamento e prima
+della fase A. Secondo la revisione era SmolLM2-135M in uno scope da 256 MiB,
+prova di funzionamento del worker sotto `cgroup9`; il journal conferma unità,
+orario, durata di 4,82 s e picco di 256M. I suoi file stavano in una directory
+temporanea di sessione che non esiste più: è uno smoke test **non conservato**
+e non entra in alcuna condizione del gate.
+
 ## 3. Meccanismo cgroup e attribuzione
 
 `tools/cgroup9.py` crea uno scope transitorio con
@@ -81,8 +108,8 @@ globale `/proc/vmstat oom_kill` è registrato prima e dopo ogni prova.
 
 ## 4. Fase A — SmolLM2-1.7B sotto 2 GiB
 
-Checkpoint già validato (`d4c18cc`, SHA ufficiale ricontrollato dal runtime e a
-fine incremento). Stesso input dell'incremento 8: `The capital of France is`,
+Checkpoint già validato (`d4c18cc`, SHA ufficiale ricontrollato dal runtime
+all'avvio di ogni prova e dal re-hash di `integrity-after.json`). Stesso input dell'incremento 8: `The capital of France is`,
 prefill di 5 token e 3 decode, sync, tile 262.144, `RLIMIT_AS` 256 MiB.
 
 | Misura | W: cache calda altrove | P: cache rimossa, sotto pressione |
@@ -137,14 +164,34 @@ eps 1e-6, vocabolario 152.064. Il limite inferiore dei byte attivi è
 soddisfatto prima del download.
 
 Download di 15.242.803.171 B con spazio reale controllato prima e ogni 256 MiB.
-Margine di 8 GiB; minimo osservato su C: 136,78 GB liberi. SHA256 calcolato in
-streaming e confrontato con il digest LFS ufficiale prima del rename in posto
-dei `.part`. File piccoli verificati con l'ID Git blob ufficiale. **Una sola
-copia**, nessuna cache HF, nessuna conversione, nessun repack: gli shard
-originali sono usati direttamente. Descriptor `safetensors.json` esterno con i
-digest. Re-hash completo a fine incremento:
-[integrity-after.json](../results/increment9/integrity-after.json), tutti
-corrispondenti.
+Margine di 8 GiB; minimo osservato su C: 136,78 GB liberi. File piccoli
+verificati con l'ID Git blob ufficiale. **Una sola copia**, nessuna cache HF,
+nessuna conversione, nessun repack: gli shard originali sono usati direttamente.
+Descriptor `safetensors.json` esterno con i digest.
+
+L'integrità degli shard va letta su due piani distinti.
+
+- **Verifica in acquisizione (limite dichiarato).** Il codice calcolava lo SHA256
+  in streaming e sollevava un errore, senza rinominare il `.part`, se differiva
+  dal digest LFS ufficiale. In questa esecuzione la destinazione era vuota
+  (`existing: []`) e i quattro shard sono stati completati. Però il digest
+  **calcolato non fu registrato**: il campo `sha256` di `qwen-acquisition.json` è
+  il valore ufficiale copiato. Quel file quindi non è una prova indipendente e il
+  gate non lo usa come tale. Il file storico non è stato modificato.
+- **Integrità successiva (la prova).** SHA256 integrale di ogni shard calcolato
+  dal runtime all'avvio di entrambe le prove di fase B (15.231.271.888 B letti) e
+  re-hash completo registrato in
+  [integrity-after.json](../results/increment9/integrity-after.json) alle 16:45,
+  dopo forward e oracoli ma **prima** delle sonde di guasto e dei test OOM: tutti
+  uguali ai digest LFS ufficiali del preflight. Un nuovo re-hash completo,
+  ultima lettura dei checkpoint della remediation (16 novembre, 00:51–00:53 UTC,
+  seguito solo dalla rigenerazione di conservazione, test e gate), è in
+  [integrity-final.json](../results/increment9/integrity-final.json): tutti
+  uguali, index incluso.
+
+Per le acquisizioni future `tools/acquire_qwen9.py` registra il digest calcolato
+accanto a quello ufficiale, ricalcola lo SHA di un file già presente prima di
+accettarlo e verifica un `.part` completo senza richieste HTTP.
 
 ## 6. Adapter Qwen2
 
@@ -175,7 +222,9 @@ staging 524.288, attivazioni 446.464, KV 7.340.032 (due banche), output
 ## 7. Forward oltre la RAM WSL
 
 Scope da 2 GiB (fase A superata), shard rimossi dalla cache prima del lancio,
-`RLIMIT_AS` 256 MiB, budget esplicito uguale al piano, integrità `full`.
+`RLIMIT_AS` 256 MiB, budget predefinito del runtime uguale al piano
+(`budget_bytes` = `arena_plan_bytes` = 43.658.344 B; il benchmark non passa
+`budget=`), integrità `full`.
 `The capital of France is` → `[785,6722,315,9625,374]`. Prefill di 5 token, poi
 tre decode reinseriscono `[12095],[13],[1084]`. Decisioni greedy
 `[12095,13,1084,374]`: **`The capital of France is Paris. It is`**. Nessun EOS.
@@ -199,7 +248,8 @@ ogni passo.
 | `oom_kill` globale prima/dopo | 0 / 0 |
 
 L'unione dei byte attivi comprende tutte le 197 matrici (7 per layer più head),
-lette integralmente a ogni token: **56.562.286.592 coefficienti GEMV**. Comprende
+lette integralmente a ogni token: **56.562.286.592 coefficienti GEMV in totale
+sulle 8 posizioni**, cioè 7.070.285.824 per token. Comprende
 anche bias e norm, e le sole **8 righe** distinte di embedding effettivamente
 consultate (57.344 B). L'embedding non letto (circa 1,09 GB) **non** è contato.
 La contabilità di ogni tensore coincide esattamente con il grafo. Nessun layer
@@ -229,6 +279,13 @@ della sequenza completa è la scelta upstream dopo il prefisso `i`. Coincide con
 tutta la continuazione. Il profilo FP64 puro (`tools/oracle_precision9.py`)
 applica a Qwen2 la stessa politica dell'incremento 7: RMSNorm, RoPE e softmax in
 FP64 nel solo processo oracolo.
+
+Limite di indipendenza: le funzioni del profilo FP64 puro sono scritte dallo
+stesso autore del runtime. L'indipendenza piena viene dai contratti upstream
+**non modificati**: FP32 standard PASS e FP64 standard, il cui errore massimo
+sui logits è 1,04e-5 con argmax uguali. Il confronto FP64 puro misura l'accordo
+con il grafo upstream una volta rimossi i cast FP32 interni, non una seconda
+implementazione indipendente di quelle tre operazioni.
 
 Prima del modello grande, [controlli piccoli](../results/increment9/oracle9-checks.txt)
 su una fixture Qwen2 sintetica: l'oracolo a blocchi coincide **bit per bit** con
@@ -265,7 +322,10 @@ Risorse degli oracoli, in processi separati dopo le prove runtime:
 
 I parametri FP32 completi richiederebbero 30,5 GB, quelli FP64 60,9 GB: oltre
 la RAM WSL, per questo l'oracolo lavora a blocchi. VmSwap campionato degli
-oracoli: 0.
+oracoli: 0. Lo swap **globale** in uso è però salito da 717.316.096 B (684,1 MiB)
+all'avvio della prova sync a 797.814.784 B (760,9 MiB) all'avvio della prova
+pipeline: +76,8 MiB nella finestra dei tre oracoli, a carico di processi esterni
+ai cgroup dell'esperimento. Gli scope hanno `memory.swap.max` 0 e picco swap 0.
 
 ## 9. Prestazioni e I/O
 
@@ -295,8 +355,10 @@ virtualizzazione, e il contatore host è globale. Nessun `O_DIRECT`. La pipeline
 qui non accelera: l'overlap è piccolo e il costo di espansione cresce. Una
 coppia non sostiene una conclusione generale. Il residuo negativo in pipeline
 deriva dall'overlap lettura/espansione non corretto, come documentato
-nell'incremento 7. AC1 online=1 a fine prove. Temperatura, clock e potenza
-non sono controllati né misurati. GPU mai inizializzata.
+nell'incremento 7. Lo stato di alimentazione non è stato registrato in alcun
+file di evidenza: l'affermazione «AC1 online=1» del rapporto originale è stata
+rimossa. Temperatura, clock e potenza non sono controllati né misurati. GPU mai
+inizializzata.
 
 Nella fase A la stessa infrastruttura misura il costo dello streaming reale
 rispetto alla cache calda (sezione 4). Nessun valore caldo è stato estrapolato
@@ -312,7 +374,9 @@ modificato. Il vecchio banco e il descriptor `(bank,length,generation)` restano
 intatti. La sessione è fail-stop, senza ripresa. Slot drenati, FD e arene
 chiusi. Il budget inferiore di un byte al piano viene rifiutato **prima** di
 leggere il payload. Questa sonda usa `integrity='metadata'` per evitare sei SHA
-da 15 GB; l'integrità è verificata dalle prove principali e dal re-hash finale.
+da 15 GB; l'integrità è verificata dalle prove principali e dai re-hash
+registrati (`integrity-after.json`, precedente a queste sonde, e
+`integrity-final.json`, successivo).
 
 **OOM controllato.** SmolLM2-1.7B in uno scope da 32 MiB viene ucciso dal kernel
 (`oom 1`, `oom_kill 1`, exit 137). Non produce alcun rapporto di successo: è un
@@ -325,7 +389,8 @@ normalmente. Il contatore globale `oom_kill` è a 2 per questi due test
 deliberati, entrambi attribuiti. SmolLM2-135M, lanciato prima come negativo in
 48 MiB, è invece riuscito: l'evidenza è rinominata `scope48mib-135m-*`.
 
-**484 test PASS in 36,39 s, zero skip**: 408 preesistenti e 76 nuovi. I 51 test
+All'acquisizione: **484 test PASS in 36,39 s, zero skip**: 408 preesistenti e 76
+nuovi. Dopo la remediation: **613 test PASS, zero skip** (sezione 13). I 51 test
 dell'adapter usano una fixture Qwen2 stdlib e un riferimento indipendente scritto
 dalle equazioni (`math.fsum`, decodifica BF16 via `struct`). Coprono parità
 incrementale e completa in sync/pipeline, scalare/C, chunk/shard, sensibilità a
@@ -342,7 +407,7 @@ portano il gate a FAIL o NOT PROVEN.
 Il gate 8 rafforzato dalla revisione è stato rieseguito: PASS. Rieseguiti anche
 il gate numerico 7 risolto (PASS, con il FAIL diagnostico storico conservato)
 e i controlli oracle 7/8 (OK). La [conservazione](../results/increment9/preservation.json)
-rispetto alla base mostra un solo file tracciato modificato, `README.md`, in
+rispetto alla base mostra un solo file preesistente modificato, `README.md`, in
 modo intenzionale; nessuna cancellazione. Runtime, kernel, adapter Llama e
 sorgente non sono cambiati. Nessuna evidenza storica riscritta. Nessun peso o
 cattura in Git.
@@ -351,17 +416,20 @@ cattura in Git.
 
 | Condizione | Esito | Base |
 |---|---|---|
-| A — Integrità | PASS | SHA LFS in streaming, SHA integrale del runtime per entrambi i modelli, re-hash finale |
-| B — Memoria cgroup | PASS | P: scope 2 GiB verificato dall'interno, picco ≤ limite, 0 OOM/swap, letture reali, SHA e parità uguali all'8 |
-| C — I/O | PASS | W/P/B con contatori processo, cgroup e host; attribuzione W vs P coerente |
-| D — Oltre RAM WSL | PASS | 14.141.295.616 > 11.483.848.704, ricalcolato dagli header |
-| E — Forward reale | PASS | 5+3 token, 28 layer, copertura esatta, rilascio |
-| F — Correttezza | PASS | FP32 e FP64 puro completi; diagnostico FP64 standard FAIL grezzo riportato |
-| G — Risorse | PASS | tutte le cinque prove supervisionate: scope 2 GiB, 0 OOM/swap, `oom_kill` globale invariato; VmSwap 0 |
-| H — Regressioni | PASS | 484 test, gate 7/8, conservazione |
+| A — Integrità | PASS | SHA integrale del runtime (entrambe le prove B e fase A) e re-hash registrati, confrontati file per file con i digest LFS ufficiali del preflight; la verifica in acquisizione è dichiarata come limite |
+| B — Memoria cgroup | PASS | P: evizione verificata, scope 2 GiB verificato dall'interno e legato al supervisore, picco ≤ limite, anon+kernel ≤ 256 MiB, 0 OOM/swap, letture reali, digest e parità ricostruita uguali all'8 |
+| C — I/O | PASS | W/P/B con contatori processo, cgroup e host; attribuzione W vs P; fase B sync e pipeline: evizione ≤ 1% per shard e letture di blocco ≥ 90% dei byte logici |
+| D — Oltre RAM WSL | PASS | 14.141.295.616 > 11.483.848.704, ricalcolato dagli header ufficiali, su una prova evitta e realmente letta |
+| E — Forward reale | PASS | 5+3 token, 28 layer, contatori dei 339 tensori uguali alle forme ufficiali × 8 posizioni, prefisso KV e generazioni, rilascio, pipeline identica nei byte |
+| F — Correttezza | PASS | FP32 e FP64 puro ricostruiti dai confronti e legati a runtime, revisione, sequenza e oracolo; diagnostico FP64 standard obbligatorio, **FAIL grezzo riportato** |
+| G — Risorse | PASS | tutte le cinque prove supervisionate: scope 2 GiB, 0 OOM/swap, anon+kernel e VmHWM sotto soglia, `oom_kill` globale invariato; oracoli con VmSwap 0 |
+| H — Regressioni | PASS | 613 test con parsing rigoroso, gate 7/8 ricalcolati dai loro strumenti, conservazione ricalcolata da git |
 
-`tools/report_increment9.py` ricalcola ogni verdetto dalle evidenze grezze. Una
-evidenza mancante produce NOT PROVEN, mai PASS.
+`tools/report_increment9.py` ricalcola ogni verdetto dalle evidenze grezze. Un
+file o un campo mancante produce NOT PROVEN, un fatto contraddetto FAIL, mai
+PASS: dopo la remediation questa affermazione è verificata da 80 mutazioni
+(sezione 13). Due precondizioni valgono per tutte le condizioni: protocollo
+approvato e sanificazione verificata.
 
 ## 12. Limiti e passi successivi
 
@@ -386,4 +454,98 @@ evidenza mancante produce NOT PROVEN, mai PASS.
   (corretto).
 
 Fuori perimetro e non avviati: GPU, quantizzazione, MoE, speculative decoding,
-distribuzione, Harness, incremento 10. Nessun commit o push.
+distribuzione, Harness, incremento 10. Nessun commit o push durante
+l'acquisizione né durante la remediation.
+
+## 13. Remediation della revisione
+
+La [revisione indipendente](REVIEW_INCREMENT_9.md) non ha trovato P0 né P1; ha
+trovato quattro P2 nel gate e nell'acquisizione e dieci P3. La remediation del
+16 novembre 2026 li corregge senza ripetere alcuna misura: nessun forward,
+oracolo, benchmark o download. Le evidenze di misura restano quelle del 15
+novembre; sono cambiati gate, verificatore, strumento di acquisizione, audit e
+igiene dei percorsi. Ogni cambiamento ai criteri di accettazione è registrato in
+[protocol-amendment-remediation.json](../results/increment9/protocol-amendment-remediation.json),
+dichiarato successivo alle misure; `protocol.json` è invariato byte per byte e
+le soglie numeriche approvate non sono cambiate.
+
+Stato del repository trovato: l'incremento 9 era già nel commit `6031b52`
+(«passo 9») e il riferimento locale `origin/main` puntava allo stesso commit. La
+remediation non ha eseguito commit, staging, push, fetch o reset.
+
+### 13.1 Risultati dimostrati
+
+- **Gate A–H: PASS, exit 0**, ricalcolato dalle evidenze grezze con le regole
+  inasprite; precondizioni protocollo e sanificazione PASS. Gate 7 e gate 8
+  rieseguiti: PASS, exit 0.
+- **Il gate ora è fail-closed.** Su copie delle evidenze reali, 80 mutazioni:
+  con il gate originale 71 lasciavano PASS le condizioni interessate
+  ([red](../results/increment9/review/gate-mutations-red.txt)); con il gate
+  corretto nessuna ([green](../results/increment9/review/gate-mutations-green.txt)).
+- **Fase B realmente evitta e letta**, ora verificato dal gate per sync e
+  pipeline: residenza dopo l'evizione 0 B su tutti e quattro gli shard, letture
+  di blocco 112.420.581.376 B su 113.129.963.520 B logici (99,4%) in sync.
+- **Parità confermata dal verificatore corretto** sulle catture esistenti: ogni
+  campo dei tre report storici è identico; il greedy upstream ricalcolato
+  dall'argmax degli NPZ coincide con la sequenza e ogni ingresso di decode è la
+  scelta greedy precedente del runtime.
+- **FAIL diagnostici conservati**: FP64 standard Qwen, 31 residui fuori soglia,
+  0 logits, 0 KV (exit 1 del verificatore); FP64 standard dell'incremento 7,
+  270 logits e 41 residui. Nessuno è stato convertito in PASS; un report
+  diagnostico riscritto a PASS ora rende F FAIL.
+- **Integrità successiva all'acquisizione**: SHA integrale del runtime e re-hash
+  registrati uguali ai digest LFS ufficiali, sull'insieme completo dei file.
+- **613 test PASS, zero skip**: i 484 dell'acquisizione più 129 regressioni di
+  revisione. Controlli oracle 9/8/precisione 7: OK (3, 1 e 5 test).
+- **Conservazione** rispetto a `68ba9f3`: unico file preesistente modificato
+  `README.md`, nessuna cancellazione, niente in staging.
+- **Sanificazione**: 11 file di evidenza, 72 sostituzioni dichiarate, nessun
+  numero cambiato; ogni file sanificato è riottenuto esattamente dal proprio
+  originale applicando le sole regole dichiarate.
+
+### 13.2 Limiti sperimentali
+
+- Restano tutti i limiti della sezione 12: RAM fisica host non superata, 13,3
+  s/token, una sola coppia sync/pipeline, contesto di 8 posizioni, temperatura,
+  potenza e stato di alimentazione non misurati.
+- **Verifica SHA in acquisizione non documentata da un digest registrato** nella
+  prova storica (sezione 5). La prova di integrità è quella successiva.
+- **Soglia anon+kernel scelta dopo le misure.** È un inasprimento, ma non è
+  preregistrata. Anon e kernel sono campionati ogni 50 ms e possono perdere
+  transitori; VmHWM è invece il massimo del kernel.
+- **Profilo FP64 puro non pienamente indipendente** (sezione 8).
+- **Swap globale cresciuto di 76,8 MiB** nella finestra degli oracoli, fuori dai
+  cgroup dell'esperimento (sezione 8). Riportato dal gate, non vincolato.
+- `integrity-after.json` precede le sonde di guasto e i test OOM e per l'index
+  registra solo l'esito; `integrity-final.json` registra anche il digest.
+- Smoke test pilota non conservato e contenuto di `protocol.json` prima
+  dell'emendamento non verificabile (sezione 2).
+- Catture numeriche e originali non sanificati sono locali, fuori da Git. Su
+  un'altra macchina il gate lo dichiara e verifica soltanto i digest dei
+  manifest; gli originali coincidono con i file del commit `6031b52`.
+- `io.stat` non disponibile; contatori host globali; nessun `O_DIRECT`.
+
+### 13.3 Criticità residue
+
+- **I percorsi personali sono già nella storia Git.** Il commit `6031b52`
+  contiene le evidenze non sanificate e, secondo il riferimento locale, è già su
+  `origin/main`. La sanificazione vale per il working tree e per i commit
+  futuri; rimuoverli dalla storia richiede una riscrittura con push forzato, che
+  spetta al proprietario e non è stata eseguita.
+- **Tre righe con il percorso locale restano in documenti precedenti**:
+  `docs/STRATA_TECH_AUDIT_2026-11-13.md` e
+  `docs/handoffs/HANDOFF-2026-11-05-benchmark-v2.md`. Sono file preesistenti
+  alla base: modificarli violerebbe la conservazione degli incrementi 1–8.
+- **La semantica della conservazione è stata precisata.** Con l'incremento già
+  committato, `git diff` rispetto alla base elenca anche i file aggiunti. Lo
+  strumento ora giudica i soli file preesistenti (modificati o cancellati) ed
+  elenca a parte gli aggiunti. Il verdetto è lo stesso di prima, ma la regola è
+  cambiata dopo la revisione.
+- **H dipende dallo stato di git al momento dell'esecuzione**: è ricalcolato dal
+  vivo. In un incremento futuro che modifichi file preesistenti, il gate 9 non
+  sarà più PASS finché l'elenco intenzionale non viene aggiornato.
+- **I test del gate leggono i report derivati presenti** in
+  `results/increment9`: vanno rigenerati nell'ordine indicato nel README delle
+  evidenze, altrimenti la suite fallisce.
+- Le correzioni e i nuovi test non sono ancora stati esaminati da una revisione
+  indipendente.

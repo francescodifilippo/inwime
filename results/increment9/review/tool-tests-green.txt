@@ -1,0 +1,44 @@
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[........................................................................\n9999 passed in 1.00s\n-True] PASSED [  2%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[.\n510 passed in 41.27s\n-False] PASSED [  4%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[.\n9999 passed in 61.50s (0:01:01)\n-True] PASSED [  6%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[480 passed, 4 errors in 3.00s\n-False] PASSED
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[.\n9999 passed, 2 warnings in 3.00s\n-False] PASSED [ 11%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[s\n9999 passed in 3.00s\n-False] PASSED [ 13%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[.\n9999 passed in 3.00s\nERROR collecting\n-False] PASSED [ 16%]
+tests/test_increment9_review.py::test_pytest_summary_parsing_is_strict[-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[a ... ok\n\n---\nRan 3 tests in 0.198s\n\nOK\n-True] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[Ran 3 tests in 0.198s\n\nNOT OK\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[Ran 2 tests in 0.198s\n\nOK\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[Ran 3 tests in 0.198s\n\nOK (skipped=1)\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[a ... FAIL\nRan 3 tests in 0.198s\n\nFAILED (failures=1)\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[a ... ERROR\nRan 3 tests in 0.198s\n\nOK\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[OK\n-False] PASSED
+tests/test_increment9_review.py::test_unittest_summary_parsing_is_strict[-False] PASSED
+tests/test_increment9_review.py::test_sanitization_replaces_only_declared_patterns PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[number] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[string] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[key_removed] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[original_swapped] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[residual_path] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[unlisted_personal_file] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[manifest_digest] PASSED
+tests/test_increment9_review.py::test_sanitization_check_detects_undeclared_changes[missing_file] PASSED
+tests/test_increment9_review.py::test_sanitization_states_when_originals_are_absent PASSED
+tests/test_increment9_review.py::test_gate_sanitization_precondition PASSED
+tests/test_increment9_review.py::test_git_bound_evidence_has_no_personal_paths PASSED
+tests/test_increment9_review.py::test_future_reports_use_repository_relative_paths PASSED
+tests/test_increment9_review.py::test_audit_keeps_only_project_cache_entries PASSED
+tests/test_increment9_review.py::test_runtime_report_paths_are_repository_relative PASSED
+tests/test_increment9_review.py::test_rehash_records_every_digest_including_the_index PASSED
+tests/test_increment9_review.py::test_preservation_separates_modified_deleted_and_added PASSED
+tests/test_increment9_review.py::test_download_records_the_digest_it_computed PASSED
+tests/test_increment9_review.py::test_download_mismatch_keeps_part_and_raises PASSED
+tests/test_increment9_review.py::test_existing_file_is_hashed_before_being_accepted PASSED
+tests/test_increment9_review.py::test_complete_part_is_verified_without_a_range_request PASSED
+tests/test_increment9_review.py::test_complete_but_corrupt_part_is_refused PASSED
+tests/test_increment9_review.py::test_partial_part_resumes_with_range_and_full_digest PASSED
+tests/test_increment9_review.py::test_acquisition_evidence_separates_computed_and_official_digests PASSED
+tests/test_increment9_review.py::test_verifier_recomputes_upstream_greedy_from_arrays PASSED
+tests/test_increment9_review.py::test_verifier_does_not_trust_the_declared_upstream_greedy PASSED
+tests/test_increment9_review.py::test_verifier_keeps_a_false_declared_greedy_as_failure PASSED
+====================== 43 passed, 86 deselected in 0.35s =======================

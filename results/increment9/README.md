@@ -1,7 +1,9 @@
 # Evidenze dell'incremento 9
 
 Rapporto completo: [docs/RUNTIME_CPU_INCREMENT_9.md](../../docs/RUNTIME_CPU_INCREMENT_9.md).
-Gate automatico: [summary.json](summary.json), condizioni A–H tutte **PASS**.
+Revisione e remediation: [docs/REVIEW_INCREMENT_9.md](../../docs/REVIEW_INCREMENT_9.md).
+Gate automatico: [summary.json](summary.json), ricalcolato dopo la remediation:
+condizioni A–H tutte **PASS**, diagnostico FP64 standard **FAIL grezzo** conservato.
 Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 `artifacts/increment9/` (136 MiB, esclusi da Git), con hash in
 [capture-manifest.json](capture-manifest.json).
@@ -10,7 +12,9 @@ Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 
 | Area | File |
 |---|---|
-| Protocollo preregistrato e emendamento pre-misura | `protocol.json` |
+| Protocollo preregistrato e emendamento pre-misura (invariato, SHA fissato nel gate) | `protocol.json` |
+| Emendamento della remediation, successivo alle misure | `protocol-amendment-remediation.json` |
+| Sanificazione dei percorsi personali | `sanitization-manifest.json` |
 | Audit iniziale/finale memoria, swap, cgroup, storage, host | `environment-before.json`, `environment-after.json` |
 | Prova del meccanismo cgroup/evizione su file da 300 MB | `cgroup-probe-128mib.json`, `.final.txt` |
 | Preflight Qwen2.5-7B (API, header via HTTP Range) | `qwen-preflight.json` |
@@ -22,16 +26,45 @@ Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 | Parità completa | `parity-stock_fp32.json`, `parity-full64.json`, `parity-stock_fp64.json` (diagnostico) |
 | Controlli piccoli oracolo/adapter contro upstream | `oracle9-checks.txt` |
 | Guasti reali su Qwen2.5-7B | `faults.json`, `supervisor-faults.{json,log,final.txt}` |
-| OOM cgroup controllato | `negative-oom-policy-stop.{json,log}` (difetto), `negative-oom-supervisor.{json,log,final.txt}` (corretto) |
+| OOM cgroup controllato | `negative-oom-policy-stop-supervisor.{json,log}` (difetto), `negative-oom-supervisor.{json,log,final.txt}` (corretto) |
 | SmolLM2-135M in scope da 48 MiB | `scope48mib-135m-*` |
-| Integrità finale, conservazione, regressioni | `integrity-after.json`, `preservation.json`, `pytest-final.txt`, `gate7-rerun.json`, `gate8-rerun.json`, `check-oracle8.txt`, `check-oracle-precision7.txt` |
+| Re-hash dei checkpoint | `integrity-after.json` (16:45 del 15 novembre, prima di sonde di guasto e test OOM), `integrity-final.json` (ultima lettura dei checkpoint della remediation) |
+| Conservazione e regressioni (rigenerati dalla remediation) | `preservation.json`, `pytest-final.txt`, `gate7-rerun.json`, `gate8-rerun.json`, `oracle9-checks.txt`, `check-oracle8.txt`, `check-oracle-precision7.txt` |
+| Prove della remediation | `review/gate-mutations-{red,green}.txt`, `review/mutations_{red,green}.py`, `review/tool-tests-{red,green}.txt`, `review/parity-*-reverified.json` |
 
 `scope48mib-135m-*` era stato lanciato come test OOM negativo, ma il processo è
 riuscito: i file sono stati rinominati per ciò che dimostrano. Il nome di unità
 e i percorsi interni ai JSON conservano l'etichetta originale `negative-oom`.
-`negative-oom-policy-stop.*` documenta il difetto del supervisore poi corretto
+`negative-oom-policy-stop-supervisor.*` documenta il difetto del supervisore poi corretto
 (`OOMPolicy=continue`); le prove riuscite precedenti non hanno avuto OOM e il
 loro finalizzatore ha scritto normalmente i contatori.
+
+## Evidenze storiche, sanificate e derivate
+
+Le evidenze di misura sono storiche e non vengono rigenerate: runtime,
+supervisori, oracoli, parità, guasti, sonde, acquisizione, preflight, audit.
+`qwen-acquisition.json` è lasciato com'è: il suo campo `sha256` è il digest
+ufficiale copiato, non quello calcolato (limite dichiarato nel rapporto).
+
+Undici file sono stati **sanificati** da `tools/sanitize9.py`: il percorso
+assoluto del checkout diventa `<repo>`, la directory temporanea di sessione
+`<scratch>`, l'identificativo della sessione di terminale `<session>`, e le voci
+della cache Hugging Face estranee al progetto sono rimosse. Nessun numero è
+cambiato. `sanitization-manifest.json` elenca, per ogni file, SHA256 originale e
+sanificato e le regole applicate. Gli originali restano in locale in
+`artifacts/increment9/original-evidence/` (esclusa da Git) e coincidono con i
+file del commit `6031b52`. Verifica:
+
+```bash
+python3 -m tools.sanitize9 results/increment9 --verify
+```
+
+I report derivati si rigenerano in quest'ordine, cancellando esplicitamente il
+precedente: controlli oracle, `gate7-rerun.json`, `gate8-rerun.json`,
+`preservation.json`, poi `pytest-final.txt` (i test del gate leggono i report
+già presenti), infine `summary.json`. `review/mutations_red.py` documenta la
+prova contro il gate originale del commit `6031b52`; `review/mutations_green.py`
+è rieseguibile.
 
 ## Riproduzione
 
@@ -62,8 +95,19 @@ python3 -m tools.supervise8 --output /tmp/oracolo.json --rss-stop-mib 7168 --ava
 .venv-oracle7/bin/python -m unittest tools.check_oracle9
 python3 -m tools.cgroup9 --label guasti --output /tmp/guasti-sup.json -- \
   python3 -m tools.fault_increment9 checkpoints/qwen2.5-7b-d149729 --output /tmp/guasti.json
+.venv-oracle7/bin/python -m tools.check_oracle8
+.venv-oracle7/bin/python -m tools.check_oracle_precision7
+python3 -m tools.report_increment7 results/increment7/numerical-resolution \
+  --resolve-numerical-contracts --output /tmp/gate7.json
+python3 -m tools.report_increment8 results/increment8 --output /tmp/gate8.json
+python3 -m tools.integrity9 --output /tmp/conservazione.json preservation \
+  --baseline 68ba9f3adf3cffb89b18b19525644fa0d7c6d806 --intentional README.md
+# Re-hash completo: legge circa 18,7 GB, da eseguire da solo.
+python3 -m tools.integrity9 --output /tmp/integrita.json integrity \
+  checkpoints/smollm2-1.7b-d4c18cc checkpoints/qwen2.5-7b-d149729
 python3 -m pytest -q tests
 python3 -m tools.report_increment9 results/increment9 --output /tmp/gate9.json
+python3 results/increment9/review/mutations_green.py
 ```
 
 Le prove vanno eseguite una alla volta: i confronti di I/O non sono validi con

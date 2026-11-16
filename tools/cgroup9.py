@@ -17,6 +17,7 @@ import subprocess
 import time
 
 from .audit_increment9 import POWERSHELL, meminfo
+from .sanitize9 import portable
 
 USER_APP = Path('/sys/fs/cgroup/user.slice/user-{uid}.slice/user@{uid}.service/app.slice')
 FINALIZER = Path(__file__).with_name('cgroup9_finalize.sh')
@@ -229,8 +230,9 @@ def run(a):
         'io.stat unavailable: io controller not enabled for child cgroups',
         'host disk counters are global for the Windows physical disk (all host activity)',
         'fincore reports residency, not which cgroup is charged']
+    # Evidence is Git-bound: the checkout root is written as <repo>, values are unchanged.
     with a.output.open('x') as f:
-        json.dump(report, f, indent=2); f.write('\n')
+        json.dump(portable(report), f, indent=2); f.write('\n')
     fin = report['finalizer'] or {}
     print(json.dumps(dict(exit_code=code, reason=reason, unit=unit, wall_s=report['wall_s'],
                           peak=fin.get('memory.peak'), events=fin.get('memory.events'),

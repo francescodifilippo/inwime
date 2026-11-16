@@ -1,0 +1,82 @@
+control (unmutated copy, original gate): ABCDEFGH PASS
+detected   acquisition_sha_altered                    expected not PASS: A        still PASS: -        | A=FAIL
+FALSE PASS decode_input_not_previous_greedy           expected not PASS: E        still PASS: E        | all A-H PASS
+FALSE PASS diagnostic_other_runtime                   expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS diagnostic_report_missing                  expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS diagnostic_rewritten_to_pass               expected not PASS: F        still PASS: F        | all A-H PASS
+detected   finalizer_missing                          expected not PASS: G        still PASS: -        | G=FAIL
+FALSE PASS fp32_other_revision                        expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS fp32_other_sequence                        expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS fp32_thresholds_in_report                  expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_coverage_reduced                    expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_element_count_reduced               expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_failures_and_argmax_passed_true     expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_greedy_not_recorded                 expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_layer_failures_only                 expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_other_oracle_digest                 expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_other_runtime                       expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_replaced_by_stock_fp32              expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS full64_upstream_greedy_differs             expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS gate7_diagnostic_rewritten                 expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS gate7_stub                                 expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS gate8_check_removed                        expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS gate8_stub                                 expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS generation_sequence_broken                 expected not PASS: E        still PASS: E        | all A-H PASS
+detected   increment8_digest_altered                  expected not PASS: B        still PASS: -        | B=FAIL
+FALSE PASS integrity_digest_altered_match_true        expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS integrity_file_mismatch_all_match_true     expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS integrity_files_empty                      expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS integrity_index_missing                    expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS integrity_shard_missing                    expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS integrity_smollm_missing                   expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS kv_prefix_not_preserved                    expected not PASS: E        still PASS: E        | all A-H PASS
+detected   oom_kill_recorded                          expected not PASS: G        still PASS: -        | G=FAIL
+FALSE PASS oracle8_check_not_ok                       expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS oracle9_checks_no_tests                    expected not PASS: F        still PASS: F        | all A-H PASS
+FALSE PASS oracle9_checks_not_ok                      expected not PASS: F        still PASS: F        | all A-H PASS
+detected   oracle9_checks_skipped                     expected not PASS: F        still PASS: -        | F=FAIL
+FALSE PASS oracle_precision7_check_missing            expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS phaseA_anon_peak_over_threshold            expected not PASS: BG       still PASS: BG       | all A-H PASS
+FALSE PASS phaseA_condition_not_evicted               expected not PASS: B        still PASS: B        | all A-H PASS
+FALSE PASS phaseA_parity_failures_passed_true         expected not PASS: BF       still PASS: BF       | all A-H PASS
+FALSE PASS phaseA_parity_other_oracle                 expected not PASS: BF       still PASS: BF       | all A-H PASS
+FALSE PASS phaseA_parity_stub                         expected not PASS: BF       still PASS: BF       | all A-H PASS
+FALSE PASS phaseA_residency_empty                     expected not PASS: B        still PASS: B        | all A-H PASS
+FALSE PASS phaseA_residency_missing                   expected not PASS: B        still PASS: B        | all A-H PASS
+FALSE PASS phaseA_residency_other_size                expected not PASS: B        still PASS: B        | all A-H PASS
+FALSE PASS phaseA_scope_unit_differs                  expected not PASS: BG       still PASS: BG       | all A-H PASS
+FALSE PASS phaseA_source_sha_zeroed                   expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS phaseB_anon_peak_over_threshold            expected not PASS: G        still PASS: G        | all A-H PASS
+FALSE PASS phaseB_pipeline_condition_as_is            expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_half_block_reads           expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_no_block_reads             expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_one_shard_resident         expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_residency_missing          expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_shards_still_resident      expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_pipeline_source_sha_zeroed          expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS phaseB_pipeline_three_shards_only          expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_runtime_output_differs              expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_scope_unit_differs                  expected not PASS: CG       still PASS: CG       | all A-H PASS
+FALSE PASS phaseB_source_sha_zeroed                   expected not PASS: A        still PASS: A        | all A-H PASS
+FALSE PASS phaseB_sync_condition_as_is                expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_half_block_reads               expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_no_block_reads                 expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_one_shard_resident             expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_residency_missing              expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_shards_still_resident          expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_sync_three_shards_only              expected not PASS: CGD      still PASS: CGD      | all A-H PASS
+FALSE PASS phaseB_worker_vmhwm_over_threshold         expected not PASS: G        still PASS: G        | all A-H PASS
+FALSE PASS pipeline_digest_differs                    expected not PASS: E        still PASS: E        | all A-H PASS
+FALSE PASS preservation_forged                        expected not PASS: H        still PASS: H        | all A-H PASS
+detected   preservation_stub                          expected not PASS: H        still PASS: -        | gate raised KeyError
+FALSE PASS protocol_limit_altered                     expected not PASS: ABCDEFGH still PASS: ABCDEFGH | all A-H PASS
+FALSE PASS protocol_threshold_altered                 expected not PASS: ABCDEFGH still PASS: ABCDEFGH | all A-H PASS
+detected   pytest_empty                               expected not PASS: H        still PASS: -        | gate raised IndexError
+FALSE PASS pytest_failure_in_progress_line            expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS pytest_passed_with_errors                  expected not PASS: H        still PASS: H        | all A-H PASS
+FALSE PASS pytest_single_test                         expected not PASS: H        still PASS: H        | all A-H PASS
+detected   pytest_skipped                             expected not PASS: H        still PASS: -        | H=FAIL
+detected   scope_not_required                         expected not PASS: B        still PASS: -        | B=FAIL
+FALSE PASS tensor_counter_zeroed                      expected not PASS: E        still PASS: E        | all A-H PASS
+FALSE PASS tensor_counters_emptied                    expected not PASS: E        still PASS: E        | all A-H PASS
+71 false PASS, 9 detected, 80 mutations

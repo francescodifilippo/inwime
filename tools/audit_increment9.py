@@ -2,6 +2,8 @@
 
 Separates process RSS, Linux page cache, WSL RAM (MemTotal), swap and host RAM.
 Windows facts come from read-only CIM queries; failures are recorded, not hidden.
+The report carries no home path, no terminal-session identifier and no name of a
+Hugging Face cache entry unrelated to the project.
 """
 import argparse
 import json
@@ -10,6 +12,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
+
+from .sanitize9 import PROJECT_MODELS, portable
 
 POWERSHELL = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe'
 CGROUP = Path('/sys/fs/cgroup')
@@ -102,6 +106,21 @@ def checkpoint_inventory(root):
     return entries
 
 
+def relevant_cache_entries(hub):
+    """Only cache entries of the project's models are named; the rest is just counted."""
+    names = sorted(p.name for p in Path(hub).iterdir()) if Path(hub).exists() else []
+    project = [n for n in names if any(model in n for model in PROJECT_MODELS)]
+    return dict(project_entries=project, unrelated_entries=len(names)-len(project))
+
+
+def power_supply():
+    """AC/battery state as exposed to the guest; evidence for the power-state note."""
+    out = {}
+    for device in sorted(Path('/sys/class/power_supply').glob('*')):
+        out[device.name] = {f: read(device/f) for f in ('type', 'online', 'status', 'capacity') if (device/f).exists()}
+    return out
+
+
 def audit(repository):
     own, chain = cgroup_chain()
     memory = meminfo()
@@ -116,7 +135,6 @@ def audit(repository):
                                       capture_output=True, text=True, timeout=10).stdout.strip()
     except (OSError, subprocess.TimeoutExpired) as error:
         user_manager = repr(error)
-    hf = Path.home()/'.cache/huggingface/hub'
     return {
         'captured_unix_s': time.time(),
         'kernel': os.uname().release, 'logical_cpus': os.cpu_count(),
@@ -137,7 +155,8 @@ def audit(repository):
         'mnt_c_statfs_bytes': backing,
         'windows': windows_facts(),
         'checkpoints': checkpoint_inventory(Path(repository)/'checkpoints'),
-        'huggingface_hub_cache_entries': sorted(p.name for p in hf.iterdir()) if hf.exists() else [],
+        'huggingface_hub_cache': relevant_cache_entries(Path.home()/'.cache/huggingface/hub'),
+        'power_supply': power_supply(),
         'semantics': {
             'MemTotal': 'RAM assigned to the WSL2 VM, not host RAM',
             'Cached': 'global Linux page cache, not attributable to one process by itself',
@@ -149,7 +168,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
-    report = audit(Path.cwd())
+    report = portable(audit(Path.cwd()))  # no checkout path or terminal-session identifier in evidence
     with a.output.open('x') as f:
         json.dump(report, f, indent=2); f.write('\n')
     print(json.dumps({k: report[k] for k in ('wsl_meminfo_bytes', 'mnt_c_statfs_bytes',

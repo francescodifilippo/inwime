@@ -82,11 +82,11 @@
     "DirectMap1G": 15032385536
   },
   "files": [
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors"
+    "<repo>/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors"
   ],
   "global_oom_kill_before": 0,
   "residency_initial": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
+    "<repo>/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
       "resident_bytes": 0,
       "size_bytes": 3422777952
     }
@@ -94,7 +94,7 @@
   "warm_read_bytes": 3422777952,
   "warm_read_s": 3.178841379994992,
   "residency_after_warm": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
+    "<repo>/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
       "resident_bytes": 3422781440,
       "size_bytes": 3422777952
     }
@@ -191,8 +191,8 @@
     "MemorySwapMax=0",
     "--",
     "/bin/sh",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/cgroup9_finalize.sh",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/results/increment9/phaseA-W-supervisor.final.txt",
+    "<repo>/tools/cgroup9_finalize.sh",
+    "<repo>/results/increment9/phaseA-W-supervisor.final.txt",
     ".venv-oracle7/bin/python",
     "-m",
     "tools.benchmark_increment9",
@@ -857,7 +857,7 @@
     }
   },
   "residency_after": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
+    "<repo>/checkpoints/smollm2-1.7b-d4c18cc/model.safetensors": {
       "resident_bytes": 3422781440,
       "size_bytes": 3422777952
     }

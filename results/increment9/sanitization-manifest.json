@@ -1,0 +1,135 @@
+{
+  "note": "mechanical sanitization of Git-bound evidence: path prefixes and local identifiers only; no number changed; originals kept locally, outside Git",
+  "originals_directory": "artifacts/increment9/original-evidence",
+  "originals_in_git": false,
+  "rules": [
+    {
+      "id": "repo-root",
+      "pattern": "/home/[^/\"\\s]+/(?:[^/\"\\s]+/)*?ooc-inference(?![\\w.-])",
+      "replacement": "<repo>",
+      "description": "absolute path of the local repository checkout -> <repo>"
+    },
+    {
+      "id": "session-scratch",
+      "pattern": "/tmp/[a-z]+-[0-9]+/[^/\"\\s]+/[0-9a-f-]{36}/scratchpad",
+      "replacement": "<scratch>",
+      "description": "per-session scratch directory of the acquisition session -> <scratch>"
+    },
+    {
+      "id": "terminal-session",
+      "pattern": "tmux-spawn-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}",
+      "replacement": "tmux-spawn-<session>",
+      "description": "random identifier of the local terminal session scope -> tmux-spawn-<session>"
+    },
+    {
+      "id": "unrelated-hf-cache",
+      "pattern": "entries of huggingface_hub_cache_entries naming none of Qwen/SmolLM",
+      "replacement": "(dropped)",
+      "description": "Hugging Face cache entries unrelated to the project are removed from the list"
+    }
+  ],
+  "files": {
+    "cgroup-probe-128mib.json": {
+      "original_sha256": "87e34ab3ce2491b6e2796b24dd349932289dceb3571a0301989448c99172dd48",
+      "sanitized_sha256": "baca2c4717cb579dcd19b1f30b9171f84652096848b2ac8c86b486f93c001752",
+      "original_nbytes": 10904,
+      "sanitized_nbytes": 10382,
+      "replacements": {
+        "repo-root": 9,
+        "session-scratch": 1
+      }
+    },
+    "environment-after.json": {
+      "original_sha256": "fa3d66234f652db3e6b74b2a1a6daf82ada3b68a442dc0a440dc5a74cd23d090",
+      "sanitized_sha256": "ca99eb677bc757e9b3340d62fe1e6d35464c1972d0b28ebf5933bfa8422451f4",
+      "original_nbytes": 6951,
+      "sanitized_nbytes": 6858,
+      "replacements": {
+        "terminal-session": 2,
+        "unrelated-hf-cache": 1
+      }
+    },
+    "environment-before.json": {
+      "original_sha256": "c07f92ddac168c15483b434f044a7e8aa19e5abc5d5ef69e9303437f56c6ba84",
+      "sanitized_sha256": "e2386c8d00d75d548fc15da007c53bc996196558d2cd1bf2f12fc078de6cd662",
+      "original_nbytes": 6644,
+      "sanitized_nbytes": 6551,
+      "replacements": {
+        "terminal-session": 2,
+        "unrelated-hf-cache": 1
+      }
+    },
+    "negative-oom-policy-stop-supervisor.json": {
+      "original_sha256": "4fec6c79cad9aa1f95296b915b5848c1a87857212b1550e5d8eb5d39ba3e107a",
+      "sanitized_sha256": "fcc17dff21c866fe84482a899f037f564582a16343aea053bca6a97dd82bfdb0",
+      "original_nbytes": 7898,
+      "sanitized_nbytes": 7806,
+      "replacements": {
+        "repo-root": 2
+      }
+    },
+    "negative-oom-supervisor.json": {
+      "original_sha256": "41e732b129f5e9ddf79985848635c45aaf27ea5b7093233ddcc043294f0a6530",
+      "sanitized_sha256": "6615bef3182d4b55a21cd0aafcf52ef821b830ba0d95ae8241375eb63b650a03",
+      "original_nbytes": 10297,
+      "sanitized_nbytes": 10205,
+      "replacements": {
+        "repo-root": 2
+      }
+    },
+    "phaseA-P-supervisor.json": {
+      "original_sha256": "b88ae5f31ef12acf5b58938a0df47d8d212a2f30cf2b7a11036ced68586104a1",
+      "sanitized_sha256": "92511542247c9f11e2c94d1d652e2c68263c4b9bdd25e21983e1340eddb115e2",
+      "original_nbytes": 24999,
+      "sanitized_nbytes": 24723,
+      "replacements": {
+        "repo-root": 6
+      }
+    },
+    "phaseA-W-supervisor.json": {
+      "original_sha256": "3cc703a7cabf75b75e91b2a9c8c6d6916b1c0b4d8048d173d2ad42c9f27761fa",
+      "sanitized_sha256": "998e9ea091ba1c40314a92ff644f07c5f127eba955b52b48c321abe141f8652f",
+      "original_nbytes": 21692,
+      "sanitized_nbytes": 21416,
+      "replacements": {
+        "repo-root": 6
+      }
+    },
+    "phaseB-pipeline-supervisor.json": {
+      "original_sha256": "eaab1b286831616cb82af93d59873057ba79c25936b5da235d129bb5fb878ed6",
+      "sanitized_sha256": "72e6bd103e7fa82cba8d6bfe3aec37914c3fa598c078d89c67d0f6655fc5c0e7",
+      "original_nbytes": 65627,
+      "sanitized_nbytes": 64799,
+      "replacements": {
+        "repo-root": 18
+      }
+    },
+    "phaseB-sync-supervisor.json": {
+      "original_sha256": "147a13927e242e227b461326946a1a964166dfb11723b6089eea87352c910bc8",
+      "sanitized_sha256": "3cebb02837f789c3b7bea69592a49de92d400d9498aea636c6c7b2889a0685e8",
+      "original_nbytes": 62211,
+      "sanitized_nbytes": 61383,
+      "replacements": {
+        "repo-root": 18
+      }
+    },
+    "scope48mib-135m-supervisor.json": {
+      "original_sha256": "fe4b3252817c49b00391bc97cea47af3fca04766532bbd1528211e05eb7faf37",
+      "sanitized_sha256": "9f8100a18751192a221f3dc1affdb862cfe31c4cc845c3b96b3e841e7fca2073",
+      "original_nbytes": 13377,
+      "sanitized_nbytes": 13285,
+      "replacements": {
+        "repo-root": 2
+      }
+    },
+    "supervisor-faults.json": {
+      "original_sha256": "82b73acbb6df3c7fb087c0d9fa40ac8115c6c18108638587eb316cf74131d690",
+      "sanitized_sha256": "65c7beb7b79a8f14449967f72d2676f1982c38fca3333ef3b95361fa7baf730c",
+      "original_nbytes": 130511,
+      "sanitized_nbytes": 130419,
+      "replacements": {
+        "repo-root": 2
+      }
+    }
+  }
+}

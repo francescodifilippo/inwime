@@ -3,6 +3,6 @@ test_inwime_matches_upstream_small (tools.check_oracle9.OracleTests.test_inwime_
 test_streamed_equals_stock_from_pretrained (tools.check_oracle9.OracleTests.test_streamed_equals_stock_from_pretrained) ... ok
 
 ----------------------------------------------------------------------
-Ran 3 tests in 0.198s
+Ran 3 tests in 0.216s
 
 OK

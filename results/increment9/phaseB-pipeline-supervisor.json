@@ -82,44 +82,44 @@
     "DirectMap1G": 15032385536
   },
   "files": [
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors"
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors",
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors",
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors",
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors"
   ],
   "global_oom_kill_before": 0,
   "residency_initial": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
       "resident_bytes": 122773504,
       "size_bytes": 3945441440
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
       "resident_bytes": 334143488,
       "size_bytes": 3864726352
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
       "resident_bytes": 201764864,
       "size_bytes": 3864726424
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
       "resident_bytes": 3054579712,
       "size_bytes": 3556377672
     }
   },
   "residency_after_eviction": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
       "resident_bytes": 0,
       "size_bytes": 3945441440
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
       "resident_bytes": 0,
       "size_bytes": 3864726352
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
       "resident_bytes": 0,
       "size_bytes": 3864726424
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
       "resident_bytes": 0,
       "size_bytes": 3556377672
     }
@@ -216,8 +216,8 @@
     "MemorySwapMax=0",
     "--",
     "/bin/sh",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/tools/cgroup9_finalize.sh",
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/results/increment9/phaseB-pipeline-supervisor.final.txt",
+    "<repo>/tools/cgroup9_finalize.sh",
+    "<repo>/results/increment9/phaseB-pipeline-supervisor.final.txt",
     ".venv-oracle7/bin/python",
     "-m",
     "tools.benchmark_increment9",
@@ -2839,19 +2839,19 @@
     }
   },
   "residency_after": {
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": {
       "resident_bytes": 29712384,
       "size_bytes": 3945441440
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": {
       "resident_bytes": 31932416,
       "size_bytes": 3864726352
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": {
       "resident_bytes": 33984512,
       "size_bytes": 3864726424
     },
-    "/home/francesco/GIT/francescodifilippo/ooc-inference/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
+    "<repo>/checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": {
       "resident_bytes": 1934716928,
       "size_bytes": 3556377672
     }

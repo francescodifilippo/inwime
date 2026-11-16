@@ -23,7 +23,7 @@
   "swappiness": "60",
   "cgroup_filesystem": true,
   "cgroup_v2_mounted": true,
-  "own_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-68f8c310-d700-42a2-85cb-fdd07a304439.scope",
+  "own_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-<session>.scope",
   "cgroup_chain": [
     {
       "path": "/sys/fs/cgroup",
@@ -74,7 +74,7 @@
       "memory.swap.max": "max"
     },
     {
-      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-68f8c310-d700-42a2-85cb-fdd07a304439.scope",
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-tmux.slice/tmux-spawn-<session>.scope",
       "controllers": "memory pids",
       "subtree_control": "",
       "memory.max": "max",
@@ -243,9 +243,7 @@
       ]
     }
   ],
-  "huggingface_hub_cache_entries": [
-    "models--ACE-Step--Ace-Step1.5"
-  ],
+  "huggingface_hub_cache_entries": [],
   "semantics": {
     "MemTotal": "RAM assigned to the WSL2 VM, not host RAM",
     "Cached": "global Linux page cache, not attributable to one process by itself",
