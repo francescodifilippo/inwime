@@ -1,0 +1,82 @@
+control (unmutated copy, remediated gate): A=PASS B=PASS C=PASS D=PASS E=PASS F=PASS G=PASS H=PASS
+rejected   acquisition_sha_altered                    A=FAIL                             | acquisition_used_the_same_official_digests
+rejected   decode_input_not_previous_greedy           E=FAIL F=FAIL                      | decode_inputs_are_previous_greedy; pipeline_outputs_byte_identical
+rejected   diagnostic_other_runtime                   F=FAIL                             | stock_fp64_report_complete_and_bound
+rejected   diagnostic_report_missing                  F=NOT PROVEN                       | missing_evidence: parity-stock_fp64.json
+rejected   diagnostic_rewritten_to_pass               F=FAIL                             | stock_fp64_report_complete_and_bound
+rejected   finalizer_missing                          A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phaseB-sync_within_limits; phaseB-sync_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   fp32_other_revision                        F=FAIL                             | stock_fp32_report_complete_and_bound
+rejected   fp32_other_sequence                        F=FAIL                             | stock_fp32_report_complete_and_bound; stock_fp32_oracle_run_clean
+rejected   fp32_thresholds_in_report                  F=FAIL                             | stock_fp32_report_complete_and_bound
+rejected   full64_coverage_reduced                    F=NOT PROVEN                       | incomplete_evidence: KeyError('decode.1')
+rejected   full64_element_count_reduced               F=FAIL                             | full64_report_complete_and_bound
+rejected   full64_failures_and_argmax_passed_true     F=FAIL                             | full64_report_complete_and_bound; full64_passes_recomputed
+rejected   full64_greedy_not_recorded                 F=FAIL                             | full64_report_complete_and_bound; full64_passes_recomputed
+rejected   full64_layer_failures_only                 F=FAIL                             | full64_report_complete_and_bound; full64_passes_recomputed
+rejected   full64_other_oracle_digest                 F=FAIL                             | manifest_binds_captures_and_oracles
+rejected   full64_other_runtime                       F=FAIL                             | full64_report_complete_and_bound
+rejected   full64_replaced_by_stock_fp32              F=FAIL                             | full64_report_complete_and_bound; manifest_binds_captures_and_oracles
+rejected   full64_upstream_greedy_differs             F=FAIL                             | full64_report_complete_and_bound; full64_passes_recomputed
+rejected   gate7_diagnostic_rewritten                 H=FAIL                             | gate7_rerun_equals_rebuilt
+rejected   gate7_stub                                 H=FAIL                             | gate7_rerun_equals_rebuilt
+rejected   gate8_check_removed                        H=FAIL                             | gate8_rerun_equals_rebuilt
+rejected   gate8_stub                                 H=FAIL                             | gate8_rerun_equals_rebuilt
+rejected   generation_sequence_broken                 E=FAIL                             | kv_generations
+rejected   increment8_digest_altered                  B=FAIL                             | capture_digests_are_phase_digests; digests_equal_increment8
+rejected   integrity_digest_altered_match_true        A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   integrity_file_mismatch_all_match_true     A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   integrity_files_empty                      A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   integrity_index_missing                    A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   integrity_shard_missing                    A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   integrity_smollm_missing                   A=FAIL                             | rehash_recomputed_per_file_equals_official
+rejected   kv_prefix_not_preserved                    E=FAIL                             | kv_prefix_preserved
+rejected   oom_kill_recorded                          A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phaseB-pipeline_within_limits; precondition_not_met: ['sanitization']
+rejected   oracle8_check_not_ok                       H=FAIL                             | oracle8_check_ok
+rejected   oracle9_checks_no_tests                    F=FAIL                             | small_case_checks_ok
+rejected   oracle9_checks_not_ok                      F=FAIL                             | small_case_checks_ok
+rejected   oracle9_checks_skipped                     F=FAIL                             | small_case_checks_ok
+rejected   oracle_precision7_check_missing            H=NOT PROVEN                       | missing_evidence: check-oracle-precision7.txt
+rejected   phaseA_anon_peak_over_threshold            A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | anon_kernel_below_threshold; precondition_not_met: ['sanitization']
+rejected   phaseA_condition_not_evicted               A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | condition_evicted; precondition_not_met: ['sanitization']
+rejected   phaseA_parity_failures_passed_true         B=FAIL F=FAIL                      | parity_increment8_fp32_oracle_rebuilt
+rejected   phaseA_parity_other_oracle                 B=FAIL F=FAIL                      | parity_increment8_fp32_oracle_rebuilt
+rejected   phaseA_parity_stub                         B=NOT PROVEN F=NOT PROVEN          | incomplete_evidence: KeyError('runtime_report')
+rejected   phaseA_residency_empty                     A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | evicted_files_are_the_checkpoint; precondition_not_met: ['sanitization']
+rejected   phaseA_residency_missing                   A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | incomplete_evidence: KeyError('residency_after_eviction'); precondition_not_met: ['sanitization']
+rejected   phaseA_residency_other_size                A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | residency_sizes_equal_files; precondition_not_met: ['sanitization']
+rejected   phaseA_scope_unit_differs                  B=FAIL C=FAIL G=FAIL               | worker_in_supervisor_unit
+rejected   phaseA_source_sha_zeroed                   A=FAIL B=FAIL                      | runtime_smollm_full_sha256_equals_protocol
+rejected   phaseB_anon_peak_over_threshold            A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phaseB-sync_within_limits; precondition_not_met: ['sanitization']
+rejected   phaseB_pipeline_condition_as_is            A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_pipeline_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_pipeline_half_block_reads           C=FAIL G=FAIL                      | phase_b_pipeline_evicted_and_read_as_blocks
+rejected   phaseB_pipeline_no_block_reads             C=FAIL G=FAIL                      | phase_b_pipeline_evicted_and_read_as_blocks
+rejected   phaseB_pipeline_one_shard_resident         A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_pipeline_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_pipeline_residency_missing          A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | incomplete_evidence: KeyError('residency_after_eviction'); precondition_not_met: ['sanitization']
+rejected   phaseB_pipeline_shards_still_resident      A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_pipeline_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_pipeline_source_sha_zeroed          A=FAIL                             | runtime_pipeline_full_sha256_equals_official_lfs
+rejected   phaseB_pipeline_three_shards_only          A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_pipeline_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_runtime_output_differs              A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_sync_bound_to_its_scope; precondition_not_met: ['sanitization']
+rejected   phaseB_scope_unit_differs                  C=FAIL D=FAIL G=FAIL               | phase_b_sync_bound_to_its_scope
+rejected   phaseB_source_sha_zeroed                   A=FAIL                             | runtime_sync_full_sha256_equals_official_lfs
+rejected   phaseB_sync_condition_as_is                A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_sync_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_sync_half_block_reads               C=FAIL D=FAIL G=FAIL               | phase_b_sync_evicted_and_read_as_blocks
+rejected   phaseB_sync_no_block_reads                 C=FAIL D=FAIL G=FAIL               | phase_b_sync_evicted_and_read_as_blocks
+rejected   phaseB_sync_one_shard_resident             A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_sync_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_sync_residency_missing              A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | incomplete_evidence: KeyError('residency_after_eviction'); precondition_not_met: ['sanitization']
+rejected   phaseB_sync_shards_still_resident          A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_sync_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_sync_three_shards_only              A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | phase_b_sync_evicted_and_read_as_blocks; precondition_not_met: ['sanitization']
+rejected   phaseB_worker_vmhwm_over_threshold         C=FAIL G=FAIL                      | phaseB-pipeline_within_limits
+rejected   pipeline_digest_differs                    E=FAIL                             | pipeline_outputs_byte_identical; pipeline_forward_complete
+rejected   preservation_forged                        H=FAIL                             | preservation_report_clean; git_state_recomputed_equals_report
+rejected   preservation_stub                          H=NOT PROVEN                       | incomplete_evidence: KeyError('baseline')
+rejected   protocol_limit_altered                     A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | precondition_not_met: ['protocol']
+rejected   protocol_threshold_altered                 A=FAIL B=FAIL C=FAIL D=FAIL E=FAIL F=FAIL G=FAIL H=FAIL | precondition_not_met: ['protocol']
+rejected   pytest_empty                               H=FAIL                             | pytest_all_passed
+rejected   pytest_failure_in_progress_line            H=FAIL                             | pytest_all_passed
+rejected   pytest_passed_with_errors                  H=FAIL                             | pytest_all_passed
+rejected   pytest_single_test                         H=FAIL                             | pytest_all_passed
+rejected   pytest_skipped                             H=FAIL                             | pytest_all_passed
+rejected   scope_not_required                         B=FAIL C=FAIL G=FAIL               | worker_in_supervisor_unit; worker_saw_limits_before_weights; worker_pid_sampled
+rejected   tensor_counter_zeroed                      D=FAIL E=FAIL                      | per_tensor_reads_equal_expected; inference_bytes_equal_tensor_sum; per_tensor_reads_equal_official_shapes
+rejected   tensor_counters_emptied                    D=FAIL E=FAIL                      | per_tensor_reads_equal_expected; inference_bytes_equal_tensor_sum; per_tensor_reads_equal_official_shapes
+0 false PASS, 80 rejected, 80 mutations

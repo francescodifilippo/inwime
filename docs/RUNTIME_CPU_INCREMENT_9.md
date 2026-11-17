@@ -1,5 +1,15 @@
 # Incremento 9 — inferenza reale oltre il budget di memoria e oltre la RAM WSL
 
+> **Stato attuale (17 novembre 2026).** Il follow-up della seconda revisione è
+> pubblicato nel commit `5eb25da` («incremento 9 review»); la revisione
+> conclusiva lo ha giudicato *READY WITH DOCUMENTED LIMITATIONS*. M9-A e M9-B
+> sono chiusi con limitazioni documentate; le Issues #2 e #3 sono chiuse, le
+> attività residue sono nelle Issues #17, #18 e #19. Le frasi che seguono su
+> commit, staging e «non committato» descrivono lo stato **al momento della
+> stesura** e restano come testo storico. L'hardening del gate successivo alla
+> chiusura (D-1…D-6) è descritto in
+> [results/increment9/post-closure/README.md](../results/increment9/post-closure/README.md).
+
 15 novembre 2026. Base `main`, `68ba9f3adf3cffb89b18b19525644fa0d7c6d806`,
 repository `francescodifilippo/inwime` (directory locale `ooc-inference`).
 Working tree iniziale pulito. Nessun commit, staging o push durante l'acquisizione.
@@ -566,12 +576,15 @@ committata dal proprietario come `eb669f2` («passo 9 fix»).
   `results/increment9`: vanno rigenerati nell'ordine indicato nel README delle
   evidenze, altrimenti la suite fallisce.
 - Il follow-up della seconda revisione e i suoi test non sono ancora stati
-  esaminati da una revisione indipendente.
+  esaminati da una revisione indipendente (stato al momento della stesura; la
+  revisione conclusiva del 17 novembre lo ha esaminato: *READY WITH
+  DOCUMENTED LIMITATIONS*, sei P3 D-1…D-6, sezione 14).
 
 ### 13.4 Follow-up della seconda revisione
 
 La seconda revisione indipendente ha esaminato il commit `eb669f2`. Il
-follow-up, **non committato**, non ripete misure e non tocca runtime, kernel,
+follow-up, **non committato** al momento della stesura (poi pubblicato in
+`5eb25da`), non ripete misure e non tocca runtime, kernel,
 sorgente, evidenze di misura né `protocol.json`. Dettaglio per rilievo in
 [REVIEW_INCREMENT_9.md](REVIEW_INCREMENT_9.md).
 
@@ -605,3 +618,26 @@ sorgente, evidenze di misura né `protocol.json`. Dettaglio per rilievo in
   SHA fissato; nessuna opzione `--root`; index di `integrity-after.json`
   registrato solo come esito; combinazione campo mancante più fatto
   contraddetto ancora NOT PROVEN in C, D e parti di E e F.
+
+## 14. Hardening successivo alla chiusura (17 novembre 2026)
+
+Dopo la revisione conclusiva (commit `5eb25da`, *READY WITH DOCUMENTED
+LIMITATIONS*) il gate è stato reso più severo su tre punti, senza ripetere
+misure e senza modificare evidenze di misura, runtime, adapter, kernel,
+`protocol.json` o contratti numerici degli incrementi 7 e 8:
+
+- **D-2, precedenza dei verdetti**: verdetto finale = il peggiore tra il
+  verdetto della condizione e quelli delle precondizioni, nell'ordine
+  FAIL > NOT PROVEN > PASS. Il gate 9 non usa BLOCKED.
+- **D-3, contatori malformati**: ogni contatore di runtime usato in una
+  condizione deve essere un intero JSON non negativo (`type(v) is int`, quindi
+  non `bool`); un valore presente di tipo errato è FAIL, un campo assente NOT
+  PROVEN.
+- **D-4, manifest malformato**: presente ma strutturalmente non valido è FAIL,
+  assente NOT PROVEN.
+
+Sulle evidenze storiche il report del gate aggiornato è identico a
+`summary.json`: **A–H PASS**, precondizioni PASS, FP64 standard FAIL grezzo
+conservato. Le differenze rispetto al gate di `5eb25da` riguardano solo
+evidenze mutate e sono elencate, con le prove red/green, in
+[results/increment9/post-closure/README.md](../results/increment9/post-closure/README.md).

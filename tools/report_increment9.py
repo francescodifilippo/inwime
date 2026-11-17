@@ -1,8 +1,12 @@
 """Increment-9 gate A-H with PASS / FAIL / NOT PROVEN, recomputed from raw evidence.
 
 Fail-closed: a missing file or field is NOT PROVEN, a contradicted fact is FAIL,
-never PASS; a failed precondition or missing evidence can turn only a PASS into
-something else, a contradicted fact already recorded stays FAIL. Derived booleans ('passed', 'all_match', ...) are not trusted: every
+never PASS. A present value of the wrong type (a bool, float, string or null where a
+non-negative integer counter is required) is a contradicted fact, not a missing one.
+Each condition's final verdict is the worst of its own verdict and the preconditions,
+in the order FAIL > NOT PROVEN > PASS: a FAIL precondition makes every condition FAIL,
+a NOT PROVEN one turns a PASS into NOT PROVEN, and a contradicted fact already
+recorded stays FAIL. Gate 9 has no BLOCKED verdict. Derived booleans ('passed', 'all_match', ...) are not trusted: every
 verdict is rebuilt from raw counters and bound to the approved protocol, the
 official preflight, the supervisor of the same run, the increment-7/8 evidence
 and, when present on this machine, the capture files and the unsanitized
@@ -19,6 +23,7 @@ import subprocess
 from . import sanitize9
 
 PASS, FAIL, NOT_PROVEN = 'PASS', 'FAIL', 'NOT PROVEN'
+SEVERITY = {PASS: 0, NOT_PROVEN: 1, FAIL: 2}
 GIB2 = 2147483648
 # Approved acceptance values, duplicated here on purpose: editing protocol.json or
 # the amendment must not be able to move the bar.
@@ -153,9 +158,36 @@ def settle(lazy):
     return out
 
 
+def natural(*values):
+    """Counters are non-negative JSON integers: bool (an int subclass), float, str and None are not."""
+    return all(type(value) is int and value >= 0 for value in values)
+
+
 def zero(*values):
-    """Counters must be the integer 0: JSON false is not accepted as zero."""
+    """Counters must be the integer 0: JSON false or 0.0 is not accepted as zero."""
     return all(type(value) is int and value == 0 for value in values)
+
+
+def exactly(value, expected):
+    """An integer counter equal to an integer: 2147483648.0 is not the approved limit."""
+    return natural(value) and value == expected
+
+
+def counters_equal(actual, expected):
+    """Per-key counters equal to the expected ones, every value a non-negative integer."""
+    return (isinstance(actual, dict) and isinstance(expected, dict) and natural(*actual.values())
+            and natural(*expected.values()) and actual == expected)
+
+
+def counter_sum(values):
+    """Sum of non-negative integer counters, None when any of them is not one (never a TypeError)."""
+    values = list(values)
+    return sum(values) if natural(*values) else None
+
+
+def combine(*verdicts):
+    """The worst verdict, FAIL > NOT PROVEN > PASS; an unknown verdict counts as FAIL."""
+    return max((verdict if verdict in SEVERITY else FAIL for verdict in verdicts), key=SEVERITY.__getitem__)
 
 
 def output_argument(command, flag='--output'):
@@ -172,21 +204,23 @@ def scope(sup, runtime, runtime_name, parameters):
     anon_kernel = lambda: sup['sampled_peaks']['stat.anon']+sup['sampled_peaks']['stat.kernel']
     lazy = dict(
         finalizer_recorded=lambda: True,
-        exit_zero=lambda: sup['exit_code'] == 0 and fin['worker.exit'] == 0,
+        exit_zero=lambda: zero(sup['exit_code'], fin['worker.exit']),
         no_watchdog=lambda: sup['watchdog_reason'] is None,
-        limits_requested=lambda: (sup['memory_max'] == GIB2 and sup['swap_max'] == 0
+        limits_requested=lambda: (exactly(sup['memory_max'], GIB2) and zero(sup['swap_max'])
                                   and f'--unit={unit}' in sup['launcher'] and f'MemoryMax={GIB2}' in sup['launcher']
                                   and 'MemorySwapMax=0' in sup['launcher']),
-        limits_observed_by_kernel=lambda: fin['memory.max'] == GIB2 and fin['memory.swap.max'] == 0,
+        limits_observed_by_kernel=lambda: exactly(fin['memory.max'], GIB2) and zero(fin['memory.swap.max']),
         finalizer_in_same_scope=lambda: (fin['cgroup.path'].endswith(f'/{unit}.scope')
                                          and sup['scope'].endswith(f'/{unit}.scope')),
-        peak_within_limit=lambda: 0 < fin['memory.peak'] <= GIB2,
+        peak_within_limit=lambda: natural(fin['memory.peak']) and 0 < fin['memory.peak'] <= GIB2,
         no_oom=lambda: zero(events()['oom'], events()['oom_kill'], local()['oom'], local()['oom_kill']),
-        no_swap=lambda: (fin['memory.swap.peak'] == 0 and fin['memory.swap.current'] == 0
-                         and sup['sampled_peaks']['memory.swap.current'] == 0),
-        global_oom_kill_unchanged=lambda: sup['global_oom_kill_after']-sup['global_oom_kill_before'] == 0,
-        sampled=lambda: sup['samples'] > 0,
-        anon_kernel_below_threshold=lambda: anon_kernel() <= parameters['anon_kernel_peak_max_bytes'])
+        no_swap=lambda: zero(fin['memory.swap.peak'], fin['memory.swap.current'],
+                             sup['sampled_peaks']['memory.swap.current']),
+        global_oom_kill_unchanged=lambda: (natural(sup['global_oom_kill_after'], sup['global_oom_kill_before'])
+                                           and sup['global_oom_kill_after'] == sup['global_oom_kill_before']),
+        sampled=lambda: natural(sup['samples']) and sup['samples'] > 0,
+        anon_kernel_below_threshold=lambda: (natural(sup['sampled_peaks']['stat.anon'], sup['sampled_peaks']['stat.kernel'])
+                                             and anon_kernel() <= parameters['anon_kernel_peak_max_bytes']))
     if runtime is not None:
         inside, close = lambda: runtime['scope'], lambda: runtime['process_after_close']
         lazy.update(
@@ -194,17 +228,18 @@ def scope(sup, runtime, runtime_name, parameters):
                 inside()['required'] is True and inside()['unit'] == unit and inside()['member'] is True
                 and inside()['observed']['path'].endswith(f'/{unit}.scope')),
             worker_saw_limits_before_weights=lambda: (
-                inside()['verified_before_opening_weights'] is True and inside()['observed']['memory.max'] == GIB2
-                and inside()['observed']['memory.swap.max'] == 0 and inside()['expected_memory_max'] == GIB2
-                and inside()['expected_swap_max'] == 0),
+                inside()['verified_before_opening_weights'] is True and exactly(inside()['observed']['memory.max'], GIB2)
+                and zero(inside()['observed']['memory.swap.max']) and exactly(inside()['expected_memory_max'], GIB2)
+                and zero(inside()['expected_swap_max'])),
             worker_report_is_this_file=lambda: output_argument(sup['command']) == runtime_name,
             worker_pid_sampled=lambda: any(key.startswith(f'pid{inside()["pid"]}.') for key in sup['sampled_peaks']),
-            worker_vmhwm_below_threshold=lambda: max(close()['VmHWM_bytes'], runtime['peak_rss_bytes'])
-                                                 <= parameters['worker_vmhwm_max_bytes'],
-            worker_no_swap=lambda: close()['VmSwap_bytes'] == 0 and all(
-                p['process']['VmSwap_bytes'] == 0 for p in runtime['phases']),
-            worker_address_space_bounded=lambda: (close()['VmPeak_bytes'] <= runtime['rlimit_as_bytes'][0]
-                                                  < runtime['payload_bytes']))
+            worker_vmhwm_below_threshold=lambda: (natural(close()['VmHWM_bytes'], runtime['peak_rss_bytes'])
+                                                  and max(close()['VmHWM_bytes'], runtime['peak_rss_bytes'])
+                                                  <= parameters['worker_vmhwm_max_bytes']),
+            worker_no_swap=lambda: zero(close()['VmSwap_bytes'], *(p['process']['VmSwap_bytes'] for p in runtime['phases'])),
+            worker_address_space_bounded=lambda: (
+                natural(close()['VmPeak_bytes'], runtime['rlimit_as_bytes'][0], runtime['payload_bytes'])
+                and close()['VmPeak_bytes'] <= runtime['rlimit_as_bytes'][0] < runtime['payload_bytes']))
     checks = settle(lazy)
     try:
         facts = dict(unit=unit, memory_peak=fin['memory.peak'], max_events=events()['max'], oom=events()['oom'],
@@ -236,10 +271,11 @@ def eviction(sup, runtime, directory, parameters):
         condition_evicted=sup['condition'] == 'evicted',
         evicted_files_are_the_checkpoint=(len(after) == len(sizes) and {suffix(k) for k in after} == set(sizes)
                                           and sorted(sup['files']) == sorted(after)),
-        residency_sizes_equal_files=all(v['size_bytes'] == sizes.get(suffix(k)) for k, v in after.items()),
-        resident_after_eviction_within_limit=all(0 <= v['resident_bytes'] <= v['size_bytes']*limit for v in after.values())
-    ), dict(resident_bytes_after_eviction=sum(v['resident_bytes'] for v in after.values()),
-            file_bytes=sum(v['size_bytes'] for v in after.values()))
+        residency_sizes_equal_files=all(exactly(v['size_bytes'], sizes.get(suffix(k))) for k, v in after.items()),
+        resident_after_eviction_within_limit=all(natural(v['resident_bytes'], v['size_bytes'])
+                                                 and v['resident_bytes'] <= v['size_bytes']*limit for v in after.values())
+    ), dict(resident_bytes_after_eviction=counter_sum(v['resident_bytes'] for v in after.values()),
+            file_bytes=counter_sum(v['size_bytes'] for v in after.values()))
 
 
 def forward(r, decodes):
@@ -251,8 +287,8 @@ def forward(r, decodes):
         prefill_is_the_prompt=phases[0]['ids'] == prompt and len(prompt) >= 2,
         enough_decodes=len(phases)-1 >= decodes,
         phase_names=[p['name'] for p in phases] == names and sorted(r['captures']) == names,
-        kv_lengths=[p['length'] for p in phases] == list(range(len(prompt), len(prompt)+len(phases))),
-        kv_generations=[p['generation'] for p in phases] == list(range(1, len(phases)+1)),
+        kv_lengths=all(natural(p['length']) for p in phases) and [p['length'] for p in phases] == list(range(len(prompt), len(prompt)+len(phases))),
+        kv_generations=all(natural(p['generation']) for p in phases) and [p['generation'] for p in phases] == list(range(1, len(phases)+1)),
         kv_prefix_preserved=all(p['kv_prefix_preserved'] is True for p in phases),
         decode_inputs_are_previous_greedy=all(len(p['greedy']) == len(p['ids']) for p in phases) and all(
             phase['ids'] == previous['greedy'][-1:] for previous, phase in zip(phases, phases[1:])),
@@ -260,18 +296,24 @@ def forward(r, decodes):
         capture_digests_are_phase_digests=all(
             r['captures'][p['name']][kind]['sha256'] == p['digests'][kind] and HEX64.fullmatch(p['digests'][kind])
             for p in phases for kind in ('logits', 'hidden', 'kv')),
-        per_tensor_reads_equal_expected=bool(expected) and stats['tensor_read_bytes'] == expected
+        per_tensor_reads_equal_expected=bool(expected) and counters_equal(stats['tensor_read_bytes'], expected)
                                         and all(v > 0 for v in expected.values()),
-        inference_bytes_equal_tensor_sum=stats['inference_read_bytes'] == sum(expected.values()),
-        requests_released=(stats['failed'] == 0 and stats['requests'] == stats['completed'] == stats['released']
+        inference_bytes_equal_tensor_sum=exactly(stats['inference_read_bytes'], sum(expected.values())),
+        requests_released=(zero(stats['failed'])
+                           and natural(stats['requests'], stats['completed'], stats['released'], stats['session_length'])
+                           and stats['requests'] == stats['completed'] == stats['released']
                            and stats['request_state'] == 'RELEASED' and stats['session_failed'] is False
                            and stats['session_length'] == len(prompt)+len(phases)-1),
         fds_and_arenas_released=r['released_fds'] is True and r['released_arenas'] is True,
-        no_weight_cache_or_heavy_module=(r['weight_cache'] is False and r['gpu_allocations_bytes'] == 0
+        no_weight_cache_or_heavy_module=(r['weight_cache'] is False and zero(r['gpu_allocations_bytes'])
                                          and r['heavy_modules_loaded'] == []),
-        budget_equals_plan=r['budget_bytes'] == r['arena_plan_bytes'] == stats['reserved_peak_bytes'],
-        full_integrity_at_startup=(stats['integrity_policy'] == 'full' and r['integrity_read_bytes']
-                                   == sum(f['nbytes'] for f in r['source_files'].values()) == stats['source_file_bytes']))
+        budget_equals_plan=(natural(r['budget_bytes'], r['arena_plan_bytes'], stats['reserved_peak_bytes'])
+                            and r['budget_bytes'] == r['arena_plan_bytes'] == stats['reserved_peak_bytes']),
+        full_integrity_at_startup=(stats['integrity_policy'] == 'full'
+                                   and natural(r['integrity_read_bytes'], stats['source_file_bytes'],
+                                               *(f['nbytes'] for f in r['source_files'].values()))
+                                   and r['integrity_read_bytes'] == sum(f['nbytes'] for f in r['source_files'].values())
+                                   == stats['source_file_bytes']))
 
 
 def qwen_reads(preflight, positions):
@@ -317,12 +359,14 @@ def parity(report, contract, runtime, runtime_name, tensor_count):
         expected = dict(logits=n*vocab, hidden=n*layers*config['hidden_size'], kv=phase['length']*2*layers*kv_width)
         for kind, count in expected.items():
             per_layer = c[kind]['layers'] if kind != 'logits' else []
-            counts &= c[kind]['count'] == count and (kind == 'logits' or (
-                len(per_layer) == layers and sum(x['count'] for x in per_layer) == count
+            counts &= exactly(c[kind]['count'], count) and natural(c[kind]['failures']) and (kind == 'logits' or (
+                len(per_layer) == layers and natural(*(x['count'] for x in per_layer), *(x['failures'] for x in per_layer))
+                and sum(x['count'] for x in per_layer) == count
                 and sum(x['failures'] for x in per_layer) == c[kind]['failures']))
-            total[kind] += c[kind]['count']
-            failures[kind] += c[kind]['failures']
-            clean &= c[kind]['failures'] == 0 and all(x['failures'] == 0 for x in per_layer)
+            # Facts only; a counter that is not a non-negative integer is already a FAIL in `counts`.
+            total[kind] = counter_sum((total[kind], c[kind]['count'])) if total[kind] is not None else None
+            failures[kind] = counter_sum((failures[kind], c[kind]['failures'])) if failures[kind] is not None else None
+            clean &= zero(c[kind]['failures'], *(x['failures'] for x in per_layer))
         argmax &= c['argmax_equal'] is True and len(c['top10']) == n and all(
             row['actual'][0] == row['upstream'][0] == token for row, token in zip(c['top10'], phase['greedy']))
         greedy &= c['runtime_greedy_recorded'] is True
@@ -394,19 +438,23 @@ def captures_bound(manifest, runtimes, oracle_digests):
 def protocol_precondition(evidence):
     facts = {}
     try:
-        protocol, amendment = evidence['protocol.json'], evidence[AMENDMENT]
-        digest = hashlib.sha256((evidence.directory/'protocol.json').read_bytes()).hexdigest()
-        cgroup = protocol['phase_a']['cgroup']
-        checks = facts['checks'] = dict(
-            protocol_file_is_the_approved_one=digest == PROTOCOL_SHA256,
-            thresholds_approved=all((protocol[k]['atol'], protocol[k]['rtol']) == v for k, v in THRESHOLDS.items()),
-            limits_approved=cgroup['memory.max'] == GIB2 and cgroup['memory.swap.max'] == 0,
-            models_pinned=(protocol['phase_a']['revision'] == REVISION_A and protocol['phase_a']['file_sha256'] == SHA_A
-                           and protocol['phase_b']['revision'] == REVISION_B and protocol['baseline_head'] == BASELINE),
-            remediation_parameters_are_the_gate_ones=amendment['gate_parameters'] == PARAMETERS,
-            amendment_declared_post_measurement=amendment['status'].startswith('post-measurement')
-                                                and amendment['amends_protocol_sha256'] == PROTOCOL_SHA256)
-        facts['protocol_sha256'] = digest
+        protocol, amendment = lambda: evidence['protocol.json'], lambda: evidence[AMENDMENT]
+        protocol()  # absent: NOT PROVEN; not valid JSON: FAIL
+        digest = facts['protocol_sha256'] = hashlib.sha256((evidence.directory/'protocol.json').read_bytes()).hexdigest()
+        cgroup = lambda: protocol()['phase_a']['cgroup']
+        # Each check on its own: a missing amendment or field cannot hide an altered protocol.
+        checks = facts['checks'] = settle(dict(
+            protocol_file_is_the_approved_one=lambda: digest == PROTOCOL_SHA256,
+            thresholds_approved=lambda: all((protocol()[k]['atol'], protocol()[k]['rtol']) == v
+                                            for k, v in THRESHOLDS.items()),
+            limits_approved=lambda: exactly(cgroup()['memory.max'], GIB2) and zero(cgroup()['memory.swap.max']),
+            models_pinned=lambda: (protocol()['phase_a']['revision'] == REVISION_A
+                                   and protocol()['phase_a']['file_sha256'] == SHA_A
+                                   and protocol()['phase_b']['revision'] == REVISION_B
+                                   and protocol()['baseline_head'] == BASELINE),
+            remediation_parameters_are_the_gate_ones=lambda: amendment()['gate_parameters'] == PARAMETERS,
+            amendment_declared_post_measurement=lambda: (amendment()['status'].startswith('post-measurement')
+                                                         and amendment()['amends_protocol_sha256'] == PROTOCOL_SHA256)))
         return dict(verdict=PASS if true(checks) else FAIL, facts=facts)
     except Missing as error:
         return dict(verdict=NOT_PROVEN, facts=facts | {'missing_evidence': str(error)})
@@ -489,11 +537,12 @@ def phase_b_runs(e, parameters):
             evicted, residency = eviction(sup, runtime, QWEN, parameters)
             logical, block = runtime['stats']['inference_read_bytes'], runtime['inference_proc_io_delta']['read_bytes']
             streaming = evicted | dict(
-                block_reads_cover_logical_bytes=block >= logical*parameters['phase_b_block_read_min_fraction'] > 0,
+                block_reads_cover_logical_bytes=(natural(block, logical)
+                                                 and block >= logical*parameters['phase_b_block_read_min_fraction'] > 0),
                 checkpoint_is_qwen=(runtime['family'] == 'qwen2' and runtime['mode'] == run
                                     and runtime['checkpoint'].endswith('checkpoints/'+QWEN)
                                     and sorted(runtime['source_files']) == sorted(SHARDS)))
-            facts |= residency | dict(block_read_fraction=block/logical if logical else None)
+            facts |= residency | dict(block_read_fraction=block/logical if natural(block, logical) and logical else None)
         else:
             streaming = dict(finalizer_recorded=False)
         out[run] = dict(scope=checks, streaming=streaming, facts=facts)
@@ -516,9 +565,10 @@ def condition_b(f, e, parameters):
     c.update(
         protocol_model_and_settings=(r['source_files']['model.safetensors']['sha256'] == SHA_A and r['family'] == 'llama'
                                      and r['mode'] == 'sync' and r['tile_elements'] == 262144 and r['capacity'] == 16),
-        pages_read_under_the_limit=r['inference_proc_io_delta']['read_bytes'] > 0,
+        pages_read_under_the_limit=natural(r['inference_proc_io_delta']['read_bytes'])
+                                   and r['inference_proc_io_delta']['read_bytes'] > 0,
         digests_equal_increment8=[p['digests'] for p in r['phases']] == [p['digests'] for p in inc8['phases']],
-        per_tensor_reads_equal_increment8=r['stats']['tensor_read_bytes'] == inc8['expected_tensor_read_bytes'])
+        per_tensor_reads_equal_increment8=counters_equal(r['stats']['tensor_read_bytes'], inc8['expected_tensor_read_bytes']))
     f['parity_increment8_fp32_oracle'] = c_parity = phase_a_parity(report, r, 'phaseA-P-runtime.json', e)
     c['parity_increment8_fp32_oracle_rebuilt'] = true(c_parity)
     f['prefill_tokens'], f['decodes'] = len(r['input_ids']), len(r['phases'])-1
@@ -533,17 +583,20 @@ def condition_c(f, e, parameters):
     pc, pf = scope(sp, rp, 'phaseA-P-runtime.json', parameters)
     b = phase_b_runs(e, parameters)
     warm = sw['residency_after_warm']
-    resident, size = sum(v['resident_bytes'] for v in warm.values()), sum(v['size_bytes'] for v in warm.values())
+    resident = counter_sum(v['resident_bytes'] for v in warm.values())
+    size = counter_sum(v['size_bytes'] for v in warm.values())
     f.update(warm=wf | dict(resident_before_launch=resident, file_bytes=size), evicted=pf,
              qwen={run: v['facts'] for run, v in b.items()},
              note='host disk counters are global to the Windows physical disk')
     c = f['checks'] = dict(
         warm_run_bound_to_its_scope=true(wc), evicted_run_bound_to_its_scope=true(pc),
-        warm_condition=(sw['condition'] == 'warm' and len(warm) == 1 and size == rw['integrity_read_bytes']
-                        and resident >= size*0.99),
-        warm_pages_not_read_as_blocks=rw['inference_proc_io_delta']['read_bytes'] < size//100,
+        warm_condition=(sw['condition'] == 'warm' and len(warm) == 1 and natural(resident, size)
+                        and exactly(rw['integrity_read_bytes'], size) and resident >= size*0.99),
+        warm_pages_not_read_as_blocks=(natural(rw['inference_proc_io_delta']['read_bytes'], size)
+                                       and rw['inference_proc_io_delta']['read_bytes'] < size//100),
         evicted_condition=true(eviction(sp, rp, SMOLLM, parameters)[0]) if pc['finalizer_recorded'] else False,
-        evicted_pages_read_as_blocks=rp['inference_proc_io_delta']['read_bytes'] >= rp['payload_bytes'] > 0,
+        evicted_pages_read_as_blocks=(natural(rp['inference_proc_io_delta']['read_bytes'], rp['payload_bytes'])
+                                      and rp['inference_proc_io_delta']['read_bytes'] >= rp['payload_bytes'] > 0),
         host_disk_counters_recorded=all(x.get('host_disk_delta') is not None
                                         for x in (wf, pf, *(v['facts'] for v in b.values()))))
     for run, v in b.items():
@@ -564,10 +617,10 @@ def condition_d(f, e, parameters):
              independent_from_official_headers=independent, margin_bytes=independent-memtotal,
              streaming_checks=b['streaming'])
     c = f['checks'] = dict(
-        runtime_equals_independent_recomputation=independent == rb['unique_active_bf16_bytes'],
-        above_memtotal=independent > memtotal,
-        memtotal_also_seen_by_supervisor=memtotal == sup['global_at_launch']['MemTotal'],
-        counters_cover_every_official_tensor=rb['stats']['tensor_read_bytes'] == qwen_reads(pre, len(sequence)),
+        runtime_equals_independent_recomputation=natural(independent) and exactly(rb['unique_active_bf16_bytes'], independent),
+        above_memtotal=natural(memtotal) and independent > memtotal,
+        memtotal_also_seen_by_supervisor=exactly(sup['global_at_launch']['MemTotal'], memtotal),
+        counters_cover_every_official_tensor=counters_equal(rb['stats']['tensor_read_bytes'], qwen_reads(pre, len(sequence))),
         run_bound_to_its_scope=true(b['scope']),
         shards_evicted_and_read_as_blocks=true(b['streaming']))
     return true(c)
@@ -583,9 +636,9 @@ def condition_e(f, e):
     c = f['checks'] = forward(rb, decodes=1)
     c.update(
         config_is_the_official_one=rb['config'] == pre['config'],
-        per_tensor_reads_equal_official_shapes=(rb['stats']['tensor_read_bytes'] == expected
+        per_tensor_reads_equal_official_shapes=(counters_equal(rb['stats']['tensor_read_bytes'], expected)
                                                 and len(expected) == pre['tensor_count']),
-        gemv_coefficients_equal_official_shapes=rb['stats']['gemv_weight_elements'] == len(sequence)*matrices,
+        gemv_coefficients_equal_official_shapes=exactly(rb['stats']['gemv_weight_elements'], len(sequence)*matrices),
         pipeline_outputs_byte_identical=([p['digests'] for p in rp['phases']] == [p['digests'] for p in rb['phases']]
                                          and [p['ids'] for p in rp['phases']] == [p['ids'] for p in rb['phases']]),
         pipeline_forward_complete=true(forward(rp, decodes=1)))
@@ -615,7 +668,7 @@ def condition_f(f, e, parameters):
     for contract in CONTRACTS:
         sup = e[f'supervisor-oracle-{contract}.json']
         c[f'{contract}_oracle_run_clean'] = (
-            sup['exit_code'] == 0 and sup['watchdog_reason'] is None and 'tools.oracle9' in sup['command']
+            zero(sup['exit_code']) and sup['watchdog_reason'] is None and 'tools.oracle9' in sup['command']
             and sup['command'][sup['command'].index('--contract')+1] == contract
             and sup['command'][sup['command'].index('--sequence')+1] == ','.join(map(str, reports[contract]['oracle_metadata']['sequence']))
             and output_argument(sup['command']) == f'oracle-{contract}.npz')
@@ -667,7 +720,7 @@ def condition_g(f, e, parameters):
                                  minimum_memavailable=sup['minimum_memavailable_bytes'])
     f['oracle_processes'] = oracles
     c['oracle_processes_no_swap_no_watchdog'] = all(
-        o['exit_code'] == 0 and o['watchdog'] is None and o['sampled_vmswap'] == 0 for o in oracles.values())
+        zero(o['exit_code'], o['sampled_vmswap']) and o['watchdog'] is None for o in oracles.values())
     used = [(label, facts['global_swap_used_before'], facts['global_swap_used_after'])
             for label, facts in f['all_supervised_runs'].items() if 'global_swap_used_before' in facts]
     f['global_swap_used_bytes'] = dict(
@@ -740,7 +793,7 @@ def gate(directory, root='.', originals=None, preservation=git_preservation):
     try:
         sanitization = sanitize9.verify(
             e.directory, Path(root)/sanitize9.ORIGINALS if originals is None else originals,
-            e.optional(sanitize9.MANIFEST), expected=SANITIZED)
+            e.optional(sanitize9.MANIFEST), expected=SANITIZED, present=(e.directory/sanitize9.MANIFEST).is_file())
     except CONTRADICTED as error:
         sanitization = dict(verdict=FAIL, files=0, originals='unknown',
                             problems=['sanitization manifest or evidence unreadable: '+repr(error)])
@@ -765,10 +818,10 @@ def gate(directory, root='.', originals=None, preservation=git_preservation):
             verdict, facts['contradicted_evidence'] = FAIL, repr(error)
         own = verdict
         if blocked:
-            # An unapproved protocol or unbound evidence invalidates every PASS; a condition
-            # that is already FAIL or NOT PROVEN on its own evidence keeps its verdict.
-            if own == PASS:
-                verdict = FAIL if any(preconditions[b]['verdict'] == FAIL for b in blocked) else NOT_PROVEN
+            # Worst of the condition's own verdict and the preconditions: a FAIL precondition
+            # (unapproved protocol, evidence differing from its sanitized pins) is a contradicted
+            # fact for every condition, also one NOT PROVEN on its own evidence.
+            verdict = combine(own, *(preconditions[b]['verdict'] for b in blocked))
             facts['precondition_not_met'] = blocked
         out[name] = dict(verdict=verdict, verdict_before_preconditions=own, facts=facts)
     return dict(protocol_sha256=protocol['facts'].get('protocol_sha256'), remediation_parameters=PARAMETERS,
