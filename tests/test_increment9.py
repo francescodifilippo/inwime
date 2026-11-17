@@ -58,9 +58,15 @@ def test_finalizer_parsing_and_disk_delta(tmp_path):
 
 
 def test_gate_missing_evidence_is_not_proven(tmp_path):
-    (tmp_path/'protocol.json').write_text('{}')
     report = gate(tmp_path)
     assert set(report['verdicts'].values()) == {NOT_PROVEN}
+    # Post-closure hardening (D-2): a present protocol.json that is not the approved file
+    # (pinned SHA256) is a contradicted fact, so '{}' is FAIL; until 5eb25da it was NOT PROVEN.
+    (tmp_path/'protocol.json').write_text('{}')
+    report = gate(tmp_path)
+    assert report['preconditions']['protocol']['verdict'] == 'FAIL'
+    assert set(report['verdicts'].values()) == {'FAIL'}
+    assert {c['verdict_before_preconditions'] for c in report['conditions'].values()} == {NOT_PROVEN}
 
 
 @pytest.fixture

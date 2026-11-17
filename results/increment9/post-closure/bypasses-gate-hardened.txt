@@ -1,0 +1,15 @@
+control (unmutated copy): A=PASS B=PASS C=PASS D=PASS E=PASS F=PASS G=PASS H=PASS
+closed  P2-A number altered, manifest entry removed      wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P2-A number altered, manifest files = {}         wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P2-A number altered, manifest digest re-sealed   wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P3-2 oom_kill=1, manifest missing                wanted FAIL on G        | G=FAIL (before preconditions: FAIL)
+closed  P3-2 oom_kill=1, unrelated field missing         wanted FAIL on G        | G=FAIL (before preconditions: FAIL)
+closed  P3-3 protocol.json not valid JSON                wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P3-3 amendment not valid JSON                    wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P3-3 manifest not valid JSON                     wanted FAIL on ABCDEFGH | ABCDEFGH=FAIL (before preconditions: PASS)
+closed  P3-3 inference_read_bytes = 0                    wanted FAIL on CDG      | CDG=FAIL (before preconditions: FAIL)
+closed  P3-4 integrity-final index = {"match": true}     wanted FAIL on A        | A=FAIL (before preconditions: FAIL)
+closed  P3-4 computed_sha256 not a digest                wanted FAIL on A        | A=FAIL (before preconditions: FAIL)
+closed  extra: resident_bytes = -1                       wanted FAIL on CDG      | CDG=FAIL (before preconditions: FAIL)
+closed  extra: oom_kill = false                          wanted FAIL on G        | G=FAIL (before preconditions: FAIL)
+0 bypasses, 13 closed, 13 cases

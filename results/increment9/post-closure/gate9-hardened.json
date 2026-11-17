@@ -1,0 +1,836 @@
+{
+  "protocol_sha256": "b7da381cc83b08a712ba6e0f5b8fac4ca2a4f5fdf8f961e8e9ff7a0d630bf053",
+  "remediation_parameters": {
+    "anon_kernel_peak_max_bytes": 268435456,
+    "worker_vmhwm_max_bytes": 268435456,
+    "resident_after_eviction_max_fraction": 0.01,
+    "phase_b_block_read_min_fraction": 0.9,
+    "minimum_pytest_passed": 613,
+    "minimum_unittest_ran": {
+      "oracle9-checks.txt": 3,
+      "check-oracle8.txt": 1,
+      "check-oracle-precision7.txt": 5
+    },
+    "intentional_modifications": [
+      "README.md"
+    ]
+  },
+  "preconditions": {
+    "protocol": {
+      "verdict": "PASS",
+      "facts": {
+        "protocol_sha256": "b7da381cc83b08a712ba6e0f5b8fac4ca2a4f5fdf8f961e8e9ff7a0d630bf053",
+        "checks": {
+          "protocol_file_is_the_approved_one": true,
+          "thresholds_approved": true,
+          "limits_approved": true,
+          "models_pinned": true,
+          "remediation_parameters_are_the_gate_ones": true,
+          "amendment_declared_post_measurement": true
+        }
+      }
+    },
+    "sanitization": {
+      "verdict": "PASS",
+      "facts": {
+        "verdict": "PASS",
+        "files": 11,
+        "originals": "present: every sanitized file equals its original under the declared rules",
+        "problems": []
+      }
+    }
+  },
+  "verdicts": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS",
+    "F": "PASS",
+    "G": "PASS",
+    "H": "PASS"
+  },
+  "conditions": {
+    "A": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "checks": {
+          "preflight_official_bf16_revision": true,
+          "acquisition_used_the_same_official_digests": true,
+          "acquisition_verified_every_file": true,
+          "runtime_sync_full_sha256_equals_official_lfs": true,
+          "runtime_pipeline_full_sha256_equals_official_lfs": true,
+          "runtime_smollm_full_sha256_equals_protocol": true,
+          "rehash_recomputed_per_file_equals_official": true,
+          "rehash_after_remediation_equals_official": true
+        },
+        "acquisition_time_verification": {
+          "files_present_before_download": [],
+          "computed_digest_recorded": false,
+          "statement": "the download code raised on any streaming SHA256 mismatch before renaming, but the computed digest was not recorded in this historical run: the sha256 field is the official value copied. It is not used as proof; the proof is the post-acquisition integrity below."
+        },
+        "rehash_after_remediation": "present: integrity-final.json, a later full re-hash, also judged per file",
+        "integrity_read_bytes": {
+          "smollm": 3422777952,
+          "qwen": 15231271888
+        }
+      }
+    },
+    "B": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "checks": {
+          "finalizer_recorded": true,
+          "exit_zero": true,
+          "no_watchdog": true,
+          "limits_requested": true,
+          "limits_observed_by_kernel": true,
+          "finalizer_in_same_scope": true,
+          "peak_within_limit": true,
+          "no_oom": true,
+          "no_swap": true,
+          "global_oom_kill_unchanged": true,
+          "sampled": true,
+          "anon_kernel_below_threshold": true,
+          "worker_in_supervisor_unit": true,
+          "worker_saw_limits_before_weights": true,
+          "worker_report_is_this_file": true,
+          "worker_pid_sampled": true,
+          "worker_vmhwm_below_threshold": true,
+          "worker_no_swap": true,
+          "worker_address_space_bounded": true,
+          "condition_evicted": true,
+          "evicted_files_are_the_checkpoint": true,
+          "residency_sizes_equal_files": true,
+          "resident_after_eviction_within_limit": true,
+          "prefill_is_the_prompt": true,
+          "enough_decodes": true,
+          "phase_names": true,
+          "kv_lengths": true,
+          "kv_generations": true,
+          "kv_prefix_preserved": true,
+          "decode_inputs_are_previous_greedy": true,
+          "continuation_is_greedy": true,
+          "capture_digests_are_phase_digests": true,
+          "per_tensor_reads_equal_expected": true,
+          "inference_bytes_equal_tensor_sum": true,
+          "requests_released": true,
+          "fds_and_arenas_released": true,
+          "no_weight_cache_or_heavy_module": true,
+          "budget_equals_plan": true,
+          "full_integrity_at_startup": true,
+          "protocol_model_and_settings": true,
+          "pages_read_under_the_limit": true,
+          "digests_equal_increment8": true,
+          "per_tensor_reads_equal_increment8": true,
+          "parity_increment8_fp32_oracle_rebuilt": true
+        },
+        "unit": "inwime9-phaseA-P-1794755668",
+        "memory_peak": 2147483648,
+        "max_events": 21412,
+        "oom": 0,
+        "oom_kill": 0,
+        "swap_peak": 0,
+        "sampled_anon_plus_kernel_peak": 74440704,
+        "sampled_file_peak": 2074345472,
+        "global_swap_used_before": 717316096,
+        "global_swap_used_after": 717316096,
+        "minimum_global_memavailable": 8650416128,
+        "worker_vmhwm": 90992640,
+        "worker_vmpeak": 102764544,
+        "worker_block_read_bytes": 18567114752,
+        "startup_block_read_bytes": 3422781440,
+        "logical_inference_bytes": 27382054912,
+        "host_disk_delta": {
+          "0 C:": {
+            "DiskReadBytesPersec": 22765352960,
+            "DiskReadsPersec": 26089,
+            "DiskWriteBytesPersec": 1912311296
+          },
+          "1": {
+            "DiskReadBytesPersec": 0,
+            "DiskReadsPersec": 0,
+            "DiskWriteBytesPersec": 0
+          },
+          "2": {
+            "DiskReadBytesPersec": 0,
+            "DiskReadsPersec": 0,
+            "DiskWriteBytesPersec": 0
+          }
+        },
+        "resident_bytes_after_eviction": 0,
+        "file_bytes": 3422777952,
+        "parity_increment8_fp32_oracle": {
+          "rebuilt_from_comparisons": true,
+          "same_runtime_report": true,
+          "increment8_oracle": true,
+          "increment8_protocol": true
+        },
+        "prefill_tokens": 5,
+        "decodes": 3
+      }
+    },
+    "C": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "warm": {
+          "unit": "inwime9-phaseA-W-1794755620",
+          "memory_peak": 112832512,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "swap_peak": 0,
+          "sampled_anon_plus_kernel_peak": 72818688,
+          "sampled_file_peak": 39538688,
+          "global_swap_used_before": 717316096,
+          "global_swap_used_after": 717316096,
+          "minimum_global_memavailable": 8891908096,
+          "worker_vmhwm": 91156480,
+          "worker_vmpeak": 102764544,
+          "worker_block_read_bytes": 0,
+          "startup_block_read_bytes": 24576,
+          "logical_inference_bytes": 27382054912,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 144995328,
+              "DiskReadsPersec": 4160,
+              "DiskWriteBytesPersec": 8423936
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          },
+          "resident_before_launch": 3422781440,
+          "file_bytes": 3422777952
+        },
+        "evicted": {
+          "unit": "inwime9-phaseA-P-1794755668",
+          "memory_peak": 2147483648,
+          "max_events": 21412,
+          "oom": 0,
+          "oom_kill": 0,
+          "swap_peak": 0,
+          "sampled_anon_plus_kernel_peak": 74440704,
+          "sampled_file_peak": 2074345472,
+          "global_swap_used_before": 717316096,
+          "global_swap_used_after": 717316096,
+          "minimum_global_memavailable": 8650416128,
+          "worker_vmhwm": 90992640,
+          "worker_vmpeak": 102764544,
+          "worker_block_read_bytes": 18567114752,
+          "startup_block_read_bytes": 3422781440,
+          "logical_inference_bytes": 27382054912,
+          "host_disk_delta": {
+            "0 C:": {
+              "DiskReadBytesPersec": 22765352960,
+              "DiskReadsPersec": 26089,
+              "DiskWriteBytesPersec": 1912311296
+            },
+            "1": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            },
+            "2": {
+              "DiskReadBytesPersec": 0,
+              "DiskReadsPersec": 0,
+              "DiskWriteBytesPersec": 0
+            }
+          }
+        },
+        "qwen": {
+          "sync": {
+            "unit": "inwime9-phaseB-sync-1794755721",
+            "memory_peak": 2147483648,
+            "max_events": 63980,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 110297088,
+            "sampled_file_peak": 2040545280,
+            "global_swap_used_before": 717316096,
+            "global_swap_used_after": 717299712,
+            "minimum_global_memavailable": 8610328576,
+            "worker_vmhwm": 124768256,
+            "worker_vmpeak": 142110720,
+            "worker_block_read_bytes": 112420581376,
+            "startup_block_read_bytes": 15231524864,
+            "logical_inference_bytes": 113129963520,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 130314880512,
+                "DiskReadsPersec": 80074,
+                "DiskWriteBytesPersec": 2693788160
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "resident_bytes_after_eviction": 0,
+            "file_bytes": 15231271888,
+            "block_read_fraction": 0.99372949374394
+          },
+          "pipeline": {
+            "unit": "inwime9-phaseB-pipeline-1794757350",
+            "memory_peak": 2147483648,
+            "max_events": 64473,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 110895104,
+            "sampled_file_peak": 2040680448,
+            "global_swap_used_before": 797814784,
+            "global_swap_used_after": 797802496,
+            "minimum_global_memavailable": 8714878976,
+            "worker_vmhwm": 125739008,
+            "worker_vmpeak": 217624576,
+            "worker_block_read_bytes": 112420372480,
+            "startup_block_read_bytes": 15231696896,
+            "logical_inference_bytes": 113129963520,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 131858435072,
+                "DiskReadsPersec": 156168,
+                "DiskWriteBytesPersec": 6154155520
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "resident_bytes_after_eviction": 0,
+            "file_bytes": 15231271888,
+            "block_read_fraction": 0.9937276472304832
+          }
+        },
+        "note": "host disk counters are global to the Windows physical disk",
+        "checks": {
+          "warm_run_bound_to_its_scope": true,
+          "evicted_run_bound_to_its_scope": true,
+          "warm_condition": true,
+          "warm_pages_not_read_as_blocks": true,
+          "evicted_condition": true,
+          "evicted_pages_read_as_blocks": true,
+          "host_disk_counters_recorded": true,
+          "phase_b_sync_bound_to_its_scope": true,
+          "phase_b_sync_evicted_and_read_as_blocks": true,
+          "phase_b_pipeline_bound_to_its_scope": true,
+          "phase_b_pipeline_evicted_and_read_as_blocks": true
+        },
+        "phase_b_sync_checks": {
+          "condition_evicted": true,
+          "evicted_files_are_the_checkpoint": true,
+          "residency_sizes_equal_files": true,
+          "resident_after_eviction_within_limit": true,
+          "block_reads_cover_logical_bytes": true,
+          "checkpoint_is_qwen": true
+        },
+        "phase_b_pipeline_checks": {
+          "condition_evicted": true,
+          "evicted_files_are_the_checkpoint": true,
+          "residency_sizes_equal_files": true,
+          "resident_after_eviction_within_limit": true,
+          "block_reads_cover_logical_bytes": true,
+          "checkpoint_is_qwen": true
+        }
+      }
+    },
+    "D": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "memtotal_at_start": 11483848704,
+        "runtime_unique_active_bf16_bytes": 14141295616,
+        "independent_from_official_headers": 14141295616,
+        "margin_bytes": 2657446912,
+        "streaming_checks": {
+          "condition_evicted": true,
+          "evicted_files_are_the_checkpoint": true,
+          "residency_sizes_equal_files": true,
+          "resident_after_eviction_within_limit": true,
+          "block_reads_cover_logical_bytes": true,
+          "checkpoint_is_qwen": true
+        },
+        "checks": {
+          "runtime_equals_independent_recomputation": true,
+          "above_memtotal": true,
+          "memtotal_also_seen_by_supervisor": true,
+          "counters_cover_every_official_tensor": true,
+          "run_bound_to_its_scope": true,
+          "shards_evicted_and_read_as_blocks": true
+        }
+      }
+    },
+    "E": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "checks": {
+          "prefill_is_the_prompt": true,
+          "enough_decodes": true,
+          "phase_names": true,
+          "kv_lengths": true,
+          "kv_generations": true,
+          "kv_prefix_preserved": true,
+          "decode_inputs_are_previous_greedy": true,
+          "continuation_is_greedy": true,
+          "capture_digests_are_phase_digests": true,
+          "per_tensor_reads_equal_expected": true,
+          "inference_bytes_equal_tensor_sum": true,
+          "requests_released": true,
+          "fds_and_arenas_released": true,
+          "no_weight_cache_or_heavy_module": true,
+          "budget_equals_plan": true,
+          "full_integrity_at_startup": true,
+          "config_is_the_official_one": true,
+          "per_tensor_reads_equal_official_shapes": true,
+          "gemv_coefficients_equal_official_shapes": true,
+          "pipeline_outputs_byte_identical": true,
+          "pipeline_forward_complete": true
+        },
+        "prefill_tokens": 5,
+        "decodes": 3,
+        "layers": 28,
+        "tensors": 339,
+        "continuation": [
+          12095,
+          13,
+          1084,
+          374
+        ],
+        "generated_text": "The capital of France is Paris. It is",
+        "lengths": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "generations": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "gemv_coefficients_all_positions": 56562286592,
+        "positions": 8
+      }
+    },
+    "F": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "contracts": {
+          "stock_fp32": {
+            "role": "gate contract",
+            "raw_verdict": "PASS",
+            "structure": {
+              "contract": true,
+              "revision": true,
+              "approved_thresholds": true,
+              "oracle_digest": true,
+              "same_runtime_report": true,
+              "same_sequence": true,
+              "every_tensor_loaded_per_call": true,
+              "phases_compared": true,
+              "coverage_declared": true,
+              "incremental_calls_like_runtime": true,
+              "element_counts_complete": true,
+              "recorded_verdict_equals_recomputed": true
+            },
+            "compared": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 745472
+            },
+            "failures": {
+              "logits": 0,
+              "hidden": 0,
+              "kv": 0
+            },
+            "max_abs": {
+              "logits": 0.00016573590208324163,
+              "hidden": 0.003953071715841361,
+              "kv": 9.127369236239247e-05
+            },
+            "argmax_equal": true,
+            "runtime_greedy_recorded": true,
+            "upstream_greedy": true,
+            "oracle_sha256": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef"
+          },
+          "full64": {
+            "role": "gate contract",
+            "raw_verdict": "PASS",
+            "structure": {
+              "contract": true,
+              "revision": true,
+              "approved_thresholds": true,
+              "oracle_digest": true,
+              "same_runtime_report": true,
+              "same_sequence": true,
+              "every_tensor_loaded_per_call": true,
+              "phases_compared": true,
+              "coverage_declared": true,
+              "incremental_calls_like_runtime": true,
+              "element_counts_complete": true,
+              "recorded_verdict_equals_recomputed": true
+            },
+            "compared": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 745472
+            },
+            "failures": {
+              "logits": 0,
+              "hidden": 0,
+              "kv": 0
+            },
+            "max_abs": {
+              "logits": 2.5490720645393594e-12,
+              "hidden": 6.298250809777528e-11,
+              "kv": 5.755396159656812e-13
+            },
+            "argmax_equal": true,
+            "runtime_greedy_recorded": true,
+            "upstream_greedy": true,
+            "oracle_sha256": "a9e1223a287ad3b61fb20160f97c45e08a9140915aa6983c9e687f2bcd9705b1"
+          },
+          "stock_fp64": {
+            "role": "diagnostic, raw verdict kept",
+            "raw_verdict": "FAIL",
+            "structure": {
+              "contract": true,
+              "revision": true,
+              "approved_thresholds": true,
+              "oracle_digest": true,
+              "same_runtime_report": true,
+              "same_sequence": true,
+              "every_tensor_loaded_per_call": true,
+              "phases_compared": true,
+              "coverage_declared": true,
+              "element_counts_complete": true,
+              "recorded_verdict_equals_recomputed": true
+            },
+            "compared": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 745472
+            },
+            "failures": {
+              "logits": 0,
+              "hidden": 31,
+              "kv": 0
+            },
+            "max_abs": {
+              "logits": 1.039598474505965e-05,
+              "hidden": 0.0008420377935181023,
+              "kv": 1.327288345009947e-05
+            },
+            "argmax_equal": true,
+            "runtime_greedy_recorded": true,
+            "upstream_greedy": true,
+            "oracle_sha256": "3a1adf78a6b63e5d3c17f292be2486654601c8abc9cf58cb4d717be5726f5347"
+          }
+        },
+        "checks": {
+          "stock_fp32_report_complete_and_bound": true,
+          "stock_fp32_passes_recomputed": true,
+          "full64_report_complete_and_bound": true,
+          "full64_passes_recomputed": true,
+          "stock_fp64_report_complete_and_bound": true,
+          "small_case_checks_ok": true,
+          "stock_fp32_oracle_run_clean": true,
+          "full64_oracle_run_clean": true,
+          "stock_fp64_oracle_run_clean": true,
+          "phase_a_parity_rebuilt": true,
+          "manifest_binds_captures_and_oracles": true,
+          "capture_files_not_contradicted": true
+        },
+        "stock_fp64_diagnostic_raw_verdict": "FAIL",
+        "small_case_checks": true,
+        "phase_a_parity": {
+          "rebuilt_from_comparisons": true,
+          "same_runtime_report": true,
+          "increment8_oracle": true,
+          "increment8_protocol": true
+        },
+        "capture_files": {
+          "state": "verified: all 54 capture files re-hashed and equal to the manifest",
+          "files": 54
+        }
+      }
+    },
+    "G": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "checks": {
+          "phaseA-W_within_limits": true,
+          "phaseA-P_within_limits": true,
+          "phaseB-sync_within_limits": true,
+          "phaseB-pipeline_within_limits": true,
+          "faults_within_limits": true,
+          "phaseB-sync_evicted_and_read_as_blocks": true,
+          "phaseB-pipeline_evicted_and_read_as_blocks": true,
+          "faults_report_complete": true,
+          "oracle_processes_no_swap_no_watchdog": true
+        },
+        "all_supervised_runs": {
+          "phaseA-W": {
+            "unit": "inwime9-phaseA-W-1794755620",
+            "memory_peak": 112832512,
+            "max_events": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 72818688,
+            "sampled_file_peak": 39538688,
+            "global_swap_used_before": 717316096,
+            "global_swap_used_after": 717316096,
+            "minimum_global_memavailable": 8891908096,
+            "worker_vmhwm": 91156480,
+            "worker_vmpeak": 102764544,
+            "worker_block_read_bytes": 0,
+            "startup_block_read_bytes": 24576,
+            "logical_inference_bytes": 27382054912,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 144995328,
+                "DiskReadsPersec": 4160,
+                "DiskWriteBytesPersec": 8423936
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            }
+          },
+          "phaseA-P": {
+            "unit": "inwime9-phaseA-P-1794755668",
+            "memory_peak": 2147483648,
+            "max_events": 21412,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 74440704,
+            "sampled_file_peak": 2074345472,
+            "global_swap_used_before": 717316096,
+            "global_swap_used_after": 717316096,
+            "minimum_global_memavailable": 8650416128,
+            "worker_vmhwm": 90992640,
+            "worker_vmpeak": 102764544,
+            "worker_block_read_bytes": 18567114752,
+            "startup_block_read_bytes": 3422781440,
+            "logical_inference_bytes": 27382054912,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 22765352960,
+                "DiskReadsPersec": 26089,
+                "DiskWriteBytesPersec": 1912311296
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            }
+          },
+          "phaseB-sync": {
+            "unit": "inwime9-phaseB-sync-1794755721",
+            "memory_peak": 2147483648,
+            "max_events": 63980,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 110297088,
+            "sampled_file_peak": 2040545280,
+            "global_swap_used_before": 717316096,
+            "global_swap_used_after": 717299712,
+            "minimum_global_memavailable": 8610328576,
+            "worker_vmhwm": 124768256,
+            "worker_vmpeak": 142110720,
+            "worker_block_read_bytes": 112420581376,
+            "startup_block_read_bytes": 15231524864,
+            "logical_inference_bytes": 113129963520,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 130314880512,
+                "DiskReadsPersec": 80074,
+                "DiskWriteBytesPersec": 2693788160
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            }
+          },
+          "phaseB-pipeline": {
+            "unit": "inwime9-phaseB-pipeline-1794757350",
+            "memory_peak": 2147483648,
+            "max_events": 64473,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 110895104,
+            "sampled_file_peak": 2040680448,
+            "global_swap_used_before": 797814784,
+            "global_swap_used_after": 797802496,
+            "minimum_global_memavailable": 8714878976,
+            "worker_vmhwm": 125739008,
+            "worker_vmpeak": 217624576,
+            "worker_block_read_bytes": 112420372480,
+            "startup_block_read_bytes": 15231696896,
+            "logical_inference_bytes": 113129963520,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 131858435072,
+                "DiskReadsPersec": 156168,
+                "DiskWriteBytesPersec": 6154155520
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            }
+          },
+          "faults": {
+            "unit": "inwime9-faults-1794757708",
+            "memory_peak": 2147483648,
+            "max_events": 36563,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 48525312,
+            "sampled_file_peak": 2111070208,
+            "global_swap_used_before": 797716480,
+            "global_swap_used_after": 797765632,
+            "minimum_global_memavailable": 8678789120
+          }
+        },
+        "oracle_processes": {
+          "stock_fp32": {
+            "exit_code": 0,
+            "watchdog": null,
+            "sampled_vmswap": 0,
+            "sampled_vmhwm": 3645353984,
+            "minimum_memavailable": 6457069568
+          },
+          "full64": {
+            "exit_code": 0,
+            "watchdog": null,
+            "sampled_vmswap": 0,
+            "sampled_vmhwm": 5833306112,
+            "minimum_memavailable": 4248973312
+          },
+          "stock_fp64": {
+            "exit_code": 0,
+            "watchdog": null,
+            "sampled_vmswap": 0,
+            "sampled_vmhwm": 5830639616,
+            "minimum_memavailable": 4342009856
+          }
+        },
+        "global_swap_used_bytes": {
+          "per_run_before_after": {
+            "phaseA-W": [
+              717316096,
+              717316096
+            ],
+            "phaseA-P": [
+              717316096,
+              717316096
+            ],
+            "phaseB-sync": [
+              717316096,
+              717299712
+            ],
+            "phaseB-pipeline": [
+              797814784,
+              797802496
+            ],
+            "faults": [
+              797716480,
+              797765632
+            ]
+          },
+          "minimum": 717299712,
+          "maximum": 797814784,
+          "note": "system-wide swap in use by processes outside the experiment cgroups; reported, not gated. Every scope has memory.swap.max=0 and swap peak 0; the increase between runs falls in the oracle window."
+        }
+      }
+    },
+    "H": {
+      "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
+      "facts": {
+        "pytest": "651 passed in 39.30s",
+        "checks": {
+          "pytest_all_passed": true,
+          "oracle8_check_ok": true,
+          "oracle_precision7_check_ok": true,
+          "gate7_rerun_equals_rebuilt": true,
+          "gate7_passed_rebuilt": true,
+          "gate7_diagnostic_fail_preserved": true,
+          "gate8_rerun_equals_rebuilt": true,
+          "gate8_all_checks_rebuilt": true,
+          "preservation_report_clean": true,
+          "git_state_recomputed_equals_report": true
+        },
+        "modified_since_baseline": [
+          "README.md"
+        ],
+        "deleted_since_baseline": [],
+        "gate7_failed_elements_diagnostic": {
+          "hidden": 41,
+          "kv": 0,
+          "logits": 270
+        }
+      }
+    }
+  }
+}

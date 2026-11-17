@@ -1,8 +1,19 @@
 # Revisione dell'incremento 9 e remediation
 
+> **Stato attuale (17 novembre 2026).** Il follow-up della seconda revisione è
+> pubblicato nel commit `5eb25da` («incremento 9 review»); la revisione
+> conclusiva lo ha giudicato *READY WITH DOCUMENTED LIMITATIONS*. M9-A e M9-B
+> sono chiusi con limitazioni documentate; le Issues #2 e #3 sono chiuse, le
+> attività residue sono nelle Issues #17, #18 e #19. Le frasi che seguono su
+> commit, staging e «non committato» descrivono lo stato **al momento della
+> stesura** e restano come testo storico. L'hardening del gate successivo alla
+> chiusura (D-1…D-6) è descritto in
+> [results/increment9/post-closure/README.md](../results/increment9/post-closure/README.md).
+
 16 novembre 2026. **La remediation è nel commit `eb669f2` («passo 9 fix»), già
 su `origin/main` secondo il riferimento locale. Il follow-up della seconda
-revisione indipendente, descritto più sotto, non è committato.** La prima
+revisione indipendente, descritto più sotto, non è committato** (stato del 16
+novembre; poi pubblicato in `5eb25da`). La prima
 revisione indipendente dell'incremento 9 non ha trovato P0 né P1.
 Ha trovato quattro P2, tutti nel gate delle evidenze e nello strumento di
 acquisizione, e dieci P3. Questa remediation li corregge. Runtime, adapter
@@ -208,7 +219,7 @@ La seconda revisione ha esaminato la remediation, ora nel commit `eb669f2`
 («passo 9 fix»). Ha trovato due P2 e alcuni P3. Il follow-up li tratta senza
 ripetere misure, senza toccare runtime, kernel, sorgente, evidenze di misura,
 `protocol.json` o evidenze e strumenti degli incrementi 1–8. **Il follow-up non
-è committato.** I tredici aggiramenti sono stati riprodotti contro il gate di
+è committato** (stato al momento della stesura; poi pubblicato in `5eb25da`). I tredici aggiramenti sono stati riprodotti contro il gate di
 `eb669f2` ([red](../results/increment9/review/bypasses-followup-red.txt): 13 su
 13 passavano o mandavano in crash il gate) e sono chiusi dal gate attuale
 ([green](../results/increment9/review/bypasses-followup-green.txt): 0 su 13).
@@ -307,7 +318,9 @@ e i due output red/green. Nessun checkpoint è stato riletto.
   digest registrato.
 - **Limiti del gate dichiarati dalla seconda revisione**: elenco nella sezione
   precedente.
-- **Nessuna revisione indipendente** del follow-up e dei suoi 38 test.
+- **Nessuna revisione indipendente** del follow-up e dei suoi 38 test (stato
+  al momento della stesura: la revisione conclusiva del 17 novembre lo ha poi
+  esaminato, con esito *READY WITH DOCUMENTED LIMITATIONS* e sei P3, D-1…D-6).
 
 ## Riproduzione
 
@@ -334,4 +347,29 @@ Prima revisione — P2: **quattro corretti**; P3: **dieci trattati**, nove
 corretti e uno (swap globale) riportato senza vincolo. Seconda revisione — P2-A
 corretto, P2-B corretto nel testo, P3-1/2/3/4/8 corretti con i limiti
 dichiarati sopra. La remediation è nel commit `eb669f2`; il follow-up non ha
-eseguito commit, staging, push, fetch o reset.
+eseguito commit, staging, push, fetch o reset ed è stato poi pubblicato dal
+proprietario nel commit `5eb25da`.
+
+## Hardening successivo alla chiusura (17 novembre 2026)
+
+Correzioni mirate dei P3 D-2, D-3 e D-4 della revisione conclusiva (Issue #17),
+riallineamento documentale D-1 e attestazione D-6 (Issue #18). Nessuna misura
+ripetuta, nessuna evidenza di misura modificata, runtime e kernel invariati.
+Dettaglio, confronto tra gate e prove red/green in
+[results/increment9/post-closure/README.md](../results/increment9/post-closure/README.md).
+
+- **D-2** — verdetto finale = il peggiore tra verdetto proprio e precondizioni
+  (FAIL > NOT PROVEN > PASS). Una precondizione FAIL rende FAIL anche una
+  condizione NOT PROVEN sulle proprie evidenze; prima restava NOT PROVEN. Nel
+  protocollo, un `protocol.json` diverso dal file approvato è FAIL anche se
+  manca l'emendamento.
+- **D-3** — i contatori di runtime devono essere interi JSON non negativi:
+  `false`, `0.0`, `-1`, float, `null` e stringhe numeriche non soddisfano più
+  alcuna condizione (prima, per esempio, `VmSwap_bytes=false`,
+  `VmSwap_bytes=0.0`, `VmPeak_bytes=-1` e `VmHWM_bytes=-1` lasciavano A–H PASS).
+- **D-4** — un manifest di sanificazione presente ma strutturalmente non valido
+  (`files: []`, `files: null`, `files` assente, JSON `null` o lista) è FAIL;
+  il manifest assente resta NOT PROVEN.
+- Sulle evidenze storiche il gate aggiornato dà lo stesso report di
+  `summary.json`, campo per campo: A–H PASS, diagnostico FP64 standard FAIL
+  grezzo con 31 residui.

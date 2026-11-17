@@ -256,7 +256,11 @@ def test_missing_evidence_is_not_proven_not_fail(copy):
     assert verdicts(copy)['F'] == 'NOT PROVEN'
     edit(copy, 'phaseA-P-supervisor.json', lambda x: x.pop('residency_after_eviction'))
     reseal(copy)
-    assert verdicts(copy)['B'] == 'NOT PROVEN'
+    # Post-closure hardening (D-2): the edited sanitized file breaks its pinned digest, a FAIL
+    # precondition, which now makes B FAIL; until 5eb25da B stayed NOT PROVEN. On its own
+    # evidence B is still NOT PROVEN.
+    own, report = own_verdicts(copy)
+    assert own['B'] == 'NOT PROVEN' and report['verdicts']['B'] == 'FAIL'
 
 
 def test_contradicted_evidence_is_fail(copy):

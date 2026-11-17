@@ -4,6 +4,9 @@ Rapporto completo: [docs/RUNTIME_CPU_INCREMENT_9.md](../../docs/RUNTIME_CPU_INCR
 Revisione e remediation: [docs/REVIEW_INCREMENT_9.md](../../docs/REVIEW_INCREMENT_9.md).
 Gate automatico: [summary.json](summary.json), ricalcolato dopo la remediation:
 condizioni A–H tutte **PASS**, diagnostico FP64 standard **FAIL grezzo** conservato.
+Hardening del gate successivo alla chiusura M9 (17 novembre 2026, D-1…D-6):
+[post-closure/README.md](post-closure/README.md); con il gate aggiornato il
+report sulle evidenze storiche resta identico a `summary.json`.
 Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 `artifacts/increment9/` (136 MiB, esclusi da Git), con hash in
 [capture-manifest.json](capture-manifest.json).

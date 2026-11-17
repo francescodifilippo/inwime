@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 
 MANIFEST = 'sanitization-manifest.json'
 ORIGINALS = Path('artifacts/increment9/original-evidence')
@@ -127,16 +128,24 @@ def apply(directory, originals):
         files=files)
 
 
-def verify(directory, originals, manifest, expected=None):
+def verify(directory, originals, manifest, expected=None, present=None):
     """PASS only if the manifest is complete and every file is its original under the declared rules.
 
     The manifest cannot shrink its own scope: an empty manifest is never PASS, every
     original found locally must be listed, and `expected`, when given (the gate pins
     it), is the exact {name: {original_sha256, sanitized_sha256}} the manifest must carry.
+    `present` says whether the manifest file exists (default: `manifest is not None`).
+    An absent manifest is NOT PROVEN; a present one that is not an object with a `files`
+    object (JSON null, a list, `files: []` or `files: null`) is structurally false: FAIL.
     """
     directory, originals = Path(directory), Path(originals)
-    if not isinstance(manifest, dict) or not isinstance(manifest.get('files'), dict):
+    present = manifest is not None if present is None else present
+    if not present:
         return dict(verdict='NOT PROVEN', files=0, originals='unknown', problems=['sanitization manifest missing'])
+    if not isinstance(manifest, dict) or not isinstance(manifest.get('files'), dict):
+        shape = type(manifest).__name__ if not isinstance(manifest, dict) else 'files: '+type(manifest.get('files')).__name__
+        return dict(verdict='FAIL', files=0, originals='not compared: the manifest is structurally invalid',
+                    problems=[f'sanitization manifest present but structurally invalid ({shape})'])
     files = manifest['files']
     declared = [dict(id=n, pattern=p, replacement=r, description=d) for n, p, r, d in (*RULES, CACHE_RULE)]
     problems = [] if manifest.get('rules') == declared else ['declared rules differ from the rules of this tool']
@@ -181,15 +190,53 @@ def verify(directory, originals, manifest, expected=None):
     return dict(verdict='FAIL' if problems else 'PASS', files=len(files), originals=state, problems=problems)
 
 
+def verify_against_commit(directory, commit, expected, path='results/increment9', cwd=None):
+    """Attest the sanitization without local originals: the originals are the files of `commit`.
+
+    For every pinned file, the bytes at `commit:path/name` must have the pinned original
+    SHA256, and the declared rules applied to them must give exactly the current file, whose
+    SHA256 must be the pinned sanitized one. Read-only: `git show` only, history untouched.
+    """
+    directory, problems = Path(directory), []
+    if not expected:
+        problems.append('no pinned file: nothing was compared')
+    run = lambda *a: subprocess.run(['git', *a], capture_output=True, check=True, cwd=cwd).stdout
+    try:
+        resolved = run('rev-parse', '--verify', commit+'^{commit}').decode().strip()
+    except (OSError, subprocess.CalledProcessError):
+        resolved = None
+        problems.append('commit not found: '+commit)
+    for name, pin in sorted(expected.items()) if resolved else ():
+        try:
+            raw = run('show', f'{resolved}:{path}/{name}')
+        except (OSError, subprocess.CalledProcessError):
+            problems.append(f'file not in commit {commit}: {name}')
+            continue
+        current = (directory/name).read_bytes() if (directory/name).is_file() else None
+        if sha(raw) != pin['original_sha256']:
+            problems.append('historical file differs from the pinned original digest: '+name)
+        if current is None or sha(current) != pin['sanitized_sha256']:
+            problems.append('sanitized file missing or different from the pinned digest: '+name)
+        elif sanitize_bytes(name, raw) != current:
+            problems.append('file differs from its historical original beyond the declared rules: '+name)
+    return dict(verdict='FAIL' if problems else 'PASS', commit=resolved, files=len(expected), problems=problems)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('directory', type=Path)
     p.add_argument('--originals', type=Path, default=ORIGINALS)
     p.add_argument('--verify', action='store_true', help='check only; never writes')
+    p.add_argument('--against-commit', metavar='COMMIT',
+                   help='check only, against the files of COMMIT and the set pinned in the gate; never writes')
     a = p.parse_args()
     target = a.directory/MANIFEST
-    if a.verify:
-        result = verify(a.directory, a.originals, json.loads(target.read_text()) if target.exists() else None)
+    if a.against_commit:
+        from tools.report_increment9 import SANITIZED
+        result = verify_against_commit(a.directory, a.against_commit, SANITIZED)
+    elif a.verify:
+        result = verify(a.directory, a.originals, json.loads(target.read_text()) if target.exists() else None,
+                        present=target.exists())
     else:
         manifest = apply(a.directory, a.originals)
         with target.open('x') as f:
