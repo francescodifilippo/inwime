@@ -2,7 +2,7 @@
   "increment": 9,
   "document": "remediation amendment to protocol.json after the independent review of increment 9",
   "written_utc": "2026-11-16T00:44:36Z",
-  "status": "post-measurement remediation: written after every increment-9 measurement and after the independent review; every change tightens the acceptance gate, none loosens it, no approved numerical threshold is changed",
+  "status": "post-measurement remediation: written after every increment-9 measurement and after the independent review; revised after the second independent review (R10 added, R5-R7 relabelled). R1-R9 tighten the acceptance gate or add preconditions; R10 is not a tightening: it corrects the semantics of the preservation rule after measurement. No approved numerical threshold is changed",
   "amends_protocol_sha256": "b7da381cc83b08a712ba6e0f5b8fac4ca2a4f5fdf8f961e8e9ff7a0d630bf053",
   "protocol_json_untouched": "protocol.json is byte-identical to the committed file; the gate pins its SHA256 and reads both files",
   "review_limit": "the review could not verify the content of protocol.json before the 14:56:31Z amendment, because that amendment was written in place; only the amended text is in Git",
@@ -75,7 +75,8 @@
           113129963520
         ]
       },
-      "kind": "tightening"
+      "kind": "tightening, values chosen after measurement",
+      "chosen_after_measurement": "the 1% residency limit (resident_after_eviction_max_fraction 0.01) and the 90% block-read fraction (phase_b_block_read_min_fraction 0.9) are new thresholds, not preregistered, chosen after the measured values were known (residency 0 B; block reads 99.4% of logical bytes in sync)"
     },
     {
       "id": "R6",
@@ -86,21 +87,23 @@
         "anon_plus_kernel_bytes": 110895104,
         "worker_vmhwm_bytes": 125739008
       },
-      "limit_of_evidence": "anon and kernel are sampled every 50 ms and can miss transients; VmHWM is the kernel high-water mark",
-      "kind": "tightening, chosen after measurement"
+      "limit_of_evidence": "anon and kernel are sampled every 50 ms and can miss transients; VmHWM is the kernel high-water mark but is bounded by RLIMIT_AS anyway",
+      "kind": "tightening, values chosen after measurement",
+      "informative_part": "the worker VmHWM limit adds nothing: it is implied by RLIMIT_AS = 268435456 B (256 MiB) of the worker, since resident memory cannot exceed the address space. Only the anon + kernel limit is informative: measured maximum 110895104 B, margin about 2.4x, on values sampled every 50 ms"
     },
     {
       "id": "R7",
       "area": "condition H parsing",
       "before": "substring tests on the last line of pytest and unittest outputs",
       "after": "pytest: only dotted progress lines followed by exactly 'N passed in Ts' with N >= minimum_pytest_passed (613: the 484 tests of the original increment plus 129 review regressions); unittest: 'Ran N tests' with N at least the expected count and last line exactly 'OK'; the oracle 8 and precision 7 check outputs are now required",
-      "kind": "tightening"
+      "kind": "tightening, values chosen after measurement",
+      "chosen_after_measurement": "the minimum counts (613 pytest tests; 3, 1 and 5 unittest tests) are the counts observed when the remediation was written, not preregistered values; minimum_pytest_passed stays 613 although later follow-ups add tests"
     },
     {
       "id": "R8",
       "area": "sanitization of Git-bound evidence",
       "before": "supervisor and audit files contained the absolute path of the local checkout, a session scratch path, a terminal-session identifier and one Hugging Face cache entry unrelated to the project",
-      "after": "these strings are replaced by placeholders or dropped by declared mechanical rules (sanitization-manifest.json); no number is changed; originals stay local in a git-ignored directory. New gate precondition: every sanitized file must equal the digest in the manifest and, when the originals are present, must be exactly its original under the declared rules; otherwise every condition is FAIL (or NOT PROVEN if the manifest is missing)",
+      "after": "these strings are replaced by placeholders or dropped by declared mechanical rules (sanitization-manifest.json); no number is changed; originals stay local in a git-ignored directory. New gate precondition: every sanitized file must equal the digest in the manifest and, when the originals are present, must be exactly its original under the declared rules; otherwise every condition is FAIL (or NOT PROVEN if the manifest is missing). Second review: the gate pins the names and the original and sanitized SHA256 of the eleven sanitized files; an empty manifest, a removed entry or a local original not listed in the manifest is FAIL",
       "kind": "new precondition"
     },
     {
@@ -109,6 +112,21 @@
       "before": "protocol.json was read but not checked",
       "after": "precondition: protocol.json must have the committed SHA256, the approved thresholds and limits, and this amendment must carry exactly the gate parameters; otherwise every condition is FAIL (or NOT PROVEN if a file is missing)",
       "kind": "new precondition"
+    },
+    {
+      "id": "R10",
+      "area": "preservation rule (condition H, tools/integrity9.py)",
+      "before": "every path returned by 'git diff --name-only <baseline>' counted as modified and had to be in the intentional list; files added by the increment were invisible only while they were untracked",
+      "after": "only files that existed at the baseline are judged (modified or type-changed, and deleted); files added after the baseline are listed separately (added_since_baseline, new_untracked) and are not judged",
+      "measured": {
+        "unexpected_with_original_rule_at_6031b52": 75,
+        "unexpected_with_original_rule_at_eb669f2": 90,
+        "unexpected_with_current_rule": 0,
+        "deleted": 0
+      },
+      "why": "once the increment was committed the original rule failed on every file the increment itself added; the rule was changed after that was observed, which makes H pass",
+      "limit": "files added by increment 9 (for example inwime_runtime/qwen2.py and the increment-9 tools and tests) are not protected by the preservation check; git flags such as --assume-unchanged or --skip-worktree are not detected",
+      "kind": "not a tightening: semantic correction made after measurement"
     }
   ],
   "unrecorded_transient_units": {
@@ -136,5 +154,10 @@
       }
     ],
     "status": "not preserved as evidence, not used by any gate condition"
+  },
+  "revision": {
+    "written_utc": "2026-11-16",
+    "reason": "second independent review: honest labels for values chosen after measurement, R10 added, sanitized file set pinned in the gate",
+    "gate_parameters_changed": false
   }
 }

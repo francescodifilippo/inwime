@@ -53,6 +53,7 @@
   "conditions": {
     "A": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "checks": {
           "preflight_official_bf16_revision": true,
@@ -78,6 +79,7 @@
     },
     "B": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "checks": {
           "finalizer_recorded": true,
@@ -172,6 +174,7 @@
     },
     "C": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "warm": {
           "unit": "inwime9-phaseA-W-1794755620",
@@ -357,6 +360,7 @@
     },
     "D": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "memtotal_at_start": 11483848704,
         "runtime_unique_active_bf16_bytes": 14141295616,
@@ -382,6 +386,7 @@
     },
     "E": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "checks": {
           "prefill_is_the_prompt": true,
@@ -435,6 +440,7 @@
     },
     "F": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "contracts": {
           "stock_fp32": {
@@ -578,6 +584,7 @@
     },
     "G": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
         "checks": {
           "phaseA-W_within_limits": true,
@@ -799,8 +806,9 @@
     },
     "H": {
       "verdict": "PASS",
+      "verdict_before_preconditions": "PASS",
       "facts": {
-        "pytest": "613 passed in 39.68s",
+        "pytest": "651 passed in 39.30s",
         "checks": {
           "pytest_all_passed": true,
           "oracle8_check_ok": true,

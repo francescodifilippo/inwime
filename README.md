@@ -317,6 +317,9 @@ diagnostico FP64 standard FAIL grezzo conservato. Decode sync mediano circa
 13,3 s/token con letture realmente servite dal disco (circa 14 GB per token).
 SmolLM2-1.7B verificato sotto lo stesso limite di 2 GiB dopo evizione mirata della page cache.
 Non dimostra il superamento della RAM fisica host né prestazioni pratiche.
-La [revisione](docs/REVIEW_INCREMENT_9.md) ha reso il gate fail-closed e ha
-sanificato i percorsi nelle evidenze, senza ripetere misure.
+La [revisione](docs/REVIEW_INCREMENT_9.md) ha reso il gate fail-closed sulle
+mutazioni provate (80 più 13 aggiramenti trovati da una seconda revisione, con
+limiti residui dichiarati) e ha sanificato i percorsi nelle evidenze
+dell'incremento 9, senza ripetere misure. Le evidenze degli incrementi 4–8 e
+V2 contengono ancora percorsi locali: sanificarle è una decisione in sospeso.
 [Evidenze, gate A–H e comandi](results/increment9/README.md).

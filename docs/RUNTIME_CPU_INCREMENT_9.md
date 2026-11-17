@@ -5,7 +5,8 @@ repository `francescodifilippo/inwime` (directory locale `ooc-inference`).
 Working tree iniziale pulito. Nessun commit, staging o push durante l'acquisizione.
 Rapporto aggiornato il 16 novembre 2026 dalla remediation della
 [revisione indipendente](REVIEW_INCREMENT_9.md): numeri e formulazioni corretti,
-gate reso fail-closed, nessuna misura ripetuta (sezione 13).
+gate reso fail-closed sulle mutazioni provate, nessuna misura ripetuta (sezione
+13); aggiornato ancora dal follow-up della seconda revisione (sezione 13.4).
 
 **Qwen/Qwen2.5-7B originale BF16 esegue realmente prefill di cinque token e tre
 decode con 14.141.295.616 byte unici di pesi attivi, contro `MemTotal` WSL di
@@ -423,13 +424,16 @@ cattura in Git.
 | E — Forward reale | PASS | 5+3 token, 28 layer, contatori dei 339 tensori uguali alle forme ufficiali × 8 posizioni, prefisso KV e generazioni, rilascio, pipeline identica nei byte |
 | F — Correttezza | PASS | FP32 e FP64 puro ricostruiti dai confronti e legati a runtime, revisione, sequenza e oracolo; diagnostico FP64 standard obbligatorio, **FAIL grezzo riportato** |
 | G — Risorse | PASS | tutte le cinque prove supervisionate: scope 2 GiB, 0 OOM/swap, anon+kernel e VmHWM sotto soglia, `oom_kill` globale invariato; oracoli con VmSwap 0 |
-| H — Regressioni | PASS | 613 test con parsing rigoroso, gate 7/8 ricalcolati dai loro strumenti, conservazione ricalcolata da git |
+| H — Regressioni | PASS | almeno 613 test (651 dopo il follow-up) con parsing rigoroso, gate 7/8 ricalcolati dai loro strumenti, conservazione ricalcolata da git |
 
 `tools/report_increment9.py` ricalcola ogni verdetto dalle evidenze grezze. Un
-file o un campo mancante produce NOT PROVEN, un fatto contraddetto FAIL, mai
-PASS: dopo la remediation questa affermazione è verificata da 80 mutazioni
-(sezione 13). Due precondizioni valgono per tutte le condizioni: protocollo
-approvato e sanificazione verificata.
+file o un campo mancante produce NOT PROVEN, un fatto contraddetto FAIL. «Mai
+PASS» **vale per le mutazioni provate**: le 80 della remediation e i 13
+aggiramenti della seconda revisione (sezione 13). Non è una garanzia assoluta:
+la seconda revisione ha trovato eccezioni, ora corrette o dichiarate come
+limiti (sezione 13.4). Due precondizioni valgono per tutte le condizioni:
+protocollo approvato e sanificazione verificata; se falliscono cambiano solo i
+PASS, un FAIL resta FAIL.
 
 ## 12. Limiti e passi successivi
 
@@ -471,17 +475,22 @@ le soglie numeriche approvate non sono cambiate.
 
 Stato del repository trovato: l'incremento 9 era già nel commit `6031b52`
 («passo 9») e il riferimento locale `origin/main` puntava allo stesso commit. La
-remediation non ha eseguito commit, staging, push, fetch o reset.
+remediation non ha eseguito commit, staging, push, fetch o reset; è stata poi
+committata dal proprietario come `eb669f2` («passo 9 fix»).
 
 ### 13.1 Risultati dimostrati
 
 - **Gate A–H: PASS, exit 0**, ricalcolato dalle evidenze grezze con le regole
   inasprite; precondizioni protocollo e sanificazione PASS. Gate 7 e gate 8
   rieseguiti: PASS, exit 0.
-- **Il gate ora è fail-closed.** Su copie delle evidenze reali, 80 mutazioni:
-  con il gate originale 71 lasciavano PASS le condizioni interessate
-  ([red](../results/increment9/review/gate-mutations-red.txt)); con il gate
-  corretto nessuna ([green](../results/increment9/review/gate-mutations-green.txt)).
+- **Il gate è fail-closed sulle mutazioni provate.** Su copie delle evidenze
+  reali, 80 mutazioni: con il gate originale 71 lasciavano PASS le condizioni
+  interessate ([red](../results/increment9/review/gate-mutations-red.txt)); con
+  il gate corretto nessuna
+  ([green](../results/increment9/review/gate-mutations-green.txt)). La seconda
+  revisione ha poi trovato 13 aggiramenti fuori da quell'insieme, tra cui un
+  PASS con il manifest di sanificazione svuotato: corretti nel follow-up
+  (sezione 13.4), con i limiti residui dichiarati.
 - **Fase B realmente evitta e letta**, ora verificato dal gate per sync e
   pipeline: residenza dopo l'evizione 0 B su tutti e quattro gli shard, letture
   di blocco 112.420.581.376 B su 113.129.963.520 B logici (99,4%) in sync.
@@ -495,8 +504,8 @@ remediation non ha eseguito commit, staging, push, fetch o reset.
   diagnostico riscritto a PASS ora rende F FAIL.
 - **Integrità successiva all'acquisizione**: SHA integrale del runtime e re-hash
   registrati uguali ai digest LFS ufficiali, sull'insieme completo dei file.
-- **613 test PASS, zero skip**: i 484 dell'acquisizione più 129 regressioni di
-  revisione. Controlli oracle 9/8/precisione 7: OK (3, 1 e 5 test).
+- **613 test PASS, zero skip** alla remediation: i 484 dell'acquisizione più
+  129 regressioni di revisione; 651 dopo il follow-up. Controlli oracle 9/8/precisione 7: OK (3, 1 e 5 test).
 - **Conservazione** rispetto a `68ba9f3`: unico file preesistente modificato
   `README.md`, nessuna cancellazione, niente in staging.
 - **Sanificazione**: 11 file di evidenza, 72 sostituzioni dichiarate, nessun
@@ -510,9 +519,11 @@ remediation non ha eseguito commit, staging, push, fetch o reset.
   potenza e stato di alimentazione non misurati.
 - **Verifica SHA in acquisizione non documentata da un digest registrato** nella
   prova storica (sezione 5). La prova di integrità è quella successiva.
-- **Soglia anon+kernel scelta dopo le misure.** È un inasprimento, ma non è
-  preregistrata. Anon e kernel sono campionati ogni 50 ms e possono perdere
-  transitori; VmHWM è invece il massimo del kernel.
+- **Soglie scelte dopo le misure, non preregistrate**: anon+kernel ≤ 256 MiB
+  (massimo misurato 110.895.104 B, margine circa 2,4×; campioni ogni 50 ms, che
+  possono perdere transitori), residenza dopo l'evizione ≤ 1%, letture di blocco
+  ≥ 90% dei byte logici, minimi di test 613/3/1/5. La soglia su VmHWM è
+  implicata da RLIMIT_AS = 256 MiB e non aggiunge informazione.
 - **Profilo FP64 puro non pienamente indipendente** (sezione 8).
 - **Swap globale cresciuto di 76,8 MiB** nella finestra degli oracoli, fuori dai
   cgroup dell'esperimento (sezione 8). Riportato dal gate, non vincolato.
@@ -532,20 +543,65 @@ remediation non ha eseguito commit, staging, push, fetch o reset.
   `origin/main`. La sanificazione vale per il working tree e per i commit
   futuri; rimuoverli dalla storia richiede una riscrittura con push forzato, che
   spetta al proprietario e non è stata eseguita.
-- **Tre righe con il percorso locale restano in documenti precedenti**:
-  `docs/STRATA_TECH_AUDIT_2026-11-13.md` e
-  `docs/handoffs/HANDOFF-2026-11-05-benchmark-v2.md`. Sono file preesistenti
-  alla base: modificarli violerebbe la conservazione degli incrementi 1–8.
-- **La semantica della conservazione è stata precisata.** Con l'incremento già
-  committato, `git diff` rispetto alla base elenca anche i file aggiunti. Lo
-  strumento ora giudica i soli file preesistenti (modificati o cancellati) ed
-  elenca a parte gli aggiunti. Il verdetto è lo stesso di prima, ma la regola è
-  cambiata dopo la revisione.
+- **Il percorso personale resta in 309 file tracciati, 548 occorrenze** (la
+  remediation scriveva «tre righe in documenti precedenti»: sottostima). Tutti
+  preesistenti alla base `68ba9f3`: `docs/` 2 file, `results/increment4` 35,
+  `increment5` 15, `increment6` 153, `increment7` 4, `increment8` 8,
+  `results/m1a-native-ext4-*` 14, `results/v2` 78. Il nome di un account
+  Windows compare in altri 10 file (`BENCHMARK_V2.md`, tre strumenti V2 e
+  `results/v2/`). Riscrivere la sola storia dell'incremento 9 non li
+  rimuoverebbe. Sanificare le evidenze 4–8 e V2 è una decisione del
+  proprietario, in sospeso, perché tocca la conservazione degli incrementi
+  1–8: non sono state modificate.
+- **La regola di conservazione è cambiata dopo le misure (emendamento R10).**
+  Non è un inasprimento: è una correzione semantica. Con la regola originale
+  l'albero committato fallirebbe con 75 file «inattesi» al commit `6031b52` e
+  90 a `eb669f2`, cioè i file aggiunti dall'incremento. Lo strumento ora
+  giudica i soli file preesistenti (modificati o cancellati) ed elenca a parte
+  gli aggiunti, che quindi non sono protetti.
 - **H dipende dallo stato di git al momento dell'esecuzione**: è ricalcolato dal
   vivo. In un incremento futuro che modifichi file preesistenti, il gate 9 non
   sarà più PASS finché l'elenco intenzionale non viene aggiornato.
 - **I test del gate leggono i report derivati presenti** in
   `results/increment9`: vanno rigenerati nell'ordine indicato nel README delle
   evidenze, altrimenti la suite fallisce.
-- Le correzioni e i nuovi test non sono ancora stati esaminati da una revisione
-  indipendente.
+- Il follow-up della seconda revisione e i suoi test non sono ancora stati
+  esaminati da una revisione indipendente.
+
+### 13.4 Follow-up della seconda revisione
+
+La seconda revisione indipendente ha esaminato il commit `eb669f2`. Il
+follow-up, **non committato**, non ripete misure e non tocca runtime, kernel,
+sorgente, evidenze di misura né `protocol.json`. Dettaglio per rilievo in
+[REVIEW_INCREMENT_9.md](REVIEW_INCREMENT_9.md).
+
+- **Sanificazione non più aggirabile dal manifest.** Il gate fissa nomi e
+  digest (originale e sanificato) degli undici file; un manifest vuoto, una
+  voce rimossa o un originale locale non elencato danno FAIL.
+- **Un fatto contraddetto resta FAIL.** Precondizioni non soddisfatte ed
+  evidenze mancanti cambiano solo un PASS. Ogni condizione riporta anche il
+  verdetto prima delle precondizioni.
+- **Nessun crash**: JSON non valido è FAIL, file mancante NOT PROVEN,
+  `inference_read_bytes = 0` FAIL.
+- **Index e digest calcolati**: `integrity-final.json` deve registrare il
+  digest dell'index; un `computed_sha256` deve essere un digest esadecimale
+  uguale a quello ufficiale. `resident_bytes` negativo e `oom_kill: false` non
+  sono accettati.
+- **Registro degli emendamenti**: R10 aggiunto, R5–R7 etichettati come scelti
+  dopo le misure.
+- Prova: 13 aggiramenti, tutti riusciti contro il gate di `eb669f2`
+  ([red](../results/increment9/review/bypasses-followup-red.txt)), nessuno
+  contro il gate attuale
+  ([green](../results/increment9/review/bypasses-followup-green.txt)).
+  **651 test PASS**, zero skip; gate 7, 8 e 9 PASS con exit 0; diagnostici FP64
+  standard ancora FAIL grezzi.
+- **Limiti dichiarati e non corretti**: digest LFS ancorati solo dal preflight;
+  contatori `failures` di parità non ricalcolati dal gate; `generated_text` non
+  legato ai token; evizione legata per suffisso; punti di pytest non contati;
+  conservazione che non copre il codice aggiunto dal 9 né i flag
+  `--assume-unchanged`/`--skip-worktree`; `repository_path` fuori dal checkout;
+  test mancanti per interruzione a metà flusso e server senza `Range`;
+  accoppiamento di `minimum_pytest_passed`; un solo file di emendamento, senza
+  SHA fissato; nessuna opzione `--root`; index di `integrity-after.json`
+  registrato solo come esito; combinazione campo mancante più fatto
+  contraddetto ancora NOT PROVEN in C, D e parti di E e F.

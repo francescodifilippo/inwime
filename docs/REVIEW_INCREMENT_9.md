@@ -1,7 +1,9 @@
 # Revisione dell'incremento 9 e remediation
 
-16 novembre 2026. **Pronto per una nuova revisione indipendente; nessun commit
-eseguito.** La revisione indipendente dell'incremento 9 non ha trovato P0 né P1.
+16 novembre 2026. **La remediation è nel commit `eb669f2` («passo 9 fix»), già
+su `origin/main` secondo il riferimento locale. Il follow-up della seconda
+revisione indipendente, descritto più sotto, non è committato.** La prima
+revisione indipendente dell'incremento 9 non ha trovato P0 né P1.
 Ha trovato quattro P2, tutti nel gate delle evidenze e nello strumento di
 acquisizione, e dieci P3. Questa remediation li corregge. Runtime, adapter
 Qwen2, kernel e matematica sono invariati; nessuna misura è stata ripetuta.
@@ -11,7 +13,7 @@ Perimetro: base `68ba9f3adf3cffb89b18b19525644fa0d7c6d806`. All'inizio della
 remediation l'incremento 9 era già nel commit `6031b52` («passo 9») e il
 riferimento locale `origin/main` puntava allo stesso commit. Non sono stati
 eseguiti forward, oracoli, benchmark, download, commit, staging, push, fetch o
-reset. Rapporto aggiornato: [RUNTIME_CPU_INCREMENT_9.md](RUNTIME_CPU_INCREMENT_9.md),
+reset da parte della remediation; il commit `eb669f2` è successivo. Rapporto aggiornato: [RUNTIME_CPU_INCREMENT_9.md](RUNTIME_CPU_INCREMENT_9.md),
 sezione 13.
 
 Ogni falso PASS indicato dalla revisione è stato prima **riprodotto** contro il
@@ -127,10 +129,25 @@ più il blocco `upstream_greedy`.
 cambiamenti sono in un file separato,
 [protocol-amendment-remediation.json](../results/increment9/protocol-amendment-remediation.json),
 che il gate legge insieme al protocollo e i cui parametri devono coincidere con
-quelli del codice. Sono nove, R1–R9, tutti inasprimenti o nuove precondizioni,
-tutti successivi alle misure. Le soglie numeriche approvate restano FP32
-`2e-3 + 2e-4*|ref|` e FP64 `2e-5 + 2e-6*|ref|`; `memory.max` 2.147.483.648 B e
-swap 0. L'unica soglia nuova è quella su anon+kernel e VmHWM.
+quelli del codice. Sono dieci, R1–R10, tutti successivi alle misure. R1–R9
+sono inasprimenti o nuove precondizioni. **R10 non è un inasprimento**: è la
+correzione semantica della regola di conservazione, fatta dopo le misure. Con
+la regola originale (`git diff --name-only` rispetto alla base, tutto giudicato)
+l'albero committato fallirebbe: 75 file «inattesi» al commit `6031b52`, 90 al
+commit `eb669f2`, cioè i file aggiunti dall'incremento stesso. La regola attuale
+giudica solo i file preesistenti alla base ed elenca a parte gli aggiunti.
+
+Le soglie numeriche approvate restano FP32 `2e-3 + 2e-4*|ref|` e FP64
+`2e-5 + 2e-6*|ref|`; `memory.max` 2.147.483.648 B e swap 0. Le soglie nuove,
+nessuna preregistrata e tutte scelte conoscendo già i valori misurati, sono:
+
+- anon+kernel campionato ≤ 268.435.456 B (R6). Massimo misurato 110.895.104 B,
+  margine circa 2,4×, su campioni ogni 50 ms. La parte su VmHWM non aggiunge
+  nulla: è implicata da RLIMIT_AS = 256 MiB del worker;
+- residenza dopo l'evizione ≤ 1% per shard e letture di blocco ≥ 90% dei byte
+  logici in fase B (R5). Misurati: 0 B e 99,4%;
+- minimi di test 613 (pytest) e 3, 1, 5 (unittest) (R7): sono i conteggi
+  osservati quando la remediation fu scritta.
 
 ## Evidenze storiche, rigenerate e nuove
 
@@ -162,11 +179,16 @@ file del commit `6031b52`.
 contiene SHA256 originale e sanificato di ogni file e le regole. Il gate ha una
 precondizione: ogni file sanificato deve coincidere con il manifest e, se gli
 originali sono presenti, essere esattamente l'originale trasformato dalle sole
-regole dichiarate; se sono assenti lo dichiara. Per le prove future
+regole dichiarate; se sono assenti lo dichiara. Dopo la seconda revisione il
+gate fissa nel codice i nomi e i digest degli undici file: il manifest non può
+più restringere da solo ciò che viene confrontato. Per le prove future
 `cgroup9.py`, `audit_increment9.py` e `benchmark_increment9.py` scrivono già
 percorsi relativi o `<repo>`.
 
-## Esito
+## Esito della remediation (commit `eb669f2`)
+
+Valori della remediation, prima del follow-up; quelli attuali sono nella
+sezione successiva.
 
 | Verifica | Esito |
 |---|---|
@@ -180,22 +202,112 @@ percorsi relativi o `<repo>`.
 | Sanificazione | PASS: 11 file, originali presenti e coerenti |
 | Re-hash finale dei checkpoint (18,65 GB letti, 2 min 02 s) | tutti i digest uguali a quelli ufficiali, index incluso (`integrity-final.json`) |
 
+## Seconda revisione indipendente e follow-up
+
+La seconda revisione ha esaminato la remediation, ora nel commit `eb669f2`
+(«passo 9 fix»). Ha trovato due P2 e alcuni P3. Il follow-up li tratta senza
+ripetere misure, senza toccare runtime, kernel, sorgente, evidenze di misura,
+`protocol.json` o evidenze e strumenti degli incrementi 1–8. **Il follow-up non
+è committato.** I tredici aggiramenti sono stati riprodotti contro il gate di
+`eb669f2` ([red](../results/increment9/review/bypasses-followup-red.txt): 13 su
+13 passavano o mandavano in crash il gate) e sono chiusi dal gate attuale
+([green](../results/increment9/review/bypasses-followup-green.txt): 0 su 13).
+
+| Rilievo | Esito |
+|---|---|
+| P2-A — la precondizione di sanificazione si aggirava togliendo voci dal manifest (con `files: {}` il verdetto era PASS) | **Corretto.** Il gate fissa nel codice i nomi degli undici file sanificati e, per ciascuno, SHA256 originale e sanificato. Manifest vuoto: FAIL, mai «present». Ogni originale presente in locale deve essere elencato e coincidere. Voce rimossa, manifest vuoto o digest riscritto: A–H FAIL, con e senza originali |
+| P2-B — il testo sottostimava i percorsi personali rimasti nel repository | **Testo corretto, file non toccati** (vedi «Criticità residue») |
+| P3-1 — registro degli emendamenti | **Corretto.** Aggiunto R10 per il cambio della regola di conservazione, etichettato «non è un inasprimento»; R5, R6 e R7 etichettati come scelti dopo le misure; in R6 la parte VmHWM è dichiarata implicata da RLIMIT_AS |
+| P3-2 — una precondizione fallita o un campo mancante declassava un FAIL a NOT PROVEN | **Corretto, con un limite dichiarato.** Precondizioni ed evidenze mancanti cambiano soltanto un PASS; `oom_kill=1` resta FAIL anche senza manifest o con un campo mancante nello stesso supervisore |
+| P3-3 — crash su JSON non valido e su `inference_read_bytes = 0` | **Corretto.** JSON non valido in protocollo, emendamento, manifest o evidenze: FAIL; file mancante: NOT PROVEN; divisione per zero: FAIL |
+| P3-4 — voce dell'index ridotta a `{"match": true}` | **Corretto per `integrity-final.json`**: `sha256` ed `expected` obbligatori e uguali al digest dell'index registrato in acquisizione, da cui deriva `index_sha256` del descrittore. I `computed_sha256`, se presenti, devono essere digest di 64 cifre esadecimali uguali a quelli ufficiali |
+| P3-8 — testo non aggiornato | **Corretto**: stato dei commit e formulazioni assolute su «mai PASS» / fail-closed |
+| In più, correzioni di una riga | `resident_bytes` negativo non vale come evizione; `oom_kill: false` non vale come 0 |
+
+Ogni condizione riporta ora anche `verdict_before_preconditions`, il verdetto
+sulle sole evidenze proprie: i test delle 80 mutazioni lo controllano, così una
+mutazione di un file sanificato non risulta respinta solo perché cambia il
+digest fissato.
+
+**Dichiarato, non corretto:**
+
+- i quattro digest LFS degli shard sono ancorati soltanto tramite
+  `qwen-preflight.json`: il gate non li fissa nel codice;
+- i contatori `failures` dei report di parità sono presi dai report: li protegge
+  un test del verificatore, non un ricalcolo dalle catture nel gate;
+- `generated_text` non è legato ai token della continuazione;
+- l'evizione è legata ai file del checkpoint solo per suffisso del percorso;
+- il parsing di pytest non conta i punti delle righe di avanzamento;
+- la conservazione non copre il codice aggiunto dall'incremento 9 (per esempio
+  `inwime_runtime/qwen2.py`) e non rileva i flag git `--assume-unchanged` e
+  `--skip-worktree`;
+- `repository_path` di `tools/benchmark_increment9.py` lascia assoluto un
+  percorso esterno al checkout;
+- mancano test dell'acquisizione per un'interruzione a metà flusso e per un
+  server che ignora `Range`;
+- `minimum_pytest_passed` (613) è accoppiato al numero di test del momento in
+  cui fu scritto e non segue la suite (oggi 651);
+- il gate legge un solo file di emendamento, con nome fissato nel codice, e non
+  ne fissa lo SHA256: lo vincolano i parametri, non il testo;
+- la CLI del gate non ha un'opzione `--root`: va eseguita dalla radice;
+- `integrity-after.json`, storico, registra per l'index solo l'esito: il digest
+  dell'index è richiesto soltanto in `integrity-final.json`;
+- la regola «un fatto contraddetto resta FAIL» vale per i controlli già
+  registrati quando si incontra il campo mancante e, dentro una prova
+  supervisionata, per tutti i controlli dello scope; le condizioni che
+  calcolano i controlli in un'unica espressione (C, D, parti di E e F) possono
+  ancora dare NOT PROVEN per la combinazione campo mancante più fatto
+  contraddetto. In nessun caso danno PASS;
+- `tools.sanitize9 --verify` da solo non conosce l'insieme fissato: senza
+  originali rileva un manifest vuoto ma non una voce rimossa. Il gate sì.
+
+| Verifica del follow-up | Esito |
+|---|---|
+| `python3 -m pytest -q tests` | **651 passed**, zero skip, exit 0 (613 più 38 regressioni della seconda revisione) |
+| `tools.check_oracle9` / `check_oracle8` / `check_oracle_precision7` | OK: 3, 1 e 5 test |
+| Gate 7 e gate 8 | PASS, exit 0; output identici ai rerun conservati; diagnostico FP64 standard del 7 FAIL conservato |
+| Gate 9 | **A–H PASS, exit 0**; precondizioni PASS, originali presenti; diagnostico FP64 standard **FAIL grezzo**: 31 residui |
+| Conservazione rispetto a `68ba9f3` | PASS: solo `README.md` modificato tra i file preesistenti; nessuna cancellazione; staging vuoto |
+| `mutations_green.py` (80 mutazioni) e `bypasses_followup.py` (13 aggiramenti) | 0 falsi PASS; 0 aggiramenti |
+
+Report derivati rigenerati dal follow-up, con cancellazione esplicita del
+precedente e nell'ordine del README delle evidenze: `preservation.json`,
+`pytest-final.txt`, `summary.json`. Non rigenerati perché i loro ingressi non
+sono cambiati: `gate7-rerun.json`, `gate8-rerun.json` (riesecuzione identica) e
+i tre output dei controlli oracle (rieseguiti, OK). Modificato:
+`protocol-amendment-remediation.json`. File nuovi: `review/bypasses_followup.py`
+e i due output red/green. Nessun checkpoint è stato riletto.
+
 ## Criticità residue
 
-- **Storia Git.** Le evidenze non sanificate sono nel commit `6031b52` che,
-  secondo il riferimento locale, è già su `origin/main`. Rimuoverle richiede una
-  riscrittura della storia: decisione del proprietario, non eseguita.
-- **Documenti precedenti.** Tre righe con il percorso locale restano in
-  `docs/STRATA_TECH_AUDIT_2026-11-13.md` e
-  `docs/handoffs/HANDOFF-2026-11-05-benchmark-v2.md`, preesistenti alla base:
-  non modificati per non violare la conservazione.
-- **Conservazione.** Con l'incremento già committato lo strumento giudica i
-  file preesistenti ed elenca a parte gli aggiunti: verdetto invariato, regola
-  precisata dopo la revisione.
-- **Soglia anon+kernel** scelta dopo le misure; anon e kernel campionati a 50 ms.
+- **Storia Git.** Le evidenze non sanificate dell'incremento 9 sono nel commit
+  `6031b52` che, secondo il riferimento locale, è già su `origin/main`.
+  Rimuoverle richiede una riscrittura della storia: decisione del proprietario,
+  non eseguita.
+- **Percorsi personali nel resto del repository.** La remediation scriveva «tre
+  righe in documenti precedenti»: era una sottostima. Riconteggio su `HEAD`
+  (`git ls-files` più `grep`): **309 file tracciati** contengono il percorso
+  home locale, **548 occorrenze**, tutte in file che non sono cambiati dopo la
+  base `68ba9f3`. Per area: `docs/` 2 file (3 occorrenze), `results/increment4`
+  35, `results/increment5` 15, `results/increment6` 153, `results/increment7` 4,
+  `results/increment8` 8, `results/m1a-native-ext4-*` 14, `results/v2` 78.
+  Inoltre il nome di un account Windows compare in **10 file** (11 occorrenze):
+  `BENCHMARK_V2.md`, `tools/report_v2.py`, `tools/storage_setup.py`,
+  `tools/storage_cleanup.py` e sei file sotto `results/v2/`. I nomi non sono
+  riportati qui. **Riscrivere la sola storia dell'incremento 9 non li
+  rimuoverebbe**: sono nei commit precedenti e nel working tree. Sanificare le
+  evidenze degli incrementi 4–8 e della V2 è una **decisione del proprietario,
+  in sospeso**, perché tocca la regola di conservazione degli incrementi 1–8;
+  questi file non sono stati modificati.
+- **Conservazione.** La regola è stata cambiata dopo le misure (R10): non è un
+  inasprimento. Non copre i file aggiunti dall'incremento 9.
+- **Soglie scelte dopo le misure**: anon+kernel (campionato a 50 ms), 1% di
+  residenza, 90% di letture di blocco, minimi di test.
 - **Verifica SHA in acquisizione** della prova storica non documentata da un
   digest registrato.
-- **Nessuna revisione indipendente** delle correzioni e dei 129 test nuovi.
+- **Limiti del gate dichiarati dalla seconda revisione**: elenco nella sezione
+  precedente.
+- **Nessuna revisione indipendente** del follow-up e dei suoi 38 test.
 
 ## Riproduzione
 
@@ -215,7 +327,11 @@ python3 -m tools.integrity9 --output /tmp/conservazione-nuova.json preservation 
 python3 -m tools.sanitize9 results/increment9 --verify
 python3 -m tools.report_increment9 results/increment9 --output /tmp/gate9-nuovo.json
 python3 results/increment9/review/mutations_green.py
+python3 results/increment9/review/bypasses_followup.py
 ```
 
-P2: **quattro corretti**. P3: **dieci trattati**, nove corretti e uno (swap
-globale) riportato senza vincolo. Nessun commit o push eseguito dalla remediation.
+Prima revisione — P2: **quattro corretti**; P3: **dieci trattati**, nove
+corretti e uno (swap globale) riportato senza vincolo. Seconda revisione — P2-A
+corretto, P2-B corretto nel testo, P3-1/2/3/4/8 corretti con i limiti
+dichiarati sopra. La remediation è nel commit `eb669f2`; il follow-up non ha
+eseguito commit, staging, push, fetch o reset.

@@ -13,7 +13,7 @@ Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 | Area | File |
 |---|---|
 | Protocollo preregistrato e emendamento pre-misura (invariato, SHA fissato nel gate) | `protocol.json` |
-| Emendamento della remediation, successivo alle misure | `protocol-amendment-remediation.json` |
+| Emendamento della remediation, successivo alle misure (R1–R10; R10 non è un inasprimento) | `protocol-amendment-remediation.json` |
 | Sanificazione dei percorsi personali | `sanitization-manifest.json` |
 | Audit iniziale/finale memoria, swap, cgroup, storage, host | `environment-before.json`, `environment-after.json` |
 | Prova del meccanismo cgroup/evizione su file da 300 MB | `cgroup-probe-128mib.json`, `.final.txt` |
@@ -31,6 +31,7 @@ Nessun peso o cattura numerica è versionato: catture e NPZ restano in
 | Re-hash dei checkpoint | `integrity-after.json` (16:45 del 15 novembre, prima di sonde di guasto e test OOM), `integrity-final.json` (ultima lettura dei checkpoint della remediation) |
 | Conservazione e regressioni (rigenerati dalla remediation) | `preservation.json`, `pytest-final.txt`, `gate7-rerun.json`, `gate8-rerun.json`, `oracle9-checks.txt`, `check-oracle8.txt`, `check-oracle-precision7.txt` |
 | Prove della remediation | `review/gate-mutations-{red,green}.txt`, `review/mutations_{red,green}.py`, `review/tool-tests-{red,green}.txt`, `review/parity-*-reverified.json` |
+| Prove del follow-up della seconda revisione | `review/bypasses_followup.py`, `review/bypasses-followup-{red,green}.txt` |
 
 `scope48mib-135m-*` era stato lanciato come test OOM negativo, ma il processo è
 riuscito: i file sono stati rinominati per ciò che dimostrano. Il nome di unità
@@ -59,12 +60,22 @@ file del commit `6031b52`. Verifica:
 python3 -m tools.sanitize9 results/increment9 --verify
 ```
 
+Il gate fissa nel codice (`SANITIZED` in `tools/report_increment9.py`) i nomi
+degli undici file e i loro SHA256 originale e sanificato: un manifest vuoto,
+una voce rimossa o un originale locale non elencato danno FAIL. Il comando qui
+sopra, da solo, non conosce quell'insieme: senza originali non rileva una voce
+rimossa. La sanificazione riguarda solo l'incremento 9: le evidenze degli
+incrementi 4–8 e V2 contengono ancora percorsi locali (conteggi in
+`docs/REVIEW_INCREMENT_9.md`).
+
 I report derivati si rigenerano in quest'ordine, cancellando esplicitamente il
 precedente: controlli oracle, `gate7-rerun.json`, `gate8-rerun.json`,
 `preservation.json`, poi `pytest-final.txt` (i test del gate leggono i report
 già presenti), infine `summary.json`. `review/mutations_red.py` documenta la
 prova contro il gate originale del commit `6031b52`; `review/mutations_green.py`
-è rieseguibile.
+è rieseguibile. `review/bypasses_followup.py` riproduce i 13 aggiramenti della
+seconda revisione: senza argomenti contro il gate attuale, con una directory
+che contiene i `tools/` di `eb669f2` contro il gate precedente.
 
 ## Riproduzione
 
@@ -108,6 +119,7 @@ python3 -m tools.integrity9 --output /tmp/integrita.json integrity \
 python3 -m pytest -q tests
 python3 -m tools.report_increment9 results/increment9 --output /tmp/gate9.json
 python3 results/increment9/review/mutations_green.py
+python3 results/increment9/review/bypasses_followup.py
 ```
 
 Le prove vanno eseguite una alla volta: i confronti di I/O non sono validi con

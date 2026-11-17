@@ -1,7 +1,8 @@
 """Increment-9 gate A-H with PASS / FAIL / NOT PROVEN, recomputed from raw evidence.
 
 Fail-closed: a missing file or field is NOT PROVEN, a contradicted fact is FAIL,
-never PASS. Derived booleans ('passed', 'all_match', ...) are not trusted: every
+never PASS; a failed precondition or missing evidence can turn only a PASS into
+something else, a contradicted fact already recorded stays FAIL. Derived booleans ('passed', 'all_match', ...) are not trusted: every
 verdict is rebuilt from raw counters and bound to the approved protocol, the
 official preflight, the supervisor of the same run, the increment-7/8 evidence
 and, when present on this machine, the capture files and the unsanitized
@@ -49,7 +50,37 @@ QWEN_TENSORS = {'norm1': 'input_layernorm.weight', 'norm2': 'post_attention_laye
                 'v': 'self_attn.v_proj.weight', 'v.bias': 'self_attn.v_proj.bias',
                 'o': 'self_attn.o_proj.weight', 'ffn.gate': 'mlp.gate_proj.weight',
                 'ffn.up': 'mlp.up_proj.weight', 'ffn.down': 'mlp.down_proj.weight'}
+# The eleven sanitized evidence files: name -> (original SHA256, sanitized SHA256). Pinned
+# here so that removing or rewriting manifest entries cannot shrink what is compared.
+SANITIZED = {
+    'cgroup-probe-128mib.json': ('87e34ab3ce2491b6e2796b24dd349932289dceb3571a0301989448c99172dd48',
+                                'baca2c4717cb579dcd19b1f30b9171f84652096848b2ac8c86b486f93c001752'),
+    'environment-after.json': ('fa3d66234f652db3e6b74b2a1a6daf82ada3b68a442dc0a440dc5a74cd23d090',
+                              'ca99eb677bc757e9b3340d62fe1e6d35464c1972d0b28ebf5933bfa8422451f4'),
+    'environment-before.json': ('c07f92ddac168c15483b434f044a7e8aa19e5abc5d5ef69e9303437f56c6ba84',
+                               'e2386c8d00d75d548fc15da007c53bc996196558d2cd1bf2f12fc078de6cd662'),
+    'negative-oom-policy-stop-supervisor.json': ('4fec6c79cad9aa1f95296b915b5848c1a87857212b1550e5d8eb5d39ba3e107a',
+                                                'fcc17dff21c866fe84482a899f037f564582a16343aea053bca6a97dd82bfdb0'),
+    'negative-oom-supervisor.json': ('41e732b129f5e9ddf79985848635c45aaf27ea5b7093233ddcc043294f0a6530',
+                                    '6615bef3182d4b55a21cd0aafcf52ef821b830ba0d95ae8241375eb63b650a03'),
+    'phaseA-P-supervisor.json': ('b88ae5f31ef12acf5b58938a0df47d8d212a2f30cf2b7a11036ced68586104a1',
+                                '92511542247c9f11e2c94d1d652e2c68263c4b9bdd25e21983e1340eddb115e2'),
+    'phaseA-W-supervisor.json': ('3cc703a7cabf75b75e91b2a9c8c6d6916b1c0b4d8048d173d2ad42c9f27761fa',
+                                '998e9ea091ba1c40314a92ff644f07c5f127eba955b52b48c321abe141f8652f'),
+    'phaseB-pipeline-supervisor.json': ('eaab1b286831616cb82af93d59873057ba79c25936b5da235d129bb5fb878ed6',
+                                       '72e6bd103e7fa82cba8d6bfe3aec37914c3fa598c078d89c67d0f6655fc5c0e7'),
+    'phaseB-sync-supervisor.json': ('147a13927e242e227b461326946a1a964166dfb11723b6089eea87352c910bc8',
+                                   '3cebb02837f789c3b7bea69592a49de92d400d9498aea636c6c7b2889a0685e8'),
+    'scope48mib-135m-supervisor.json': ('fe4b3252817c49b00391bc97cea47af3fca04766532bbd1528211e05eb7faf37',
+                                       '9f8100a18751192a221f3dc1affdb862cfe31c4cc845c3b96b3e841e7fca2073'),
+    'supervisor-faults.json': ('82b73acbb6df3c7fb087c0d9fa40ac8115c6c18108638587eb316cf74131d690',
+                              '65c7beb7b79a8f14449967f72d2676f1982c38fca3333ef3b95361fa7baf730c'),
+}
+SANITIZED = {name: dict(original_sha256=o, sanitized_sha256=c) for name, (o, c) in SANITIZED.items()}
 HEX64 = re.compile('[0-9a-f]{64}')
+# Missing or malformed fields (NOT PROVEN) versus unreadable or contradicted evidence (FAIL).
+INCOMPLETE = (KeyError, IndexError, TypeError, AttributeError)
+CONTRADICTED = (ValueError, ArithmeticError)
 PYTEST_PROGRESS = re.compile(r'\.+\s*\[\s*\d+%\]')
 PYTEST_TAIL = re.compile(r'(\d+) passed in \d+(?:\.\d+)?s(?: \(\d+:\d\d:\d\d\))?')
 UNITTEST_RAN = re.compile(r'Ran (\d+) tests? in \d+(?:\.\d+)?s')
@@ -105,6 +136,28 @@ def true(checks):
     return all(value is True for value in checks.values())
 
 
+def settle(lazy):
+    """Evaluate every check on its own, so that a missing field cannot hide a contradicted fact.
+
+    With no contradicted check the first missing field is raised as before (NOT PROVEN);
+    otherwise the missing checks are recorded as None and the result is not true (FAIL).
+    """
+    out, missing = {}, None
+    for name, check in lazy.items():
+        try:
+            out[name] = check()
+        except (Missing, *INCOMPLETE) as error:
+            out[name], missing = None, missing or error
+    if missing is not None and not any(value is False for value in out.values()):
+        raise missing
+    return out
+
+
+def zero(*values):
+    """Counters must be the integer 0: JSON false is not accepted as zero."""
+    return all(type(value) is int and value == 0 for value in values)
+
+
 def output_argument(command, flag='--output'):
     return Path(command[command.index(flag)+1]).name if flag in command else None
 
@@ -114,49 +167,62 @@ def scope(sup, runtime, runtime_name, parameters):
     fin = sup['finalizer']
     if fin is None:
         return dict(finalizer_recorded=False), {}
-    events, local, peaks, unit = fin['memory.events'], fin['memory.events.local'], sup['sampled_peaks'], sup['unit']
-    launcher = sup['launcher']
-    anon_kernel = peaks['stat.anon']+peaks['stat.kernel']
-    checks = dict(
-        finalizer_recorded=True,
-        exit_zero=sup['exit_code'] == 0 and fin['worker.exit'] == 0,
-        no_watchdog=sup['watchdog_reason'] is None,
-        limits_requested=(sup['memory_max'] == GIB2 and sup['swap_max'] == 0 and f'--unit={unit}' in launcher
-                          and f'MemoryMax={GIB2}' in launcher and 'MemorySwapMax=0' in launcher),
-        limits_observed_by_kernel=fin['memory.max'] == GIB2 and fin['memory.swap.max'] == 0,
-        finalizer_in_same_scope=fin['cgroup.path'].endswith(f'/{unit}.scope') and sup['scope'].endswith(f'/{unit}.scope'),
-        peak_within_limit=0 < fin['memory.peak'] <= GIB2,
-        no_oom=events['oom'] == 0 and events['oom_kill'] == 0 and local['oom'] == 0 and local['oom_kill'] == 0,
-        no_swap=fin['memory.swap.peak'] == 0 and fin['memory.swap.current'] == 0 and peaks['memory.swap.current'] == 0,
-        global_oom_kill_unchanged=sup['global_oom_kill_after']-sup['global_oom_kill_before'] == 0,
-        sampled=sup['samples'] > 0,
-        anon_kernel_below_threshold=anon_kernel <= parameters['anon_kernel_peak_max_bytes'])
-    facts = dict(unit=unit, memory_peak=fin['memory.peak'], max_events=events['max'], oom=events['oom'],
-                 oom_kill=events['oom_kill'], swap_peak=fin['memory.swap.peak'],
-                 sampled_anon_plus_kernel_peak=anon_kernel, sampled_file_peak=peaks['stat.file'],
-                 global_swap_used_before=sup['global_before']['SwapTotal']-sup['global_before']['SwapFree'],
-                 global_swap_used_after=sup['global_after']['SwapTotal']-sup['global_after']['SwapFree'],
-                 minimum_global_memavailable=sup['minimum_global_memavailable'])
+    unit = sup['unit']
+    events, local = lambda: fin['memory.events'], lambda: fin['memory.events.local']
+    anon_kernel = lambda: sup['sampled_peaks']['stat.anon']+sup['sampled_peaks']['stat.kernel']
+    lazy = dict(
+        finalizer_recorded=lambda: True,
+        exit_zero=lambda: sup['exit_code'] == 0 and fin['worker.exit'] == 0,
+        no_watchdog=lambda: sup['watchdog_reason'] is None,
+        limits_requested=lambda: (sup['memory_max'] == GIB2 and sup['swap_max'] == 0
+                                  and f'--unit={unit}' in sup['launcher'] and f'MemoryMax={GIB2}' in sup['launcher']
+                                  and 'MemorySwapMax=0' in sup['launcher']),
+        limits_observed_by_kernel=lambda: fin['memory.max'] == GIB2 and fin['memory.swap.max'] == 0,
+        finalizer_in_same_scope=lambda: (fin['cgroup.path'].endswith(f'/{unit}.scope')
+                                         and sup['scope'].endswith(f'/{unit}.scope')),
+        peak_within_limit=lambda: 0 < fin['memory.peak'] <= GIB2,
+        no_oom=lambda: zero(events()['oom'], events()['oom_kill'], local()['oom'], local()['oom_kill']),
+        no_swap=lambda: (fin['memory.swap.peak'] == 0 and fin['memory.swap.current'] == 0
+                         and sup['sampled_peaks']['memory.swap.current'] == 0),
+        global_oom_kill_unchanged=lambda: sup['global_oom_kill_after']-sup['global_oom_kill_before'] == 0,
+        sampled=lambda: sup['samples'] > 0,
+        anon_kernel_below_threshold=lambda: anon_kernel() <= parameters['anon_kernel_peak_max_bytes'])
     if runtime is not None:
-        inside, close = runtime['scope'], runtime['process_after_close']
-        checks.update(
-            worker_in_supervisor_unit=(inside['required'] is True and inside['unit'] == unit and inside['member'] is True
-                                       and inside['observed']['path'].endswith(f'/{unit}.scope')),
-            worker_saw_limits_before_weights=(
-                inside['verified_before_opening_weights'] is True and inside['observed']['memory.max'] == GIB2
-                and inside['observed']['memory.swap.max'] == 0 and inside['expected_memory_max'] == GIB2
-                and inside['expected_swap_max'] == 0),
-            worker_report_is_this_file=output_argument(sup['command']) == runtime_name,
-            worker_pid_sampled=any(key.startswith(f'pid{inside["pid"]}.') for key in peaks),
-            worker_vmhwm_below_threshold=max(close['VmHWM_bytes'], runtime['peak_rss_bytes'])
-                                         <= parameters['worker_vmhwm_max_bytes'],
-            worker_no_swap=close['VmSwap_bytes'] == 0 and all(p['process']['VmSwap_bytes'] == 0 for p in runtime['phases']),
-            worker_address_space_bounded=close['VmPeak_bytes'] <= runtime['rlimit_as_bytes'][0] < runtime['payload_bytes'])
-        facts.update(worker_vmhwm=close['VmHWM_bytes'], worker_vmpeak=close['VmPeak_bytes'],
-                     worker_block_read_bytes=runtime['inference_proc_io_delta']['read_bytes'],
-                     startup_block_read_bytes=runtime['startup_proc_io_delta']['read_bytes'],
-                     logical_inference_bytes=runtime['stats']['inference_read_bytes'],
-                     host_disk_delta=sup['host_disk_delta'])
+        inside, close = lambda: runtime['scope'], lambda: runtime['process_after_close']
+        lazy.update(
+            worker_in_supervisor_unit=lambda: (
+                inside()['required'] is True and inside()['unit'] == unit and inside()['member'] is True
+                and inside()['observed']['path'].endswith(f'/{unit}.scope')),
+            worker_saw_limits_before_weights=lambda: (
+                inside()['verified_before_opening_weights'] is True and inside()['observed']['memory.max'] == GIB2
+                and inside()['observed']['memory.swap.max'] == 0 and inside()['expected_memory_max'] == GIB2
+                and inside()['expected_swap_max'] == 0),
+            worker_report_is_this_file=lambda: output_argument(sup['command']) == runtime_name,
+            worker_pid_sampled=lambda: any(key.startswith(f'pid{inside()["pid"]}.') for key in sup['sampled_peaks']),
+            worker_vmhwm_below_threshold=lambda: max(close()['VmHWM_bytes'], runtime['peak_rss_bytes'])
+                                                 <= parameters['worker_vmhwm_max_bytes'],
+            worker_no_swap=lambda: close()['VmSwap_bytes'] == 0 and all(
+                p['process']['VmSwap_bytes'] == 0 for p in runtime['phases']),
+            worker_address_space_bounded=lambda: (close()['VmPeak_bytes'] <= runtime['rlimit_as_bytes'][0]
+                                                  < runtime['payload_bytes']))
+    checks = settle(lazy)
+    try:
+        facts = dict(unit=unit, memory_peak=fin['memory.peak'], max_events=events()['max'], oom=events()['oom'],
+                     oom_kill=events()['oom_kill'], swap_peak=fin['memory.swap.peak'],
+                     sampled_anon_plus_kernel_peak=anon_kernel(), sampled_file_peak=sup['sampled_peaks']['stat.file'],
+                     global_swap_used_before=sup['global_before']['SwapTotal']-sup['global_before']['SwapFree'],
+                     global_swap_used_after=sup['global_after']['SwapTotal']-sup['global_after']['SwapFree'],
+                     minimum_global_memavailable=sup['minimum_global_memavailable'])
+        if runtime is not None:
+            facts.update(worker_vmhwm=close()['VmHWM_bytes'], worker_vmpeak=close()['VmPeak_bytes'],
+                         worker_block_read_bytes=runtime['inference_proc_io_delta']['read_bytes'],
+                         startup_block_read_bytes=runtime['startup_proc_io_delta']['read_bytes'],
+                         logical_inference_bytes=runtime['stats']['inference_read_bytes'],
+                         host_disk_delta=sup['host_disk_delta'])
+    except INCOMPLETE as error:
+        if not any(value is False for value in checks.values()):
+            raise
+        facts = dict(incomplete_evidence=repr(error))  # the contradicted checks above stay FAIL
     return checks, facts
 
 
@@ -171,7 +237,7 @@ def eviction(sup, runtime, directory, parameters):
         evicted_files_are_the_checkpoint=(len(after) == len(sizes) and {suffix(k) for k in after} == set(sizes)
                                           and sorted(sup['files']) == sorted(after)),
         residency_sizes_equal_files=all(v['size_bytes'] == sizes.get(suffix(k)) for k, v in after.items()),
-        resident_after_eviction_within_limit=all(v['resident_bytes'] <= v['size_bytes']*limit for v in after.values())
+        resident_after_eviction_within_limit=all(0 <= v['resident_bytes'] <= v['size_bytes']*limit for v in after.values())
     ), dict(resident_bytes_after_eviction=sum(v['resident_bytes'] for v in after.values()),
             file_bytes=sum(v['size_bytes'] for v in after.values()))
 
@@ -344,8 +410,10 @@ def protocol_precondition(evidence):
         return dict(verdict=PASS if true(checks) else FAIL, facts=facts)
     except Missing as error:
         return dict(verdict=NOT_PROVEN, facts=facts | {'missing_evidence': str(error)})
-    except (KeyError, IndexError, TypeError, AttributeError) as error:
+    except INCOMPLETE as error:
         return dict(verdict=NOT_PROVEN, facts=facts | {'incomplete_evidence': repr(error)})
+    except CONTRADICTED as error:  # protocol or amendment present but not valid JSON
+        return dict(verdict=FAIL, facts=facts | {'contradicted_evidence': repr(error)})
 
 
 def condition_a(f, e):
@@ -365,8 +433,13 @@ def condition_a(f, e):
             acq['revision'] == REVISION_B and acq['execute'] is True
             and all(acq['files'][n]['lfs_sha256'] == official[n] and acq['downloaded'][n]['nbytes'] == sizes[n]
                     and acq['downloaded'][n]['sha256'] == official[n] for n in SHARDS)))
-    recorded = all('computed_sha256' in acq['downloaded'][n] for n in SHARDS)
-    c['acquisition_verified_every_file'] = recorded or acq['existing'] == []
+    computed = {n: acq['downloaded'][n].get('computed_sha256') for n in SHARDS}
+    recorded = all(v is not None for v in computed.values())
+    # A recorded computed digest is evidence only as a 64-hex value equal to the official one.
+    c['acquisition_verified_every_file'] = (
+        all(v is None or (isinstance(v, str) and bool(HEX64.fullmatch(v)) and v == official[n])
+            for n, v in computed.items())
+        and (recorded or acq['existing'] == []))
     f['acquisition_time_verification'] = dict(
         files_present_before_download=acq['existing'], computed_digest_recorded=recorded,
         statement=('computed digests recorded next to the official ones' if recorded else
@@ -383,20 +456,24 @@ def condition_a(f, e):
     index_sha = acq['downloaded'][INDEX]['sha256']
     names = {f'{QWEN}/{n}': official[n] for n in SHARDS} | {f'{SMOLLM}/model.safetensors': SHA_A}
 
-    def rehash(report):
+    def rehash(report, index_digest_required):
         files = report['files']
         index = files.get(f'{QWEN}/{INDEX}', {})
+        # integrity-after.json is historical and recorded only the outcome for the index; any
+        # later re-hash must carry the index digest, equal to the one the descriptor was built from.
+        recorded = (index.get('sha256') == index.get('expected') == index_sha if index_digest_required
+                    else index.get('sha256', index_sha) == index.get('expected', index_sha) == index_sha)
         return (sorted(files) == sorted([*names, f'{QWEN}/{INDEX}'])
                 and all(files[n]['sha256'] == digest == files[n]['expected'] and files[n]['match'] is True
                         for n, digest in names.items())
-                and index.get('match') is True and index.get('sha256', index_sha) == index_sha
-                and report['all_match'] is True)
-    c['rehash_recomputed_per_file_equals_official'] = rehash(integ)
+                and index.get('match') is True and recorded and isinstance(index_sha, str)
+                and bool(HEX64.fullmatch(index_sha)) and report['all_match'] is True)
+    c['rehash_recomputed_per_file_equals_official'] = rehash(integ, index_digest_required=False)
     final = e.optional('integrity-final.json')
     if final is None:
         f['rehash_after_remediation'] = 'absent: integrity-after.json is the last recorded re-hash'
     else:
-        c['rehash_after_remediation_equals_official'] = rehash(final)
+        c['rehash_after_remediation_equals_official'] = rehash(final, index_digest_required=True)
         f['rehash_after_remediation'] = 'present: integrity-final.json, a later full re-hash, also judged per file'
     f['integrity_read_bytes'] = dict(smollm=ra['integrity_read_bytes'], qwen=rb['integrity_read_bytes'])
     return true(c)
@@ -416,7 +493,7 @@ def phase_b_runs(e, parameters):
                 checkpoint_is_qwen=(runtime['family'] == 'qwen2' and runtime['mode'] == run
                                     and runtime['checkpoint'].endswith('checkpoints/'+QWEN)
                                     and sorted(runtime['source_files']) == sorted(SHARDS)))
-            facts |= residency | dict(block_read_fraction=block/logical)
+            facts |= residency | dict(block_read_fraction=block/logical if logical else None)
         else:
             streaming = dict(finalizer_recorded=False)
         out[run] = dict(scope=checks, streaming=streaming, facts=facts)
@@ -660,9 +737,13 @@ def condition_h(f, e, parameters, preservation):
 def gate(directory, root='.', originals=None, preservation=git_preservation):
     e = Evidence(directory, root)
     protocol = protocol_precondition(e)
-    manifest = e.optional(sanitize9.MANIFEST)
-    sanitization = sanitize9.verify(e.directory, Path(root)/sanitize9.ORIGINALS if originals is None else originals,
-                                    manifest)
+    try:
+        sanitization = sanitize9.verify(
+            e.directory, Path(root)/sanitize9.ORIGINALS if originals is None else originals,
+            e.optional(sanitize9.MANIFEST), expected=SANITIZED)
+    except CONTRADICTED as error:
+        sanitization = dict(verdict=FAIL, files=0, originals='unknown',
+                            problems=['sanitization manifest or evidence unreadable: '+repr(error)])
     preconditions = dict(protocol=protocol, sanitization=dict(verdict=sanitization['verdict'], facts=sanitization))
     blocked = [name for name, p in preconditions.items() if p['verdict'] != PASS]
     conditions = dict(A=(condition_a, e), B=(condition_b, e, PARAMETERS), C=(condition_c, e, PARAMETERS),
@@ -673,17 +754,23 @@ def gate(directory, root='.', originals=None, preservation=git_preservation):
         facts = {}
         try:
             verdict = PASS if function(facts, *arguments) else FAIL
-        except Missing as error:
-            verdict, facts['missing_evidence'] = NOT_PROVEN, str(error)
-        except (KeyError, IndexError, TypeError, AttributeError) as error:
-            verdict, facts['incomplete_evidence'] = NOT_PROVEN, repr(error)
-        except ValueError as error:
+        except (Missing, *INCOMPLETE) as error:
+            key = 'missing_evidence' if isinstance(error, Missing) else 'incomplete_evidence'
+            facts[key] = str(error) if isinstance(error, Missing) else repr(error)
+            # Missing evidence does not hide a fact already found contradicted.
+            checks = facts.get('checks')
+            contradicted = isinstance(checks, dict) and any(value is False for value in checks.values())
+            verdict = FAIL if contradicted else NOT_PROVEN
+        except CONTRADICTED as error:
             verdict, facts['contradicted_evidence'] = FAIL, repr(error)
+        own = verdict
         if blocked:
-            # An unapproved protocol or unbound evidence invalidates every condition.
-            verdict = FAIL if any(preconditions[b]['verdict'] == FAIL for b in blocked) else NOT_PROVEN
+            # An unapproved protocol or unbound evidence invalidates every PASS; a condition
+            # that is already FAIL or NOT PROVEN on its own evidence keeps its verdict.
+            if own == PASS:
+                verdict = FAIL if any(preconditions[b]['verdict'] == FAIL for b in blocked) else NOT_PROVEN
             facts['precondition_not_met'] = blocked
-        out[name] = dict(verdict=verdict, facts=facts)
+        out[name] = dict(verdict=verdict, verdict_before_preconditions=own, facts=facts)
     return dict(protocol_sha256=protocol['facts'].get('protocol_sha256'), remediation_parameters=PARAMETERS,
                 preconditions=preconditions, verdicts={k: v['verdict'] for k, v in out.items()}, conditions=out)
 

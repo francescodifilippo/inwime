@@ -127,20 +127,34 @@ def apply(directory, originals):
         files=files)
 
 
-def verify(directory, originals, manifest):
-    """PASS only if every listed file is exactly its original under the declared rules."""
+def verify(directory, originals, manifest, expected=None):
+    """PASS only if the manifest is complete and every file is its original under the declared rules.
+
+    The manifest cannot shrink its own scope: an empty manifest is never PASS, every
+    original found locally must be listed, and `expected`, when given (the gate pins
+    it), is the exact {name: {original_sha256, sanitized_sha256}} the manifest must carry.
+    """
     directory, originals = Path(directory), Path(originals)
     if not isinstance(manifest, dict) or not isinstance(manifest.get('files'), dict):
         return dict(verdict='NOT PROVEN', files=0, originals='unknown', problems=['sanitization manifest missing'])
+    files = manifest['files']
     declared = [dict(id=n, pattern=p, replacement=r, description=d) for n, p, r, d in (*RULES, CACHE_RULE)]
     problems = [] if manifest.get('rules') == declared else ['declared rules differ from the rules of this tool']
+    if not files:
+        problems.append('sanitization manifest lists no file: nothing was compared')
+    if expected is not None:
+        problems += ['file expected by the gate is not in the manifest: '+n for n in sorted(set(expected)-set(files))]
+        problems += ['file in the manifest is not expected by the gate: '+n for n in sorted(set(files)-set(expected))]
     problems += ['personal path or identifier left: '+item for item in residual(directory)]
     present = 0
-    for name, entry in manifest['files'].items():
+    for name, entry in files.items():
         path = directory/name
-        if Path(name).name != name or not path.is_file():
+        if not isinstance(entry, dict) or Path(name).name != name or not path.is_file():
             problems.append('sanitized file missing: '+name)
             continue
+        pinned = expected.get(name) if expected is not None else None
+        if pinned is not None and any(entry.get(key) != pinned[key] for key in ('original_sha256', 'sanitized_sha256')):
+            problems.append('manifest digests differ from the digests pinned in the gate: '+name)
         current = path.read_bytes()
         if sha(current) != entry.get('sanitized_sha256'):
             problems.append('sanitized file differs from the manifest: '+name)
@@ -152,15 +166,19 @@ def verify(directory, originals, manifest):
                 problems.append('local original differs from the manifest: '+name)
             elif sanitize_bytes(name, raw) != current:
                 problems.append('file differs from its original beyond the declared rules: '+name)
-    if present == len(manifest['files']):
+    unlisted = sorted(p.name for p in originals.iterdir() if p.name not in files) if originals.is_dir() else []
+    problems += ['local original is not listed in the manifest: '+name for name in unlisted]
+    if not files:
+        state = 'not compared: the manifest lists no file'
+    elif unlisted or 0 < present < len(files):
+        state = f'partial: {present} of {len(files)} listed originals present, {len(unlisted)} present but not listed'
+        if present < len(files):
+            problems.append('only some originals are present')
+    elif present == len(files):
         state = 'present: every sanitized file equals its original under the declared rules'
-    elif present == 0:
-        state = 'absent: originals are local and outside Git; only the manifest digests were checked'
     else:
-        state = f'partial: {present} of {len(manifest["files"])} originals present'
-        problems.append('only some originals are present')
-    return dict(verdict='FAIL' if problems else 'PASS', files=len(manifest['files']), originals=state,
-                problems=problems)
+        state = 'absent: originals are local and outside Git; only the manifest digests were checked'
+    return dict(verdict='FAIL' if problems else 'PASS', files=len(files), originals=state, problems=problems)
 
 
 if __name__ == '__main__':

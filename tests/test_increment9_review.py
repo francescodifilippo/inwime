@@ -241,8 +241,14 @@ def test_gate_rejects_review_mutation(copy, case):
     mutate, conditions = MUTATIONS[case]
     mutate(copy)
     reseal(copy)
-    result = verdicts(copy)
+    report = gate(copy, originals=copy/'no-originals',
+                  preservation=lambda baseline, intentional: dict(CLEAN_PRESERVATION))
+    result = report['verdicts']
     assert all(result[c] in NOT_PASS for c in conditions), (case, result)
+    # Rejected on the condition's own evidence, not only through a failed precondition.
+    # (Protocol mutations are caught by the protocol precondition alone, by design.)
+    own = {c: report['conditions'][c]['verdict_before_preconditions'] for c in conditions}
+    assert conditions == EVERY or all(v in NOT_PASS for v in own.values()), (case, own)
 
 
 def test_missing_evidence_is_not_proven_not_fail(copy):
@@ -397,6 +403,271 @@ def test_gate_sanitization_precondition(copy):
     assert set(verdicts(copy).values()) == {'FAIL'}
     (copy/'sanitization-manifest.json').unlink()
     assert set(verdicts(copy).values()) == {'NOT PROVEN'}
+
+
+# ---- second review: the manifest cannot shrink its own scope (P2-A) -------------------------
+
+def own_verdicts(d, **options):
+    options.setdefault('originals', d/'no-originals')
+    options.setdefault('preservation', lambda baseline, intentional: dict(CLEAN_PRESERVATION))
+    report = gate(d, **options)
+    return {k: v['verdict_before_preconditions'] for k, v in report['conditions'].items()}, report
+
+
+def pins(manifest):
+    return {name: dict(original_sha256=e['original_sha256'], sanitized_sha256=e['sanitized_sha256'])
+            for name, e in manifest['files'].items()}
+
+
+@pytest.mark.parametrize('originals_present', [True, False])
+def test_sanitization_entry_removed_with_altered_number_is_fail(tmp_path, originals_present):
+    from tools import sanitize9
+    d, originals = tmp_path/'e', tmp_path/'originals'
+    personal_evidence(d)
+    manifest = sanitize9.apply(d, originals)
+    expected = pins(manifest)
+    edit(d, 'run-supervisor.json', lambda x: x.update(wall_s=30.0))
+    manifest['files'].pop('run-supervisor.json')
+    where = originals if originals_present else tmp_path/'absent'
+    result = sanitize9.verify(d, where, manifest, expected=expected)
+    assert result['verdict'] == 'FAIL' and not result['originals'].startswith('present')
+    assert any('run-supervisor.json' in problem for problem in result['problems'])
+    if originals_present:  # detected even without the pinned set: the original is there and unlisted
+        result = sanitize9.verify(d, originals, manifest)
+        assert result['verdict'] == 'FAIL'
+        assert 'local original is not listed in the manifest: run-supervisor.json' in result['problems']
+
+
+@pytest.mark.parametrize('originals_present', [True, False])
+def test_sanitization_empty_manifest_is_never_pass(tmp_path, originals_present):
+    from tools import sanitize9
+    d, originals = tmp_path/'e', tmp_path/'originals'
+    personal_evidence(d)
+    manifest = sanitize9.apply(d, originals)
+    expected = pins(manifest)
+    edit(d, 'run-supervisor.json', lambda x: x.update(wall_s=30.0))
+    manifest['files'] = {}
+    where = originals if originals_present else tmp_path/'absent'
+    for options in (dict(), dict(expected=expected)):
+        result = sanitize9.verify(d, where, manifest, **options)
+        assert result['verdict'] == 'FAIL' and result['files'] == 0
+        assert result['originals'].startswith('not compared')
+        assert 'sanitization manifest lists no file: nothing was compared' in result['problems']
+
+
+def test_sanitization_original_present_but_not_listed_is_fail(tmp_path):
+    from tools import sanitize9
+    d, originals = tmp_path/'e', tmp_path/'originals'
+    personal_evidence(d)
+    manifest = sanitize9.apply(d, originals)
+    assert sanitize9.verify(d, originals, manifest)['verdict'] == 'PASS'
+    (originals/'clean.json').write_text((d/'clean.json').read_text())  # an original the manifest does not list
+    result = sanitize9.verify(d, originals, manifest)
+    assert result['verdict'] == 'FAIL' and result['originals'].startswith('partial')
+    assert 'local original is not listed in the manifest: clean.json' in result['problems']
+
+
+def test_sanitization_pinned_set_and_digests(tmp_path):
+    from tools import sanitize9
+    d, originals = tmp_path/'e', tmp_path/'originals'
+    personal_evidence(d)
+    manifest = sanitize9.apply(d, originals)
+    expected = pins(manifest)
+    assert sanitize9.verify(d, tmp_path/'absent', manifest, expected=expected)['verdict'] == 'PASS'
+    more = expected | {'other.json': dict(original_sha256='0'*64, sanitized_sha256='0'*64)}
+    assert sanitize9.verify(d, tmp_path/'absent', manifest, expected=more)['verdict'] == 'FAIL'
+    less = {k: v for k, v in expected.items() if k != 'environment.json'}
+    assert sanitize9.verify(d, tmp_path/'absent', manifest, expected=less)['verdict'] == 'FAIL'
+    # A forger who alters a number and re-seals the manifest digest, with no originals around.
+    edit(d, 'run-supervisor.json', lambda x: x.update(wall_s=30.0))
+    manifest['files']['run-supervisor.json']['sanitized_sha256'] = hashlib.sha256(
+        (d/'run-supervisor.json').read_bytes()).hexdigest()
+    assert sanitize9.verify(d, tmp_path/'absent', manifest)['verdict'] == 'PASS'  # what the pin is for
+    assert sanitize9.verify(d, tmp_path/'absent', manifest, expected=expected)['verdict'] == 'FAIL'
+
+
+def test_gate_pins_the_eleven_sanitized_files():
+    from tools.report_increment9 import SANITIZED
+    manifest = json.loads((EVIDENCE/'sanitization-manifest.json').read_text())
+    assert len(SANITIZED) == 11 and SANITIZED == pins(manifest)
+
+
+@pytest.mark.parametrize('case', ['entry_removed', 'entry_removed_resealed', 'manifest_empty', 'resealed_only'])
+def test_gate_sanitization_cannot_be_bypassed_through_the_manifest(copy, case):
+    edit(copy, 'phaseA-W-supervisor.json', lambda x: x.update(wall_s=1.0))
+    if case.startswith('entry_removed'):
+        edit(copy, 'sanitization-manifest.json', lambda x: x['files'].pop('phaseA-W-supervisor.json'))
+    if case == 'manifest_empty':
+        edit(copy, 'sanitization-manifest.json', lambda x: x.update(files={}))
+    if case.endswith('resealed') or case == 'resealed_only':
+        reseal(copy)
+    own, report = own_verdicts(copy)
+    assert set(report['verdicts'].values()) == {'FAIL'}, report['verdicts']
+    assert set(own.values()) == {'PASS'}  # only the precondition catches an altered wall time
+    facts = report['preconditions']['sanitization']['facts']
+    assert facts['verdict'] == 'FAIL' and not facts['originals'].startswith('present')
+    # With the real local originals, when this machine has them, the verdict is the same.
+    real = Path('artifacts/increment9/original-evidence')
+    if real.is_dir():
+        assert set(verdicts(copy, originals=real).values()) == {'FAIL'}
+
+
+def test_gate_original_present_but_not_listed(copy, tmp_path):
+    originals = tmp_path/'originals'; originals.mkdir()
+    (originals/'faults.json').write_text((copy/'faults.json').read_text())
+    report = gate(copy, originals=originals, preservation=lambda baseline, intentional: dict(CLEAN_PRESERVATION))
+    assert set(report['verdicts'].values()) == {'FAIL'}
+    assert 'local original is not listed in the manifest: faults.json' in report[
+        'preconditions']['sanitization']['facts']['problems']
+
+
+# ---- second review: a contradicted fact stays FAIL (P3-2) ---------------------------------
+
+def test_settle_keeps_a_contradicted_check_when_a_field_is_missing():
+    from tools.report_increment9 import settle
+    data = dict(oom_kill=1)
+    assert settle(dict(a=lambda: data['oom_kill'] == 1)) == dict(a=True)
+    with pytest.raises(KeyError):
+        settle(dict(a=lambda: data['oom_kill'] == 1, b=lambda: data['samples'] > 0))
+    assert settle(dict(a=lambda: data['oom_kill'] == 0, b=lambda: data['samples'] > 0)) == dict(a=False, b=None)
+
+
+def test_precondition_not_proven_does_not_mask_a_fail(copy):
+    edit(copy, 'integrity-after.json', lambda x: x['files'][
+        'qwen2.5-7b-d149729/model-00002-of-00004.safetensors'].update(match=False))
+    edit(copy, 'phaseB-pipeline-supervisor.json', lambda x: x['finalizer']['memory.events'].update(oom_kill=1))
+    (copy/'sanitization-manifest.json').unlink()
+    own, report = own_verdicts(copy)
+    result = report['verdicts']
+    assert report['preconditions']['sanitization']['verdict'] == 'NOT PROVEN'
+    # Before the fix every condition, the OOM kill included, was reported NOT PROVEN.
+    assert result['A'] == 'FAIL' and result['G'] == 'FAIL', result
+    assert own['A'] == own['G'] == 'FAIL'
+    assert all(result[c] == 'NOT PROVEN' for c in 'BEFH'), result  # their own PASS is not kept either
+    assert all(report['conditions'][c]['facts']['precondition_not_met'] == ['sanitization'] for c in EVERY)
+
+
+def test_missing_amendment_does_not_mask_a_fail(copy):
+    edit(copy, 'integrity-after.json', lambda x: x['files'][
+        'qwen2.5-7b-d149729/model-00002-of-00004.safetensors'].update(match=False))
+    (copy/'protocol-amendment-remediation.json').unlink()
+    result = verdicts(copy)
+    assert result['A'] == 'FAIL' and all(result[c] == 'NOT PROVEN' for c in 'BCDEFGH'), result
+
+
+@pytest.mark.parametrize('case', ['same_supervisor', 'same_supervisor_fact', 'other_file'])
+def test_missing_unrelated_field_does_not_mask_a_fail(copy, case):
+    edit(copy, 'phaseB-pipeline-supervisor.json', lambda x: x['finalizer']['memory.events'].update(oom_kill=1))
+    if case == 'same_supervisor':
+        edit(copy, 'phaseB-pipeline-supervisor.json', lambda x: x.pop('samples'))
+    if case == 'same_supervisor_fact':
+        edit(copy, 'phaseB-pipeline-supervisor.json', lambda x: x.pop('minimum_global_memavailable'))
+    if case == 'other_file':
+        edit(copy, 'faults.json', lambda x: x.pop('cases'))
+    own, report = own_verdicts(copy)
+    assert own['G'] == 'FAIL' and report['verdicts']['G'] == 'FAIL', (own, report['conditions']['G']['facts'])
+
+
+def test_missing_field_alone_is_still_not_proven(copy):
+    edit(copy, 'phaseB-pipeline-supervisor.json', lambda x: x.pop('samples'))
+    own, _ = own_verdicts(copy)
+    assert own['G'] == 'NOT PROVEN'
+    edit(copy, 'phaseB-pipeline-runtime.json', lambda x: x.pop('process_after_close'))
+    assert own_verdicts(copy)[0]['G'] == 'NOT PROVEN'
+
+
+# ---- second review: unreadable evidence gives a verdict, not a crash (P3-3) ---------------
+
+@pytest.mark.parametrize('name', ['protocol.json', 'protocol-amendment-remediation.json',
+                                  'sanitization-manifest.json'])
+def test_invalid_json_in_a_precondition_file_is_fail_not_a_crash(copy, name):
+    replace(copy, name, '{"increment": 9,')
+    report = gate(copy, originals=copy/'no-originals',
+                  preservation=lambda baseline, intentional: dict(CLEAN_PRESERVATION))
+    assert set(report['verdicts'].values()) == {'FAIL'}
+    kind = 'sanitization' if name.startswith('sanitization') else 'protocol'
+    assert report['preconditions'][kind]['verdict'] == 'FAIL'
+    (copy/name).unlink()
+    assert set(verdicts(copy).values()) == {'NOT PROVEN'}
+
+
+def test_invalid_json_in_evidence_is_fail_not_a_crash(copy):
+    replace(copy, 'integrity-final.json', '{"files": ')
+    replace(copy, 'faults.json', 'not json')
+    result = verdicts(copy)
+    assert result['A'] == 'FAIL' and result['G'] == 'FAIL', result
+
+
+def test_zero_logical_inference_bytes_is_fail_not_a_crash(copy):
+    edit(copy, 'phaseB-sync-runtime.json', lambda x: x['stats'].update(inference_read_bytes=0))
+    result = verdicts(copy)
+    assert all(result[c] == 'FAIL' for c in 'CDEG'), result
+
+
+# ---- second review: index entry and computed digests (P3-4) ---------------------------------
+
+INDEX_ENTRY = 'qwen2.5-7b-d149729/model.safetensors.index.json'
+
+
+@pytest.mark.parametrize('entry', [dict(match=True), dict(match=True, sha256='0'*64, expected='0'*64),
+                                   dict(match=True, sha256='624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028'),
+                                   dict(match=True, expected='624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028')])
+def test_final_rehash_must_record_the_index_digest(copy, entry):
+    assert json.loads((copy/'integrity-final.json').read_text())['files'][INDEX_ENTRY]['sha256'] == json.loads(
+        (copy/'qwen-acquisition.json').read_text())['downloaded']['model.safetensors.index.json']['sha256']
+    edit(copy, 'integrity-final.json', lambda x: x['files'].update({INDEX_ENTRY: entry}))
+    report = gate(copy, originals=copy/'no-originals',
+                  preservation=lambda baseline, intentional: dict(CLEAN_PRESERVATION))
+    assert report['verdicts']['A'] == 'FAIL'
+    assert report['conditions']['A']['facts']['checks']['rehash_after_remediation_equals_official'] is False
+
+
+def test_historical_rehash_index_digest_cannot_be_wrong(copy):
+    # integrity-after.json recorded only the outcome for the index (declared limit); a digest, if there, must agree.
+    edit(copy, 'integrity-after.json', lambda x: x['files'][INDEX_ENTRY].update(sha256='0'*64))
+    assert verdicts(copy)['A'] == 'FAIL'
+
+
+@pytest.mark.parametrize('value,verdict', [('official', 'PASS'), ('zeros', 'FAIL'), ('short', 'FAIL'),
+                                           ('upper', 'FAIL'), ('one_wrong', 'FAIL'), ('true', 'FAIL')])
+def test_computed_digests_must_be_hex_and_equal_to_the_official_ones(copy, value, verdict):
+    def change(x):
+        for i, (name, entry) in enumerate(sorted(x['downloaded'].items())):
+            if 'of-00004' in name:
+                official = entry['sha256']
+                entry['computed_sha256'] = dict(
+                    official=official, zeros='0'*64, short=official[:10], upper=official.upper(), true=True,
+                    one_wrong='0'*64 if name.startswith('model-00003') else official)[value]
+    edit(copy, 'qwen-acquisition.json', change)
+    assert verdicts(copy)['A'] == verdict
+
+
+# ---- second review: one-line hardenings ------------------------------------------------------
+
+def test_negative_residency_is_not_evidence_of_eviction(copy):
+    edit(copy, 'phaseB-sync-supervisor.json', lambda x: each(
+        x['residency_after_eviction'], lambda v: v.update(resident_bytes=-1)))
+    own, _ = own_verdicts(copy)
+    assert all(own[c] == 'FAIL' for c in 'CDG'), own
+
+
+def test_json_false_is_not_a_zero_oom_counter(copy):
+    edit(copy, 'phaseB-sync-supervisor.json', lambda x: x['finalizer']['memory.events'].update(oom_kill=False))
+    own, _ = own_verdicts(copy)
+    assert all(own[c] == 'FAIL' for c in 'CDG'), own
+
+
+# ---- second review: honest amendment register (P3-1) -----------------------------------------
+
+def test_amendment_register_labels_post_measurement_choices():
+    amendment = json.loads((EVIDENCE/'protocol-amendment-remediation.json').read_text())
+    changes = {c['id']: c for c in amendment['changes']}
+    assert list(changes) == [f'R{i}' for i in range(1, 11)]
+    assert amendment['status'].startswith('post-measurement') and 'every change tightens' not in amendment['status']
+    assert changes['R10']['kind'].startswith('not a tightening')
+    for name in ('R5', 'R6', 'R7'):
+        assert 'chosen after measurement' in changes[name]['kind'], name
+    assert hashlib.sha256((EVIDENCE/'protocol.json').read_bytes()).hexdigest() == amendment['amends_protocol_sha256']
 
 
 def test_git_bound_evidence_has_no_personal_paths():
