@@ -12,6 +12,37 @@ FAIL diagnostico `stock_fp64` e i contratti degli incrementi 7 e 8. Nessun
 report derivato di `results/increment9/` è stato rigenerato: questa directory
 contiene soltanto file nuovi.
 
+## Aggiornamento dopo micro-correzione (commit `9417bb7`)
+
+L'hardening iniziale `0cf37e2` ha prodotto **900 test PASS** (249 mirati),
+registrati nel file storico [pytest-hardened.txt](pytest-hardened.txt).
+Quel log viene **conservato senza riscritture** e le tabelle sottostanti
+descrivono tale esecuzione.
+
+Il successivo commit `9417bb7` modifica esclusivamente
+`tools/report_increment9.py` e `tests/test_increment9_hardening.py`:
+aggiunge verifiche di tipo per i contatori `completed`, `released`,
+`session_length`, `arena_plan_bytes`, `reserved_peak_bytes`,
+`source_file_bytes`, `source_files[*].nbytes`, nonché lunghezze e
+generazioni KV. Corregge 10 falsi PASS dovuti all'uguaglianza numerica
+in Python fra `int`, `float` e `bool` (esempio `True == 1`).
+
+**Verifica locale riferita dall'operatore sul commit `9417bb7`:**
+**910 test PASS** senza skip (259 nel modulo hardening), gate 7 e 8 PASS,
+gate 9 A–H PASS con JSON invariato campo per campo rispetto a
+`results/increment9/summary.json`, 80 mutazioni senza falsi PASS,
+13 bypass respinti, `sanitize9 --verify` PASS e
+`sanitize9 --against-commit 6031b52` PASS. I 10 nuovi test
+eseguiti contro il gate precedente `0cf37e2` sono risultati tutti
+rossi, con verdetto proprio E erroneamente PASS; sul nuovo gate passano.
+La prova è stata eseguita in WSL dall'operatore; non è stata ancora
+pubblicata una nuova trascrizione completa sotto `results/`.
+
+**Nota di provenienza:** i numeri 900/249 nei log versionati indicano il
+commit `0cf37e2`. I numeri 910/259 si riferiscono al successivo
+`9417bb7`. Nessun output originario è stato modificato per sostituire
+retroattivamente un risultato.
+
 ## Esito per intervento
 
 | ID | Intervento | Classificazione |
@@ -175,8 +206,9 @@ Meccanismo proposto per M10, da fissare **prima** delle misure:
   della condizione. La correzione D-2 riguarda la combinazione con le
   precondizioni; questo limite, già dichiarato, resta (DEFERRED).
 - La tipizzazione stretta riguarda i contatori. Identificativi, token, liste
-  di lunghezze e generazioni KV sono confrontati per uguaglianza: un `true`
-  dentro una lista vale ancora come 1.
+  di token e relative liste di ID sono confrontati per uguaglianza; alcuni
+  altri campi strutturali non hanno ancora validazione stretta. Le lunghezze e
+  generazioni KV scalari sono invece tipizzate dal commit `9417bb7`.
 - Gli `integrity_read_bytes` letti dalla condizione A non sono tipizzati in A.
   Lo sono, per le stesse prove, nei controlli `forward` di B ed E.
 - `tools.sanitize9 --verify` da solo continua a non conoscere l'insieme
