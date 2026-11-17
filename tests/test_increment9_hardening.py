@@ -42,6 +42,47 @@ def own_and_final(d):
     return own, report['verdicts'], report
 
 
+@pytest.mark.parametrize('field_path', [
+    ('stats', 'completed'),
+    ('stats', 'released'),
+    ('stats', 'session_length'),
+    ('arena_plan_bytes',),
+    ('stats', 'reserved_peak_bytes'),
+    ('stats', 'source_file_bytes'),
+    ('phases', 0, 'length'),
+    ('phases', 0, 'generation'),
+])
+def test_forward_counters_reject_numerically_equal_floats(copy, field_path):
+    """An integer JSON counter cannot pass through numeric equality as a float."""
+    original = json.loads((copy/SYNC_RUN).read_text())
+    for part in field_path:
+        original = original[part]
+    assert type(original) is int and original > 0
+    edit(copy, SYNC_RUN, put(field_path, float(original)))
+    own, _, _ = own_and_final(copy)
+    assert own['E'] == 'FAIL', (field_path, own)
+
+
+def test_forward_kv_generation_rejects_json_true(copy):
+    """Python considers True == 1; a generation counter must be an actual JSON int."""
+    original = json.loads((copy/SYNC_RUN).read_text())
+    assert original['phases'][0]['generation'] == 1
+    edit(copy, SYNC_RUN, put(('phases', 0, 'generation'), True))
+    own, _, _ = own_and_final(copy)
+    assert own['E'] == 'FAIL', own
+
+
+def test_forward_source_file_nbytes_rejects_equal_float(copy):
+    """The sum of shard sizes must not accept a float in one of the source entries."""
+    original = json.loads((copy/SYNC_RUN).read_text())
+    first = next(iter(original['source_files']))
+    nbytes = original['source_files'][first]['nbytes']
+    assert type(nbytes) is int and nbytes > 0
+    edit(copy, SYNC_RUN, put(('source_files', first, 'nbytes'), float(nbytes)))
+    own, _, _ = own_and_final(copy)
+    assert own['E'] == 'FAIL', own
+
+
 # ---- D-3: malformed runtime counters --------------------------------------------------------
 
 # name -> (file, path, valid non-zero value or None, zero allowed, conditions that read the field)

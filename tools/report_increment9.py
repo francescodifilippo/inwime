@@ -287,8 +287,8 @@ def forward(r, decodes):
         prefill_is_the_prompt=phases[0]['ids'] == prompt and len(prompt) >= 2,
         enough_decodes=len(phases)-1 >= decodes,
         phase_names=[p['name'] for p in phases] == names and sorted(r['captures']) == names,
-        kv_lengths=[p['length'] for p in phases] == list(range(len(prompt), len(prompt)+len(phases))),
-        kv_generations=[p['generation'] for p in phases] == list(range(1, len(phases)+1)),
+        kv_lengths=all(natural(p['length']) for p in phases) and [p['length'] for p in phases] == list(range(len(prompt), len(prompt)+len(phases))),
+        kv_generations=all(natural(p['generation']) for p in phases) and [p['generation'] for p in phases] == list(range(1, len(phases)+1)),
         kv_prefix_preserved=all(p['kv_prefix_preserved'] is True for p in phases),
         decode_inputs_are_previous_greedy=all(len(p['greedy']) == len(p['ids']) for p in phases) and all(
             phase['ids'] == previous['greedy'][-1:] for previous, phase in zip(phases, phases[1:])),
@@ -299,15 +299,19 @@ def forward(r, decodes):
         per_tensor_reads_equal_expected=bool(expected) and counters_equal(stats['tensor_read_bytes'], expected)
                                         and all(v > 0 for v in expected.values()),
         inference_bytes_equal_tensor_sum=exactly(stats['inference_read_bytes'], sum(expected.values())),
-        requests_released=(zero(stats['failed']) and natural(stats['requests'])
+        requests_released=(zero(stats['failed'])
+                           and natural(stats['requests'], stats['completed'], stats['released'], stats['session_length'])
                            and stats['requests'] == stats['completed'] == stats['released']
                            and stats['request_state'] == 'RELEASED' and stats['session_failed'] is False
                            and stats['session_length'] == len(prompt)+len(phases)-1),
         fds_and_arenas_released=r['released_fds'] is True and r['released_arenas'] is True,
         no_weight_cache_or_heavy_module=(r['weight_cache'] is False and zero(r['gpu_allocations_bytes'])
                                          and r['heavy_modules_loaded'] == []),
-        budget_equals_plan=natural(r['budget_bytes']) and r['budget_bytes'] == r['arena_plan_bytes'] == stats['reserved_peak_bytes'],
-        full_integrity_at_startup=(stats['integrity_policy'] == 'full' and natural(r['integrity_read_bytes'])
+        budget_equals_plan=(natural(r['budget_bytes'], r['arena_plan_bytes'], stats['reserved_peak_bytes'])
+                            and r['budget_bytes'] == r['arena_plan_bytes'] == stats['reserved_peak_bytes']),
+        full_integrity_at_startup=(stats['integrity_policy'] == 'full'
+                                   and natural(r['integrity_read_bytes'], stats['source_file_bytes'],
+                                               *(f['nbytes'] for f in r['source_files'].values()))
                                    and r['integrity_read_bytes'] == sum(f['nbytes'] for f in r['source_files'].values())
                                    == stats['source_file_bytes']))
 
