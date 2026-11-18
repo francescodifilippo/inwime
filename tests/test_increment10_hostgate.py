@@ -21,6 +21,7 @@ from tools import hostgate10 as hg
 from tools import hostmem10 as hm
 from tools import protocol10
 from tests.test_increment10_acquire import FakeHF, authorize, build_repo, small_reserves
+from tests.support_increment10_monitor import healthy
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_PATH = ROOT/'results'/'increment10'/'protocol.json'
@@ -109,7 +110,7 @@ def usage_for(dest, backing, dest_total=DEST_TOTAL, back_total=BACK_TOTAL):
 
 
 def run_execute(fake, manifest, dest, backing, auth, host_gate, usage=None):
-    return acq.execute(dest, backing, auth, host_gate, manifest=manifest, endpoint=fake.endpoint,
+    return acq.execute(dest, backing, auth, host_gate, healthy(dest, backing), manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
                        usage=usage or usage_for(dest, backing))
 

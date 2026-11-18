@@ -17,6 +17,7 @@ import threading
 import pytest
 
 from tools import acquire10 as acq
+from tests.support_increment10_monitor import healthy
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA = ROOT/'results'/'increment10'/'preflight-metadata'
@@ -214,10 +215,12 @@ class GoGate:
         return dict(schema='inwime-hostgate10/1', profile='download', verdict='GO', reasons=[])
 
 
-def run(fake, manifest, dest, auth, host_gate=None, **kw):
+def run(fake, manifest, dest, auth, host_gate=None, host_monitor=None, **kw):
     kw.setdefault('reserves', small_reserves())
     kw.setdefault('usage', lambda p: BIG)
-    return acq.execute(dest, dest.parent, auth, host_gate or GoGate(), manifest=manifest, endpoint=fake.endpoint,
+    # quiet in-run monitor (amendment 002; the monitor itself is tested in test_increment10_hostmonitor.py)
+    return acq.execute(dest, dest.parent, auth, host_gate or GoGate(), host_monitor or healthy(dest, dest.parent),
+                       manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), **kw)
 
 

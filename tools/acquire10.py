@@ -26,6 +26,14 @@ Modes
                          eligibility; protocol amendment 001).
                        Without both nothing is downloaded; neither implies the
                        other.
+                       While bytes flow, the in-run host monitor
+                       (tools/hostmonitor10.py, amendment 002) applies the
+                       preregistered abort criteria and stops the transfer
+                       cooperatively (owned .part kept, resumable after a new
+                       GO). No valid host sample for too long also stops it.
+                       The monitor stops this acquisition only; it cannot act on
+                       Windows and reacts within one sampling interval plus the
+                       preregistered sustain time.
 
 Safety properties (each covered by tests against a local fake HTTP server)
   * HTTPS only, host allowlist on every redirect hop, generic User-Agent, no
@@ -82,6 +90,10 @@ class TransferStopped(AcquireError):
 
 class SpaceError(TransferStopped):
     pass
+
+
+class HostPressureStop(TransferStopped):
+    """Preregistered host abort condition (or loss of host monitoring) during the transfer."""
 
 
 class Manifest:
@@ -569,6 +581,16 @@ class Guard:
         self.destination, self.backing, self.reserves, self.usage = destination, backing, reserves, usage
         self.minimum_free = None
         self.checks = 0
+        self.monitor = None
+
+    def poll_host(self):
+        """In-run host monitor (amendment 002); called before each request and after each chunk."""
+        if self.monitor is None:
+            return
+        decision = self.monitor.poll()
+        if decision['stop']:
+            raise HostPressureStop('host stop condition: '+'; '.join(decision['reasons'])
+                                   + '; .part retained, resume only after a new hostgate10 GO')
 
     def free(self):
         return min(self.usage(existing_ancestor(self.destination)).free, self.usage(self.backing).free)
@@ -603,6 +625,7 @@ def transfer(transport, url, destination, name, manifest, guard, budget, opener=
         if budget['transferred']+need > budget['max_bytes']:
             raise AcquireError('authorized transfer budget would be exceeded')
         headers = {'Range': f'bytes={done}-'} if done else {}
+        guard.poll_host()
         r = transport.open(url, headers)
         try:
             if done:
@@ -638,6 +661,7 @@ def transfer(transport, url, destination, name, manifest, guard, budget, opener=
                     done += len(data); transferred += len(data); since += len(data)
                     budget['transferred'] += len(data)
                     transport.payload_bytes += len(data)
+                    guard.poll_host()
                     if since >= guard.reserves.check_interval:
                         since = 0
                         guard.check()
@@ -776,8 +800,17 @@ def dry_run(destination, backing, *, manifest=QWEN25_14B, reserves=None, endpoin
     return report
 
 
-def execute(destination, backing, authorization, host_gate, *, manifest=QWEN25_14B, reserves=None,
-            endpoint=ENDPOINT, transport=None, usage=shutil.disk_usage, opener=open, discard_rejected=False):
+def require_monitor(host_monitor):
+    from . import hostmonitor10
+    if not isinstance(host_monitor, hostmonitor10.HostMonitor):
+        raise AcquireError('in-run host monitor missing: tools/hostmonitor10.HostMonitor is required '
+                           'before any transfer (amendment 002)')
+    return host_monitor
+
+
+def execute(destination, backing, authorization, host_gate, host_monitor, *, manifest=QWEN25_14B, reserves=None,
+            endpoint=ENDPOINT, transport=None, usage=shutil.disk_usage, opener=open, discard_rejected=False,
+            chunk=MiB):
     reserves = reserves or Reserves()
     transport = transport or Transport()
     destination = Path(destination)
@@ -790,6 +823,7 @@ def execute(destination, backing, authorization, host_gate, *, manifest=QWEN25_1
     check_authorization(authorization, manifest, destination,
                         sum(f['transfer_bytes'] for f in inspect(destination, manifest)['files'].values()))
     host_before_network = host_readiness(host_gate, destination, backing, manifest, usage)
+    monitor = require_monitor(host_monitor)
     api, small, headers = online_metadata(transport, endpoint, manifest)
     report['metadata'] = verify_metadata(api, small, headers, manifest)
     destination.mkdir(exist_ok=True)
@@ -820,46 +854,74 @@ def execute(destination, backing, authorization, host_gate, *, manifest=QWEN25_1
             raise SpaceError('; '.join(plan['blockers']))
         budget = dict(max_bytes=auth['max_transfer_bytes'], transferred=0)
         committed, verification = {}, {}
-        for name in manifest.files():
-            path = destination/name
-            if path.exists():
-                digest, done = hash_file(path)
-                ok = done == manifest.size(name) and (
-                    digest.hexdigest() == manifest.shards[name][1] if name in manifest.shards
-                    else blob_id(path.read_bytes()) == manifest.small[name][1])
-                if not ok:
-                    raise AcquireError('existing file differs from the pinned manifest (never overwritten): '+name)
-                verification[name] = dict(method='existing file re-hashed', computed_sha256=digest.hexdigest())
-                continue
-            digest, resumed, moved = transfer(transport, resolve(endpoint, manifest, name), destination, name,
-                                              manifest, guard, budget, opener=opener)
-            commit_file(destination, name, manifest, digest, committed)
-            verification[name] = dict(method='streamed' if not resumed else
-                                      ('complete .part re-hashed' if not moved else 'resumed .part re-hashed then streamed'),
-                                      resumed_from_bytes=resumed, transferred_bytes=moved,
-                                      computed_sha256=digest.hexdigest())
-        descriptor = dict(format='inwime-safetensors-bf16-v1', index='model.safetensors.index.json',
-                          index_sha256=hashlib.sha256((destination/'model.safetensors.index.json').read_bytes()).hexdigest(),
-                          files={n: dict(nbytes=manifest.shards[n][0], sha256=verification[n]['computed_sha256'])
-                                 for n in sorted(manifest.shards)})
-        provenance = dict(model=manifest.model, revision=manifest.revision, license=manifest.license,
-                          manifest_sha256=manifest.digest(),
-                          files={n: dict(nbytes=manifest.size(n), sha256=verification[n]['computed_sha256'])
-                                 for n in manifest.files()})
-        for fname, data in (('safetensors.json', descriptor), ('provenance.json', provenance)):
-            path = destination/fname
-            if path.exists():
-                if json.loads(path.read_text()) != data:
-                    raise AcquireError('existing descriptor differs (never overwritten): '+fname)
-            else:
-                with path.open('x') as f:
-                    json.dump(data, f, indent=2); f.write('\n')
+        try:
+            first = monitor.start()
+            report['host_monitor_start'] = first
+            if first['stop']:
+                raise HostPressureStop('host stop condition before the first payload request: '
+                                       + '; '.join(first['reasons']))
+            guard.monitor = monitor
+            files_loop(destination, manifest, transport, endpoint, guard, budget, opener, chunk, committed,
+                       verification)
+        except TransferStopped as error:
+            report.update(stopped=str(error), payload_bytes_transferred=budget['transferred'],
+                          host_monitor=monitor.summary(), utc_stop=now(),
+                          parts_retained={n: (destination/(n+'.part')).stat().st_size for n in manifest.files()
+                                          if (destination/(n+'.part')).exists()})
+            error.report = report
+            raise
+        finally:
+            monitor.close()
+        report['host_monitor'] = monitor.summary()
+        write_descriptors(destination, manifest, verification)
         report.update(verification=verification, committed=committed, payload_bytes_transferred=budget['transferred'],
                       minimum_free_during_transfer=guard.minimum_free, guard_checks=guard.checks,
                       free_after=guard.free(), utc_end=now(), requests=len(transport.log))
         return report
     finally:
         lock.unlink(missing_ok=True)
+
+
+def files_loop(destination, manifest, transport, endpoint, guard, budget, opener, chunk, committed, verification):
+    """Acquire every file in manifest order; existing final files are re-hashed, never trusted."""
+    for name in manifest.files():
+        path = destination/name
+        if path.exists():
+            digest, done = hash_file(path)
+            ok = done == manifest.size(name) and (
+                digest.hexdigest() == manifest.shards[name][1] if name in manifest.shards
+                else blob_id(path.read_bytes()) == manifest.small[name][1])
+            if not ok:
+                raise AcquireError('existing file differs from the pinned manifest (never overwritten): '+name)
+            verification[name] = dict(method='existing file re-hashed', computed_sha256=digest.hexdigest())
+            continue
+        digest, resumed, moved = transfer(transport, resolve(endpoint, manifest, name), destination, name,
+                                          manifest, guard, budget, opener=opener, chunk=chunk)
+        commit_file(destination, name, manifest, digest, committed)
+        verification[name] = dict(method='streamed' if not resumed else
+                                  ('complete .part re-hashed' if not moved else 'resumed .part re-hashed then streamed'),
+                                  resumed_from_bytes=resumed, transferred_bytes=moved,
+                                  computed_sha256=digest.hexdigest())
+
+
+def write_descriptors(destination, manifest, verification):
+    """safetensors.json and provenance.json, created once and never overwritten."""
+    descriptor = dict(format='inwime-safetensors-bf16-v1', index='model.safetensors.index.json',
+                      index_sha256=hashlib.sha256((destination/'model.safetensors.index.json').read_bytes()).hexdigest(),
+                      files={n: dict(nbytes=manifest.shards[n][0], sha256=verification[n]['computed_sha256'])
+                             for n in sorted(manifest.shards)})
+    provenance = dict(model=manifest.model, revision=manifest.revision, license=manifest.license,
+                      manifest_sha256=manifest.digest(),
+                      files={n: dict(nbytes=manifest.size(n), sha256=verification[n]['computed_sha256'])
+                             for n in manifest.files()})
+    for fname, data in (('safetensors.json', descriptor), ('provenance.json', provenance)):
+        path = destination/fname
+        if path.exists():
+            if json.loads(path.read_text()) != data:
+                raise AcquireError('existing descriptor differs (never overwritten): '+fname)
+        else:
+            with path.open('x') as f:
+                json.dump(data, f, indent=2); f.write('\n')
 
 
 def main(argv=None):
@@ -898,8 +960,18 @@ def main(argv=None):
             p.error('--execute requires --host-report and --host-baseline (fresh hostmem10 GO, profile download)')
         if a.metadata_dir is not None:
             p.error('--execute always re-verifies metadata online')
-        report = execute(a.destination, a.backing_volume, a.authorization, Gate(a.host_report, a.host_baseline),
-                         reserves=reserves, discard_rejected=a.discard_rejected)
+        from .hostmonitor10 import HostMonitor
+        try:
+            monitor = HostMonitor.for_acquisition(a.host_baseline, a.destination, a.backing_volume)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            raise AcquireError('in-run host monitor unavailable: '+str(error)) from error
+        try:
+            report = execute(a.destination, a.backing_volume, a.authorization, Gate(a.host_report, a.host_baseline),
+                             monitor, reserves=reserves, discard_rejected=a.discard_rejected)
+        except TransferStopped as error:
+            if getattr(error, 'report', None) is not None:
+                write_evidence(a.evidence, error.report)       # stop evidence, incl. monitor summary
+            raise
     else:
         if a.authorization is not None or a.discard_rejected:
             p.error('--authorization/--discard-rejected only apply to --execute')

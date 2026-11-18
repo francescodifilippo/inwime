@@ -297,7 +297,7 @@ def amendment():
 def test_repository_chain_verifies():
     result = protocol10.check()
     assert result['passed'], result['problems']
-    assert result['amendments'] == [AMENDMENT.name]
+    assert result['amendments'][0] == AMENDMENT.name     # later amendments extend the chain
 
 
 def test_amendment_moves_no_threshold_and_keeps_every_required_test():

@@ -249,3 +249,8 @@ in `results/increment10/amendments/`, con catena di SHA verificata da
   in `hostmem10`, verifica CI dell'inventario con test non verificabili sul runner
   dichiarati (mai PASS) e attestazione locale separata; inventario emendato
   `test-inventory-a001.json` (1135 node ID). Soglie e criteri invariati.
+- [002](AMENDMENT_INCREMENT_10_002.md) (18/11, review della PR #24 a `e8c588f`):
+  monitor host read-only in-run (`tools/hostmonitor10.py`) che applica durante il
+  trasferimento i criteri di arresto congelati (§8), con stop cooperativo, `.part`
+  conservati e ripresa solo dopo un nuovo GO; inventario `test-inventory-a002.json`
+  (1180 node ID). Soglie, sustain e azioni invariati.

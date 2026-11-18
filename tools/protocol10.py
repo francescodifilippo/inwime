@@ -374,7 +374,11 @@ def build(inventory_path):
 AMENDMENT_SCHEMA = 'inwime-protocol-m10-amendment/1'
 # What an amendment may change. Start/abort criteria, numerical thresholds, workload, verdict rules
 # and the frozen inventory are rebuilt from code and compared with the frozen protocol: they cannot move.
-AMENDABLE = {'pinned_tools_sha256', 'test_inventory', 'acquisition_host_gate', 'ci_runner_verification'}
+AMENDABLE = {'pinned_tools_sha256', 'test_inventory', 'acquisition_host_gate', 'ci_runner_verification',
+             'acquisition_host_monitor'}
+# Acquisition meaning of the frozen abort actions (amendment 002): only the I/O-attribution criterion
+# may stay an annotation; every pause/kill/stop action must stop the transfer.
+ANNOTATE_ONLY_ACTIONS = {'annotate-io-attribution-invalid'}
 
 
 def amendment_files(directory=R10/'amendments'):
@@ -391,14 +395,14 @@ def effective(protocol_path=R10/'protocol.json', directory=None):
     directory = Path(protocol_path).parent/'amendments' if directory is None else directory
     out = dict(pinned_tools_sha256=dict(p['pinned_tools_sha256']),
                test_inventory=dict(path=p['test_inventory']['path'], sha256=p['test_inventory']['sha256']),
-               acquisition_host_gate=None, ci_runner_verification=None, amendments=[])
+               acquisition_host_gate=None, ci_runner_verification=None, acquisition_host_monitor=None, amendments=[])
     for path in amendment_files(directory):
         changes = json.loads(path.read_text()).get('changes') or {}
         for tool, change in (changes.get('pinned_tools_sha256') or {}).items():
             out['pinned_tools_sha256'][tool] = change['to']
         if 'test_inventory' in changes:
             out['test_inventory'] = dict(changes['test_inventory']['to'])
-        for key in ('acquisition_host_gate', 'ci_runner_verification'):
+        for key in ('acquisition_host_gate', 'ci_runner_verification', 'acquisition_host_monitor'):
             if key in changes:
                 out[key] = changes[key]
         out['amendments'].append(path.name)
@@ -457,6 +461,19 @@ def check_amendments(raw, p, directory, root=ROOT):
                   and 0 < gate['interval_tolerance'][0] <= 1 <= gate['interval_tolerance'][1])
             if not ok:
                 problems.append(f'amendment {path.name}: acquisition_host_gate malformed')
+        monitor = changes.get('acquisition_host_monitor')
+        if monitor is not None:
+            actions = {c['action'] for c in p['host_memory_preflight']['abort_criteria']}
+            mapping = monitor.get('action_mapping') or {}
+            ints = ('sample_interval_s', 'max_unmonitored_s', 'startup_timeout_s', 'max_line_bytes',
+                    'max_samples_kept', 'max_errors_kept', 'max_annotations')
+            ok = (all(type(monitor.get(k)) is int and monitor[k] > 0 for k in ints)
+                  and monitor['sample_interval_s'] < monitor['max_unmonitored_s']
+                  and set(mapping) == actions
+                  and all(v == 'stop' or (v == 'annotate' and a in ANNOTATE_ONLY_ACTIONS) for a, v in mapping.items())
+                  and monitor.get('criteria') == 'host_memory_preflight.abort_criteria')
+            if not ok:
+                problems.append(f'amendment {path.name}: acquisition_host_monitor malformed or weakens an abort action')
         ci = changes.get('ci_runner_verification')
         if ci is not None:
             unverifiable = ci.get('not_verifiable_on_runner') or {}
