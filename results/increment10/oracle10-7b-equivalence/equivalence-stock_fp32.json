@@ -1,0 +1,99 @@
+{
+  "contract": "stock_fp32",
+  "head_mode": "resident",
+  "block_rows": 16384,
+  "rule": "bit identity (resident FP32 head, same F.linear as nn.Linear)",
+  "coverage": "PARTIAL",
+  "coverage_detail": "embedding gather + final norm + head on every recorded call; decoder layers not re-run (covered on fixtures by check_oracle10)",
+  "embedding_rows_compared": 8,
+  "embedding_rows_bit_identical": true,
+  "calls": [
+    {
+      "tokens": [
+        785,
+        6722,
+        315,
+        9625,
+        374
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        12095
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        13
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        1084
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    }
+  ],
+  "logits_elements_compared": 1216512,
+  "passed": true,
+  "wall_s": 9.043566284992266,
+  "memory_plan": {
+    "dtype": "float32",
+    "head_mode": "resident",
+    "block_rows": 16384,
+    "tokens": 8,
+    "components": {
+      "overhead": 1073741824,
+      "layer": 0,
+      "head": 2297430016,
+      "embedding": 172032,
+      "outputs": 23773184,
+      "activations": 9728000
+    },
+    "planned_peak_bytes": 3404845056,
+    "full_head_in_dtype_bytes": 2179989504,
+    "full_embedding_in_dtype_bytes": 2179989504,
+    "largest_layer_matrix_in_dtype_bytes": 271581184,
+    "note": "estimate; measured peak RSS is reported next to it"
+  },
+  "memory_budget_bytes": 4294967296,
+  "peak_rss_bytes": 3779825664,
+  "head_rows_read": 608256,
+  "source_bf16_bytes_read": 4360065024,
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5"
+  },
+  "capture": "artifacts/increment9/oracle-stock_fp32.npz",
+  "capture_sha256": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef",
+  "checkpoint": "checkpoints/qwen2.5-7b-d149729",
+  "checkpoint_revision": "d149729398750b98c0af14eb82c78cfe92750796",
+  "sequence": [
+    785,
+    6722,
+    315,
+    9625,
+    374,
+    12095,
+    13,
+    1084
+  ],
+  "chunks": [
+    5,
+    1,
+    1,
+    1
+  ],
+  "threads": 2
+}

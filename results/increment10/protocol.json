@@ -1,0 +1,725 @@
+{
+ "schema": "inwime-protocol-m10/1",
+ "protocol_version": 1,
+ "increment": 10,
+ "status": "preregistered before any increment-10 download, run or oracle on the 14B checkpoint",
+ "base_commit": "639de22ed7e30a796b831595cd0f9823d585de16",
+ "separate_from": "results/increment9/protocol.json (unchanged)",
+ "classification": {
+  "capacity": "installed or configured size (RAM, DIMM, MemTotal, volume size)",
+  "observation": "measured state at a stated time; may change",
+  "estimate": "derived by declared arithmetic or assumed; never reported as a measurement"
+ },
+ "amendment_policy": {
+  "rule": "protocol.json and the test inventory are never edited after freezing; changes are new files results/increment10/amendments/NNN-<slug>.json with reason, author, UTC time and the SHA256 of protocol.json and of the previous amendment",
+  "forbidden": [
+   "widening a numerical threshold after any measurement",
+   "removing or renaming a required test",
+   "reclassifying a FAIL"
+  ],
+  "protocol_sha256_file": "results/increment10/protocol.sha256"
+ },
+ "checkpoint": {
+  "model": "Qwen/Qwen2.5-14B",
+  "variant": "base (not Instruct: Instruct uses rms_norm_eps 1e-6)",
+  "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+  "license": "apache-2.0",
+  "gated": false,
+  "acquisition_tool": "tools/acquire10.py",
+  "acquisition_manifest_sha256": "69a3c92cb3f274f077b29838380974de21c51d77f31b0ba21c6aeceeb5df84cd",
+  "shards": {
+   "model-00001-of-00008.safetensors": {
+    "nbytes": 3885134104,
+    "lfs_sha256": "e015e2bc9a26b4e46d77913d8c667608ae7e48aa1eca04af5786c2408f4bc0fa",
+    "header_sha256": "b8a9bb6fed05e00312ee49fcc294baac74ba7af94337be6a8978135c25c41be1"
+   },
+   "model-00002-of-00008.safetensors": {
+    "nbytes": 3995327992,
+    "lfs_sha256": "e7efa1adc8257218813dcb494bb2a3d5775fa268735ab39e5b8119e233c21462",
+    "header_sha256": "1eab343927d487c3d12856938b4582f4dd9a4a08f123fd105fc8a3568bffbf3f"
+   },
+   "model-00003-of-00008.safetensors": {
+    "nbytes": 3995328064,
+    "lfs_sha256": "68127c9bc4fab170f7aaf63d5c7ac9e182afd10b74a1c6bb8025afefc11447cb",
+    "header_sha256": "6671aca470735a98bfc64b489b89641e9d4d2428e3f554a689b860ec0b8c78b8"
+   },
+   "model-00004-of-00008.safetensors": {
+    "nbytes": 3995348776,
+    "lfs_sha256": "7250708a789da850ff40a4a5be335971dfa0d2bd7cba2e9905916dab06744d75",
+    "header_sha256": "c75f9185e6258940c5d7fa28297a1a92720b5f524651947c42e3edfcc73630b2"
+   },
+   "model-00005-of-00008.safetensors": {
+    "nbytes": 3979614448,
+    "lfs_sha256": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e",
+    "header_sha256": "0447cdb3a415069c428ed4394c75a6d94a069ff46a1d2175a1ff89a882a9887c"
+   },
+   "model-00006-of-00008.safetensors": {
+    "nbytes": 3995328064,
+    "lfs_sha256": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180",
+    "header_sha256": "765cb81a9f2c825475b607c7b54719c131ead0232741c10ed2dd901ead77afae"
+   },
+   "model-00007-of-00008.safetensors": {
+    "nbytes": 3995328064,
+    "lfs_sha256": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba",
+    "header_sha256": "42cda7e1576abc459afdc432b8da4dd632c399bd83aa192a162c22a12b18bf24"
+   },
+   "model-00008-of-00008.safetensors": {
+    "nbytes": 1698724408,
+    "lfs_sha256": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f",
+    "header_sha256": "423a48781d74000ab9b3e53999732f870f7aac17eadea70bfe0a2ad363405006"
+   }
+  },
+  "shard_bytes": 29540133920,
+  "download_total_bytes": 29551684877,
+  "payload_bytes": 29540067328,
+  "tensor_count": 579,
+  "dtypes": [
+   "BF16"
+  ],
+  "parameters": 14770033664,
+  "layers_split_across_shards": [
+   4,
+   11,
+   18,
+   33,
+   40,
+   47
+  ],
+  "tokenizer": "identical Git blobs to the verified local Qwen2.5-7B tokenizer (preflight 2.1)",
+  "destination": "checkpoints/qwen2.5-14b-97e1e76 (internal ext4 on the WSL VHDX, physical volume C:)",
+  "integrity": "SHA256 computed while streaming (acquire10) == official LFS digest; runtime full SHA at start of R1-R3; final re-hash with tools/integrity9.py",
+  "class": "observation (official metadata captured 2026-11-18, results/increment10/preflight-metadata)"
+ },
+ "model_geometry": {
+  "hidden_size": 5120,
+  "intermediate_size": 13824,
+  "num_hidden_layers": 48,
+  "num_attention_heads": 40,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 1000000.0,
+  "vocab_size": 152064,
+  "tie_word_embeddings": false,
+  "use_sliding_window": false,
+  "gqa_ratio": 5,
+  "head_dim": 128,
+  "new_vs_7b": [
+   "GQA 5:1",
+   "rms_norm_eps 1e-5",
+   "48 layers"
+  ],
+  "synthetic_coverage": "tools/fixture_qwen10.py, tests/test_increment10_fixture.py"
+ },
+ "workload": {
+  "prompt_text": "The capital of France is",
+  "prompt_token_ids": [
+   785,
+   6722,
+   315,
+   9625,
+   374
+  ],
+  "prefill_tokens": 5,
+  "decodes": 3,
+  "decode_rule": "greedy token from the runtime logits, fed back even if it is EOS (151643)",
+  "chunks": [
+   5,
+   1,
+   1,
+   1
+  ],
+  "capacity": 16,
+  "tile_elements": 262144,
+  "integrity": "full",
+  "kernel": "c-fp64-ordered (build/libinwime_cpu.so from src/cpu_kernel.c)",
+  "runtime_change": "none: inwime_runtime/ and src/ must equal base_commit"
+ },
+ "active_weights": {
+  "class": "estimate (derived from the official headers; recomputed by tools/protocol10.py)",
+  "unique_bytes_without_embedding": 27982931968,
+  "embedding_row_bytes": 10240,
+  "unique_bytes_5_distinct_rows": 27982983168,
+  "unique_bytes_8_distinct_rows": 27983013888,
+  "logical_bytes_per_token": 27982942208,
+  "logical_bytes_8_positions": 223863537664,
+  "gemv_matrices_per_token": 337,
+  "gemv_coefficients_per_token": 13990625280,
+  "gemv_coefficients_8_positions": 111925002240,
+  "versus_host_ram": {
+   "total_physical_memory": 16900739072,
+   "installed_dimm": 17179869184,
+   "ratio_lower_bound": 1.6557
+  },
+  "versus_wsl_memtotal": {
+   "memtotal": 11483848704,
+   "ratio_lower_bound": 2.4367
+  },
+  "not_claimed": "larger than host RAM + pagefile (51.7 GB): irrelevant, weights are file pages"
+ },
+ "memory": {
+  "host_total_physical_memory": {
+   "value": 16900739072,
+   "class_": "capacity",
+   "source": "Win32_ComputerSystem, 2026-11-18"
+  },
+  "host_installed_dimm_bytes": {
+   "value": 17179869184,
+   "class_": "capacity",
+   "source": "Win32_PhysicalMemory, 2026-11-18"
+  },
+  "wsl_memtotal": {
+   "value": 11483848704,
+   "class_": "capacity",
+   "source": ".wslconfig memory=11GB (read only, unchanged)"
+  },
+  "wsl_swap": {
+   "value": 8589934592,
+   "class_": "capacity",
+   "source": ".wslconfig swap=8GB (unchanged)"
+  },
+  "host_available_at_rest": {
+   "value": [
+    648921088,
+    768126976
+   ],
+   "class_": "observation",
+   "source": "Win32_PerfRawData_PerfOS_Memory, 2026-11-18 07:00-08:40 CET"
+  },
+  "host_pagefile_in_use": {
+   "value_mib": [
+    7002,
+    8639
+   ],
+   "class_": "observation",
+   "source": "Win32_PageFileUsage, 2026-11-18 (8639 after the 7B component checks)"
+  },
+  "no_changes": [
+   "no .wslconfig, swap, pagefile, sysctl, drop_caches or Windows setting is modified"
+  ]
+ },
+ "memory_limits": {
+  "scope": {
+   "mechanism": "systemd-run --user --scope (transient, delegated user manager)",
+   "memory_max_bytes": 2147483648,
+   "swap_max_bytes": 0,
+   "oom_policy": "continue"
+  },
+  "plan_bytes": {
+   "sync": 80543216,
+   "pipeline": 83189502,
+   "class_": "observation: unchanged Qwen2Runtime.minimum_plan on sparse copies of the official headers (preflight 3.1; re-run by test_increment10_fixture)"
+  },
+  "rlimit_as_bytes": {
+   "sync": 268435456,
+   "pipeline": 402653184
+  },
+  "anon_plus_kernel_max_bytes": 268435456,
+  "vmhwm_max_bytes": 268435456,
+  "derivation": {
+   "m9_7b_sync_vmpeak": 142110720,
+   "m9_7b_pipeline_vmpeak": 217624576,
+   "m9_7b_sync_plan": 43658344,
+   "m9_7b_pipeline_plan": 46304630,
+   "estimated_14b_sync_vmpeak": 178995592,
+   "estimated_14b_pipeline_vmpeak": 254509448,
+   "rule": "VmPeak(14B) = VmPeak(7B, M9) + plan(14B) - plan(7B); same code path, so the remaining address space (interpreter, ctypes kernel, thread stack and arena) is unchanged",
+   "margin_sync_at_256MiB": 89439864,
+   "margin_pipeline_at_256MiB": 13926008,
+   "margin_pipeline_at_384MiB": 148143736,
+   "glibc_arena_alignment_transient_bytes": 67108864,
+   "estimated_14b_pipeline_vmpeak_worst_case": 321618312,
+   "margin_pipeline_worst_case_at_384MiB": 81034872,
+   "transient_observation": "the I/O thread arena is created by mapping 2 x 64 MiB and trimming to an aligned 64 MiB: VmPeak may include a transient 64 MiB that VmSize never keeps. Structural pipeline overhead measured 72.9 MB on the 7B (M9) and 136 MiB on the fixture (2026-11-18, tests/test_increment10_limits.py)",
+   "why_384": "at 256 MiB the pipeline keeps < 14 MB of address space, and the worst-case arena transient does not fit: a spurious MemoryError or a degraded arena, not a numerical error, would decide the run. 384 MiB keeps > 140 MiB (> 77 MiB in the worst case). RLIMIT_AS is a safety net, not the memory measurement: anon+kernel and VmHWM stay bounded at 256 MiB and the 2 GiB scope is the real limit",
+   "synthetic_tests": [
+    "tests/test_increment10_limits.py::test_derivation_recomputed_from_m9_evidence",
+    "tests/test_increment10_limits.py::test_pipeline_overhead_is_structural_and_runs_under_limits"
+   ],
+   "class": "estimate"
+  }
+ },
+ "numerical_contract": {
+  "thresholds": {
+   "fp32": {
+    "atol": 0.002,
+    "rtol": 0.0002
+   },
+   "fp64": {
+    "atol": 2e-05,
+    "rtol": 2e-06
+   },
+   "rule": "abs(err) <= atol + rtol*abs(ref) for every element; never widened"
+  },
+  "contracts": {
+   "stock_fp32": "gating: upstream Transformers in FP32",
+   "full64": "gating: upstream graph with RMSNorm, RoPE and softmax in FP64 (profile 7/9)",
+   "stock_fp64": "diagnostic: reported raw; an expected FAIL is never rewritten"
+  },
+  "coverage_full": {
+   "logits": 1216512,
+   "residuals": 1966080,
+   "kv_final": 786432,
+   "kv_per_phase_runtime": 2555904,
+   "also": "argmax and top-10 of every position; upstream greedy equals the runtime continuation",
+   "kv_rule": "the oracle K/V after the last call are compared element-wise; the runtime per-phase K/V (lengths 5,6,7,8) must be byte-identical prefixes of the final K/V"
+  },
+  "coverage_classes": {
+   "FULL": "every element above compared",
+   "PARTIAL": "subset or missing kind",
+   "STRUCTURAL": "shapes, digests, argmax only",
+   "NOT PROVEN": "nothing usable",
+   "rule": "F is PASS only with FULL coverage on both gating contracts (tools/compare10.py)"
+  },
+  "fp32_risk": "if stock_fp32 fails while full64 passes, F is FAIL; per-layer threshold utilization reported",
+  "oracle10": {
+   "tool": "tools/oracle10.py",
+   "independence": "no InWiMe import (static test); only token IDs from the runtime",
+   "versions": {
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "safetensors": "0.7.0",
+    "numpy": "2.3.5"
+   },
+   "contracts": {
+    "stock_fp32": {
+     "dtype": "float32",
+     "head_mode": "resident",
+     "block_rows": 16384
+    },
+    "full64": {
+     "dtype": "float64",
+     "head_mode": "blocked",
+     "block_rows": 16384
+    },
+    "stock_fp64": {
+     "dtype": "float64",
+     "head_mode": "blocked",
+     "block_rows": 16384
+    }
+   },
+   "memory_budget_bytes": 5368709120,
+   "scope_memory_max_bytes": 6442450944,
+   "scope_swap_max_bytes": 0,
+   "guest_mem_available_min_bytes": 6979321856,
+   "head_policy": "blocked F.linear is not bit-identical to a full one in general (BLAS tail kernels; fixture: FP32 1.9e-6, FP64 4.4e-15): stock_fp32 keeps the full FP32 head (3.11 GB), bit-identical by construction; the FP64 head is never materialized",
+   "equivalence": {
+    "fixtures": "bit identity with stock from_pretrained (residuals, K/V, FP32 logits); FP64 logits max |delta| <= 1e-9 with identical argmax (tools/check_oracle10.py)",
+    "7b_components": "embedding gather and final norm + head on the M9 captures (tools/equivalence10.py): executed 2026-11-18, PARTIAL coverage, see oracle10-7b-equivalence/",
+    "7b_end_to_end_prerequisite": "before any 14B oracle: oracle10 on Qwen2.5-7B with the M9 sequence and chunks against artifacts/increment9/oracle-*.npz. stock_fp32: logits, residuals and K/V bit-identical; full64/stock_fp64: residuals and K/V bit-identical, logits max |delta| <= 1e-9, identical argmax. Failure makes the corresponding 14B contract NOT PROVEN",
+    "cost_estimate": "about 7 min and 60 GB of reads per contract (M9 oracle wall time); estimate"
+   }
+  }
+ },
+ "fault_injection": [
+  {
+   "id": "N1",
+   "fault": "I/O error",
+   "modes": [
+    "sync",
+    "pipeline"
+   ],
+   "target": "14B real, integrity=metadata, RLIMIT_AS per mode"
+  },
+  {
+   "id": "N2",
+   "fault": "short read",
+   "modes": [
+    "sync",
+    "pipeline"
+   ],
+   "target": "14B real"
+  },
+  {
+   "id": "N3",
+   "fault": "cancellation",
+   "modes": [
+    "sync",
+    "pipeline"
+   ],
+   "target": "14B real"
+  },
+  {
+   "id": "N4",
+   "fault": "budget reduced by 1 byte",
+   "target": "14B real: refused before payload"
+  },
+  {
+   "id": "N5",
+   "fault": "wrong SHA256 / file changed after open",
+   "target": "fixture"
+  },
+  {
+   "id": "N6",
+   "fault": "OOM in a 32 MiB scope",
+   "target": "SmolLM2-1.7B (local)"
+  },
+  {
+   "id": "N7",
+   "fault": "worker outside the scope",
+   "target": "supervisor check"
+  },
+  {
+   "id": "N8",
+   "fault": "mutations of attribution (W as C) and of criterion D (7B bytes, missing RAM, MemTotal as RAM)",
+   "target": "gate"
+  },
+  {
+   "id": "N9",
+   "fault": "perturbed weight / wrong epsilon",
+   "target": "oracle sensitivity (check_oracle10)"
+  },
+  {
+   "id": "N10",
+   "fault": "space guard, interrupted transfer, ignored Range, wrong digest",
+   "target": "acquire10 tests"
+  }
+ ],
+ "rollback": {
+  "repository": "dedicated branch, additive files only; revert or abandon; no force push",
+  "download": ".part retained for resume or removed only by acquire10 --clean-temporaries (owned files)",
+  "checkpoint": "deletion (29.55 GB) is the owner's decision; C: measured after any deletion (sparse VHDX reclaim not proven)",
+  "runs": "transient scopes with --collect; no residual units/processes; targeted eviction of experiment files only",
+  "evidence": "sanitized at write time; a FAIL is never fixed by changing thresholds or runtime inside M10"
+ },
+ "io_protocol": {
+  "runs": [
+   {
+    "id": "R1",
+    "cache": "C",
+    "mode": "sync",
+    "captures": "full",
+    "purpose": "primary"
+   },
+   {
+    "id": "R2",
+    "cache": "C",
+    "mode": "pipeline",
+    "captures": "digest",
+    "purpose": "byte identity with R1"
+   },
+   {
+    "id": "R3",
+    "cache": "C",
+    "mode": "sync",
+    "captures": "digest",
+    "purpose": "repetition"
+   },
+   {
+    "id": "R4",
+    "cache": "W",
+    "mode": "sync",
+    "captures": "digest",
+    "purpose": "informative only"
+   }
+  ],
+  "cold_definition": "C = cold guest: experiment files evicted (POSIX_FADV_DONTNEED) and residency <= 1 % per shard by fincore before start. Not cold NAND: Windows, controller and SSD caches are not controlled; L4 shows whether the host could have served the reads",
+  "warm_definition": "W = as-is immediately after a C run; informative, never used for C/D",
+  "counters": {
+   "L0": "logical bytes per tensor (runtime)",
+   "L1": "/proc/PID/io read_bytes",
+   "L2": "scope memory.stat, events, PSI",
+   "L3": "/sys/block/<dev>/stat of the VHDX disk",
+   "L4": "Windows physical disk raw read counter (global)",
+   "L4b": "host AvailableBytes, PagesInput/Output, pagefile usage (tools/hostmem10.py)",
+   "io.stat": "not available: io controller not delegated (declared)"
+  },
+  "attribution_rules": [
+   "L1 >= 0.90 * L0 on inference and every decode of a C run",
+   "delta L3 >= L1",
+   "delta L4 >= 0.90 * L1 when readable (global counter: never equality)",
+   "host PagesInput sustained > 2048 pages/s during a run: I/O attribution of that run is invalid (condition C NOT PROVEN for it); numerical results kept"
+  ],
+  "records": [
+   "UTC times",
+   "AC power and power plan",
+   "process list",
+   "temperatures NOT MEASURED unless readable without elevation"
+  ]
+ },
+ "host_memory_preflight": {
+  "tool": "tools/hostmem10.py (read only)",
+  "interval_s": 30,
+  "baseline": "a hostmem10 report taken at the start of the campaign session, before the first run; every later start check passes it as --baseline",
+  "start_criteria": {
+   "download": [
+    {
+     "quantity": "host_available_bytes",
+     "op": ">=",
+     "threshold": 536870912,
+     "required": true
+    },
+    {
+     "quantity": "host_commit_headroom_bytes",
+     "op": ">=",
+     "threshold": 2147483648,
+     "required": true
+    },
+    {
+     "quantity": "host_pages_input_per_s",
+     "op": "<=",
+     "threshold": 1024,
+     "required": true
+    },
+    {
+     "quantity": "host_pagefile_growth_since_baseline",
+     "op": "<=",
+     "threshold": 1073741824,
+     "required": true
+    },
+    {
+     "quantity": "guest_mem_available",
+     "op": ">=",
+     "threshold": 2147483648,
+     "required": true
+    },
+    {
+     "quantity": "guest_swap_growth_since_baseline",
+     "op": "<=",
+     "threshold": 268435456,
+     "required": true
+    },
+    {
+     "quantity": "backing_volume_free",
+     "op": ">=",
+     "threshold": 72329391373,
+     "required": true
+    }
+   ],
+   "runtime": [
+    {
+     "quantity": "host_available_bytes",
+     "op": ">=",
+     "threshold": 1073741824,
+     "required": true
+    },
+    {
+     "quantity": "host_commit_headroom_bytes",
+     "op": ">=",
+     "threshold": 3221225472,
+     "required": true
+    },
+    {
+     "quantity": "host_pages_input_per_s",
+     "op": "<=",
+     "threshold": 256,
+     "required": true
+    },
+    {
+     "quantity": "host_pages_output_per_s",
+     "op": "<=",
+     "threshold": 256,
+     "required": true
+    },
+    {
+     "quantity": "host_pagefile_growth_since_baseline",
+     "op": "<=",
+     "threshold": 536870912,
+     "required": true
+    },
+    {
+     "quantity": "guest_mem_available",
+     "op": ">=",
+     "threshold": 3221225472,
+     "required": true
+    },
+    {
+     "quantity": "guest_swap_growth_since_baseline",
+     "op": "<=",
+     "threshold": 268435456,
+     "required": true
+    },
+    {
+     "quantity": "guest_psi_memory_some_avg10",
+     "op": "<=",
+     "threshold": 1.0,
+     "required": true
+    },
+    {
+     "quantity": "backing_volume_free",
+     "op": ">=",
+     "threshold": 42949672960,
+     "required": true
+    }
+   ],
+   "oracle": [
+    {
+     "quantity": "host_available_bytes",
+     "op": ">=",
+     "threshold": 1073741824,
+     "required": true
+    },
+    {
+     "quantity": "host_commit_headroom_bytes",
+     "op": ">=",
+     "threshold": 7516192768,
+     "required": true
+    },
+    {
+     "quantity": "host_pages_input_per_s",
+     "op": "<=",
+     "threshold": 256,
+     "required": true
+    },
+    {
+     "quantity": "host_pagefile_growth_since_baseline",
+     "op": "<=",
+     "threshold": 536870912,
+     "required": true
+    },
+    {
+     "quantity": "guest_mem_available",
+     "op": ">=",
+     "threshold": 6979321856,
+     "required": true
+    },
+    {
+     "quantity": "guest_swap_growth_since_baseline",
+     "op": "<=",
+     "threshold": 268435456,
+     "required": true
+    },
+    {
+     "quantity": "guest_psi_memory_some_avg10",
+     "op": "<=",
+     "threshold": 1.0,
+     "required": true
+    },
+    {
+     "quantity": "backing_volume_free",
+     "op": ">=",
+     "threshold": 42949672960,
+     "required": true
+    }
+   ]
+  },
+  "abort_criteria": [
+   {
+    "quantity": "host_available_bytes",
+    "op": ">=",
+    "threshold": 300000000,
+    "required": true,
+    "sustain_s": 10,
+    "action": "pause-and-annotate"
+   },
+   {
+    "quantity": "guest_mem_available",
+    "op": ">=",
+    "threshold": 805306368,
+    "required": true,
+    "action": "kill-scope-invalidate-run"
+   },
+   {
+    "quantity": "host_pagefile_growth_since_baseline",
+    "op": "<=",
+    "threshold": 4294967296,
+    "required": true,
+    "action": "pause-and-annotate"
+   },
+   {
+    "quantity": "host_commit_headroom_bytes",
+    "op": ">=",
+    "threshold": 1073741824,
+    "required": true,
+    "action": "kill-scope-invalidate-run"
+   },
+   {
+    "quantity": "host_pages_input_per_s",
+    "op": "<=",
+    "threshold": 2048,
+    "required": true,
+    "sustain_s": 30,
+    "action": "annotate-io-attribution-invalid"
+   },
+   {
+    "quantity": "backing_volume_free",
+    "op": ">=",
+    "threshold": 42949672960,
+    "required": true,
+    "action": "stop-acquisition-retain-part"
+   }
+  ],
+  "verdicts": {
+   "GO": "every start criterion measured and satisfied",
+   "DEFER": "a measured value violates a start criterion: postpone, record blocked-host-memory-*.json",
+   "NOT MEASURED": "a required value is unreadable: do not start (BLOCKED with cause)"
+  },
+  "observation_2026_11_18": "host AvailableBytes 0.65-1.03 GB at rest: runtime and oracle profiles would be DEFER; the 7B component checks (peak RSS 3.8 GB in a 4.5 GiB scope) raised the pagefile from 7089 to 8639 MiB. A first hostmem10 revision launched one powershell.exe per sample and counted its start-up page-ins in the interval (8456 pages/s observed); the frozen revision takes both samples in one process (superseded reports kept in preflight-tooling/superseded-before-refreeze/)",
+  "sampling": "one powershell.exe process takes both samples (Start-Sleep inside), so its start-up is not counted in the paging rates; guest values are read just before and just after it",
+  "class": "thresholds are policy decisions (estimates), not measured capacities"
+ },
+ "space": {
+  "class": "observation (C: free) + estimate (reserves)",
+  "required_free_before_download": 72329391373,
+  "reserves": {
+   "fixed_margin": 34359738368,
+   "temporary": 0,
+   "verification": 0,
+   "rollback": 0,
+   "evidence": 1073741824,
+   "swap_growth": 7344226304,
+   "stop_threshold": 42949672960,
+   "check_interval": 268435456
+  },
+  "stop_threshold_during_download": 42949672960,
+  "note": "the ext4 VHDX free space (892 GB apparent) is never used for decisions; C: is the physical limit"
+ },
+ "verdicts": {
+  "PASS": "every required fact present, typed and recomputed from raw data",
+  "FAIL": "a fact contradicts the criterion, or invalid JSON / wrong field type",
+  "NOT PROVEN": "evidence or field missing, or partial coverage, after the attempt",
+  "BLOCKED": "not attempted because of an external precondition recorded in blocked-*.json with cause and UTC time: download not authorized, space below threshold, host DEFER/NOT MEASURED, mount missing",
+  "precedence": [
+   "FAIL",
+   "BLOCKED",
+   "NOT PROVEN",
+   "PASS"
+  ],
+  "mixed_rule": "a missing field and a contradicted field in the same check give FAIL (Issue #22 residual)",
+  "blocked_without_cause_file": "NOT PROVEN"
+ },
+ "gate_conditions": {
+  "A": "integrity: acquisition SHA, runtime start SHA (R1-R3) and final re-hash equal the pinned LFS digests",
+  "B": "memory: 2 GiB scope, swap 0, memory.peak <= limit, oom = oom_kill = 0, anon+kernel <= 256 MiB, VmSwap 0, RLIMIT_AS per mode recorded",
+  "C": "I/O attribution rules on R1-R3; residency <= 1 % after eviction",
+  "D": "unique bytes from counters > max(TotalPhysicalMemory, DIMM) measured in the same run, and > MemTotal, equal to the header recomputation, on a C run that really read",
+  "E": "prefill 5 + 3 decodes, 48 layers, 579 tensor counters = shape x 8 (embedding rows exact), gemv coefficients for 8 positions, KV 5/6/7/8, sync/pipeline digests identical",
+  "F": "stock_fp32 and full64 PASS on FULL coverage, oracle10 7B end-to-end equivalence PASS, stock_fp64 raw",
+  "G": "every run supervised, no unattributed OOM, guest swap growth <= 256 MiB, host recorded (L4b)",
+  "H": "pinned inventory verified on the archived JUnit (tools/inventory10.py verify), gates 7/8/9 PASS, inwime_runtime/ and src/ unchanged since base_commit, no pre-existing file modified"
+ },
+ "stop_conditions": [
+  "decode above 80 s/token: pause, investigate thermals and I/O",
+  "guest MemAvailable < 768 MiB: cgroup.kill of the scope only; run invalidated and kept",
+  "host AvailableBytes < 300 MB for more than 10 s: pause, annotated",
+  "host pagefile growth > 4 GiB since baseline: pause, annotated",
+  "unplanned oom_kill: FAIL recorded",
+  "C: free < 40 GiB during acquisition: stop, .part retained",
+  "no repetition until pass: every run, red or pilot, is kept"
+ ],
+ "test_inventory": {
+  "path": "results/increment10/test-inventory.json",
+  "sha256": "12a67e3754f2ba1ddb2d3346102b679f0454d9dbd501f4ac93c98f789d3c6553",
+  "baseline_node_ids_at_base": 910,
+  "total_node_ids": 1053
+ },
+ "pinned_tools_sha256": {
+  "tools/acquire10.py": "b762717ac6c40ff9360743dc676691909098c8e8e7e6b099c01932c7a74d8cf1",
+  "tools/hostmem10.py": "8d95fa5d4cbfd3b35fcdf5722b81b29daf0c7382f9ca2488285a607595f79084",
+  "tools/oracle10.py": "86e262b1e7069a334db862e0a880571c61a1b8df7dbc44d86dc3cc448a7cdd3c",
+  "tools/oracle10_plan.py": "211b9fc497cdc0989f883b1f9b8ba7d32dc992efef47aacff5d1297e090cf24b",
+  "tools/compare10.py": "9c9df41668f882acb475b6ba6533e2ee53845c06bda9f8cf56138fbc2931fc13",
+  "tools/equivalence10.py": "c6abc3f90651b8098f2592519e34541802bce20ff15d9e2d8bcfaf7ccc68adce",
+  "tools/check_oracle10.py": "bdbd9f1177160085fb86a0ad7e68f72d70490d4670da5873d52b3f13a0f20c4b",
+  "tools/inventory10.py": "72a4915ab1aae47343c1fd105c906f0c5c7360413c8383758b694d4cb514a456",
+  "tools/fixture_qwen10.py": "49889f04323fa8a1cd98721827b28742621fb6fdd667ef63080dbb5f58354c3b",
+  "tools/protocol10.py": "e621ba4430bea3098b9f3a87239966d2773bfd4bd6370a91a38cc85f0ce30bd7",
+  "tools/cgroup9.py": "6257344744f8ceffd8d83b9bb150956bed51ff9d51f1f8b64d9a8a0f74a57476",
+  "tools/cgroup9_finalize.sh": "b3446ba58c1fab434fd0123608861add4cdb574a00b5b8900a775be434f36db7",
+  "tools/benchmark_increment9.py": "0141acce864d151c64847bd67e46e645059a7cfcfbfc01450b90d487e2c528e3",
+  "tools/oracle_precision9.py": "5fab8921eed524c6d51d488c2153a3d1b2830dbdb184d725c4ecba599afa7955",
+  "tools/oracle_precision7.py": "e555b77d4c121863882ee64e66dba5a15735b05660daced35a7780a35822a896",
+  "tools/integrity9.py": "80ba7443cd12bacea46a1da1daca5ba75e1c24ebaad62f5b40a412dc39c28a08",
+  "src/cpu_kernel.c": "0128a24debf54a1aed735e7a3530d40a3c1fd927250f4f03ccbd5eb83c86bc36"
+ },
+ "frozen_utc": "2026-11-18T08:06:24Z"
+}

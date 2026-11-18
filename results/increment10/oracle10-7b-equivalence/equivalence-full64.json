@@ -1,0 +1,99 @@
+{
+  "contract": "full64",
+  "head_mode": "blocked",
+  "block_rows": 16384,
+  "rule": "max |delta| <= 1e-9 and identical argmax (blocked FP64 head)",
+  "coverage": "PARTIAL",
+  "coverage_detail": "embedding gather + final norm + head on every recorded call; decoder layers not re-run (covered on fixtures by check_oracle10)",
+  "embedding_rows_compared": 8,
+  "embedding_rows_bit_identical": true,
+  "calls": [
+    {
+      "tokens": [
+        785,
+        6722,
+        315,
+        9625,
+        374
+      ],
+      "bit_identical": false,
+      "max_abs_difference": 9.769962616701378e-15,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        12095
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        13
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    },
+    {
+      "tokens": [
+        1084
+      ],
+      "bit_identical": true,
+      "max_abs_difference": 0.0,
+      "argmax_identical": true
+    }
+  ],
+  "logits_elements_compared": 1216512,
+  "passed": true,
+  "wall_s": 5.749555280024651,
+  "memory_plan": {
+    "dtype": "float64",
+    "head_mode": "blocked",
+    "block_rows": 16384,
+    "tokens": 8,
+    "components": {
+      "overhead": 1073741824,
+      "layer": 0,
+      "head": 588251136,
+      "embedding": 286720,
+      "outputs": 29556736,
+      "activations": 19456000
+    },
+    "planned_peak_bytes": 1711292416,
+    "full_head_in_dtype_bytes": 4359979008,
+    "full_embedding_in_dtype_bytes": 4359979008,
+    "largest_layer_matrix_in_dtype_bytes": 543162368,
+    "note": "estimate; measured peak RSS is reported next to it"
+  },
+  "memory_budget_bytes": 2684354560,
+  "peak_rss_bytes": 1902862336,
+  "head_rows_read": 608256,
+  "source_bf16_bytes_read": 4360065024,
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5"
+  },
+  "capture": "artifacts/increment9/oracle-full64.npz",
+  "capture_sha256": "a9e1223a287ad3b61fb20160f97c45e08a9140915aa6983c9e687f2bcd9705b1",
+  "checkpoint": "checkpoints/qwen2.5-7b-d149729",
+  "checkpoint_revision": "d149729398750b98c0af14eb82c78cfe92750796",
+  "sequence": [
+    785,
+    6722,
+    315,
+    9625,
+    374,
+    12095,
+    13,
+    1084
+  ],
+  "chunks": [
+    5,
+    1,
+    1,
+    1
+  ],
+  "threads": 2
+}

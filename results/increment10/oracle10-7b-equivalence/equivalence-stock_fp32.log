@@ -1,0 +1,26 @@
+{
+ "contract": "stock_fp32",
+ "passed": true,
+ "coverage": "PARTIAL",
+ "embedding_rows_bit_identical": true,
+ "peak_rss_bytes": 3779825664,
+ "wall_s": 9.043566284992266,
+ "calls": [
+  [
+   true,
+   0.0
+  ],
+  [
+   true,
+   0.0
+  ],
+  [
+   true,
+   0.0
+  ],
+  [
+   true,
+   0.0
+  ]
+ ]
+}

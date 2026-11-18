@@ -1,0 +1,26 @@
+{
+ "contract": "full64",
+ "passed": true,
+ "coverage": "PARTIAL",
+ "embedding_rows_bit_identical": true,
+ "peak_rss_bytes": 1902862336,
+ "wall_s": 5.749555280024651,
+ "calls": [
+  [
+   false,
+   9.769962616701378e-15
+  ],
+  [
+   true,
+   0.0
+  ],
+  [
+   true,
+   0.0
+  ],
+  [
+   true,
+   0.0
+  ]
+ ]
+}
