@@ -1,5 +1,7 @@
 # Benchmark BF16 con streaming esplicito
 
+**Fonti e antecedenti del progetto:** [related work e attribuzioni](docs/RELATED_WORK.md) · [catalogo storico completo F01–F62](docs/INWIME_TECHNIQUE_WATCHLIST.md).
+
 Benchmark C++17, CUDA Runtime e cuBLAS per `C_block = A_block × B`.
 `A` è un file sintetico BF16 letto un blocco alla volta; `B` è BF16 residente;
 accumulo e output sono FP32. Non richiede modelli, download o configurazioni di sistema.
