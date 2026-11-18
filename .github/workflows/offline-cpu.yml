@@ -57,11 +57,21 @@ jobs:
       - name: Verify sanitized M9 evidence without local originals
         run: python -m tools.sanitize9 results/increment9 --verify
 
+      # Increment 10, amendment 001 (review of PR #24): the protocol chain and pinned digests verify,
+      # and the identity of every executed test is checked against the effective inventory. Tests that
+      # need local originals are reported as NOT VERIFIABLE ON RUNNER (never PASS); the full-inventory
+      # verdict of this runner stays NOT PROVEN and the archived local attestation is verified separately.
+      - name: Verify increment-10 protocol chain and pinned digests
+        run: python -m tools.protocol10 check
+
+      - name: Verify executed tests against the increment-10 inventory
+        run: python -m tools.inventory10 ci --junit ci-results/pytest.xml --output ci-results/inventory-ci.json
+
       - name: Attach pytest report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pytest-report
-          path: ci-results/pytest.xml
+          path: ci-results/
           if-no-files-found: ignore
           retention-days: 7

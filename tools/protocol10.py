@@ -7,6 +7,10 @@ build  Write protocol.json once ('x' mode): decisions (thresholds, limits, runs,
        Tool and inventory SHA256 are pinned.
 check  Recompute everything and compare with the frozen file; verify the pinned
        tool/inventory digests, the protocol digest file and the amendment chain.
+amend  Append the next amendment (results/increment10/amendments/NNN-<slug>.json,
+       'x' mode) from a spec: 'from' digests are taken from the effective chain,
+       'to' digests from the files on disk; frozen files are never edited. Only the
+       sections in AMENDABLE may change (no threshold, criterion or verdict rule).
 
 Classes used for every quantity: capacity (installed/configured size),
 observation (measured state, with time), estimate (derived or assumed).
@@ -367,27 +371,165 @@ def build(inventory_path):
     }
 
 
+AMENDMENT_SCHEMA = 'inwime-protocol-m10-amendment/1'
+# What an amendment may change. Start/abort criteria, numerical thresholds, workload, verdict rules
+# and the frozen inventory are rebuilt from code and compared with the frozen protocol: they cannot move.
+AMENDABLE = {'pinned_tools_sha256', 'test_inventory', 'acquisition_host_gate', 'ci_runner_verification'}
+
+
+def amendment_files(directory=R10/'amendments'):
+    return sorted(Path(directory).glob('*.json')) if Path(directory).exists() else []
+
+
+def node_ids(inventory_path):
+    return {n for nodes in json.loads(Path(inventory_path).read_text())['groups'].values() for n in nodes}
+
+
+def effective(protocol_path=R10/'protocol.json', directory=None):
+    """Protocol values after applying the amendment chain (no validation: see check())."""
+    p = json.loads(Path(protocol_path).read_bytes())
+    directory = Path(protocol_path).parent/'amendments' if directory is None else directory
+    out = dict(pinned_tools_sha256=dict(p['pinned_tools_sha256']),
+               test_inventory=dict(path=p['test_inventory']['path'], sha256=p['test_inventory']['sha256']),
+               acquisition_host_gate=None, ci_runner_verification=None, amendments=[])
+    for path in amendment_files(directory):
+        changes = json.loads(path.read_text()).get('changes') or {}
+        for tool, change in (changes.get('pinned_tools_sha256') or {}).items():
+            out['pinned_tools_sha256'][tool] = change['to']
+        if 'test_inventory' in changes:
+            out['test_inventory'] = dict(changes['test_inventory']['to'])
+        for key in ('acquisition_host_gate', 'ci_runner_verification'):
+            if key in changes:
+                out[key] = changes[key]
+        out['amendments'].append(path.name)
+    return out
+
+
+def check_amendments(raw, p, directory, root=ROOT):
+    """Validate the chain: digests, numbering, allowed keys, 'from' values, superset inventory."""
+    problems = []
+    protocol_digest = hashlib.sha256(raw).hexdigest()
+    previous = protocol_digest
+    tools = dict(p['pinned_tools_sha256'])
+    inventory = dict(path=p['test_inventory']['path'], sha256=p['test_inventory']['sha256'])
+    for index, path in enumerate(amendment_files(directory), 1):
+        try:
+            a = json.loads(path.read_text())
+        except ValueError:
+            problems.append('amendment is not valid JSON: '+path.name)
+            break
+        if a.get('protocol_sha256') != protocol_digest or a.get('previous_sha256') != previous:
+            problems.append('broken amendment chain: '+path.name)
+        if a.get('schema') != AMENDMENT_SCHEMA or a.get('number') != index or not path.name.startswith(f'{index:03d}-'):
+            problems.append('amendment schema or numbering wrong: '+path.name)
+        for k in ('author', 'utc', 'reason'):
+            if not a.get(k):
+                problems.append(f'amendment lacks {k}: '+path.name)
+        changes = a.get('changes') or {}
+        if not changes or set(changes) - AMENDABLE:
+            problems.append(f'amendment changes non-amendable sections {sorted(set(changes) - AMENDABLE)}: '+path.name)
+        for tool, change in (changes.get('pinned_tools_sha256') or {}).items():
+            if not isinstance(change, dict) or change.get('from') != tools.get(tool) or not change.get('to'):
+                problems.append(f'amendment {path.name}: pinned digest of {tool} does not start from the effective value')
+                continue
+            tools[tool] = change['to']
+        if 'test_inventory' in changes:
+            change = changes['test_inventory']
+            new = change.get('to') or {}
+            if change.get('from') != inventory:
+                problems.append(f'amendment {path.name}: inventory does not start from the effective one')
+            elif not (root/str(new.get('path'))).exists() or sha256(root/new['path']) != new.get('sha256'):
+                problems.append(f'amendment {path.name}: amended inventory missing or SHA256 differs')
+            else:
+                old_nodes, new_nodes = node_ids(root/inventory['path']), node_ids(root/new['path'])
+                if not old_nodes <= new_nodes:
+                    problems.append(f'amendment {path.name}: required tests removed or renamed: '
+                                    + ', '.join(sorted(old_nodes - new_nodes)[:5]))
+                if new.get('total_node_ids') != len(new_nodes):
+                    problems.append(f'amendment {path.name}: total_node_ids differs from the amended inventory')
+                inventory = dict(new)
+        gate = changes.get('acquisition_host_gate')
+        if gate is not None:
+            ok = (gate.get('profile') in p['host_memory_preflight']['start_criteria']
+                  and all(type(gate.get(k)) is int and gate[k] > 0
+                          for k in ('max_report_age_s', 'max_baseline_age_s', 'max_future_skew_s'))
+                  and isinstance(gate.get('interval_tolerance'), list) and len(gate['interval_tolerance']) == 2
+                  and 0 < gate['interval_tolerance'][0] <= 1 <= gate['interval_tolerance'][1])
+            if not ok:
+                problems.append(f'amendment {path.name}: acquisition_host_gate malformed')
+        ci = changes.get('ci_runner_verification')
+        if ci is not None:
+            unverifiable = ci.get('not_verifiable_on_runner') or {}
+            nodes = unverifiable.get('node_ids')
+            known = node_ids(root/inventory['path'])
+            if not isinstance(nodes, list) or not nodes or not set(nodes) <= known or len(set(nodes)) != len(nodes) \
+                    or not unverifiable.get('skip_message'):
+                problems.append(f'amendment {path.name}: ci_runner_verification malformed or names unknown tests')
+        previous = sha256(path)
+    for tool, digest in tools.items():
+        if not (root/tool).exists() or sha256(root/tool) != digest:
+            problems.append('pinned tool differs from its effective digest: '+tool)
+    return problems
+
+
 def check(protocol_path=R10/'protocol.json'):
     problems = []
     raw = Path(protocol_path).read_bytes()
     p = json.loads(raw)
-    digest_file = R10/'protocol.sha256'
+    digest_file = Path(protocol_path).parent/'protocol.sha256'
     if not digest_file.exists() or digest_file.read_text().split()[0] != hashlib.sha256(raw).hexdigest():
         problems.append('protocol.sha256 missing or different')
     inventory_path = ROOT/p['test_inventory']['path']
     rebuilt = build(inventory_path)
     for key in ('checkpoint', 'model_geometry', 'workload', 'active_weights', 'memory_limits', 'numerical_contract',
-                'host_memory_preflight', 'space', 'verdicts', 'gate_conditions', 'test_inventory', 'pinned_tools_sha256'):
+                'host_memory_preflight', 'space', 'verdicts', 'gate_conditions', 'test_inventory'):
         if json.loads(json.dumps(rebuilt[key])) != p[key]:
             problems.append('section differs from recomputation: '+key)
-    amendments = sorted((R10/'amendments').glob('*.json')) if (R10/'amendments').exists() else []
-    previous = hashlib.sha256(raw).hexdigest()
-    for path in amendments:
-        a = json.loads(path.read_text())
-        if a.get('protocol_sha256') != hashlib.sha256(raw).hexdigest() or a.get('previous_sha256') != previous:
-            problems.append('broken amendment chain: '+path.name)
-        previous = sha256(path)
-    return dict(passed=not problems, problems=problems, amendments=[p.name for p in amendments])
+    # the frozen pin set is the one build() names; amended digests are verified through the chain
+    if sorted(p['pinned_tools_sha256']) != sorted(PINNED_TOOLS):
+        problems.append('frozen pinned tool set differs from PINNED_TOOLS')
+    directory = Path(protocol_path).parent/'amendments'
+    problems += check_amendments(raw, p, directory)
+    return dict(passed=not problems, problems=problems, amendments=[x.name for x in amendment_files(directory)])
+
+
+def amend(spec, protocol_path=R10/'protocol.json', utc=None):
+    """Write the next amendment from spec = {slug, author, reason, tools, test_inventory?, sections?,
+    frozen_evidence?}. Returns its path."""
+    from datetime import datetime, timezone
+    raw = Path(protocol_path).read_bytes()
+    directory = Path(protocol_path).parent/'amendments'
+    existing = amendment_files(directory)
+    eff = effective(protocol_path)
+    changes = {}
+    tools = {}
+    for tool in spec.get('tools', []):
+        digest = sha256(ROOT/tool)
+        if eff['pinned_tools_sha256'].get(tool) != digest:
+            tools[tool] = {'from': eff['pinned_tools_sha256'].get(tool), 'to': digest}
+    if tools:
+        changes['pinned_tools_sha256'] = tools
+    if spec.get('test_inventory'):
+        path = spec['test_inventory']
+        changes['test_inventory'] = {'from': eff['test_inventory'],
+                                     'to': dict(path=path, sha256=sha256(ROOT/path), total_node_ids=len(node_ids(ROOT/path)))}
+    for key, value in (spec.get('sections') or {}).items():
+        changes[key] = value
+    if set(changes) - AMENDABLE:
+        raise SystemExit(f'non-amendable sections: {sorted(set(changes) - AMENDABLE)}')
+    number = len(existing) + 1
+    amendment = dict(schema=AMENDMENT_SCHEMA, number=number, slug=spec['slug'],
+                     protocol_sha256=hashlib.sha256(raw).hexdigest(),
+                     previous_sha256=sha256(existing[-1]) if existing else hashlib.sha256(raw).hexdigest(),
+                     author=spec['author'], utc=utc or datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                     reason=spec['reason'], invariants=spec.get('invariants', {}),
+                     frozen_evidence_preserved={f: sha256(ROOT/f) for f in spec.get('frozen_evidence', [])},
+                     changes=changes)
+    directory.mkdir(exist_ok=True)
+    out = directory/f"{number:03d}-{spec['slug']}.json"
+    with out.open('x') as f:
+        json.dump(amendment, f, indent=1); f.write('\n')
+    return out
 
 
 def main(argv=None):
@@ -397,7 +539,14 @@ def main(argv=None):
     b.add_argument('--inventory', type=Path, default=R10/'test-inventory.json')
     b.add_argument('--frozen-utc', required=True)
     sub.add_parser('check')
+    m = sub.add_parser('amend')
+    m.add_argument('--spec', type=Path, required=True)
     args = a.parse_args(argv)
+    if args.command == 'amend':
+        out = amend(json.loads(args.spec.read_text()))
+        result = check()
+        print(json.dumps(dict(amendment=str(out.relative_to(ROOT)), sha256=sha256(out), check=result), indent=1))
+        return 0 if result['passed'] else 1
     if args.command == 'build':
         protocol = build(args.inventory.absolute()) | {'frozen_utc': args.frozen_utc}
         out = R10/'protocol.json'

@@ -21,6 +21,7 @@ Verdicts (thresholds are preregistered in results/increment10/protocol.json):
   NOT MEASURED  a required value could not be read: the campaign must not start
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -267,6 +268,24 @@ def abort_reasons(sample_quantities, criteria, history=None):
     return reasons
 
 
+def make_report(before, after, baseline_raw, criteria, profile, interval, protocol_sha256):
+    """Assemble the report. Amendment 001: the baseline is identified by its SHA256 and UTC time so
+    that tools/hostgate10.py can bind a report to the exact baseline file and check its freshness."""
+    baseline = json.loads(baseline_raw)['after'] if baseline_raw is not None else None
+    q = measurements(before, after, baseline)
+    result = evaluate(q, criteria)
+    report = dict(schema=SCHEMA, profile=profile, interval_s=interval, protocol_sha256=protocol_sha256,
+                  before=before, after=after, baseline_used=baseline_raw is not None,
+                  baseline_sha256=hashlib.sha256(baseline_raw).hexdigest() if baseline_raw is not None else None,
+                  baseline_utc=baseline.get('utc') if baseline is not None else None,
+                  quantities=q, **result,
+                  read_only=True, note='No system setting was changed; values are point observations.')
+    for snap in (before, after):
+        for key in ('checkpoint_volume', 'backing_volume'):
+            snap[key]['path_checked'] = os.path.relpath(Path(snap[key]['path_checked']).absolute())
+    return report
+
+
 def load_criteria(protocol, profile):
     section = json.loads(Path(protocol).read_text())['host_memory_preflight']
     if profile not in section['start_criteria']:
@@ -291,16 +310,10 @@ def main(argv=None):
                   backing_volume=volume(a.backing_volume))
     after = dict(utc=now(), guest=guest(), windows=w_after, checkpoint_volume=volume(a.checkpoint_volume),
                  backing_volume=volume(a.backing_volume))
-    baseline = json.loads(a.baseline.read_text())['after'] if a.baseline else None
-    q = measurements(before, after, baseline)
-    result = evaluate(q, criteria)
-    report = dict(schema=SCHEMA, profile=a.profile, interval_s=a.interval, protocol_sha256=__import__(
-        'hashlib').sha256(a.protocol.read_bytes()).hexdigest(), before=before, after=after,
-        baseline_used=a.baseline is not None, quantities=q, **result,
-        read_only=True, note='No system setting was changed; values are point observations.')
-    for snap in (before, after):
-        for key in ('checkpoint_volume', 'backing_volume'):
-            snap[key]['path_checked'] = os.path.relpath(Path(snap[key]['path_checked']).absolute())
+    baseline_raw = a.baseline.read_bytes() if a.baseline else None
+    report = make_report(before, after, baseline_raw, criteria, a.profile, a.interval,
+                         hashlib.sha256(a.protocol.read_bytes()).hexdigest())
+    q, result = report['quantities'], report
     if a.output:
         with a.output.open('x') as f:
             json.dump(report, f, indent=2); f.write('\n')

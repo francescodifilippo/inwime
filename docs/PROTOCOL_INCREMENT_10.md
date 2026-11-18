@@ -241,3 +241,11 @@ NOT PROVEN; conteggio minimo mai sufficiente). Il gate ricostruisce ogni node ID
 dal JUnit XML archiviato e ne confronta il digest. Emendamenti solo come nuovi file
 in `results/increment10/amendments/`, con catena di SHA verificata da
 `tools/protocol10.py check`.
+
+## 11. Emendamenti
+
+- [001](AMENDMENT_INCREMENT_10_001.md) (18/11, review della PR #24): gate host
+  obbligatorio in `acquire10 --execute` (`tools/hostgate10.py`), identità del baseline
+  in `hostmem10`, verifica CI dell'inventario con test non verificabili sul runner
+  dichiarati (mai PASS) e attestazione locale separata; inventario emendato
+  `test-inventory-a001.json` (1135 node ID). Soglie e criteri invariati.

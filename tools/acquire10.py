@@ -12,10 +12,20 @@ Modes
                        about 160 KB, or offline from a captured --metadata-dir)
                        against the pinned manifest, inspects the destination
                        and computes the space plan on the physical volume.
-  --execute            Requires --authorization FILE: a separate, explicit owner
-                       record naming model, revision, manifest digest,
-                       destination and the maximum number of bytes that may be
-                       transferred. Without it nothing is downloaded.
+  --execute            Requires two independent records, both checked before
+                       any network request and again under the lock before the
+                       first payload request:
+                       * --authorization FILE: the owner's explicit approval
+                         naming model, revision, manifest digest, destination
+                         and the maximum number of bytes that may be transferred
+                         (human decision);
+                       * --host-report/--host-baseline: a fresh hostmem10 GO for
+                         the preregistered 'download' profile, validated by
+                         tools/hostgate10.py against the pinned protocol, this
+                         destination and this physical volume (technical
+                         eligibility; protocol amendment 001).
+                       Without both nothing is downloaded; neither implies the
+                       other.
 
 Safety properties (each covered by tests against a local fake HTTP server)
   * HTTPS only, host allowlist on every redirect hop, generic User-Agent, no
@@ -714,8 +724,23 @@ def write_evidence(path, report):
         json.dump(report, f, indent=2, sort_keys=True); f.write('\n')
 
 
+def host_readiness(host_gate, destination, backing, manifest, usage):
+    """Technical eligibility from the host gate (tools/hostgate10.py); only a well-formed GO passes."""
+    from . import hostgate10
+    if host_gate is None or not callable(getattr(host_gate, 'evaluate', None)):
+        raise AcquireError('host readiness gate missing: a fresh hostmem10 GO (--host-report/--host-baseline) '
+                           'is required before any transfer')
+    result = host_gate.evaluate(destination, backing, manifest, usage)
+    if not isinstance(result, dict) or result.get('schema') != hostgate10.SCHEMA or result.get('profile') != 'download' \
+            or result.get('verdict') != 'GO' or result.get('reasons'):
+        verdict = result.get('verdict') if isinstance(result, dict) else None
+        reasons = result.get('reasons') if isinstance(result, dict) else None
+        raise AcquireError(f'host readiness gate is not GO ({verdict}): '+'; '.join(map(str, reasons or ['invalid result'])))
+    return result
+
+
 def dry_run(destination, backing, *, manifest=QWEN25_14B, reserves=None, endpoint=ENDPOINT,
-            metadata_dir=None, transport=None, usage=shutil.disk_usage):
+            metadata_dir=None, transport=None, usage=shutil.disk_usage, host_gate=None):
     reserves = reserves or Reserves()
     report = dict(schema=SCHEMA, mode='dry-run', utc=now(), model=manifest.model, revision=manifest.revision,
                   manifest_sha256=manifest.digest(), download_total_bytes=manifest.total_bytes(),
@@ -737,13 +762,22 @@ def dry_run(destination, backing, *, manifest=QWEN25_14B, reserves=None, endpoin
                       usage(existing_ancestor(destination)).free, usage(backing).free)
     report.update(destination=dict(path_relative=os.path.relpath(Path(destination).absolute()),
                                    backing_volume=str(backing), **state),
-                  space=plan,
-                  would_proceed_if_authorized=not state['blockers'] and not plan['blockers'])
+                  space=plan)
+    # Storage readiness alone is never permission to download (review of PR #24): the host gate
+    # must be GO as well, and owner authorization stays a separate record that a dry-run never reads.
+    storage_ready = not state['blockers'] and not plan['blockers']
+    if host_gate is None:
+        host = dict(verdict='NOT EVALUATED', reasons=['storage-only dry-run: no --host-report/--host-baseline'])
+    else:
+        host = host_gate.evaluate(destination, backing, manifest, usage)
+    report.update(storage_ready=storage_ready, host_readiness=host,
+                  owner_authorization='not evaluated by a dry-run; --execute requires a separate owner record',
+                  would_proceed_if_authorized=storage_ready and host.get('verdict') == 'GO' and not host.get('reasons'))
     return report
 
 
-def execute(destination, backing, authorization, *, manifest=QWEN25_14B, reserves=None, endpoint=ENDPOINT,
-            transport=None, usage=shutil.disk_usage, opener=open, discard_rejected=False):
+def execute(destination, backing, authorization, host_gate, *, manifest=QWEN25_14B, reserves=None,
+            endpoint=ENDPOINT, transport=None, usage=shutil.disk_usage, opener=open, discard_rejected=False):
     reserves = reserves or Reserves()
     transport = transport or Transport()
     destination = Path(destination)
@@ -751,9 +785,11 @@ def execute(destination, backing, authorization, *, manifest=QWEN25_14B, reserve
                   revision=manifest.revision, manifest_sha256=manifest.digest(), user_agent=AGENT)
     if not destination.parent.is_dir():
         raise AcquireError('destination parent does not exist (not created implicitly)')
-    # Authorization is checked before any network request and again under the lock.
+    # Owner authorization (human decision) and host readiness (technical eligibility) are separate
+    # checks; both run before any network request and again under the lock before any payload request.
     check_authorization(authorization, manifest, destination,
                         sum(f['transfer_bytes'] for f in inspect(destination, manifest)['files'].values()))
+    host_before_network = host_readiness(host_gate, destination, backing, manifest, usage)
     api, small, headers = online_metadata(transport, endpoint, manifest)
     report['metadata'] = verify_metadata(api, small, headers, manifest)
     destination.mkdir(exist_ok=True)
@@ -770,6 +806,11 @@ def execute(destination, backing, authorization, *, manifest=QWEN25_14B, reserve
         planned = sum(f['transfer_bytes'] for f in state['files'].values())
         auth = check_authorization(authorization, manifest, destination, planned)
         report['authorization'] = {k: auth[k] for k in ('approved_by', 'approved_utc', 'max_transfer_bytes')}
+        host_before_payload = host_readiness(host_gate, destination, backing, manifest, usage)
+        report['host_readiness'] = {
+            when: {k: r.get(k) for k in ('verdict', 'report_sha256', 'baseline_sha256', 'report_utc', 'report_age_s',
+                                         'protocol_sha256', 'values')}
+            for when, r in (('before_network', host_before_network), ('before_payload', host_before_payload))}
         if state['blockers']:
             raise AcquireError('destination state blocks the run: '+'; '.join(state['blockers']))
         guard = Guard(destination, backing, reserves, usage)
@@ -832,13 +873,16 @@ def main(argv=None):
     mode.add_argument('--clean-temporaries', action='store_true',
                       help='remove only acquire10-owned .part files (partial and rejected)')
     mode.add_argument('--print-manifest', action='store_true')
-    p.add_argument('--authorization', type=Path)
+    p.add_argument('--authorization', type=Path, help='owner approval record (human decision)')
+    p.add_argument('--host-report', type=Path, help='fresh hostmem10 report, profile download, taken with --baseline')
+    p.add_argument('--host-baseline', type=Path, help='the baseline report named by --host-report')
     p.add_argument('--metadata-dir', type=Path, help='dry-run: verify captured metadata offline')
     p.add_argument('--evidence', type=Path)
     p.add_argument('--discard-rejected', action='store_true')
     for name, default in Reserves().as_dict().items():
         p.add_argument('--reserve-'+name.replace('_', '-'), dest='reserve_'+name, type=int, default=default)
     a = p.parse_args(argv)
+    from .hostgate10 import Gate
     if a.print_manifest:
         print(json.dumps(QWEN25_14B.canonical() | dict(manifest_sha256=QWEN25_14B.digest(),
                                                        download_total_bytes=QWEN25_14B.total_bytes()), indent=1))
@@ -850,17 +894,27 @@ def main(argv=None):
     if a.execute:
         if a.authorization is None:
             p.error('--execute requires --authorization (explicit owner approval record)')
+        if a.host_report is None or a.host_baseline is None:
+            p.error('--execute requires --host-report and --host-baseline (fresh hostmem10 GO, profile download)')
         if a.metadata_dir is not None:
             p.error('--execute always re-verifies metadata online')
-        report = execute(a.destination, a.backing_volume, a.authorization, reserves=reserves,
-                         discard_rejected=a.discard_rejected)
+        report = execute(a.destination, a.backing_volume, a.authorization, Gate(a.host_report, a.host_baseline),
+                         reserves=reserves, discard_rejected=a.discard_rejected)
     else:
         if a.authorization is not None or a.discard_rejected:
             p.error('--authorization/--discard-rejected only apply to --execute')
-        report = dry_run(a.destination, a.backing_volume, reserves=reserves, metadata_dir=a.metadata_dir)
+        if (a.host_report is None) != (a.host_baseline is None):
+            p.error('--host-report and --host-baseline go together')
+        gate = Gate(a.host_report, a.host_baseline) if a.host_report is not None else None
+        report = dry_run(a.destination, a.backing_volume, reserves=reserves, metadata_dir=a.metadata_dir,
+                         host_gate=gate)
     write_evidence(a.evidence, report)
     summary = {k: report.get(k) for k in ('mode', 'manifest_sha256', 'download_total_bytes',
-                                          'payload_bytes_transferred', 'would_proceed_if_authorized')}
+                                          'payload_bytes_transferred', 'storage_ready', 'would_proceed_if_authorized')}
+    if 'host_readiness' in report:
+        h = report['host_readiness']
+        summary['host_readiness'] = {k: h.get(k) for k in ('verdict', 'reasons')} if 'verdict' in h else \
+            {k: v.get('verdict') for k, v in h.items()}
     if 'space' in report:
         summary['space'] = {k: report['space'][k] for k in ('transfer_bytes', 'required_free_bytes',
                                                             'effective_free_bytes', 'surplus_bytes', 'blockers')}

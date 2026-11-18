@@ -88,8 +88,11 @@ def test_every_criterion_quantity_is_produced_by_hostmem10():
 
 
 def test_pinned_tools_exist_and_match():
+    """Effective pins = frozen pins plus the amendment chain (amendment 001: review of PR #24)."""
     PROTOCOL = protocol()
-    for path, digest in PROTOCOL['pinned_tools_sha256'].items():
+    pins = protocol10.effective()['pinned_tools_sha256']
+    assert set(PROTOCOL['pinned_tools_sha256']) <= set(pins)
+    for path, digest in pins.items():
         assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest() == digest, path
 
 

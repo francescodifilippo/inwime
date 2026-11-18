@@ -207,10 +207,17 @@ def authorize(path, manifest, dest, max_bytes=None, **override):
     return path
 
 
-def run(fake, manifest, dest, auth, **kw):
+class GoGate:
+    """Stand-in for a valid hostgate10 GO (the gate itself is tested in test_increment10_hostgate.py)."""
+
+    def evaluate(self, destination, backing, manifest, usage):
+        return dict(schema='inwime-hostgate10/1', profile='download', verdict='GO', reasons=[])
+
+
+def run(fake, manifest, dest, auth, host_gate=None, **kw):
     kw.setdefault('reserves', small_reserves())
     kw.setdefault('usage', lambda p: BIG)
-    return acq.execute(dest, dest.parent, auth, manifest=manifest, endpoint=fake.endpoint,
+    return acq.execute(dest, dest.parent, auth, host_gate or GoGate(), manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), **kw)
 
 
@@ -293,7 +300,10 @@ def test_dry_run_online_reads_no_payload(repo, tmp_path):
     report = acq.dry_run(dest, tmp_path, manifest=manifest, endpoint=fake.endpoint,
                          transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
                          usage=lambda p: BIG)
-    assert report['payload_bytes_transferred'] == 0 and report['would_proceed_if_authorized'] is True
+    assert report['payload_bytes_transferred'] == 0 and report['storage_ready'] is True
+    # storage-only dry-run (no host report): never reads as permission to download (review of PR #24)
+    assert report['would_proceed_if_authorized'] is False
+    assert report['host_readiness']['verdict'] == 'NOT EVALUATED'
     assert not dest.exists()
     assert fake.payload_gets() == []
     assert all(r['authorization'] is None for r in fake.requests)

@@ -13,6 +13,16 @@ verify    Rebuild the identity and outcome of every node ID from a JUnit XML fil
 
 Precedence of verdicts: FAIL > NOT PROVEN > PASS. A missing JUnit file is NOT PROVEN;
 an unreadable, malformed or internally inconsistent one is FAIL.
+
+ci        (protocol amendment 001, review of PR #24) Verify the GitHub runner's JUnit
+          against the effective (amended) inventory. Tests that cannot run on the
+          runner are declared in the amendment with their exact skip message: such a
+          test skipped with exactly that message is NOT VERIFIABLE ON RUNNER, never
+          PASS, so the full-inventory verdict of a runner JUnit is NOT PROVEN. Any
+          other skip, a different message, a failure or error is FAIL. The runner
+          verdict (every runner-verifiable test passed, nothing missing or extra) is
+          reported separately, and so is the archived local attestation (full JUnit
+          of a local run, verified against the same inventory and its pinned SHA256).
 """
 import argparse
 import ast
@@ -175,8 +185,17 @@ def parse_junit(path):
     return cases, declared, observed
 
 
-def verify(inventory, junit, root='.', junit_sha256=None):
+def junit_skip_messages(path):
+    """{(classname, name): message} of every <skipped> element (outcome detail for the runner check)."""
+    root = ET.fromstring(Path(path).read_bytes())
+    return {(c.get('classname'), c.get('name')): c.find('skipped').get('message')
+            for c in root.iter('testcase') if c.find('skipped') is not None}
+
+
+def verify(inventory, junit, root='.', junit_sha256=None, not_verifiable=None):
+    """not_verifiable: {node_id: exact skip message} of tests that cannot run on this runner."""
     findings = dict(fail=[], not_proven=[])
+    not_verifiable = dict(not_verifiable or {})
     required = {junit_key(n): n for nodes in inventory['groups'].values() for n in nodes}
     result = dict(schema=SCHEMA, inventory_counts=inventory['expected_counts'])
     # test files on disk against the pinned digests (substitution with identical names)
@@ -212,13 +231,19 @@ def verify(inventory, junit, root='.', junit_sha256=None):
         seen.add(key)
         outcomes[key] = outcome
     missing = sorted(n for k, n in required.items() if k not in outcomes)
+    messages = junit_skip_messages(junit) if not_verifiable else {}
+    unverified = sorted(n for k, n in required.items() if n in not_verifiable and outcomes.get(k) == 'skipped'
+                        and messages.get(k) == not_verifiable[n])
+    unknown = sorted(set(not_verifiable) - set(required.values()))
+    if unknown:
+        findings['fail'].append('not-verifiable list names tests outside the inventory: '+', '.join(unknown[:5]))
     not_passed = {n: outcomes[k] for k, n in sorted(required.items(), key=lambda x: x[1])
-                  if k in outcomes and outcomes[k] != 'passed'}
+                  if k in outcomes and outcomes[k] != 'passed' and n not in unverified}
     extra = sorted('::'.join(k) for k in outcomes if k not in required)
     groups = {g: dict(expected=len(v), passed=sum(outcomes.get(junit_key(n)) == 'passed' for n in v))
               for g, v in inventory['groups'].items()}
     result.update(missing_required=missing, not_passed=not_passed, duplicates=sorted(duplicates),
-                  extra_not_in_inventory=extra, groups=groups,
+                  extra_not_in_inventory=extra, groups=groups, not_verifiable_on_runner=unverified,
                   required_passed=sum(1 for k in required if outcomes.get(k) == 'passed'),
                   required_total=len(required))
     if missing:
@@ -229,7 +254,71 @@ def verify(inventory, junit, root='.', junit_sha256=None):
         findings['fail'].append('duplicate testcases')
     if extra:
         findings['not_proven'].append(f'{len(extra)} testcases not in the inventory')
+    if not_verifiable:
+        # runner verdict: everything the runner can run passed; the full-inventory verdict stays
+        # NOT PROVEN while any required test is only "not verifiable on runner" (never PASS).
+        result['runner_verdict'] = 'FAIL' if findings['fail'] else 'NOT PROVEN' if findings['not_proven'] else 'PASS'
+    if unverified:
+        findings['not_proven'].append(f'{len(unverified)} required node IDs not verifiable on this runner '
+                                      '(local attestation required)')
     return finish(result, findings)
+
+
+def ci(junit, root='.', output=None):
+    """Runner verification under amendment 001. Exit 0 only if the protocol chain verifies, the runner
+    verdict is PASS and the archived local attestation is a full PASS of the same inventory."""
+    from . import protocol10
+    root = Path(root)
+    check = protocol10.check()
+    eff = protocol10.effective()
+    rules = eff.get('ci_runner_verification')
+    out = dict(schema=SCHEMA, mode='ci', protocol_check=check, inventory=eff['test_inventory'])
+    if not check['passed'] or rules is None:
+        out.update(runner_verdict='FAIL', reasons=['protocol chain not verified or no ci_runner_verification rule'])
+        return emit_ci(out, output, 5)
+    inventory_path = root/eff['test_inventory']['path']
+    if sha256(inventory_path) != eff['test_inventory']['sha256']:
+        out.update(runner_verdict='FAIL', reasons=['effective inventory differs from its pinned SHA256'])
+        return emit_ci(out, output, 5)
+    inventory = json.loads(inventory_path.read_text())
+    unverifiable = rules['not_verifiable_on_runner']
+    runner = verify(inventory, junit, root, not_verifiable={n: unverifiable['skip_message'] for n in unverifiable['node_ids']})
+    out['runner'] = runner
+    attestation_path = root/rules['local_attestation']
+    try:
+        attestation = json.loads(attestation_path.read_text())
+        local = verify(inventory, root/attestation['junit'], root, junit_sha256=attestation['junit_sha256'])
+        if attestation.get('inventory_sha256') != eff['test_inventory']['sha256']:
+            local = finish(local, dict(fail=local['fail_reasons']+['attestation names another inventory'],
+                                       not_proven=local['not_proven_reasons']))
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        local = finish(dict(schema=SCHEMA), dict(fail=[], not_proven=['local attestation missing or unreadable: '
+                                                                       + type(error).__name__]))
+    out['local_attestation'] = dict(source='archived JUnit of a local run (not a runner result)',
+                                    path=rules['local_attestation'], verdict=local['verdict'],
+                                    required_passed=local.get('required_passed'),
+                                    required_total=local.get('required_total'),
+                                    fail_reasons=local['fail_reasons'], not_proven_reasons=local['not_proven_reasons'])
+    out.update(runner_verdict=runner.get('runner_verdict', runner['verdict']),
+               full_inventory_verdict_on_runner=runner['verdict'])
+    ok = out['runner_verdict'] == 'PASS' and local['verdict'] == 'PASS'
+    return emit_ci(out, output, 0 if ok else 5)
+
+
+def emit_ci(out, output, code):
+    if output:
+        with Path(output).open('x') as f:
+            json.dump(out, f, indent=1); f.write('\n')
+    runner = out.get('runner') or {}
+    print(json.dumps(dict(
+        runner_verdict=out.get('runner_verdict'),
+        full_inventory_verdict_on_runner=out.get('full_inventory_verdict_on_runner'),
+        runner_passed=runner.get('required_passed'), required_total=runner.get('required_total'),
+        not_verifiable_on_runner=runner.get('not_verifiable_on_runner'),
+        runner_fail_reasons=runner.get('fail_reasons'), runner_not_proven_reasons=runner.get('not_proven_reasons'),
+        local_attestation=out.get('local_attestation'), reasons=out.get('reasons'),
+        protocol_check=(out.get('protocol_check') or {}).get('problems')), indent=1))
+    return code
 
 
 def finish(result, findings):
@@ -254,7 +343,13 @@ def main(argv=None):
     v.add_argument('--junit-sha256')
     v.add_argument('--root', type=Path, default=Path('.'))
     v.add_argument('--output', type=Path)
+    c = sub.add_parser('ci', help='runner JUnit vs effective inventory, plus the archived local attestation')
+    c.add_argument('--junit', type=Path, required=True)
+    c.add_argument('--root', type=Path, default=Path('.'))
+    c.add_argument('--output', type=Path)
     a = p.parse_args(argv)
+    if a.command == 'ci':
+        return ci(a.junit, a.root, a.output)
     if a.command == 'generate':
         inventory = generate(a.root, a.base_commit, venv=a.venv)
         with a.output.open('x') as f:
