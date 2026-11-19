@@ -254,3 +254,10 @@ in `results/increment10/amendments/`, con catena di SHA verificata da
   trasferimento i criteri di arresto congelati (§8), con stop cooperativo, `.part`
   conservati e ripresa solo dopo un nuovo GO; inventario `test-inventory-a002.json`
   (1180 node ID). Soglie, sustain e azioni invariati.
+- [003](AMENDMENT_INCREMENT_10_003.md) (19/11, Issue #25): l'acquisizione non è più
+  vincolata dalla memoria host. `acquire10 --execute` richiede solo l'autorizzazione del
+  proprietario e si ferma solo per rischi di acquisizione (rete, Range, checksum,
+  spazio fisico, ENOSPC, I/O, budget, lock, proprietà dei `.part`); diagnostiche host
+  facoltative e non bloccanti. 001/002 restano storici e invariati; `hostmem10`,
+  `hostgate10` e `hostmonitor10` restano per inferenza, oracolo e benchmark. Inventario
+  `test-inventory-a003.json` (1199 node ID, nessuno rimosso o rinominato).

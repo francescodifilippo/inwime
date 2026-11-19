@@ -1,0 +1,116 @@
+{
+ "schema": "inwime-protocol-m10-amendment/1",
+ "number": 3,
+ "slug": "acquisition-without-host-memory-gate",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "previous_sha256": "02b78daeb346875222cdd79562920aaa87cc8f0aaa7e006bf2da4501b7305d89",
+ "author": "Assistant session at the owner's request (Issue #25 decision of 2026-11-19); owner acceptance pending through the review of PR #24",
+ "utc": "2026-11-19T21:21:05Z",
+ "reason": [
+  "Issue #25 (owner decision, 2026-11-19): the checkpoint download is a streaming Internet -> ext4 transfer of file pages, independent of the RAM/paging limits that protect inference, oracle and benchmark runs. Amendments 001 (hostgate10 GO required by acquire10 --execute) and 002 (in-run host monitor stopping the transfer) imposed inference-run criteria on a file transfer.",
+  "Observed incident: the authorized real download was stopped by HostPressureStop: host_available_bytes=267665408 violates >= 300000000, with no checksum, space or HTTP error. The download was later completed with a local, temporary disabling of the gate (report acquisition-resume-20261119T183903Z.json, outside the repository); this amendment makes the correction permanent and versioned.",
+  "acquire10 now requires only the owner authorization; it never consults hostgate10 and never stops for host or guest memory pressure. It stops only for acquisition risks. Manifest pinning, metadata verification, SHA256/LFS and Git blob checks, strict Range/Content-Range/Content-Length, resume of owned .part files, no overwrite, lock, space guard and ENOSPC handling are unchanged. Optional host diagnostics (--host-diagnostics) record hostmonitor10 samples without ever stopping the transfer.",
+  "hostmem10, hostgate10 and hostmonitor10 are kept unchanged for inference, oracle and benchmark runs. Amendments 001 and 002 are historical and stay in the chain unchanged; their sections remain readable but no longer bind the acquisition.",
+  "Tests: no node ID removed or renamed (inventory superset). The bodies of the acquire10 integration tests in test_increment10_hostgate.py and test_increment10_hostmonitor.py now assert the amended policy (gate verdicts still computed; the acquisition completes whatever they are). New tests prove that a synthetic critical host never stops a correct transfer, that resume is unaffected, and that the acquisition path imports no host gate."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendment_001_unchanged": true,
+  "amendment_002_unchanged": true,
+  "checkpoint_unchanged": true,
+  "note": "host start/abort criteria keep their frozen values for runtime and oracle profiles; the download profile is no longer applied by the acquisition"
+ },
+ "frozen_evidence_preserved": {
+  "results/increment10/protocol.json": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "results/increment10/protocol.sha256": "4a89601b0c923c975bad772fcb5e0bfba64debf5af0aa4c54ca7184051d8eab4",
+  "results/increment10/test-inventory.json": "12a67e3754f2ba1ddb2d3346102b679f0454d9dbd501f4ac93c98f789d3c6553",
+  "results/increment10/SHA256SUMS": "eccca0f1cefd1c40644559560442e1e969de074da32fb7681021ab54f8426f56",
+  "results/increment10/test-inventory-a001.json": "3b264449048b0a3ab5dd7cda8fab7cba9c50ec3cf1ab869907e87a2739abb158",
+  "results/increment10/test-inventory-a002.json": "ed9efe7ab927510abdc17588b592af51f15214d8b1be83d59709de3879278fa3",
+  "results/increment10/amendments/001-acquisition-host-gate-and-ci-inventory.json": "5beae6e4069a31de514501cc4659c6b8a79b640c4078669fd26d4504d0321b66",
+  "results/increment10/amendments/002-acquisition-in-run-host-monitor.json": "02b78daeb346875222cdd79562920aaa87cc8f0aaa7e006bf2da4501b7305d89",
+  "results/increment10/amendment-001/SHA256SUMS": "ca31b44e07fb6e75a00e94ccece1c087aa6b00bad500a662914b5d195e7cbe96",
+  "results/increment10/amendment-001/local-attestation.json": "87d29ec3069e5b0018c58c0e506b642d4727a18d8e4e54de9c007d63c6f10ce3",
+  "results/increment10/amendment-002/SHA256SUMS": "1df5504b461b0bee584263617dfb702f3cc5772c95cd0db7441284bb27cbf42d",
+  "results/increment10/amendment-002/local-attestation.json": "edfdb3ff6c1f8475bb0cf13bffcafb1664f28fd78cf89f6717165a138bb57d0a"
+ },
+ "changes": {
+  "pinned_tools_sha256": {
+   "tools/acquire10.py": {
+    "from": "429b52d7cd7fd310d06b24794a7235dcccbf590ee7e9353a70228b19606bec43",
+    "to": "b279d3334fd2c9bb497181f1171584cd5044adf2170ba80645c7de6f3599e797"
+   },
+   "tools/protocol10.py": {
+    "from": "4a37f60fd13f908a7b56178aaa1cc2b9f0591f4b17371d2f7074b888200c6e9e",
+    "to": "5b598749fb6cb1628260ed9db9d18cef9b00627f62037a5e9047f160fa613d66"
+   }
+  },
+  "test_inventory": {
+   "from": {
+    "path": "results/increment10/test-inventory-a002.json",
+    "sha256": "ed9efe7ab927510abdc17588b592af51f15214d8b1be83d59709de3879278fa3",
+    "total_node_ids": 1180
+   },
+   "to": {
+    "path": "results/increment10/test-inventory-a003.json",
+    "sha256": "00fc390aed3ba7438c3107d730539a7e5fbb0e066924e9af1a6f7f30221b9abb",
+    "total_node_ids": 1199
+   }
+  },
+  "acquisition_host_policy": {
+   "gated": false,
+   "issue": 25,
+   "rule": "acquire10 --execute requires the owner authorization only; it never requires a host GO (hostgate10) and never stops for host AvailableBytes, commit, pagefile, paging, guest MemAvailable or swap",
+   "supersedes": [
+    "001: hostgate10 GO required by acquire10 --execute (before network and before payload)",
+    "002: in-run host monitor mapping pause/kill/stop actions to a stop of the transfer"
+   ],
+   "acquisition_stop_conditions": [
+    "network",
+    "HTTP status",
+    "Range/Content-Range/Content-Length",
+    "checksum",
+    "physical space",
+    "ENOSPC",
+    "I/O error",
+    "budget",
+    "lock",
+    "ownership"
+   ],
+   "diagnostics": "optional and non-blocking: acquire10 --host-diagnostics BASELINE records hostmonitor10 samples and the decisions amendment 002 would have applied (reasons_ignored)",
+   "host_tools_kept_for": [
+    "inference",
+    "oracle",
+    "benchmark"
+   ]
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-003/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ }
+}

@@ -375,7 +375,12 @@ AMENDMENT_SCHEMA = 'inwime-protocol-m10-amendment/1'
 # What an amendment may change. Start/abort criteria, numerical thresholds, workload, verdict rules
 # and the frozen inventory are rebuilt from code and compared with the frozen protocol: they cannot move.
 AMENDABLE = {'pinned_tools_sha256', 'test_inventory', 'acquisition_host_gate', 'ci_runner_verification',
-             'acquisition_host_monitor'}
+             'acquisition_host_monitor', 'acquisition_host_policy'}
+# Amendment 003 (Issue #25): the acquisition is not gated by host memory. The section must say so
+# explicitly, name the issue and list what it supersedes; it can never re-enable a blocking host gate
+# for the acquisition without a further amendment that replaces this one.
+HOST_POLICY_KEYS = {'gated', 'issue', 'rule', 'supersedes', 'acquisition_stop_conditions', 'diagnostics',
+                    'host_tools_kept_for'}
 # Acquisition meaning of the frozen abort actions (amendment 002): only the I/O-attribution criterion
 # may stay an annotation; every pause/kill/stop action must stop the transfer.
 ANNOTATE_ONLY_ACTIONS = {'annotate-io-attribution-invalid'}
@@ -395,14 +400,16 @@ def effective(protocol_path=R10/'protocol.json', directory=None):
     directory = Path(protocol_path).parent/'amendments' if directory is None else directory
     out = dict(pinned_tools_sha256=dict(p['pinned_tools_sha256']),
                test_inventory=dict(path=p['test_inventory']['path'], sha256=p['test_inventory']['sha256']),
-               acquisition_host_gate=None, ci_runner_verification=None, acquisition_host_monitor=None, amendments=[])
+               acquisition_host_gate=None, ci_runner_verification=None, acquisition_host_monitor=None,
+               acquisition_host_policy=None, amendments=[])
     for path in amendment_files(directory):
         changes = json.loads(path.read_text()).get('changes') or {}
         for tool, change in (changes.get('pinned_tools_sha256') or {}).items():
             out['pinned_tools_sha256'][tool] = change['to']
         if 'test_inventory' in changes:
             out['test_inventory'] = dict(changes['test_inventory']['to'])
-        for key in ('acquisition_host_gate', 'ci_runner_verification', 'acquisition_host_monitor'):
+        for key in ('acquisition_host_gate', 'ci_runner_verification', 'acquisition_host_monitor',
+                    'acquisition_host_policy'):
             if key in changes:
                 out[key] = changes[key]
         out['amendments'].append(path.name)
@@ -474,6 +481,16 @@ def check_amendments(raw, p, directory, root=ROOT):
                   and monitor.get('criteria') == 'host_memory_preflight.abort_criteria')
             if not ok:
                 problems.append(f'amendment {path.name}: acquisition_host_monitor malformed or weakens an abort action')
+        policy = changes.get('acquisition_host_policy')
+        if policy is not None:
+            ok = (isinstance(policy, dict) and set(policy) == HOST_POLICY_KEYS and policy['gated'] is False
+                  and policy['issue'] == 25 and isinstance(policy['supersedes'], list) and policy['supersedes']
+                  and isinstance(policy['acquisition_stop_conditions'], list)
+                  and {'checksum', 'physical space', 'network'} <= set(policy['acquisition_stop_conditions'])
+                  and not any(w in ' '.join(policy['acquisition_stop_conditions']).lower()
+                              for w in ('ram', 'paging', 'pagefile', 'memory')))
+            if not ok:
+                problems.append(f'amendment {path.name}: acquisition_host_policy malformed')
         ci = changes.get('ci_runner_verification')
         if ci is not None:
             unverifiable = ci.get('not_verifiable_on_runner') or {}

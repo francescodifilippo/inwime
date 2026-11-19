@@ -1,12 +1,17 @@
-"""Increment 10, amendment 001: the acquisition refuses without a fresh, valid host GO.
+"""Increment 10, amendment 001 (gate) and amendment 003 (no longer wired into the acquisition).
 
-Review of PR #24, observation 1. tools/hostgate10.py is exercised with synthetic
-hostmem10 reports built by the real hostmem10.make_report, against the real
-protocol (thresholds, interval, pinned digest) and the amended policy, and wired
-into tools/acquire10.py::execute against the local fake HTTP server of
-test_increment10_acquire. Every refusal must happen before any request to the
-server (no metadata, no payload) and leave the destination uncreated. Owner
-authorization and host readiness are independent: neither implies the other.
+tools/hostgate10.py is exercised with synthetic hostmem10 reports built by the real
+hostmem10.make_report, against the real protocol (thresholds, interval, pinned
+digest) and the amendment-001 policy: every verdict (GO, DEFER, NOT MEASURED,
+REFUSED) is still computed and asserted, because the gate stays available.
+
+Amendment 003 (Issue #25) removed the gate from tools/acquire10.py::execute: a
+download is a streaming Internet -> ext4 transfer, not an inference run. Where these
+tests used to assert "refused before any request", they now assert the opposite
+half of the decision: the acquisition completes against the local fake HTTP server
+whatever the gate verdict, and never calls the gate. Owner authorization is still
+required and checked before any request. Node IDs are unchanged (inventory policy);
+the bodies changed and are pinned by the amended inventory.
 """
 from collections import namedtuple
 from datetime import datetime, timedelta, timezone
@@ -109,8 +114,20 @@ def usage_for(dest, backing, dest_total=DEST_TOTAL, back_total=BACK_TOTAL):
     return usage
 
 
+class NeverCalled:
+    """A gate that fails the test if the acquisition consults it (amendment 003)."""
+
+    def __init__(self, gate=None):
+        self.gate = gate
+
+    def evaluate(self, *args):
+        raise AssertionError('acquire10 consulted a host gate')
+
+
 def run_execute(fake, manifest, dest, backing, auth, host_gate, usage=None):
-    return acq.execute(dest, backing, auth, host_gate, healthy(dest, backing), manifest=manifest, endpoint=fake.endpoint,
+    """Amendment 003: the gate is not an argument of execute any more; it is never consulted."""
+    del host_gate
+    return acq.execute(dest, backing, auth, manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
                        usage=usage or usage_for(dest, backing))
 
@@ -119,6 +136,13 @@ def assert_refused_before_network(fake, dest, call, match=None):
     with pytest.raises(acq.AcquireError, match=match):
         call()
     assert fake.requests == [] and not dest.exists()
+
+
+def assert_not_gated(fake, manifest, dest, backing, auth, verdict):
+    """Whatever the host gate says (verdict), a correct acquisition completes (amendment 003)."""
+    out = run_execute(fake, manifest, dest, backing, auth, NeverCalled())
+    assert out['payload_bytes_transferred'] == manifest.total_bytes()
+    assert out['host_policy']['gated'] is False and 'host_readiness' not in out
 
 
 # ---------------------------------------------------------------- policy and GO path
@@ -148,8 +172,7 @@ def test_fresh_go_allows_execute_with_owner_authorization(tmp_path, setup):
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     out = run_execute(fake, manifest, dest, backing, auth, g)
     assert out['payload_bytes_transferred'] == manifest.total_bytes()
-    assert set(out['host_readiness']) == {'before_network', 'before_payload'}
-    assert all(v['verdict'] == 'GO' for v in out['host_readiness'].values())
+    assert out['host_policy']['gated'] is False and 'host_readiness' not in out      # amendment 003
     assert set(out['authorization']) == {'approved_by', 'approved_utc', 'max_transfer_bytes'}
 
 
@@ -165,7 +188,7 @@ def test_defer_refuses_before_any_request(tmp_path, setup, kw, violated):
     result = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
     assert result['verdict'] == 'DEFER' and violated in result['violated']
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g), 'DEFER')
+    assert_not_gated(fake, manifest, dest, backing, auth, result['verdict'])
 
 
 def test_not_measured_when_windows_sampling_failed(tmp_path, setup):
@@ -174,8 +197,7 @@ def test_not_measured_when_windows_sampling_failed(tmp_path, setup):
     g = gate(report, baseline, manifest)
     assert g.evaluate(dest, backing, manifest, usage_for(dest, backing))['verdict'] == 'NOT MEASURED'
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g),
-                                  'NOT MEASURED')
+    assert_not_gated(fake, manifest, dest, backing, auth, 'NOT MEASURED')
 
 
 @pytest.mark.parametrize('missing', ['report', 'baseline'])
@@ -186,7 +208,7 @@ def test_missing_report_or_baseline_is_not_measured(tmp_path, setup, missing):
     g = gate(report, baseline, manifest)
     assert g.evaluate(dest, backing, manifest, usage_for(dest, backing))['verdict'] == 'NOT MEASURED'
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g))
+    assert_not_gated(fake, manifest, dest, backing, auth, 'NOT MEASURED')
 
 
 def test_report_without_baseline_is_refused(tmp_path, setup):
@@ -214,7 +236,7 @@ def test_stale_or_future_report_refused(tmp_path, setup, now, needle):
     result = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
     assert result['verdict'] == 'REFUSED' and any(needle in r for r in result['reasons']), result
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g), 'REFUSED')
+    assert_not_gated(fake, manifest, dest, backing, auth, result['verdict'])
 
 
 @pytest.mark.parametrize('baseline_time,needle', [(T0 - timedelta(hours=13), 'another session'),
@@ -227,16 +249,17 @@ def test_baseline_out_of_session_refused(tmp_path, setup, baseline_time, needle)
 
 
 def test_report_goes_stale_between_network_check_and_payload(tmp_path, setup):
-    """The gate is re-evaluated under the lock: a report that ages out stops the run before any payload."""
+    """Gate level: a report ages out between two evaluations. Amendment 003: the acquisition does not
+    evaluate the gate at all, so a stale report cannot stop it (and the gate is never called)."""
     manifest, fake, dest, backing = setup
     report, baseline = write_reports(tmp_path, dest, backing)
     times = iter([T0 + timedelta(seconds=60), T0 + timedelta(seconds=2000)])
     g = hg.Gate(report, baseline, loader=loader_for(manifest), clock=lambda: next(times))
+    assert g.evaluate(dest, backing, manifest, usage_for(dest, backing))['verdict'] == 'GO'
+    stale = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
+    assert stale['verdict'] == 'REFUSED' and any('stale' in r for r in stale['reasons'])
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    with pytest.raises(acq.AcquireError, match='stale'):
-        run_execute(fake, manifest, dest, backing, auth, g)
-    assert fake.payload_gets() == []
-    assert not any(p.name.endswith('.part') for p in dest.iterdir())
+    assert_not_gated(fake, manifest, dest, backing, auth, stale['verdict'])
 
 
 def test_interval_measured_outside_tolerance_refused(tmp_path, setup):
@@ -255,7 +278,7 @@ def test_report_from_another_protocol_refused(tmp_path, setup):
     result = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
     assert result['verdict'] == 'REFUSED' and any('another protocol' in r for r in result['reasons'])
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g))
+    assert_not_gated(fake, manifest, dest, backing, auth, result['verdict'])
 
 
 @pytest.mark.parametrize('profile', ['runtime', 'oracle'])
@@ -286,7 +309,7 @@ def test_unverified_protocol_chain_refused(tmp_path, setup):
     result = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
     assert result['verdict'] == 'REFUSED' and any('protocol chain' in r for r in result['reasons'])
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g))
+    assert_not_gated(fake, manifest, dest, backing, auth, result['verdict'])
 
 
 def test_missing_policy_or_unreadable_protocol_refused(tmp_path, setup):
@@ -364,7 +387,7 @@ def test_destination_or_backing_path_mismatch_refused(tmp_path, setup, which):
     result = g.evaluate(dest, backing, manifest, usage_for(dest, backing))
     assert result['verdict'] == 'REFUSED' and any('path differs' in r for r in result['reasons']), result
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, g))
+    assert_not_gated(fake, manifest, dest, backing, auth, result['verdict'])
 
 
 @pytest.mark.parametrize('kw', [dict(dest_total=DEST_TOTAL + 4096), dict(back_total=BACK_TOTAL - 4096)])
@@ -400,10 +423,10 @@ def test_go_without_owner_authorization_refused(tmp_path, setup):
 
 
 def test_owner_authorization_without_gate_refused(tmp_path, setup):
+    """Inverted by amendment 003: owner authorization alone is sufficient; no host gate is needed."""
     manifest, fake, dest, backing = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, None),
-                                  'host readiness gate missing')
+    assert_not_gated(fake, manifest, dest, backing, auth, None)
 
 
 @pytest.mark.parametrize('result', [None, {}, dict(schema='other', profile='download', verdict='GO', reasons=[]),
@@ -416,11 +439,18 @@ def test_malformed_gate_result_refused(tmp_path, setup, result):
     class Fake:
         def evaluate(self, *args):
             return result
+    # gate level: hostgate10 consumers must still reject a malformed result as not GO
+    r = Fake().evaluate()
+    assert not (isinstance(r, dict) and r.get('schema') == hg.SCHEMA and r.get('profile') == 'download'
+                and r.get('verdict') == 'GO' and not r.get('reasons'))
+    # amendment 003: the acquisition never reads a gate result, malformed or not
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    assert_refused_before_network(fake, dest, lambda: run_execute(fake, manifest, dest, backing, auth, Fake()))
+    assert_not_gated(fake, manifest, dest, backing, auth, None)
 
 
 def test_cli_execute_requires_both_records(tmp_path):
+    """Amendment 003: --execute requires the owner record only; --host-report/--host-baseline were removed
+    from acquire10 and are rejected as unknown options (no silent acceptance of a superseded policy)."""
     dest = tmp_path/'ckpt'
     auth = tmp_path/'auth.json'
     auth.write_text('{}')
@@ -438,13 +468,13 @@ def test_dry_run_reports_host_readiness_separately(tmp_path, setup):
     manifest, fake, dest, backing = setup
     report, baseline = write_reports(tmp_path, dest, backing)
     kw = dict(manifest=manifest, endpoint=fake.endpoint, reserves=small_reserves(), usage=usage_for(dest, backing))
-    go = acq.dry_run(dest, backing, transport=acq.Transport(allow_loopback_http=True),
-                     host_gate=gate(report, baseline, manifest), **kw)
-    assert go['storage_ready'] and go['host_readiness']['verdict'] == 'GO' and go['would_proceed_if_authorized']
-    assert 'not evaluated' in go['owner_authorization']
+    # the gate verdicts stay computable on their own ...
+    assert gate(report, baseline, manifest).evaluate(dest, backing, manifest, usage_for(dest, backing))['verdict'] == 'GO'
     report2, baseline2 = write_reports(tmp_path, dest, backing, pages_in_rate=5000)
-    d = acq.dry_run(dest, backing, transport=acq.Transport(allow_loopback_http=True),
-                    host_gate=gate(report2, baseline2, manifest), **kw)
-    assert d['storage_ready'] and d['host_readiness']['verdict'] == 'DEFER'
-    assert d['would_proceed_if_authorized'] is False
+    assert gate(report2, baseline2, manifest).evaluate(dest, backing, manifest,
+                                                       usage_for(dest, backing))['verdict'] == 'DEFER'
+    # ... and the dry-run reports storage readiness only (amendment 003), with the host policy stated
+    d = acq.dry_run(dest, backing, transport=acq.Transport(allow_loopback_http=True), **kw)
+    assert d['storage_ready'] and d['would_proceed_if_authorized'] and 'host_readiness' not in d
+    assert d['host_policy']['gated'] is False and 'not evaluated' in d['owner_authorization']
     assert fake.payload_gets() == [] and not dest.exists()

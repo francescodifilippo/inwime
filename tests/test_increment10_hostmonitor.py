@@ -1,12 +1,16 @@
-"""Increment 10, amendment 002: read-only in-run host monitor during the acquisition.
+"""Increment 10: read-only host monitor (amendment 002) and its acquisition role (amendment 003).
 
-Review of PR #24 at e8c588f: the start GO can go stale while 29.55 GB flow. The
-monitor applies the frozen abort criteria of protocol.json during the transfer and
-stops it cooperatively, keeping the owned .part for a later resume. Covered here:
-GO -> critical host pressure during the first and during a later file, each frozen
-criterion, sustain windows, annotation-only criterion, sampling errors (error lines,
-unreadable values, dead sampler, no first sample, sampler that cannot start), bounds,
-resume after a stop, and the real subprocess stream with a fake sampler.
+The monitor itself is unchanged and fully covered here: each frozen abort criterion,
+sustain windows, the annotation-only criterion, sampling errors (error lines,
+unreadable values, dead sampler, no first sample, sampler that cannot start), bounds
+and the real subprocess stream with a fake sampler. It stays available for runs.
+
+Amendment 003 (Issue #25): during an acquisition the monitor is optional diagnostics
+only. The "integration with execute" tests keep their node IDs (inventory policy) but
+now assert that GO -> critical host pressure during the first or a later file, guest
+pressure, sampling errors or a dead sampler never stop a correct transfer: the
+decisions amendment 002 would have applied are recorded and ignored, every file is
+committed with its verified digest, and the sampler child is always closed.
 """
 import hashlib
 import json
@@ -223,25 +227,27 @@ def part_size(dest, name):
 
 
 def run(fake, manifest, dest, auth, mon):
-    return acq.execute(dest, dest.parent, auth, GoGate(), mon, manifest=manifest, endpoint=fake.endpoint,
+    return acq.execute(dest, dest.parent, auth, manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
-                       usage=lambda p: ROOMY, chunk=512)
+                       usage=lambda p: ROOMY, chunk=512, host_diagnostics=mon)
 
 
 def critical_when(condition, **pressure):
     return lambda i, t: win(t, **pressure) if condition() else win(t)
 
 
-def assert_stopped_with_part(fake, manifest, dest, auth, mon, name):
-    with pytest.raises(acq.HostPressureStop) as info:
-        run(fake, manifest, dest, auth, mon)
-    report = info.value.report
-    assert report['host_monitor']['stopped'] and report['parts_retained'][name] == part_size(dest, name)
-    assert 0 < part_size(dest, name) < manifest.size(name)
-    marker = json.loads((dest/(name+'.part.acquire10.json')).read_text())
-    assert marker['state'] == 'partial' and marker['bytes'] == part_size(dest, name)
-    assert not (dest/name).exists() and not (dest/'.acquire10.lock').exists()
-    assert mon.source.closed
+def assert_stopped_with_part(fake, manifest, dest, auth, mon, name, files):
+    """Amendment 003: the pressure that amendment 002 turned into a stop is recorded, the transfer completes."""
+    report = run(fake, manifest, dest, auth, mon)
+    d = report['host_diagnostics']
+    assert d['blocking'] is False and d['would_have_stopped_under_amendment_002'] is True
+    assert report['payload_bytes_transferred'] == manifest.total_bytes() and 'stopped' not in report
+    for n, data in files.items():
+        assert (dest/n).read_bytes() == data
+        assert not (dest/(n+'.part')).exists()
+    assert report['committed'][name]['computed_sha256'] == hashlib.sha256(files[name]).hexdigest()
+    assert not (dest/'.acquire10.lock').exists() and mon.source.closed
+    report['stopped'] = '; '.join(d['reasons_ignored'])        # what amendment 002 would have reported
     return report
 
 
@@ -249,24 +255,19 @@ def test_go_to_critical_during_first_shard_then_resume(tmp_path, setup):
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(critical_when(lambda: part_size(dest, SHARD1) > 0, available=200*10**6), dest, dest.parent)
-    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1)
+    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1, files)
     assert 'host_available_bytes' in report['stopped']
-    assert report['payload_bytes_transferred'] < manifest.total_bytes()
-    kept = part_size(dest, SHARD1)
-    # resume: new GO and a healthy host; the .part is re-hashed and only the remainder is requested
-    again = run(fake, manifest, dest, auth, healthy(dest, dest.parent))
-    v = again['verification'][SHARD1]
-    assert v['method'] == 'resumed .part re-hashed then streamed' and v['resumed_from_bytes'] == kept
-    for name, data in files.items():
-        assert (dest/name).read_bytes() == data
-    assert again['committed'][SHARD1]['computed_sha256'] == hashlib.sha256(files[SHARD1]).hexdigest()
+    # a rerun under the same pressure is idempotent: existing files re-hashed, nothing transferred
+    again = run(fake, manifest, dest, auth, monitor(lambda i, t: win(t, available=200*10**6), dest, dest.parent))
+    assert again['payload_bytes_transferred'] == 0
+    assert {v['method'] for v in again['verification'].values()} == {'existing file re-hashed'}
 
 
 def test_go_to_critical_during_a_later_shard(tmp_path, setup):
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(critical_when(lambda: part_size(dest, SHARD2) > 0, committed=50*GiB - 1), dest, dest.parent)
-    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD2)
+    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD2, files)
     assert (dest/SHARD1).read_bytes() == files[SHARD1]                  # earlier file committed and verified
     assert 'host_commit_headroom_bytes' in report['stopped'] and 'kill-scope-invalidate-run' in report['stopped']
 
@@ -276,7 +277,7 @@ def test_guest_pressure_during_transfer_stops(tmp_path, setup):
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(lambda i, t: win(t), dest, dest.parent,
                   guest_reader=lambda: guest(500*MiB if part_size(dest, SHARD1) > 0 else 7*GiB))
-    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1)
+    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1, files)
     assert 'guest_mem_available' in report['stopped']
 
 
@@ -284,9 +285,9 @@ def test_critical_before_first_payload_request(tmp_path, setup):
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(lambda i, t: win(t, pf_mb=7000 + 5000), dest, dest.parent)
-    with pytest.raises(acq.HostPressureStop, match='before the first payload'):
-        run(fake, manifest, dest, auth, mon)
-    assert fake.payload_gets() == [] and mon.source.closed
+    report = run(fake, manifest, dest, auth, mon)
+    assert report['host_diagnostics_start']['stop'] is True          # recorded at start, ignored
+    assert report['payload_bytes_transferred'] == manifest.total_bytes() and mon.source.closed
     assert not any(p.name.endswith('.part') for p in dest.iterdir())
 
 
@@ -294,15 +295,15 @@ def test_sampling_errors_during_transfer_stop_safely(tmp_path, setup):
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(lambda i, t: 'error' if part_size(dest, SHARD1) > 0 else win(t), dest, dest.parent)
-    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1)
-    assert 'not monitored' in report['stopped'] and report['host_monitor']['counts']['errors'] >= 4
+    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD1, files)
+    assert 'not monitored' in report['stopped'] and report['host_diagnostics']['summary']['counts']['errors'] >= 4
 
 
 def test_dead_sampler_during_transfer_stops_safely(tmp_path, setup):
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
     mon = monitor(lambda i, t: 'eof' if part_size(dest, SHARD2) > 0 else win(t), dest, dest.parent)
-    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD2)
+    report = assert_stopped_with_part(fake, manifest, dest, auth, mon, SHARD2, files)
     assert 'sampler stopped' in report['stopped']
 
 
@@ -312,23 +313,31 @@ def test_annotation_only_paging_does_not_stop_transfer(tmp_path, setup):
     mon = monitor(lambda i, t: win(t, pages_per_s=9000), dest, dest.parent)
     report = run(fake, manifest, dest, auth, mon)
     assert report['payload_bytes_transferred'] == manifest.total_bytes()
-    notes = report['host_monitor']['annotations']
+    notes = report['host_diagnostics']['summary']['annotations']
     assert [n['quantity'] for n in notes] == ['host_pages_input_per_s'] and notes[0]['applied'] == 'annotate'
     assert mon.source.closed
 
 
 @pytest.mark.parametrize('bad', [None, object(), GoGate()])
 def test_execute_requires_a_real_monitor(tmp_path, setup, bad):
+    """Amendment 003: no monitor (None) is accepted; a diagnostics object that is not a real HostMonitor
+    is still refused before any request (no ad-hoc object may stand in for the read-only sampler)."""
     manifest, files, fake, dest = setup
     auth = authorize(tmp_path/'auth.json', manifest, dest)
-    with pytest.raises(acq.AcquireError, match='in-run host monitor missing'):
+    if bad is None:
+        report = run(fake, manifest, dest, auth, bad)
+        assert report['payload_bytes_transferred'] == manifest.total_bytes()
+        assert report['host_diagnostics'] == dict(enabled=False)
+        return
+    with pytest.raises(acq.AcquireError, match='host diagnostics must be'):
         run(fake, manifest, dest, auth, bad)
     assert fake.requests == [] and not dest.exists()
 
 
 def test_cli_stop_writes_evidence(tmp_path, setup, monkeypatch):
     manifest, files, fake, dest = setup
-    stop = acq.HostPressureStop('host stop condition: x')
+    # amendment 003: only acquisition risks stop a transfer; the CLI still writes the stop evidence
+    stop = acq.TransferStopped('connection interrupted; .part retained: x')
     stop.report = dict(mode='execute', stopped='x')
 
     def fake_execute(*args, **kw):
@@ -336,9 +345,9 @@ def test_cli_stop_writes_evidence(tmp_path, setup, monkeypatch):
     monkeypatch.setattr(acq, 'execute', fake_execute)
     monkeypatch.setattr(hmon.HostMonitor, 'for_acquisition', classmethod(lambda cls, *a, **k: None))
     evidence = tmp_path/'stop.json'
-    with pytest.raises(acq.HostPressureStop):
+    with pytest.raises(acq.TransferStopped):
         acq.main([str(dest), '--backing-volume', str(tmp_path), '--execute', '--authorization', 'a.json',
-                  '--host-report', 'r.json', '--host-baseline', 'b.json', '--evidence', str(evidence)])
+                  '--host-diagnostics', 'b.json', '--evidence', str(evidence)])
     assert json.loads(evidence.read_text())['stopped'] == 'x'
 
 

@@ -12,28 +12,22 @@ Modes
                        about 160 KB, or offline from a captured --metadata-dir)
                        against the pinned manifest, inspects the destination
                        and computes the space plan on the physical volume.
-  --execute            Requires two independent records, both checked before
-                       any network request and again under the lock before the
-                       first payload request:
-                       * --authorization FILE: the owner's explicit approval
-                         naming model, revision, manifest digest, destination
-                         and the maximum number of bytes that may be transferred
-                         (human decision);
-                       * --host-report/--host-baseline: a fresh hostmem10 GO for
-                         the preregistered 'download' profile, validated by
-                         tools/hostgate10.py against the pinned protocol, this
-                         destination and this physical volume (technical
-                         eligibility; protocol amendment 001).
-                       Without both nothing is downloaded; neither implies the
-                       other.
-                       While bytes flow, the in-run host monitor
-                       (tools/hostmonitor10.py, amendment 002) applies the
-                       preregistered abort criteria and stops the transfer
-                       cooperatively (owned .part kept, resumable after a new
-                       GO). No valid host sample for too long also stops it.
-                       The monitor stops this acquisition only; it cannot act on
-                       Windows and reacts within one sampling interval plus the
-                       preregistered sustain time.
+  --execute            Requires the owner's explicit approval (--authorization
+                       FILE) naming model, revision, manifest digest,
+                       destination and the maximum number of bytes that may be
+                       transferred; checked before any network request and again
+                       under the lock before the first payload request.
+                       Host RAM and paging are NOT acquisition criteria
+                       (protocol amendment 003, Issue #25): the acquisition is a
+                       streaming Internet -> ext4 transfer whose pages are file
+                       pages; it stops only for acquisition risks (network,
+                       Range/Content-Range/Content-Length, checksum, physical
+                       space or ENOSPC, I/O errors, budget, lock, ownership).
+                       The host gate (tools/hostgate10.py) and the in-run host
+                       monitor (tools/hostmonitor10.py) of amendments 001/002
+                       stay available for inference, oracle and benchmark runs;
+                       --host-diagnostics BASELINE optionally records host
+                       samples during the transfer, never stopping it.
 
 Safety properties (each covered by tests against a local fake HTTP server)
   * HTTPS only, host allowlist on every redirect hop, generic User-Agent, no
@@ -90,10 +84,6 @@ class TransferStopped(AcquireError):
 
 class SpaceError(TransferStopped):
     pass
-
-
-class HostPressureStop(TransferStopped):
-    """Preregistered host abort condition (or loss of host monitoring) during the transfer."""
 
 
 class Manifest:
@@ -581,16 +571,18 @@ class Guard:
         self.destination, self.backing, self.reserves, self.usage = destination, backing, reserves, usage
         self.minimum_free = None
         self.checks = 0
-        self.monitor = None
+        self.diagnostics = None
+        self.diagnostic_polls = 0
 
     def poll_host(self):
-        """In-run host monitor (amendment 002); called before each request and after each chunk."""
-        if self.monitor is None:
+        """Optional host diagnostics (amendment 003): sampled and recorded, never a reason to stop.
+
+        Called before each request and after each chunk. A decision of the monitor (including a
+        'stop' that amendment 002 would have applied) is kept in its summary and ignored here."""
+        if self.diagnostics is None:
             return
-        decision = self.monitor.poll()
-        if decision['stop']:
-            raise HostPressureStop('host stop condition: '+'; '.join(decision['reasons'])
-                                   + '; .part retained, resume only after a new hostgate10 GO')
+        self.diagnostic_polls += 1
+        self.diagnostics.poll()
 
     def free(self):
         return min(self.usage(existing_ancestor(self.destination)).free, self.usage(self.backing).free)
@@ -748,23 +740,39 @@ def write_evidence(path, report):
         json.dump(report, f, indent=2, sort_keys=True); f.write('\n')
 
 
-def host_readiness(host_gate, destination, backing, manifest, usage):
-    """Technical eligibility from the host gate (tools/hostgate10.py); only a well-formed GO passes."""
-    from . import hostgate10
-    if host_gate is None or not callable(getattr(host_gate, 'evaluate', None)):
-        raise AcquireError('host readiness gate missing: a fresh hostmem10 GO (--host-report/--host-baseline) '
-                           'is required before any transfer')
-    result = host_gate.evaluate(destination, backing, manifest, usage)
-    if not isinstance(result, dict) or result.get('schema') != hostgate10.SCHEMA or result.get('profile') != 'download' \
-            or result.get('verdict') != 'GO' or result.get('reasons'):
-        verdict = result.get('verdict') if isinstance(result, dict) else None
-        reasons = result.get('reasons') if isinstance(result, dict) else None
-        raise AcquireError(f'host readiness gate is not GO ({verdict}): '+'; '.join(map(str, reasons or ['invalid result'])))
-    return result
+# Amendment 003 (Issue #25): host RAM, commit, pagefile, paging and guest memory are not acquisition
+# criteria. Recorded in every report so that an evidence file states which policy produced it.
+HOST_POLICY = dict(
+    gated=False, amendment='003-acquisition-without-host-memory-gate', issue=25,
+    rule='the acquisition never requires a host GO and never stops for host or guest memory pressure; '
+         'it stops only for network, HTTP/Range, checksum, physical space/ENOSPC, I/O, budget, lock or '
+         'ownership conditions',
+    superseded=['amendment 001: hostgate10 GO required by --execute',
+                'amendment 002: in-run host monitor stopping the transfer'],
+    diagnostics='optional, non-blocking (--host-diagnostics BASELINE)')
+
+
+def check_diagnostics(host_diagnostics):
+    """None (no diagnostics) or a real tools/hostmonitor10.HostMonitor used only to record samples."""
+    if host_diagnostics is None:
+        return None
+    from . import hostmonitor10
+    if not isinstance(host_diagnostics, hostmonitor10.HostMonitor):
+        raise AcquireError('host diagnostics must be a tools/hostmonitor10.HostMonitor (or absent)')
+    return host_diagnostics
+
+
+def diagnostics_summary(monitor, polls):
+    if monitor is None:
+        return dict(enabled=False)
+    summary = monitor.summary()
+    return dict(enabled=True, blocking=False, polls=polls,
+                would_have_stopped_under_amendment_002=summary['stopped'],
+                reasons_ignored=summary['stop_reasons'], summary=summary)
 
 
 def dry_run(destination, backing, *, manifest=QWEN25_14B, reserves=None, endpoint=ENDPOINT,
-            metadata_dir=None, transport=None, usage=shutil.disk_usage, host_gate=None):
+            metadata_dir=None, transport=None, usage=shutil.disk_usage):
     reserves = reserves or Reserves()
     report = dict(schema=SCHEMA, mode='dry-run', utc=now(), model=manifest.model, revision=manifest.revision,
                   manifest_sha256=manifest.digest(), download_total_bytes=manifest.total_bytes(),
@@ -787,30 +795,20 @@ def dry_run(destination, backing, *, manifest=QWEN25_14B, reserves=None, endpoin
     report.update(destination=dict(path_relative=os.path.relpath(Path(destination).absolute()),
                                    backing_volume=str(backing), **state),
                   space=plan)
-    # Storage readiness alone is never permission to download (review of PR #24): the host gate
-    # must be GO as well, and owner authorization stays a separate record that a dry-run never reads.
+    # Owner authorization stays a separate record that a dry-run never reads (amendment 003: no host gate).
     storage_ready = not state['blockers'] and not plan['blockers']
-    if host_gate is None:
-        host = dict(verdict='NOT EVALUATED', reasons=['storage-only dry-run: no --host-report/--host-baseline'])
-    else:
-        host = host_gate.evaluate(destination, backing, manifest, usage)
-    report.update(storage_ready=storage_ready, host_readiness=host,
+    report.update(storage_ready=storage_ready, host_policy=HOST_POLICY,
+                  parts_inventory={n: dict(state=f['state'], part_bytes=part_path(Path(destination)/n).stat().st_size,
+                                           remaining_bytes=f['transfer_bytes'])
+                                   for n, f in state['files'].items() if part_path(Path(destination)/n).exists()},
                   owner_authorization='not evaluated by a dry-run; --execute requires a separate owner record',
-                  would_proceed_if_authorized=storage_ready and host.get('verdict') == 'GO' and not host.get('reasons'))
+                  would_proceed_if_authorized=storage_ready)
     return report
 
 
-def require_monitor(host_monitor):
-    from . import hostmonitor10
-    if not isinstance(host_monitor, hostmonitor10.HostMonitor):
-        raise AcquireError('in-run host monitor missing: tools/hostmonitor10.HostMonitor is required '
-                           'before any transfer (amendment 002)')
-    return host_monitor
-
-
-def execute(destination, backing, authorization, host_gate, host_monitor, *, manifest=QWEN25_14B, reserves=None,
+def execute(destination, backing, authorization, *, manifest=QWEN25_14B, reserves=None,
             endpoint=ENDPOINT, transport=None, usage=shutil.disk_usage, opener=open, discard_rejected=False,
-            chunk=MiB):
+            chunk=MiB, host_diagnostics=None):
     reserves = reserves or Reserves()
     transport = transport or Transport()
     destination = Path(destination)
@@ -818,12 +816,12 @@ def execute(destination, backing, authorization, host_gate, host_monitor, *, man
                   revision=manifest.revision, manifest_sha256=manifest.digest(), user_agent=AGENT)
     if not destination.parent.is_dir():
         raise AcquireError('destination parent does not exist (not created implicitly)')
-    # Owner authorization (human decision) and host readiness (technical eligibility) are separate
-    # checks; both run before any network request and again under the lock before any payload request.
+    # Owner authorization (human decision) runs before any network request and again under the lock
+    # before any payload request. Host memory is not consulted (amendment 003, Issue #25).
     check_authorization(authorization, manifest, destination,
                         sum(f['transfer_bytes'] for f in inspect(destination, manifest)['files'].values()))
-    host_before_network = host_readiness(host_gate, destination, backing, manifest, usage)
-    monitor = require_monitor(host_monitor)
+    monitor = check_diagnostics(host_diagnostics)
+    report['host_policy'] = HOST_POLICY
     api, small, headers = online_metadata(transport, endpoint, manifest)
     report['metadata'] = verify_metadata(api, small, headers, manifest)
     destination.mkdir(exist_ok=True)
@@ -840,11 +838,6 @@ def execute(destination, backing, authorization, host_gate, host_monitor, *, man
         planned = sum(f['transfer_bytes'] for f in state['files'].values())
         auth = check_authorization(authorization, manifest, destination, planned)
         report['authorization'] = {k: auth[k] for k in ('approved_by', 'approved_utc', 'max_transfer_bytes')}
-        host_before_payload = host_readiness(host_gate, destination, backing, manifest, usage)
-        report['host_readiness'] = {
-            when: {k: r.get(k) for k in ('verdict', 'report_sha256', 'baseline_sha256', 'report_utc', 'report_age_s',
-                                         'protocol_sha256', 'values')}
-            for when, r in (('before_network', host_before_network), ('before_payload', host_before_payload))}
         if state['blockers']:
             raise AcquireError('destination state blocks the run: '+'; '.join(state['blockers']))
         guard = Guard(destination, backing, reserves, usage)
@@ -855,24 +848,22 @@ def execute(destination, backing, authorization, host_gate, host_monitor, *, man
         budget = dict(max_bytes=auth['max_transfer_bytes'], transferred=0)
         committed, verification = {}, {}
         try:
-            first = monitor.start()
-            report['host_monitor_start'] = first
-            if first['stop']:
-                raise HostPressureStop('host stop condition before the first payload request: '
-                                       + '; '.join(first['reasons']))
-            guard.monitor = monitor
+            if monitor is not None:
+                report['host_diagnostics_start'] = monitor.start()     # recorded only, never a reason to stop
+                guard.diagnostics = monitor
             files_loop(destination, manifest, transport, endpoint, guard, budget, opener, chunk, committed,
                        verification)
         except TransferStopped as error:
             report.update(stopped=str(error), payload_bytes_transferred=budget['transferred'],
-                          host_monitor=monitor.summary(), utc_stop=now(),
+                          host_diagnostics=diagnostics_summary(monitor, guard.diagnostic_polls), utc_stop=now(),
                           parts_retained={n: (destination/(n+'.part')).stat().st_size for n in manifest.files()
                                           if (destination/(n+'.part')).exists()})
             error.report = report
             raise
         finally:
-            monitor.close()
-        report['host_monitor'] = monitor.summary()
+            if monitor is not None:
+                monitor.close()
+        report['host_diagnostics'] = diagnostics_summary(monitor, guard.diagnostic_polls)
         write_descriptors(destination, manifest, verification)
         report.update(verification=verification, committed=committed, payload_bytes_transferred=budget['transferred'],
                       minimum_free_during_transfer=guard.minimum_free, guard_checks=guard.checks,
@@ -936,15 +927,15 @@ def main(argv=None):
                       help='remove only acquire10-owned .part files (partial and rejected)')
     mode.add_argument('--print-manifest', action='store_true')
     p.add_argument('--authorization', type=Path, help='owner approval record (human decision)')
-    p.add_argument('--host-report', type=Path, help='fresh hostmem10 report, profile download, taken with --baseline')
-    p.add_argument('--host-baseline', type=Path, help='the baseline report named by --host-report')
+    p.add_argument('--host-diagnostics', type=Path, metavar='BASELINE',
+                   help='--execute only: record host samples during the transfer (hostmem10 baseline report); '
+                        'diagnostic, never stops the transfer (amendment 003)')
     p.add_argument('--metadata-dir', type=Path, help='dry-run: verify captured metadata offline')
     p.add_argument('--evidence', type=Path)
     p.add_argument('--discard-rejected', action='store_true')
     for name, default in Reserves().as_dict().items():
         p.add_argument('--reserve-'+name.replace('_', '-'), dest='reserve_'+name, type=int, default=default)
     a = p.parse_args(argv)
-    from .hostgate10 import Gate
     if a.print_manifest:
         print(json.dumps(QWEN25_14B.canonical() | dict(manifest_sha256=QWEN25_14B.digest(),
                                                        download_total_bytes=QWEN25_14B.total_bytes()), indent=1))
@@ -956,37 +947,33 @@ def main(argv=None):
     if a.execute:
         if a.authorization is None:
             p.error('--execute requires --authorization (explicit owner approval record)')
-        if a.host_report is None or a.host_baseline is None:
-            p.error('--execute requires --host-report and --host-baseline (fresh hostmem10 GO, profile download)')
         if a.metadata_dir is not None:
             p.error('--execute always re-verifies metadata online')
-        from .hostmonitor10 import HostMonitor
+        monitor = None
+        if a.host_diagnostics is not None:
+            from .hostmonitor10 import HostMonitor
+            try:
+                monitor = HostMonitor.for_acquisition(a.host_diagnostics, a.destination, a.backing_volume)
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                # diagnostics are optional: their absence is recorded, never a reason to refuse
+                print('acquire10: host diagnostics unavailable: '+str(error), file=sys.stderr)
         try:
-            monitor = HostMonitor.for_acquisition(a.host_baseline, a.destination, a.backing_volume)
-        except (OSError, ValueError, KeyError, TypeError) as error:
-            raise AcquireError('in-run host monitor unavailable: '+str(error)) from error
-        try:
-            report = execute(a.destination, a.backing_volume, a.authorization, Gate(a.host_report, a.host_baseline),
-                             monitor, reserves=reserves, discard_rejected=a.discard_rejected)
+            report = execute(a.destination, a.backing_volume, a.authorization, reserves=reserves,
+                             discard_rejected=a.discard_rejected, host_diagnostics=monitor)
         except TransferStopped as error:
             if getattr(error, 'report', None) is not None:
                 write_evidence(a.evidence, error.report)       # stop evidence, incl. monitor summary
             raise
     else:
-        if a.authorization is not None or a.discard_rejected:
-            p.error('--authorization/--discard-rejected only apply to --execute')
-        if (a.host_report is None) != (a.host_baseline is None):
-            p.error('--host-report and --host-baseline go together')
-        gate = Gate(a.host_report, a.host_baseline) if a.host_report is not None else None
-        report = dry_run(a.destination, a.backing_volume, reserves=reserves, metadata_dir=a.metadata_dir,
-                         host_gate=gate)
+        if a.authorization is not None or a.discard_rejected or a.host_diagnostics is not None:
+            p.error('--authorization/--discard-rejected/--host-diagnostics only apply to --execute')
+        report = dry_run(a.destination, a.backing_volume, reserves=reserves, metadata_dir=a.metadata_dir)
     write_evidence(a.evidence, report)
     summary = {k: report.get(k) for k in ('mode', 'manifest_sha256', 'download_total_bytes',
                                           'payload_bytes_transferred', 'storage_ready', 'would_proceed_if_authorized')}
-    if 'host_readiness' in report:
-        h = report['host_readiness']
-        summary['host_readiness'] = {k: h.get(k) for k in ('verdict', 'reasons')} if 'verdict' in h else \
-            {k: v.get('verdict') for k, v in h.items()}
+    summary['host_policy'] = 'not gated (amendment 003, Issue #25)'
+    if report.get('parts_inventory'):
+        summary['parts_inventory'] = report['parts_inventory']
     if 'space' in report:
         summary['space'] = {k: report['space'][k] for k in ('transfer_bytes', 'required_free_bytes',
                                                             'effective_free_bytes', 'surplus_bytes', 'blockers')}

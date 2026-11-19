@@ -4,6 +4,12 @@ Covers the pinned 14B manifest, the offline metadata check of the preflight capt
 host allowlist, strict Range handling, interrupted/ignored-Range resume, wrong
 checksums, space exhaustion (plan, guard and ENOSPC), partial and foreign files,
 no silent overwrite, owned-only cleanup and the authorization gate.
+
+Amendment 003 (Issue #25): host RAM, commit, pagefile, paging and guest memory are
+not acquisition criteria. The tests at the end prove that a reduced host (synthetic
+critical samples through the real HostMonitor used as optional diagnostics) never
+stops or refuses a correct transfer, that resume is unaffected, and that the
+acquisition path does not consult the host gate.
 """
 from collections import namedtuple
 import errno
@@ -17,7 +23,7 @@ import threading
 import pytest
 
 from tools import acquire10 as acq
-from tests.support_increment10_monitor import healthy
+from tests.support_increment10_monitor import GiB, MiB, guest, healthy, monitor, win
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA = ROOT/'results'/'increment10'/'preflight-metadata'
@@ -209,18 +215,18 @@ def authorize(path, manifest, dest, max_bytes=None, **override):
 
 
 class GoGate:
-    """Stand-in for a valid hostgate10 GO (the gate itself is tested in test_increment10_hostgate.py)."""
+    """Stand-in for a valid hostgate10 GO. Since amendment 003 the acquisition never consults a host gate;
+    the class stays importable (test_increment10_hostmonitor passes it as a non-monitor object)."""
 
     def evaluate(self, destination, backing, manifest, usage):
         return dict(schema='inwime-hostgate10/1', profile='download', verdict='GO', reasons=[])
 
 
-def run(fake, manifest, dest, auth, host_gate=None, host_monitor=None, **kw):
+def run(fake, manifest, dest, auth, **kw):
     kw.setdefault('reserves', small_reserves())
     kw.setdefault('usage', lambda p: BIG)
-    # quiet in-run monitor (amendment 002; the monitor itself is tested in test_increment10_hostmonitor.py)
-    return acq.execute(dest, dest.parent, auth, host_gate or GoGate(), host_monitor or healthy(dest, dest.parent),
-                       manifest=manifest, endpoint=fake.endpoint,
+    # amendment 003 (Issue #25): no host gate and no blocking host monitor in the acquisition path
+    return acq.execute(dest, dest.parent, auth, manifest=manifest, endpoint=fake.endpoint,
                        transport=acq.Transport(allow_loopback_http=True), **kw)
 
 
@@ -304,9 +310,9 @@ def test_dry_run_online_reads_no_payload(repo, tmp_path):
                          transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
                          usage=lambda p: BIG)
     assert report['payload_bytes_transferred'] == 0 and report['storage_ready'] is True
-    # storage-only dry-run (no host report): never reads as permission to download (review of PR #24)
-    assert report['would_proceed_if_authorized'] is False
-    assert report['host_readiness']['verdict'] == 'NOT EVALUATED'
+    # amendment 003: host memory is not an acquisition criterion; owner authorization stays separate
+    assert report['would_proceed_if_authorized'] is True and report['host_policy']['gated'] is False
+    assert 'host_readiness' not in report and 'not evaluated' in report['owner_authorization']
     assert not dest.exists()
     assert fake.payload_gets() == []
     assert all(r['authorization'] is None for r in fake.requests)
@@ -662,3 +668,116 @@ def test_complete_part_verified_without_request(repo, tmp_path):
     assert report['verification'][shard]['method'] == 'complete .part re-hashed'
     assert not any(r['path'].endswith(shard) and r['range'] not in ('bytes=0-7', f'bytes=8-{7+manifest.shards[shard][3]}')
                    for r in fake.requests)
+
+
+# ---------------------------------------------------------------- amendment 003 (Issue #25)
+
+def critical(dest):
+    """Host far below every frozen abort threshold once the first .part exists (synthetic)."""
+    def script(i, t):
+        if any(p.name.endswith('.part') for p in dest.iterdir()) if dest.is_dir() else False:
+            return win(t, available=150*10**6, committed=50*GiB - 2**20, pf_mb=7000 + 6000, pages_per_s=9000)
+        return win(t)
+    return script
+
+
+def test_reduced_host_ram_does_not_stop_a_correct_transfer(repo, tmp_path):
+    manifest, files, fake = repo
+    dest = tmp_path/'ckpt'
+    auth = authorize(tmp_path/'auth.json', manifest, dest)
+    mon = monitor(critical(dest), dest, dest.parent, guest_reader=lambda: guest(400*MiB))
+    report = run(fake, manifest, dest, auth, host_diagnostics=mon, chunk=512)
+    assert report['payload_bytes_transferred'] == manifest.total_bytes()
+    for name, data in files.items():
+        assert (dest/name).read_bytes() == data
+    for name in manifest.shards:
+        v = report['committed'][name]
+        assert v['computed_sha256'] == v['official_lfs_sha256'] == hashlib.sha256(files[name]).hexdigest()
+    d = report['host_diagnostics']
+    assert d['enabled'] and d['blocking'] is False and d['polls'] > 0
+    # the old policy would have stopped: the reasons are recorded, and ignored
+    assert d['would_have_stopped_under_amendment_002'] is True
+    assert any('host_available_bytes' in r or 'guest_mem_available' in r for r in d['reasons_ignored'])
+    assert report['host_policy']['gated'] is False and mon.source.closed
+    assert 'stopped' not in report
+
+
+def test_resume_is_unaffected_by_low_host_ram(repo, tmp_path):
+    """Interrupted by the network (a real acquisition risk) under host pressure, resumed exactly."""
+    manifest, files, fake = repo
+    dest = tmp_path/'ckpt'
+    auth = authorize(tmp_path/'auth.json', manifest, dest)
+    shard = 'model-00001-of-00002.safetensors'
+    fake.mode[shard] = 'truncate:3000'
+    with pytest.raises(acq.TransferStopped, match='interrupted|incomplete') as info:
+        run(fake, manifest, dest, auth, host_diagnostics=monitor(critical(dest), dest, dest.parent))
+    stop = info.value.report
+    have = (dest/(shard+'.part')).stat().st_size
+    assert stop['parts_retained'][shard] == have and 0 < have < len(files[shard])
+    assert stop['host_diagnostics']['blocking'] is False
+    fake.mode.clear()
+    report = run(fake, manifest, dest, auth, host_diagnostics=monitor(critical(dest), dest, dest.parent))
+    v = report['verification'][shard]
+    assert v['method'] == 'resumed .part re-hashed then streamed' and v['resumed_from_bytes'] == have
+    assert v['transferred_bytes'] == len(files[shard]) - have
+    assert (dest/shard).read_bytes() == files[shard]
+    assert any(r['range'] == f'bytes={have}-' for r in fake.requests)
+
+
+def test_acquisition_path_does_not_consult_host_memory():
+    """Static: acquire10 imports neither the host gate nor hostmem10; hostmonitor10 only for diagnostics."""
+    import ast
+    tree = ast.parse(Path(acq.__file__).read_text())
+    imported = {(n.module or '') + ':' + ','.join(a.name for a in n.names)
+                for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)}
+    assert not any('hostgate10' in i or 'hostmem10' in i for i in imported), imported
+    assert not hasattr(acq, 'HostPressureStop') and not hasattr(acq, 'host_readiness')
+    functions = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+    users = {name for name, f in functions.items()
+             if any(isinstance(x, ast.ImportFrom) and 'hostmonitor10' in ''.join(a.name for a in x.names) + (x.module or '')
+                    for x in ast.walk(f))}
+    assert users <= {'check_diagnostics', 'main'}, users
+
+
+def test_cli_execute_needs_only_owner_authorization(tmp_path, monkeypatch, capsys):
+    seen = {}
+
+    def fake_execute(destination, backing, authorization, **kw):
+        seen.update(kw, authorization=authorization)
+        return dict(mode='execute', payload_bytes_transferred=0)
+    monkeypatch.setattr(acq, 'execute', fake_execute)
+    dest = tmp_path/'ckpt'
+    assert acq.main([str(dest), '--backing-volume', str(tmp_path), '--execute', '--authorization', 'a.json']) == 0
+    assert seen['host_diagnostics'] is None and str(seen['authorization']) == 'a.json'
+    for removed in (['--host-report', 'r.json'], ['--host-baseline', 'b.json']):
+        with pytest.raises(SystemExit):
+            acq.main([str(dest), '--backing-volume', str(tmp_path), '--execute', '--authorization', 'a.json', *removed])
+
+
+def test_cli_unavailable_host_diagnostics_never_refuse(tmp_path, monkeypatch, capsys):
+    seen = {}
+    monkeypatch.setattr(acq, 'execute', lambda d, b, a, **kw: seen.update(kw) or dict(mode='execute'))
+    missing = tmp_path/'no-baseline.json'
+    assert acq.main([str(tmp_path/'ckpt'), '--backing-volume', str(tmp_path), '--execute', '--authorization',
+                     'a.json', '--host-diagnostics', str(missing)]) == 0
+    assert seen['host_diagnostics'] is None
+    assert 'host diagnostics unavailable' in capsys.readouterr().err
+
+
+def test_dry_run_inventories_parts_without_host_verdict(repo, tmp_path):
+    manifest, files, fake = repo
+    dest = tmp_path/'ckpt'
+    auth = authorize(tmp_path/'auth.json', manifest, dest)
+    shard = 'model-00001-of-00002.safetensors'
+    fake.mode[shard] = 'truncate:3000'
+    with pytest.raises(acq.TransferStopped):
+        run(fake, manifest, dest, auth)
+    fake.mode.clear()
+    have = (dest/(shard+'.part')).stat().st_size
+    report = acq.dry_run(dest, tmp_path, manifest=manifest, endpoint=fake.endpoint,
+                         transport=acq.Transport(allow_loopback_http=True), reserves=small_reserves(),
+                         usage=lambda p: BIG)
+    assert report['parts_inventory'] == {shard: dict(state='partial', part_bytes=have,
+                                                     remaining_bytes=len(files[shard]) - have)}
+    assert report['would_proceed_if_authorized'] is True and report['host_policy']['gated'] is False
+    assert (dest/(shard+'.part')).stat().st_size == have          # dry-run never touches the .part
