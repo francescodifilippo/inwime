@@ -21,3 +21,17 @@ Read `docs/VISION_AND_ROADMAP.md` for the current mission and roadmap, then `PRO
 
 ## Historical first run (already completed; not an active task)
 Request: `Read PROJECT_BRIEF.md. Audit hardware, drivers, storage, CUDA and any existing PoC. Build a small BF16 streamed-matrix benchmark with bounded RAM and VRAM; compare to CPU reference. No quantization.`
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live in GitHub Issues of `francescodifilippo/inwime` (`gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `GLOSSARY.md` plus `docs/adr/`, created lazily. See `docs/agents/domain.md`.
