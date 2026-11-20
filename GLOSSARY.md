@@ -13,7 +13,7 @@ L'autorità unica del Motore su sessioni, stato KV, risorse e scheduling; nessun
 _Avoid_: orchestratore, scheduler (come sinonimo dell'intero ruolo)
 
 **Gestore delle regioni**:
-La componente risorse storica (`core.Coordinator`) che amministra budget, lease e letture dei pesi dentro un singolo runtime; è subordinata al Coordinatore.
+La componente storica (`core.Coordinator`) che gestisce prenotazioni di memoria, lease, accesso alle regioni dei pesi e I/O di un singolo runtime; è subordinata al Coordinatore.
 _Avoid_: Coordinatore (per questo ruolo)
 
 **Percorso congelato**:
@@ -22,6 +22,23 @@ _Avoid_: legacy, vecchio runtime
 
 **Percorso computazionale**:
 La combinazione precisa di adapter, operatori, kernel, ordine di accumulo e configurazione di thread con cui un modello viene eseguito.
+
+**Percorso additivo**:
+Il percorso computazionale introdotto dopo M10 che affianca il Percorso congelato senza modificarlo e, dove entrambi accettano il Checkpoint, ne riproduce i risultati bit per bit.
+_Avoid_: percorso ottimizzato, nuovo runtime
+
+## Attestazioni numeriche
+
+Tre attestazioni distinte, mai intercambiabili.
+
+**Bit-identità**:
+Uguaglianza esatta, bit per bit, di logits e stati tra due Percorsi computazionali del Motore sulla stessa configurazione certificata.
+
+**Equivalenza con l'oracolo**:
+Accordo entro tolleranze dichiarate tra il Motore e un oracolo indipendente (Transformers FP32, riferimento FP64).
+
+**Parità dei token**:
+Uguaglianza della sequenza di token generati in modo greedy tra il Motore e l'oracolo su prompt renderizzati.
 
 ## Modelli
 
@@ -32,6 +49,10 @@ _Avoid_: modello scaricato, snapshot
 **Revisione**:
 Il commit SHA che fissa in modo univoco il contenuto di un Checkpoint su Hugging Face.
 _Avoid_: branch, tag, versione
+
+**Contesto autorizzato**:
+Il dominio di autorizzazione identificato da una API key del server, entro cui è ammesso il riuso del prefisso KV; non identifica una singola conversazione.
+_Avoid_: sessione, conversazione, utente
 
 **Quantizzazione silenziosa**:
 Qualunque conversione dei pesi originali verso una rappresentazione diversa non richiesta esplicitamente dall'utente; vietata.
