@@ -1,4 +1,4 @@
-> **Nota di stato (15 novembre 2026):** questo brief conserva l'impostazione iniziale, l'hardware e le autorizzazioni storiche al 5 novembre. Le frasi sulla mancanza di un runtime end-to-end e sui «next cycle» di allora sono **superate** dai risultati degli incrementi 1–8. La fonte canonica corrente per scopo finale, roadmap e stato verificato è [docs/VISION_AND_ROADMAP.md](docs/VISION_AND_ROADMAP.md). Conservare questo brief per provenienza e vincoli operativi; le istruzioni temporanee non autorizzano nuove azioni.
+> **Nota di stato (aggiornata il 20 novembre 2026):** questo brief conserva l'impostazione iniziale, l'hardware e le autorizzazioni storiche al 5 novembre. Le frasi sulla mancanza di un runtime end-to-end e sui «next cycle» di allora sono **superate** dai risultati degli incrementi 1–10. La fonte canonica corrente per scopo finale, piano delle release e stato verificato è [docs/VISION_AND_ROADMAP.md](docs/VISION_AND_ROADMAP.md). Conservare questo brief per provenienza e vincoli operativi; le istruzioni temporanee non autorizzano nuove azioni.
 
 # InWiMe — Out-of-core LLM inference, MSI Katana GF66
 
