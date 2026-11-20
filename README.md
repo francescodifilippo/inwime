@@ -1,5 +1,22 @@
 > **InWiMe oggi — visione e roadmap:** [scopo finale, requisiti irrinunciabili, prove concluse, piano delle release e traguardi futuri](docs/VISION_AND_ROADMAP.md). La documentazione storica dei benchmark qui sotto non rappresenta da sola lo stato attuale: gli incrementi 7–10 hanno eseguito LLM pubblici addestrati, fino a Qwen2.5-14B BF16 con pesi attivi oltre la RAM fisica host (incremento 10, gate A–H PASS). La prossima tappa è la release v0.1.0-alpha ([#26](https://github.com/francescodifilippo/inwime/issues/26)).
 
+## Installazione del pacchetto `inwime` (in sviluppo, v0.1.0-alpha)
+
+Linux x86-64 o WSL2, Python ≥3.11. Si installa in un ambiente utente, senza privilegi di sistema:
+
+```sh
+python3 -m venv ~/.venvs/inwime && ~/.venvs/inwime/bin/pip install .   # oppure: pipx install .
+~/.venvs/inwime/bin/inwime doctor          # audit non distruttivo; --json per il report versionato
+```
+
+Con un compilatore C l'installazione include il kernel nativo FP64 di M10, compilato senza modifiche. Senza compilatore resta il fallback Python, molto più lento. `inwime doctor` mostra:
+- CPU e memoria applicativa, con i limiti cgroup v2;
+- sotto WSL2, la RAM fisica dell'host e lo spazio fisico del volume che contiene il VHDX;
+- lo spazio utilizzabile al netto di un margine di 30 GiB (`--host-margin-gib`);
+- l'esito del self-test bit per bit del kernel.
+
+I dati non rilevabili compaiono come `unknown`. I nomi utente nei percorsi sono oscurati per default (`--show-paths` li mostra). Catalogo, download dei modelli e API arrivano con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
+
 # Benchmark BF16 con streaming esplicito
 
 **Fonti e antecedenti del progetto:** [related work e attribuzioni](docs/RELATED_WORK.md) · [catalogo storico completo F01–F62](docs/INWIME_TECHNIQUE_WATCHLIST.md).

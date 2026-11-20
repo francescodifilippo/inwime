@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inwime"
+dynamic = ["version"]
+description = "Out-of-core local inference of large language models from original BF16 checkpoints, with bounded memory."
+readme = "README.md"
+license = "MPL-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C",
+]
+
+[project.scripts]
+inwime = "inwime.cli:main"
+
+[tool.setuptools]
+packages = ["inwime", "inwime_runtime"]
+
+[tool.setuptools.dynamic]
+version = { attr = "inwime.__version__" }
