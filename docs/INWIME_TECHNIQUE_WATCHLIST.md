@@ -1,5 +1,7 @@
 # InWiMe — Catalogo delle tecniche e dei sistemi da studiare
 
+**Indice pubblico delle fonti, dei progetti e dei paper:** [RELATED_WORK.md](RELATED_WORK.md). Le schede F01–F60 sono il catalogo storico conservato; F61–F62 costituiscono un addendum successivo.
+
 **Stato:** inventario in evoluzione; copertura non esaustiva e provenienza da completare.
 
 **Revisione editoriale:** 1.4 — 12 novembre 2026. Base importata: versione 1.3, dichiarata del 7 novembre 2026.
@@ -762,3 +764,22 @@ Questa tabella non prova che ogni vecchia conversazione sia stata recuperata; pr
 **Questo è un audit del materiale disponibile, non una verifica integrale di ogni vecchio messaggio.** Sono stati confrontati i documenti `PROJECT_BRIEF.md`, `HANDOFF-2026-11-05-benchmark-v2.md`, le architetture, i messaggi presenti nella conversazione e i riferimenti storici recuperabili. Non è giustificato affermare «abbiamo incluso tutto» senza un accesso verificabile a tutte le conversazioni originali o un elenco chiuso approvato dall'utente.
 
 Per le prossime revisioni tenere **due registri separati**: (A) *riferimenti effettivamente discussi*, con data/thread o documento di origine quando noto; (B) *nuove scoperte dalla ricerca*, con data e fonte. Una nuova proposta interessante non deve mai essere etichettata retroattivamente come argomento discusso.
+
+
+---
+
+## Addendum 18 novembre 2026 — fonti analizzate dopo il catalogo v1.4
+
+Il corpo storico F01–F60 e i registri D/R/P importati sono preservati. Questo addendum registra **nuove attestazioni documentali**; la scheda F61 non significa che Strata sia stato discusso prima del 7 novembre e F62 non equivale a un'implementazione integrata. Per la vista navigabile di tutti i precedenti: [RELATED_WORK.md](RELATED_WORK.md).
+
+### F61 — Strata: gerarchia esperti GPU/RAM/SSD, cache e CPU lane [R]
+- **Fonte esaminata:** [Niko1221/Strata, commit `13eedf552417a6a791a7d13c6597e24300ee3a09`](https://github.com/Niko1221/Strata/commit/13eedf552417a6a791a7d13c6597e24300ee3a09).
+- **Provenienza:** [audit tecnico InWiMe del 13 novembre 2026](STRATA_TECH_AUDIT_2026-11-13.md), con referenze [S0]–[S36] a sorgenti pin-nati. La review è un'analisi del codice, **non** un benchmark locale del motore Strata.
+- **Da confrontare:** gestione degli esperti per span e per file, I/O buffered/direct, cache/slot, warmup, calcolo CPU+GPU, scheduling; differenze rispetto al coordinatore CPU-first e ai budget stretti di InWiMe.
+- **Stato:** analizzato come antecedente; nessun codice importato sulla base di questo audit; risultati e percorsi GPU di terzi non attribuibili a InWiMe. M11/M12 (#5/#6).
+
+### F62 — Betelgeuse: demand paging degli esperti MoE in un fork llama.cpp [R]
+- **Fonti:** [Betelgeuse-AI/Betelgeuse](https://github.com/Betelgeuse-AI/Betelgeuse), [documentazione fluxaeros](https://github.com/Betelgeuse-AI/Betelgeuse/blob/main/docs/fluxaeros.md), [discussione GitHub InWiMe #11](https://github.com/francescodifilippo/inwime/issues/11), [video iniziale](https://youtu.be/CgPHfkb6V-c).
+- **Provenienza:** comparazione tecnica registrata nella issue #11 dopo il catalogo v1.4; valutazione futura ancora aperta.
+- **Da confrontare:** gestione del pager per expert, indice/packing degli offset, buffer e cache RAM/VRAM, I/O asincrono, fail-closed e corretta semantica router.
+- **Stato:** riferimento sperimentale di terzi, prestazioni pubblicate dal fork non replicate in InWiMe; configurazioni quantizzate e GPU non dimostrano la fattibilità CPU-only BF16 originale. M11/M12 (#5/#6).
