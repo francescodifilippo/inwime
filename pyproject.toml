@@ -10,7 +10,10 @@ readme = "README.md"
 license = "MPL-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "huggingface_hub==2.4.0",
+    "httpx2==2.16.2",            # imported directly by the catalog for network errors
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Operating System :: POSIX :: Linux",
