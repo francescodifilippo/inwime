@@ -35,6 +35,7 @@ ORDER = ('discovered', 'metadata_parsed', 'graph_resolved', 'operators_resolved'
          'resource_plan_feasible', 'end_to_end_executable', 'numerically_verified')
 NATIVE_DTYPES = ('BF16',)
 MAX_HEADER_FILES = 256                    # shard headers the catalog reads per Revisione
+MAX_CATALOG_TENSORS = 200_000             # tensors the catalog keeps in memory per Revisione
 TOKENIZER_SETS = (('tokenizer.json',), ('tokenizer.model',), ('spiece.model',), ('tiktoken.model',),
                   ('vocab.json', 'merges.txt'), ('vocab.txt',))
 
@@ -74,15 +75,26 @@ class _HeaderSource:
         self.retained_bytes = self.bootstrap_bytes = 0
 
 
-def resolve_graph(architecture, config_raw, tensors):
-    """Run the runtime adapter on the config bytes and tensor shapes; None or its refusal."""
+def resolve_graph(architecture, config, config_raw, tensors):
+    """Run the runtime adapter on the config bytes and tensor shapes; None or its refusal.
+
+    The config comes from an untrusted Hub repository. Every adapter needs at least one tensor
+    per layer, so a layer count above the tensor count is refused here, before the adapter
+    builds per-layer structures from it.
+    """
     from inwime_runtime.core import CheckpointError
+    layers = config.get('num_hidden_layers')
+    if type(layers) is not int or not 0 < layers <= len(tensors):
+        return 'num_hidden_layers=%s is not a positive count within the %d tensors' % (
+            json.dumps(layers)[:40], len(tensors))
     with tempfile.TemporaryDirectory(prefix='inwime-catalog-') as directory:
         (Path(directory)/'config.json').write_bytes(config_raw)
         try:
             adapters()[architecture](_HeaderSource(directory, tensors))
         except CheckpointError as error:
             return str(error)
+        except (MemoryError, OverflowError, RecursionError) as error:
+            return 'config dimensions out of range (%s)' % type(error).__name__
     return None
 
 
@@ -167,6 +179,8 @@ def assess(meta):
     elif weights['missing_files']:
         blocked('metadata_parsed', 'weights', 'the index names files absent from the Revisione: %s'
                 % ', '.join(weights['missing_files']))
+    elif weights.get('header_error'):
+        blocked('metadata_parsed', 'weights', weights['header_error'])
     elif not weights['headers_read']:
         blocked('metadata_parsed', 'weights', '%d weight files: above the %d headers the catalog reads'
                 % (len(weights['files']), MAX_HEADER_FILES))
@@ -192,7 +206,7 @@ def assess(meta):
                     % (', '.join(map(str, architectures)), config['model_type'],
                        ', '.join(PROFILE_DESCRIPTION.values())))
         elif weights['headers_read']:
-            refusal = resolve_graph(architectures[0], meta.config_raw, meta.tensors)
+            refusal = resolve_graph(architectures[0], config, meta.config_raw, meta.tensors)
             if refusal is None:
                 adapter = architectures[0]
             else:

@@ -55,7 +55,7 @@ def models_main(parser, args):
                                     max_params=args.max_params, sort=args.sort, limit=args.limit,
                                     page=args.page)
     except catalog.CatalogError as error:
-        sys.stderr.write('inwime: %s\n' % error)
+        sys.stderr.write('inwime: %s\n' % catalog.printable(error))
         return error.exit_status
     if args.json:
         json.dump(result, sys.stdout, indent=1)

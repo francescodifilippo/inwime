@@ -442,3 +442,43 @@ def test_search_marks_the_certified_revision_and_survives_a_rate_limit(hub, run)
     hub.rate_limit('/api/models', times=1, retry_after='0')
     result = run.json('search')
     assert result['results'][0]['certification']['this_revision'] is True
+
+
+def test_untrusted_metadata_cannot_drive_the_terminal(hub, run):
+    hostile = dict(hm.QWEN2, model_type='qwen2\x1b]0;owned\x07\x1b[2J')
+    hub.add(hm.repo('acme/hostile', hm.checkpoint(hostile), license='mit\x1b[31m\r\x9b'))
+    for args in (('info', 'acme/hostile'), ('search',)):
+        result = run(*args)
+        assert result.returncode == 0, result.stderr
+        assert not any(c in result.stdout for c in '\x1b\x07\r\x9b'), args
+
+
+def test_absurd_dimensions_are_refused_without_allocating(hub, run):
+    hub.add(hm.repo('acme/absurd', hm.checkpoint(dict(hm.QWEN2, num_hidden_layers=10**12),
+                                                 shapes=hm.tensors(hm.QWEN2))))
+    info = run.json('info', 'acme/absurd')
+    assert states(info) == reached_up_to('metadata_parsed')
+    assert any('num_hidden_layers' in d['message'] for d in diagnosis(info, 'architecture'))
+
+
+def test_oversized_safetensors_header_is_diagnosed(hub, run):
+    import struct
+    files = hm.checkpoint(hm.QWEN2)
+    files['model.safetensors'] = struct.pack('<Q', 30_000_000) + b'{}' + bytes(64)
+    hub.add(hm.repo('acme/huge-header', files))
+    info = run.json('info', 'acme/huge-header')
+    assert states(info) == reached_up_to('discovered')
+    assert any('header' in d['message'] for d in diagnosis(info, 'weights'))
+    assert hub.served_bytes('.safetensors') <= 100_001
+
+
+def test_endpoint_credentials_never_reach_the_output(hub, run):
+    hub.add(hm.repo('acme/tiny-qwen2', hm.checkpoint(hm.QWEN2)))
+    secret_endpoint = hub.endpoint.replace('http://', 'http://mirror-user:MIRRORsecret@')
+    ok = run('info', 'acme/tiny-qwen2', '--json', endpoint=secret_endpoint)
+    missing = run('info', 'acme/none', endpoint=secret_endpoint)
+    dead = run('info', 'acme/tiny-qwen2', endpoint='http://u:DEADsecret@127.0.0.1:9')
+    assert ok.returncode == 0 and missing.returncode == 3 and dead.returncode == 7
+    assert json.loads(ok.stdout)['endpoint'] == hub.endpoint
+    for result, secret in ((ok, 'MIRRORsecret'), (missing, 'MIRRORsecret'), (dead, 'DEADsecret')):
+        assert secret not in result.stdout + result.stderr

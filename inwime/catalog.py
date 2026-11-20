@@ -49,6 +49,18 @@ def endpoint():
     return os.environ.get('HF_ENDPOINT', constants.ENDPOINT).rstrip('/') or constants.ENDPOINT
 
 
+def public_endpoint():
+    """The endpoint as shown to the user: any user:password@ part is removed."""
+    from urllib.parse import urlsplit, urlunsplit
+    parts = urlsplit(endpoint())
+    host = parts.hostname or ''
+    if ':' in host:
+        host = '[%s]' % host
+    if parts.port is not None:
+        host += ':%d' % parts.port
+    return urlunsplit(parts._replace(netloc=host))
+
+
 def retry_after(headers):
     """Seconds the Hub asks to wait (Retry-After or the IETF RateLimit header), or None."""
     from huggingface_hub.utils import parse_ratelimit_headers
@@ -80,7 +92,7 @@ def translated(repo_id=None):
     """Hub failures as CatalogError, with what to do next. Messages never carry a token."""
     import httpx2
     from huggingface_hub import errors, get_token
-    page = '%s/%s' % (endpoint(), repo_id) if repo_id else endpoint()
+    page = '%s/%s' % (public_endpoint(), repo_id) if repo_id else public_endpoint()
     repo_id = repo_id or 'the catalog'
     try:
         yield
@@ -101,12 +113,13 @@ def translated(repo_id=None):
         raise CatalogError('not_found', 'repository %s is disabled on the Hub' % repo_id) from None
     except errors.OfflineModeIsEnabled:
         raise CatalogError('offline', 'HF_HUB_OFFLINE is set: the catalog needs the Hub at %s'
-                           % endpoint()) from None
+                           % public_endpoint()) from None
     except errors.HfHubHTTPError as error:
         status = error.response.status_code if error.response is not None else None
         raise CatalogError('hub_error', 'the Hub answered HTTP %s for %s' % (status, repo_id)) from None
-    except httpx2.TransportError as error:
-        raise CatalogError('hub_error', 'cannot reach the Hub at %s: %s' % (endpoint(), error)) from None
+    except httpx2.TransportError as error:     # its text may quote URLs: only the type is shown
+        raise CatalogError('hub_error', 'cannot reach the Hub at %s (%s)'
+                           % (public_endpoint(), type(error).__name__)) from None
 
 
 def api():
@@ -181,20 +194,29 @@ def weights(repo_id, revision, siblings, index):
     others = sorted(n for n in siblings if n.endswith(WEIGHT_SUFFIXES) and n not in files)
     result = {'format': 'safetensors' if files else None, 'files': files, 'sharded': indexed,
               'missing_files': missing, 'bytes': None if missing or None in sizes else sum(sizes),
-              'other_weight_files': others, 'parameters': None, 'dtypes': None, 'headers_read': False}
+              'other_weight_files': others, 'parameters': None, 'dtypes': None, 'headers_read': False,
+              'header_error': None}
+    tensors = {}
     if files and not missing and len(files) <= capability.MAX_HEADER_FILES:
+        from huggingface_hub.errors import SafetensorsParsingError
         hub = api()
-        tensors, dtypes = {}, {}
+        dtypes = {}
         for name in files:
-            header = call(hub.parse_safetensors_file_metadata, repo_id, name, revision=revision)
+            try:
+                header = call(hub.parse_safetensors_file_metadata, repo_id, name, revision=revision)
+            except SafetensorsParsingError as error:
+                result['header_error'] = 'unreadable safetensors header in %s: %s' % (name, error)
+                return result, {}
             for tensor, meta in header.tensors.items():
                 tensors[tensor] = (meta.dtype, tuple(meta.shape))
             for dtype, count in header.parameter_count.items():
                 dtypes[dtype] = dtypes.get(dtype, 0) + count
+            if len(tensors) > capability.MAX_CATALOG_TENSORS:
+                result['header_error'] = 'more than %d tensors: the catalog stops reading headers' \
+                    % capability.MAX_CATALOG_TENSORS
+                return result, {}
         result.update(parameters=sum(dtypes.values()), dtypes=dict(sorted(dtypes.items())),
                       headers_read=True)
-    else:
-        tensors = {}
     return result, tensors
 
 
@@ -272,7 +294,7 @@ def search(text=None, *, author=None, task=None, family=None, licence=None, min_
                              'license': licence_of(model), 'gated': model.gated or False,
                              'last_modified': model.last_modified.isoformat() if model.last_modified else None},
                             **evidence.highlights(model.id, model.sha)))
-    return {'schema': SCHEMA_SEARCH, 'client': client(), 'endpoint': endpoint(), 'query': query,
+    return {'schema': SCHEMA_SEARCH, 'client': client(), 'endpoint': public_endpoint(), 'query': query,
             'page': page, 'limit': limit, 'has_more': len(models) > limit, 'results': results}
 
 
@@ -310,11 +332,11 @@ def _info(repo_id, requested):
     return {
         'schema': SCHEMA_INFO,
         'client': client(),
-        'endpoint': endpoint(),
+        'endpoint': public_endpoint(),
         'repo_id': repo_id,
         'requested_ref': requested,
         'revision': revision,
-        'hub_url': '%s/%s/tree/%s' % (endpoint(), repo_id, revision),
+        'hub_url': '%s/%s/tree/%s' % (public_endpoint(), repo_id, revision),
         'pipeline_tag': model.pipeline_tag,
         'library_name': model.library_name,
         'license': licence_of(model),
@@ -332,6 +354,15 @@ def _info(repo_id, requested):
 
 
 # -- text rendering ----------------------------------------------------------------------------
+
+def printable(text):
+    """Hub-sourced text made inert for a terminal: control characters become \\xNN escapes."""
+    return ''.join(c if c.isprintable() else '\\x%02x' % ord(c) if ord(c) < 256 else '\\u%04x' % ord(c)
+                   for c in str(text))
+
+
+def _lines(lines):
+    return '\n'.join(printable(line) for line in lines) + '\n'
 
 def _count(n):
     if n is None:
@@ -366,7 +397,7 @@ def render_search(result):
     lines.append('* v0.1 certification target   v verified revision (see `inwime models info`)')
     lines.append('page %d, %d per page%s' % (result['page'], result['limit'],
                  '; more results: repeat with --page %d' % (result['page']+1) if result['has_more'] else ''))
-    return '\n'.join(lines) + '\n'
+    return _lines(lines)
 
 
 def render_info(info):
@@ -403,4 +434,4 @@ def render_info(info):
     if cap['diagnosis']:
         out += ['', 'Diagnosis:']
         out += ['  - [%s] %s' % (d['category'], d['message']) for d in cap['diagnosis']]
-    return '\n'.join(out) + '\n'
+    return _lines(out)
