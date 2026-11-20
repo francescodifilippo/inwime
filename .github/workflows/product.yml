@@ -1,0 +1,103 @@
+name: Product package and tests
+
+# v0.1.0-alpha product layer (spec #32, ticket #33). Kept in its own workflow: the
+# offline-cpu workflow file is pinned by the increment-10 protocol and must not change,
+# and product tests live outside tests/ so the frozen increment-10 inventory is untouched.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: product-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  product:
+    name: Python ${{ matrix.python }} / package install, doctor and product tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.14"]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+      HF_HUB_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Build the historical kernel (bit-identity reference)
+        run: make cpu-kernel
+
+      - name: Build wheel and sdist, check their contents
+        run: |
+          python -m venv "$RUNNER_TEMP/build"
+          "$RUNNER_TEMP/build/bin/pip" install build==1.3.0
+          "$RUNNER_TEMP/build/bin/python" -m build --outdir dist .
+          python - <<'PY'
+          import glob, sys, tarfile, zipfile
+          wheel = zipfile.ZipFile(glob.glob('dist/*.whl')[0]).namelist()
+          sdist = tarfile.open(glob.glob('dist/*.tar.gz')[0]).getnames()
+          problems = []
+          if not any(n.startswith('inwime/_cpu_kernel') and n.endswith('.so') for n in wheel):
+              problems.append('wheel lacks the native kernel')
+          if not any(n.endswith('.dist-info/licenses/LICENSE') for n in wheel):
+              problems.append('wheel lacks LICENSE')
+          if not any(n.endswith('src/cpu_kernel.c') for n in sdist):
+              problems.append('sdist lacks the kernel source')
+          leaked = [n for n in wheel if n.split('/')[0] in ('tests', 'tests_inwime', 'tools', 'checkpoints', 'results')]
+          if leaked:
+              problems.append('wheel contains non-package files: %s' % leaked[:5])
+          print('\n'.join(problems) or 'wheel and sdist contents OK')
+          sys.exit(bool(problems))
+          PY
+
+      - name: Clean install without torch, run the installed command
+        run: |
+          python -m venv "$RUNNER_TEMP/inwime"
+          "$RUNNER_TEMP/inwime/bin/pip" install dist/*.whl pytest==9.0.2
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/inwime/bin/python" -c "import importlib.util, sys; sys.exit(importlib.util.find_spec('torch') is not None)"
+          "$RUNNER_TEMP/inwime/bin/inwime" --version
+          "$RUNNER_TEMP/inwime/bin/inwime" doctor --json --no-host-query > doctor.json
+          "$RUNNER_TEMP/inwime/bin/python" -c "import json, sys; r = json.load(open('doctor.json')); k = r['cpu_kernel']; print(r['status'], k['implementation'], k['self_test']); sys.exit(not k['native'])"
+
+      - name: Product tests against the installed package
+        run: |
+          mkdir -p ci-results
+          "$RUNNER_TEMP/inwime/bin/pytest" -q tests_inwime -ra -p no:cacheprovider --junitxml=ci-results/product-pytest.xml
+
+      - name: Install from source without a C compiler (Python fallback)
+        run: |
+          python -m venv "$RUNNER_TEMP/nocc"
+          CC=/bin/false "$RUNNER_TEMP/nocc/bin/pip" install --no-cache-dir .
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/nocc/bin/inwime" doctor --json --no-host-query > nocc.json
+          "$RUNNER_TEMP/nocc/bin/python" -c "import json, sys; k = json.load(open('nocc.json'))['cpu_kernel']; print(k['implementation'], k['detail']); sys.exit(k['native'] or k['implementation'] != 'python-fp64')"
+
+      - name: Attach product reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-report-py${{ matrix.python }}
+          path: ci-results/
+          if-no-files-found: ignore
+          retention-days: 7

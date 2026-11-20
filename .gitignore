@@ -87,3 +87,7 @@ hardware-audit*.json
 /hf-cache/
 /.cache/huggingface/
 /.huggingface/
+
+# Python packaging outputs (setup.py/pyproject build).
+*.egg-info/
+/dist/
