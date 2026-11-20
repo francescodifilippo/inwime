@@ -1,0 +1,113 @@
+{
+  "passed": true,
+  "checks": {
+    "A_original_public_bf16": true,
+    "B_full_prefill_and_three_decodes": true,
+    "B_repeated_outputs_bitwise_exact": true,
+    "C_bounded_process_below_payload": true,
+    "D_full_standard_fp32_parity": true,
+    "D_exact_modes_formats_causality": true,
+    "E_atomic_KV_and_failures": true,
+    "F_preserved_regressions": true
+  },
+  "declared_parity": "full standard Transformers FP32, complete logits/residuals/KV; 1.7B FP64 oracle not executed",
+  "unique_active_bf16_bytes": 3422752768,
+  "performance": {
+    "sync": {
+      "samples": 3,
+      "prefill_s_median": 13.070943605009234,
+      "decode_s_median": 2.7382421110232826,
+      "decode_s_range": [
+        2.6395043270022143,
+        3.10879133202252
+      ],
+      "decode_tokens_per_s": 0.3651978018942596,
+      "workload_s_median": 21.229624635045184,
+      "peak_rss_bytes": 91234304,
+      "peak_vmhwm_bytes": 91234304,
+      "peak_virtual_bytes": 102735872,
+      "sampled_peak_rss_bytes": 91500544,
+      "sampled_peak_vmhwm_bytes": 91500544,
+      "sampled_peak_virtual_bytes": 102735872,
+      "phase_vmsize_bytes_range": [
+        102735872,
+        102735872
+      ],
+      "arena_plan_bytes": 41536665,
+      "median_open_index_s": 0.009804408007767051,
+      "median_sha256_s": 1.9569793560076505,
+      "median_startup_full_integrity_s": 2.0086370119825006,
+      "median_gemv_s": 6.917955408,
+      "median_bf16_expand_s": 9.14298828,
+      "median_read_service_s": 2.761146962,
+      "median_data_wait_s": 3.0747187,
+      "median_overlap_s": 0.0,
+      "median_host_residual_s": 0.1152475959936119,
+      "inference_logical_bytes": [
+        27382054912,
+        27382054912,
+        27382054912
+      ],
+      "inference_physical_proc_bytes": [
+        0,
+        0,
+        0
+      ],
+      "max_observed_phase_swap_bytes": 0
+    },
+    "pipeline": {
+      "samples": 3,
+      "prefill_s_median": 13.354118641989771,
+      "decode_s_median": 2.7692840279778466,
+      "decode_s_range": [
+        2.7023510670114774,
+        2.798989930015523
+      ],
+      "decode_tokens_per_s": 0.36110416623830677,
+      "workload_s_median": 21.644397944008233,
+      "peak_rss_bytes": 91533312,
+      "peak_vmhwm_bytes": 91533312,
+      "peak_virtual_bytes": 245350400,
+      "sampled_peak_rss_bytes": 91779072,
+      "sampled_peak_vmhwm_bytes": 91779072,
+      "sampled_peak_virtual_bytes": 245350400,
+      "phase_vmsize_bytes_range": [
+        178253824,
+        178257920
+      ],
+      "arena_plan_bytes": 44182951,
+      "median_open_index_s": 0.00913208001293242,
+      "median_sha256_s": 1.9832634030026384,
+      "median_startup_full_integrity_s": 2.0538398649950977,
+      "median_gemv_s": 7.214447414,
+      "median_bf16_expand_s": 10.17067797,
+      "median_read_service_s": 2.822634416,
+      "median_data_wait_s": 0.655346867,
+      "median_overlap_s": 0.061380139,
+      "median_host_residual_s": -0.0291585054980521,
+      "inference_logical_bytes": [
+        27382054912,
+        27382054912,
+        27382054912
+      ],
+      "inference_physical_proc_bytes": [
+        0,
+        0,
+        0
+      ],
+      "max_observed_phase_swap_bytes": 0
+    }
+  },
+  "max_abs": {
+    "logits": 9.890720767247174e-05,
+    "hidden": 0.013267222821014002,
+    "kv": 0.00016695380495157508
+  },
+  "limitations": [
+    "weights below total WSL and physical host RAM",
+    "buffered OS cache, no controlled cold-NVMe inference",
+    "short context: maximum eight positions, capacity sixteen",
+    "1.7B independent oracle is FP32, not pure FP64",
+    "temperature and CPU power not controlled"
+  ]
+}

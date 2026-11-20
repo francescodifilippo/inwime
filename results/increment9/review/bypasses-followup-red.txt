@@ -1,0 +1,15 @@
+control (unmutated copy): A=PASS B=PASS C=PASS D=PASS E=PASS F=PASS G=PASS H=PASS
+BYPASS  P2-A number altered, manifest entry removed      wanted FAIL on ABCDEFGH | ABCDEFGH=PASS
+BYPASS  P2-A number altered, manifest files = {}         wanted FAIL on ABCDEFGH | ABCDEFGH=PASS
+BYPASS  P2-A number altered, manifest digest re-sealed   wanted FAIL on ABCDEFGH | ABCDEFGH=PASS
+BYPASS  P3-2 oom_kill=1, manifest missing                wanted FAIL on G        | G=NOT PROVEN
+BYPASS  P3-2 oom_kill=1, unrelated field missing         wanted FAIL on G        | G=NOT PROVEN
+BYPASS  P3-3 protocol.json not valid JSON                wanted FAIL on ABCDEFGH | CRASH JSONDecodeError
+BYPASS  P3-3 amendment not valid JSON                    wanted FAIL on ABCDEFGH | CRASH JSONDecodeError
+BYPASS  P3-3 manifest not valid JSON                     wanted FAIL on ABCDEFGH | CRASH JSONDecodeError
+BYPASS  P3-3 inference_read_bytes = 0                    wanted FAIL on CDG      | CRASH ZeroDivisionError
+BYPASS  P3-4 integrity-final index = {"match": true}     wanted FAIL on A        | A=PASS
+BYPASS  P3-4 computed_sha256 not a digest                wanted FAIL on A        | A=PASS
+BYPASS  extra: resident_bytes = -1                       wanted FAIL on CDG      | CDG=PASS
+BYPASS  extra: oom_kill = false                          wanted FAIL on G        | G=PASS
+13 bypasses, 0 closed, 13 cases

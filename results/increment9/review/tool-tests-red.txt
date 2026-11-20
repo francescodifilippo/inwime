@@ -1,0 +1,15 @@
+# Red run of the tool regressions against the ORIGINAL code (before the remediation):
+# python3 -m pytest -q tests/test_increment9_review.py -k "download or part or existing or acquisition or verifier or preservation_separates"
+# The gate mutation case selected by the keyword fails here only because the original gate() has no
+# "originals" argument; the red evidence for the gate is gate-mutations-red.txt.
+FAILED tests/test_increment9_review.py::test_gate_rejects_review_mutation[acquisition_sha_altered]
+FAILED tests/test_increment9_review.py::test_preservation_separates_modified_deleted_and_added
+FAILED tests/test_increment9_review.py::test_download_records_the_digest_it_computed
+FAILED tests/test_increment9_review.py::test_existing_file_is_hashed_before_being_accepted
+FAILED tests/test_increment9_review.py::test_complete_part_is_verified_without_a_range_request
+FAILED tests/test_increment9_review.py::test_complete_but_corrupt_part_is_refused
+FAILED tests/test_increment9_review.py::test_partial_part_resumes_with_range_and_full_digest
+FAILED tests/test_increment9_review.py::test_acquisition_evidence_separates_computed_and_official_digests
+FAILED tests/test_increment9_review.py::test_verifier_recomputes_upstream_greedy_from_arrays
+FAILED tests/test_increment9_review.py::test_verifier_does_not_trust_the_declared_upstream_greedy
+10 failed, 2 passed, 115 deselected in 0.30s

@@ -1,0 +1,648 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "R2",
+  "kind": "runtime",
+  "profile": "runtime",
+  "cache": "C",
+  "purpose": "cold guest, pipeline, byte identity with R1",
+  "utc_start": "2026-11-19T21:47:12Z",
+  "command": [
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--family",
+    "qwen2",
+    "--mode",
+    "pipeline",
+    "--as-mib",
+    "384",
+    "--output",
+    "results/increment10/campaign/R2-forward.json",
+    "--cache-state",
+    "evicted-under-scope"
+  ],
+  "memory_max": 2147483648,
+  "condition": "evicted",
+  "files": [
+    "checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors",
+    "checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors"
+  ],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "R2-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "b89566165fa2eb89a9a2fde70e80b7c566cc7e95974ed9504cb9a56a16372bcd"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 653103.128739833,
+      "utc": "2026-11-19T21:47:43Z",
+      "reads_completed": 1988770,
+      "reads_merged": 1136351,
+      "sectors_read": 3041597162,
+      "read_ticks_ms": 2627675,
+      "writes_completed": 740590,
+      "writes_merged": 830251,
+      "sectors_written": 214104240,
+      "write_ticks_ms": 6863485,
+      "in_flight": 0,
+      "io_ticks_ms": 2470948,
+      "time_in_queue_ms": 9911998,
+      "read_bytes": 1557297746944
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 653103.128808729,
+        "utc": "2026-11-19T21:47:43Z",
+        "reads_completed": 200103,
+        "reads_merged": 62254,
+        "sectors_read": 2102040,
+        "read_ticks_ms": 49156,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105540,
+        "time_in_queue_ms": 8383194,
+        "read_bytes": 1076244480
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-R2",
+    "--output",
+    "results/increment10/campaign/R2-scope.json",
+    "--memory-max",
+    "2147483648",
+    "--swap-max",
+    "0",
+    "--condition",
+    "evicted",
+    "--host-disk",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors",
+    "--file",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors",
+    "--",
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--family",
+    "qwen2",
+    "--mode",
+    "pipeline",
+    "--as-mib",
+    "384",
+    "--output",
+    "results/increment10/campaign/R2-forward.json",
+    "--cache-state",
+    "evicted-under-scope"
+  ],
+  "wall_s": 204.52390532498248,
+  "supervisor_exit": 0,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 653308.904468071,
+      "utc": "2026-11-19T21:51:09Z",
+      "reads_completed": 2057558,
+      "reads_merged": 1139517,
+      "sectors_read": 3534470970,
+      "read_ticks_ms": 2752399,
+      "writes_completed": 740997,
+      "writes_merged": 830470,
+      "sectors_written": 214114856,
+      "write_ticks_ms": 6863964,
+      "in_flight": 0,
+      "io_ticks_ms": 2546892,
+      "time_in_queue_ms": 10037265,
+      "read_bytes": 1809649136640
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 653308.904530779,
+        "utc": "2026-11-19T21:51:09Z",
+        "reads_completed": 200103,
+        "reads_merged": 62254,
+        "sectors_read": 2102040,
+        "read_ticks_ms": 49156,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105540,
+        "time_in_queue_ms": 8383194,
+        "read_bytes": 1076244480
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 68788,
+      "reads_merged": 3166,
+      "sectors_read": 492873808,
+      "read_ticks_ms": 124724,
+      "writes_completed": 407,
+      "writes_merged": 219,
+      "sectors_written": 10616,
+      "write_ticks_ms": 479,
+      "io_ticks_ms": 75944,
+      "time_in_queue_ms": 125267,
+      "read_bytes": 252351389696
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 0,
+        "writes_merged": 0,
+        "sectors_written": 0,
+        "write_ticks_ms": 0,
+        "io_ticks_ms": 0,
+        "time_in_queue_ms": 0,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 39,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 0
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132085866496,
+          "max": 132086517760
+        },
+        "guest_mem_available": {
+          "min": 8387334144,
+          "max": 8652861440
+        },
+        "host_available_bytes": {
+          "min": 2919579648,
+          "max": 5046226944
+        },
+        "host_commit_headroom_bytes": {
+          "min": 29749567488,
+          "max": 31862435840
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": 175112192,
+          "max": 207618048
+        },
+        "host_pages_input_per_s": {
+          "min": 0.18688095683049896,
+          "max": 128.72959279414525
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.903,
+          "host_available_bytes": 5046226944,
+          "guest_mem_available": 8652861440,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 31862435840,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132086517760
+        },
+        {
+          "t": 6.206,
+          "host_available_bytes": 3749924864,
+          "guest_mem_available": 8483921920,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30564499456,
+          "host_pages_input_per_s": 66.32939853850478,
+          "backing_volume_free": 132086517760
+        },
+        {
+          "t": 11.555,
+          "host_available_bytes": 3679969280,
+          "guest_mem_available": 8478044160,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30496231424,
+          "host_pages_input_per_s": 35.031847133757964,
+          "backing_volume_free": 132086517760
+        },
+        {
+          "t": 16.916,
+          "host_available_bytes": 3582959616,
+          "guest_mem_available": 8474537984,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30390165504,
+          "host_pages_input_per_s": 56.175595238095234,
+          "backing_volume_free": 132086517760
+        },
+        {
+          "t": 22.258,
+          "host_available_bytes": 3501715456,
+          "guest_mem_available": 8449183744,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30333333504,
+          "host_pages_input_per_s": 68.05790562135739,
+          "backing_volume_free": 132086452224
+        },
+        {
+          "t": 27.606,
+          "host_available_bytes": 3469332480,
+          "guest_mem_available": 8461443072,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30311383040,
+          "host_pages_input_per_s": 3.175196115054165,
+          "backing_volume_free": 132086448128
+        },
+        {
+          "t": 32.965,
+          "host_available_bytes": 3632967680,
+          "guest_mem_available": 8466382848,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30468997120,
+          "host_pages_input_per_s": 6.891413671074688,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 38.343,
+          "host_available_bytes": 3495120896,
+          "guest_mem_available": 8490471424,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30322999296,
+          "host_pages_input_per_s": 5.804156524995319,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 43.724,
+          "host_available_bytes": 3307126784,
+          "guest_mem_available": 8465235968,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 30143561728,
+          "host_pages_input_per_s": 19.814814814814813,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 49.086,
+          "host_available_bytes": 3137327104,
+          "guest_mem_available": 8451231744,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 29949812736,
+          "host_pages_input_per_s": 6.522549385016773,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 54.435,
+          "host_available_bytes": 3059314688,
+          "guest_mem_available": 8471339008,
+          "host_pagefile_growth_since_baseline": 205520896,
+          "host_commit_headroom_bytes": 29862817792,
+          "host_pages_input_per_s": 66.51718983557548,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 59.827,
+          "host_available_bytes": 2947047424,
+          "guest_mem_available": 8497332224,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29773287424,
+          "host_pages_input_per_s": 5.747126436781609,
+          "backing_volume_free": 132086185984
+        },
+        {
+          "t": 65.184,
+          "host_available_bytes": 3137855488,
+          "guest_mem_available": 8493645824,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29988163584,
+          "host_pages_input_per_s": 3.169276659209545,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 70.59,
+          "host_available_bytes": 3390255104,
+          "guest_mem_available": 8477491200,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30217678848,
+          "host_pages_input_per_s": 0.5572065378900446,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 75.913,
+          "host_available_bytes": 3368488960,
+          "guest_mem_available": 8482144256,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30200684544,
+          "host_pages_input_per_s": 0.18688095683049896,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 81.24,
+          "host_available_bytes": 3214819328,
+          "guest_mem_available": 8447053824,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30071132160,
+          "host_pages_input_per_s": 128.72959279414525,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 86.62,
+          "host_available_bytes": 3097468928,
+          "guest_mem_available": 8472182784,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29942722560,
+          "host_pages_input_per_s": 3.3525796237660646,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 91.99,
+          "host_available_bytes": 3051241472,
+          "guest_mem_available": 8465289216,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29869973504,
+          "host_pages_input_per_s": 24.827328728766098,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 97.357,
+          "host_available_bytes": 2962186240,
+          "guest_mem_available": 8477990912,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29795598336,
+          "host_pages_input_per_s": 3.544776119402985,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 102.725,
+          "host_available_bytes": 2956603392,
+          "guest_mem_available": 8499531776,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29798494208,
+          "host_pages_input_per_s": 15.831626001117527,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 108.061,
+          "host_available_bytes": 3287822336,
+          "guest_mem_available": 8432754688,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30147555328,
+          "host_pages_input_per_s": 45.581916682234265,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 113.394,
+          "host_available_bytes": 3396390912,
+          "guest_mem_available": 8444776448,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30254071808,
+          "host_pages_input_per_s": 20.247469066366705,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 118.756,
+          "host_available_bytes": 3207868416,
+          "guest_mem_available": 8460718080,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30050541568,
+          "host_pages_input_per_s": 15.307074855329475,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 124.12,
+          "host_available_bytes": 3139264512,
+          "guest_mem_available": 8476798976,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29986041856,
+          "host_pages_input_per_s": 28.73134328358209,
+          "backing_volume_free": 132085989376
+        },
+        {
+          "t": 129.502,
+          "host_available_bytes": 2988453888,
+          "guest_mem_available": 8480759808,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29845647360,
+          "host_pages_input_per_s": 2.227998514667657,
+          "backing_volume_free": 132085870592
+        },
+        {
+          "t": 134.863,
+          "host_available_bytes": 2950311936,
+          "guest_mem_available": 8496898048,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29805244416,
+          "host_pages_input_per_s": 2.796420581655481,
+          "backing_volume_free": 132085870592
+        },
+        {
+          "t": 140.213,
+          "host_available_bytes": 2928590848,
+          "guest_mem_available": 8409612288,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29762236416,
+          "host_pages_input_per_s": 62.371230567522005,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 145.575,
+          "host_available_bytes": 3069095936,
+          "guest_mem_available": 8474324992,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 29929463808,
+          "host_pages_input_per_s": 6.527415143603133,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 150.959,
+          "host_available_bytes": 3190517760,
+          "guest_mem_available": 8446242816,
+          "host_pagefile_growth_since_baseline": 206569472,
+          "host_commit_headroom_bytes": 30087331840,
+          "host_pages_input_per_s": 7.081625046589639,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 156.314,
+          "host_available_bytes": 3456061440,
+          "guest_mem_available": 8483213312,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 30312992768,
+          "host_pages_input_per_s": 9.667224391150773,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 161.677,
+          "host_available_bytes": 3187773440,
+          "guest_mem_available": 8450756608,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 30046715904,
+          "host_pages_input_per_s": 3.5355414960922964,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 167.058,
+          "host_available_bytes": 3066204160,
+          "guest_mem_available": 8480698368,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 29923614720,
+          "host_pages_input_per_s": 6.512839598064756,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 172.431,
+          "host_available_bytes": 2968199168,
+          "guest_mem_available": 8487710720,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 29818208256,
+          "host_pages_input_per_s": 6.351578554081824,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 177.778,
+          "host_available_bytes": 2919579648,
+          "guest_mem_available": 8478609408,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 29760851968,
+          "host_pages_input_per_s": 13.591509960901135,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 183.117,
+          "host_available_bytes": 2927046656,
+          "guest_mem_available": 8387334144,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 29749567488,
+          "host_pages_input_per_s": 6.175149700598802,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 188.521,
+          "host_available_bytes": 2988126208,
+          "guest_mem_available": 8471846912,
+          "host_pagefile_growth_since_baseline": 207618048,
+          "host_commit_headroom_bytes": 29803663360,
+          "host_pages_input_per_s": 0.5579319323042589,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 193.894,
+          "host_available_bytes": 3370729472,
+          "guest_mem_available": 8488628224,
+          "host_pagefile_growth_since_baseline": 175112192,
+          "host_commit_headroom_bytes": 30248775680,
+          "host_pages_input_per_s": 114.98516320474776,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 199.262,
+          "host_available_bytes": 3401252864,
+          "guest_mem_available": 8489652224,
+          "host_pagefile_growth_since_baseline": 175112192,
+          "host_commit_headroom_bytes": 30258139136,
+          "host_pages_input_per_s": 17.283032893514218,
+          "backing_volume_free": 132085866496
+        },
+        {
+          "t": 204.651,
+          "host_available_bytes": 3192205312,
+          "guest_mem_available": 8627048448,
+          "host_pagefile_growth_since_baseline": 175112192,
+          "host_commit_headroom_bytes": 30081945600,
+          "host_pages_input_per_s": 3.528974739970282,
+          "backing_volume_free": 132085866496
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T21:51:09Z",
+  "produced_sha256": {
+    "R2-forward.json": "9f7d5831db5869230e5adda23851db5f52486744c4cb3cc2eb2828a78f062aca",
+    "R2-host-start.json": "b89566165fa2eb89a9a2fde70e80b7c566cc7e95974ed9504cb9a56a16372bcd",
+    "R2-scope.final.txt": "a62cde3b10b06bcf0616c9df99286a91a14c4eea93f54ffa806c283c8ea48766",
+    "R2-scope.json": "1ad44a999697b36ae924e0f88bb4c18269582dcac7858ec0e5ea278eef0fa4ec",
+    "R2-scope.log": "5f7b79317484f11236341d535b1e5c06f2678d0501b975807f62583adaf96da2",
+    "results/increment10/campaign/R2-forward.json": "9f7d5831db5869230e5adda23851db5f52486744c4cb3cc2eb2828a78f062aca"
+  }
+}

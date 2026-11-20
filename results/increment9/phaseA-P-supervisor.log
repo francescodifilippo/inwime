@@ -1,0 +1,5 @@
+phase decode.0 ids=[504, 3575, 282, 4649, 314] greedy=7042 wall=17.18s
+phase decode.1 ids=[7042] greedy=30 wall=3.34s
+phase decode.2 ids=[30] greedy=198 wall=3.27s
+phase decode.3 ids=[198] greedy=198 wall=3.38s
+results/increment9/phaseA-P-runtime.json

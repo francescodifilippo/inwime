@@ -1,0 +1,170 @@
+{
+  "destination": {
+    "backing_volume": "/mnt/c",
+    "blockers": [],
+    "destination_exists": true,
+    "files": {
+      "LICENSE": {
+        "nbytes": 11343,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "README.md": {
+        "nbytes": 3795,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "config.json": {
+        "nbytes": 664,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "generation_config.json": {
+        "nbytes": 138,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "merges.txt": {
+        "nbytes": 1671839,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00001-of-00008.safetensors": {
+        "nbytes": 3885134104,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00002-of-00008.safetensors": {
+        "nbytes": 3995327992,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00003-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00004-of-00008.safetensors": {
+        "nbytes": 3995348776,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00005-of-00008.safetensors": {
+        "nbytes": 3979614448,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00006-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00007-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model-00008-of-00008.safetensors": {
+        "nbytes": 1698724408,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "model.safetensors.index.json": {
+        "nbytes": 47472,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "tokenizer.json": {
+        "nbytes": 7031645,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "tokenizer_config.json": {
+        "nbytes": 7228,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      },
+      "vocab.json": {
+        "nbytes": 2776833,
+        "state": "present-unverified",
+        "transfer_bytes": 0
+      }
+    },
+    "path_relative": "checkpoints/qwen2.5-14b-97e1e76",
+    "unmanaged_files": []
+  },
+  "download_total_bytes": 29551684877,
+  "host_policy": {
+    "amendment": "003-acquisition-without-host-memory-gate",
+    "diagnostics": "optional, non-blocking (--host-diagnostics BASELINE)",
+    "gated": false,
+    "issue": 25,
+    "rule": "the acquisition never requires a host GO and never stops for host or guest memory pressure; it stops only for network, HTTP/Range, checksum, physical space/ENOSPC, I/O, budget, lock or ownership conditions",
+    "superseded": [
+      "amendment 001: hostgate10 GO required by --execute",
+      "amendment 002: in-run host monitor stopping the transfer"
+    ]
+  },
+  "manifest_sha256": "69a3c92cb3f274f077b29838380974de21c51d77f31b0ba21c6aeceeb5df84cd",
+  "metadata": {
+    "api": {
+      "files_checked": 17,
+      "license": "apache-2.0",
+      "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9"
+    },
+    "config": {
+      "architectures": [
+        "Qwen2ForCausalLM"
+      ],
+      "hidden_size": 5120,
+      "intermediate_size": 13824,
+      "num_attention_heads": 40,
+      "num_hidden_layers": 48,
+      "num_key_value_heads": 8,
+      "rms_norm_eps": 1e-05,
+      "rope_theta": 1000000.0,
+      "tie_word_embeddings": false,
+      "use_sliding_window": false,
+      "vocab_size": 152064
+    },
+    "dtypes": [
+      "BF16"
+    ],
+    "header_bytes_checked": 66592,
+    "payload_bytes": 29540067328,
+    "tensor_count": 579
+  },
+  "metadata_source": "offline-captured",
+  "mode": "dry-run",
+  "model": "Qwen/Qwen2.5-14B",
+  "owner_authorization": "not evaluated by a dry-run; --execute requires a separate owner record",
+  "parts_inventory": {},
+  "payload_bytes_transferred": 0,
+  "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+  "schema": "inwime-acquire10/1",
+  "space": {
+    "blockers": [],
+    "effective_free_bytes": 132128616448,
+    "expected_free_after": 132128616448,
+    "free_backing_volume": 132128616448,
+    "free_destination_filesystem": 861455921152,
+    "required_free_bytes": 42777706496,
+    "reserves": {
+      "check_interval": 268435456,
+      "evidence": 1073741824,
+      "fixed_margin": 34359738368,
+      "rollback": 0,
+      "stop_threshold": 42949672960,
+      "swap_growth": 7344226304,
+      "temporary": 0,
+      "verification": 0
+    },
+    "reserves_held": 42777706496,
+    "surplus_bytes": 89350909952,
+    "transfer_bytes": 0
+  },
+  "storage_ready": true,
+  "user_agent": "Python-urllib/3",
+  "utc": "2026-11-19T21:27:08Z",
+  "would_proceed_if_authorized": true
+}

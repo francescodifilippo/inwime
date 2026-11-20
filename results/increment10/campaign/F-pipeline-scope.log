@@ -1,0 +1,4 @@
+{"mode": "pipeline", "fault": "io", "caught": "OSError", "wall_s": 27.831740379915573}
+{"mode": "pipeline", "fault": "short", "caught": "ReadError", "wall_s": 23.527637397986837}
+{"mode": "pipeline", "fault": "cancel", "caught": "CancelledError", "wall_s": 22.83413020207081}
+results/increment10/campaign/F-pipeline-faults.json

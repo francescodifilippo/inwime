@@ -1,0 +1,6 @@
+{
+ "verdict": "PASS",
+ "files": 11,
+ "originals": "present: every sanitized file equals its original under the declared rules",
+ "problems": []
+}

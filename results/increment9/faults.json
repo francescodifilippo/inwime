@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "rlimit_as_bytes": [
+    268435456,
+    268435456
+  ],
+  "cases": [
+    {
+      "mode": "sync",
+      "fault": "io",
+      "caught": "OSError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 100,
+      "inference_read_bytes": 14190552064
+    },
+    {
+      "mode": "sync",
+      "fault": "short",
+      "caught": "ReadError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 100,
+      "inference_read_bytes": 14191076351
+    },
+    {
+      "mode": "sync",
+      "fault": "cancel",
+      "caught": "CancelledError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 100,
+      "inference_read_bytes": 14191076352
+    },
+    {
+      "mode": "pipeline",
+      "fault": "io",
+      "caught": "OSError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 100,
+      "inference_read_bytes": 14190552064
+    },
+    {
+      "mode": "pipeline",
+      "fault": "short",
+      "caught": "ReadError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 100,
+      "inference_read_bytes": 14191076351
+    },
+    {
+      "mode": "pipeline",
+      "fault": "cancel",
+      "caught": "CancelledError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "decode_reads_before_fault": 101,
+      "inference_read_bytes": 14191600640
+    }
+  ],
+  "peak_rss_bytes": 58089472
+}

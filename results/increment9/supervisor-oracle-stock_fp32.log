@@ -1,0 +1,13 @@
+{
+ "contract": "stock_fp32",
+ "oracle_wall_s": 250.927565830003,
+ "peak_rss_bytes": 3643817984,
+ "upstream_greedy_matches_sequence": true,
+ "loader": {
+  "one_top_level_module_resident": true,
+  "largest_module_bytes": 2179989504,
+  "source_bf16_bytes_read": 60924932096,
+  "tensors": 339,
+  "loads_per_tensor": 4
+ }
+}

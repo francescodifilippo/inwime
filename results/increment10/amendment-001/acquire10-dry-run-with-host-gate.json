@@ -1,0 +1,190 @@
+{
+  "destination": {
+    "backing_volume": "/mnt/c",
+    "blockers": [],
+    "destination_exists": false,
+    "files": {
+      "LICENSE": {
+        "nbytes": 11343,
+        "state": "absent",
+        "transfer_bytes": 11343
+      },
+      "README.md": {
+        "nbytes": 3795,
+        "state": "absent",
+        "transfer_bytes": 3795
+      },
+      "config.json": {
+        "nbytes": 664,
+        "state": "absent",
+        "transfer_bytes": 664
+      },
+      "generation_config.json": {
+        "nbytes": 138,
+        "state": "absent",
+        "transfer_bytes": 138
+      },
+      "merges.txt": {
+        "nbytes": 1671839,
+        "state": "absent",
+        "transfer_bytes": 1671839
+      },
+      "model-00001-of-00008.safetensors": {
+        "nbytes": 3885134104,
+        "state": "absent",
+        "transfer_bytes": 3885134104
+      },
+      "model-00002-of-00008.safetensors": {
+        "nbytes": 3995327992,
+        "state": "absent",
+        "transfer_bytes": 3995327992
+      },
+      "model-00003-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "absent",
+        "transfer_bytes": 3995328064
+      },
+      "model-00004-of-00008.safetensors": {
+        "nbytes": 3995348776,
+        "state": "absent",
+        "transfer_bytes": 3995348776
+      },
+      "model-00005-of-00008.safetensors": {
+        "nbytes": 3979614448,
+        "state": "absent",
+        "transfer_bytes": 3979614448
+      },
+      "model-00006-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "absent",
+        "transfer_bytes": 3995328064
+      },
+      "model-00007-of-00008.safetensors": {
+        "nbytes": 3995328064,
+        "state": "absent",
+        "transfer_bytes": 3995328064
+      },
+      "model-00008-of-00008.safetensors": {
+        "nbytes": 1698724408,
+        "state": "absent",
+        "transfer_bytes": 1698724408
+      },
+      "model.safetensors.index.json": {
+        "nbytes": 47472,
+        "state": "absent",
+        "transfer_bytes": 47472
+      },
+      "tokenizer.json": {
+        "nbytes": 7031645,
+        "state": "absent",
+        "transfer_bytes": 7031645
+      },
+      "tokenizer_config.json": {
+        "nbytes": 7228,
+        "state": "absent",
+        "transfer_bytes": 7228
+      },
+      "vocab.json": {
+        "nbytes": 2776833,
+        "state": "absent",
+        "transfer_bytes": 2776833
+      }
+    },
+    "path_relative": "checkpoints/qwen2.5-14b-97e1e76",
+    "unmanaged_files": []
+  },
+  "download_total_bytes": 29551684877,
+  "host_readiness": {
+    "baseline_age_s": 98.709506,
+    "baseline_sha256": "b797a59bf27bd4464afe9f04c4b50821a6e8983f0a7d1ffcaa0449442dd698e1",
+    "baseline_utc": "2026-11-18T21:29:23Z",
+    "measured_interval_s": 30.717,
+    "missing": [],
+    "profile": "download",
+    "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+    "reasons": [
+      "violated: host_available_bytes, host_pages_input_per_s"
+    ],
+    "recomputed_verdict": "DEFER",
+    "report_age_s": 65.709506,
+    "report_sha256": "748d98dd8be37f43ee45d0b565d152ae65117dcc73ead64541e3286dc18b5880",
+    "report_utc": "2026-11-18T21:29:56Z",
+    "schema": "inwime-hostgate10/1",
+    "scope": "technical host readiness only; owner authorization is a separate record and is not evaluated here",
+    "values": {
+      "backing_volume_free": 161127165952,
+      "guest_mem_available": 6869286912,
+      "guest_swap_growth_since_baseline": 0,
+      "host_available_bytes": 364445696,
+      "host_commit_headroom_bytes": 7671345152,
+      "host_pagefile_growth_since_baseline": 113246208,
+      "host_pages_input_per_s": 4326.171175570531
+    },
+    "verdict": "DEFER",
+    "violated": [
+      "host_available_bytes",
+      "host_pages_input_per_s"
+    ]
+  },
+  "manifest_sha256": "69a3c92cb3f274f077b29838380974de21c51d77f31b0ba21c6aeceeb5df84cd",
+  "metadata": {
+    "api": {
+      "files_checked": 17,
+      "license": "apache-2.0",
+      "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9"
+    },
+    "config": {
+      "architectures": [
+        "Qwen2ForCausalLM"
+      ],
+      "hidden_size": 5120,
+      "intermediate_size": 13824,
+      "num_attention_heads": 40,
+      "num_hidden_layers": 48,
+      "num_key_value_heads": 8,
+      "rms_norm_eps": 1e-05,
+      "rope_theta": 1000000.0,
+      "tie_word_embeddings": false,
+      "use_sliding_window": false,
+      "vocab_size": 152064
+    },
+    "dtypes": [
+      "BF16"
+    ],
+    "header_bytes_checked": 66592,
+    "payload_bytes": 29540067328,
+    "tensor_count": 579
+  },
+  "metadata_source": "offline-captured",
+  "mode": "dry-run",
+  "model": "Qwen/Qwen2.5-14B",
+  "owner_authorization": "not evaluated by a dry-run; --execute requires a separate owner record",
+  "payload_bytes_transferred": 0,
+  "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+  "schema": "inwime-acquire10/1",
+  "space": {
+    "blockers": [],
+    "effective_free_bytes": 161143455744,
+    "expected_free_after": 131591770867,
+    "free_backing_volume": 161143455744,
+    "free_destination_filesystem": 891528830976,
+    "required_free_bytes": 72329391373,
+    "reserves": {
+      "check_interval": 268435456,
+      "evidence": 1073741824,
+      "fixed_margin": 34359738368,
+      "rollback": 0,
+      "stop_threshold": 42949672960,
+      "swap_growth": 7344226304,
+      "temporary": 0,
+      "verification": 0
+    },
+    "reserves_held": 42777706496,
+    "surplus_bytes": 88814064371,
+    "transfer_bytes": 29551684877
+  },
+  "storage_ready": true,
+  "user_agent": "Python-urllib/3",
+  "utc": "2026-11-18T21:31:01Z",
+  "would_proceed_if_authorized": false
+}

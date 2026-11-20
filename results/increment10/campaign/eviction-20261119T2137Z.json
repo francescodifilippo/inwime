@@ -1,0 +1,42 @@
+{
+ "utc": "20261119T2137Z",
+ "action": "POSIX_FADV_DONTNEED on experiment checkpoint files only (protocol rollback.runs: targeted eviction)",
+ "meminfo_before": {
+  "MemFree": 1219149824,
+  "MemAvailable": 8537395200,
+  "Cached": 7554215936
+ },
+ "residency_before": {
+  "checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": 12648448,
+  "checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": 20434944,
+  "checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": 1748541440,
+  "checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": 3556380672,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": 0
+ },
+ "meminfo_after": {
+  "MemFree": 6567993344,
+  "MemAvailable": 8538931200,
+  "Cached": 2216271872
+ },
+ "residency_after": {
+  "checkpoints/qwen2.5-7b-d149729/model-00001-of-00004.safetensors": 0,
+  "checkpoints/qwen2.5-7b-d149729/model-00002-of-00004.safetensors": 0,
+  "checkpoints/qwen2.5-7b-d149729/model-00003-of-00004.safetensors": 0,
+  "checkpoints/qwen2.5-7b-d149729/model-00004-of-00004.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": 0,
+  "checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": 0
+ }
+}

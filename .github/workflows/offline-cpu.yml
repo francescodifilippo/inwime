@@ -1,0 +1,77 @@
+name: Offline CPU regressions
+
+# Only lightweight, model-free checks. Real checkpoint inference and hardware gates stay local.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-cpu-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-tests:
+    name: Python 3.14 / synthetic CPU and evidence tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+    steps:
+      - name: Checkout sources and historical evidence
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: requirements-reference.txt
+
+      - name: Install reference and test dependencies
+        run: python -m pip install -r requirements-reference.txt
+
+      - name: Build CPU-only numerical kernel
+        run: make cpu-kernel
+
+      - name: Run full synthetic and evidence regression suite
+        run: |
+          mkdir -p ci-results
+          python -m pytest -q tests -ra --junitxml=ci-results/pytest.xml
+
+      - name: Verify sanitized M9 evidence without local originals
+        run: python -m tools.sanitize9 results/increment9 --verify
+
+      # Increment 10, amendment 001 (review of PR #24): the protocol chain and pinned digests verify,
+      # and the identity of every executed test is checked against the effective inventory. Tests that
+      # need local originals are reported as NOT VERIFIABLE ON RUNNER (never PASS); the full-inventory
+      # verdict of this runner stays NOT PROVEN and the archived local attestation is verified separately.
+      - name: Verify increment-10 protocol chain and pinned digests
+        run: python -m tools.protocol10 check
+
+      - name: Verify executed tests against the increment-10 inventory
+        run: python -m tools.inventory10 ci --junit ci-results/pytest.xml --output ci-results/inventory-ci.json
+
+      - name: Attach pytest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: ci-results/
+          if-no-files-found: ignore
+          retention-days: 7

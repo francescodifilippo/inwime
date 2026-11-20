@@ -306,3 +306,22 @@ La prova supera il limite del processo, mentre i pesi restano sotto la RAM WSL
 e quella fisica host. Nessuna quantizzazione o modifica all'adapter/kernel.
 L'oracolo 1.7B è FP32 e risiede in un processo separato; nessuna parità FP64 1.7B
 o prestazione NVMe cold dichiarata. [Evidenze e comandi](results/increment8/README.md).
+
+## Oltre la RAM WSL con un LLM reale
+
+L'[incremento 9](docs/RUNTIME_CPU_INCREMENT_9.md) aggiunge un adapter Qwen2
+(bias Q/K/V, head non condivisa) ed esegue **Qwen/Qwen2.5-7B originale BF16**:
+**14.141.295.616 byte unici di pesi attivi** contro `MemTotal` WSL di
+11.483.848.704 byte, prefill di cinque token e tre decode, in un cgroup v2
+transitorio con `memory.max` 2 GiB e `memory.swap.max` 0. Parità completa con
+oracoli Transformers indipendenti a blocchi: standard FP32 e FP64 puro superati,
+diagnostico FP64 standard FAIL grezzo conservato. Decode sync mediano circa
+13,3 s/token con letture realmente servite dal disco (circa 14 GB per token).
+SmolLM2-1.7B verificato sotto lo stesso limite di 2 GiB dopo evizione mirata della page cache.
+Non dimostra il superamento della RAM fisica host né prestazioni pratiche.
+La [revisione](docs/REVIEW_INCREMENT_9.md) ha reso il gate fail-closed sulle
+mutazioni provate (80 più 13 aggiramenti trovati da una seconda revisione, con
+limiti residui dichiarati) e ha sanificato i percorsi nelle evidenze
+dell'incremento 9, senza ripetere misure. Le evidenze degli incrementi 4–8 e
+V2 contengono ancora percorsi locali: sanificarle è una decisione in sospeso.
+[Evidenze, gate A–H e comandi](results/increment9/README.md).

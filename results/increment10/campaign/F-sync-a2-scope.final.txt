@@ -1,0 +1,96 @@
+== cgroup.path
+/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/inwime9-m10-F-sync-a2-1795128280.scope
+== worker.exit
+0
+== memory.peak
+2147483648
+== memory.current
+2083905536
+== memory.max
+2147483648
+== memory.swap.max
+0
+== memory.swap.current
+0
+== memory.swap.peak
+0
+== memory.events
+low 0
+high 0
+max 38981
+oom 0
+oom_kill 0
+oom_group_kill 0
+== memory.events.local
+low 0
+high 0
+max 38981
+oom 0
+oom_kill 0
+oom_group_kill 0
+== memory.swap.events
+high 0
+max 0
+fail 0
+== memory.stat
+anon 1466368
+file 2077261824
+kernel 3837952
+kernel_stack 16384
+pagetables 1171456
+sec_pagetables 0
+percpu 2464
+sock 0
+vmalloc 0
+shmem 0
+file_mapped 0
+file_dirty 12288
+file_writeback 0
+swapcached 0
+anon_thp 0
+file_thp 1642070016
+shmem_thp 0
+inactive_anon 1363968
+active_anon 12288
+inactive_file 2038611968
+active_file 38572032
+unevictable 0
+slab_reclaimable 2488480
+slab_unreclaimable 140568
+slab 2629048
+workingset_refault_anon 0
+workingset_refault_file 18976914
+workingset_activate_anon 0
+workingset_activate_file 0
+workingset_restore_anon 0
+workingset_restore_file 0
+workingset_nodereclaim 0
+pgdemote_kswapd 0
+pgdemote_direct 0
+pgdemote_khugepaged 0
+pgdemote_proactive 0
+pgscan 18469777
+pgsteal 18469774
+pswpin 0
+pswpout 0
+pgscan_kswapd 0
+pgscan_direct 18469777
+pgscan_khugepaged 0
+pgscan_proactive 0
+pgsteal_kswapd 0
+pgsteal_direct 18469774
+pgsteal_khugepaged 0
+pgsteal_proactive 0
+pgfault 47686
+pgmajfault 1
+pgrefill 0
+pgactivate 9419
+pgdeactivate 0
+pglazyfree 0
+pglazyfreed 0
+swpin_zero 0
+swpout_zero 0
+thp_fault_alloc 0
+thp_collapse_alloc 0
+thp_swpout 0
+thp_swpout_fallback 0

@@ -1,0 +1,32 @@
+{
+ "schema": "inwime-hostgate10/1",
+ "profile": "download",
+ "scope": "technical host readiness only; owner authorization is a separate record and is not evaluated here",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "report_sha256": "748d98dd8be37f43ee45d0b565d152ae65117dcc73ead64541e3286dc18b5880",
+ "baseline_sha256": "b797a59bf27bd4464afe9f04c4b50821a6e8983f0a7d1ffcaa0449442dd698e1",
+ "report_utc": "2026-11-18T21:29:56Z",
+ "report_age_s": 65.902705,
+ "baseline_utc": "2026-11-18T21:29:23Z",
+ "baseline_age_s": 98.902705,
+ "measured_interval_s": 30.717,
+ "recomputed_verdict": "DEFER",
+ "violated": [
+  "host_available_bytes",
+  "host_pages_input_per_s"
+ ],
+ "missing": [],
+ "values": {
+  "host_available_bytes": 364445696,
+  "host_commit_headroom_bytes": 7671345152,
+  "host_pages_input_per_s": 4326.171175570531,
+  "host_pagefile_growth_since_baseline": 113246208,
+  "guest_mem_available": 6869286912,
+  "guest_swap_growth_since_baseline": 0,
+  "backing_volume_free": 161127165952
+ },
+ "verdict": "DEFER",
+ "reasons": [
+  "violated: host_available_bytes, host_pages_input_per_s"
+ ]
+}

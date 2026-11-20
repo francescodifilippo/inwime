@@ -1,0 +1,303 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "F-sync",
+  "kind": "fault",
+  "profile": "runtime",
+  "cache": "as-is",
+  "purpose": "faults N1-N4 (sync)",
+  "utc_start": "2026-11-19T22:40:29Z",
+  "command": [
+    "python3",
+    "-m",
+    "tools.fault10",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--mode",
+    "sync",
+    "--output",
+    "results/increment10/campaign/F-sync-faults.json"
+  ],
+  "memory_max": 2147483648,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "F-sync-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "ca1aa13955e629232bda4a53a12b764c3f64c942cedd92c74bddfdc47de9c47d"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 656300.816352412,
+      "utc": "2026-11-19T22:41:01Z",
+      "reads_completed": 2206124,
+      "reads_merged": 1168597,
+      "sectors_read": 4490041882,
+      "read_ticks_ms": 3002046,
+      "writes_completed": 744490,
+      "writes_merged": 833823,
+      "sectors_written": 214263184,
+      "write_ticks_ms": 6877886,
+      "in_flight": 0,
+      "io_ticks_ms": 2699904,
+      "time_in_queue_ms": 10302326,
+      "read_bytes": 2298901443584
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 656300.816404936,
+        "utc": "2026-11-19T22:41:01Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-F-sync",
+    "--output",
+    "results/increment10/campaign/F-sync-scope.json",
+    "--memory-max",
+    "2147483648",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "python3",
+    "-m",
+    "tools.fault10",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--mode",
+    "sync",
+    "--output",
+    "results/increment10/campaign/F-sync-faults.json"
+  ],
+  "wall_s": 24.375565086025745,
+  "supervisor_exit": 1,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 656326.449857063,
+      "utc": "2026-11-19T22:41:26Z",
+      "reads_completed": 2214725,
+      "reads_merged": 1170086,
+      "sectors_read": 4544940322,
+      "read_ticks_ms": 3015433,
+      "writes_completed": 744508,
+      "writes_merged": 833857,
+      "sectors_written": 214264352,
+      "write_ticks_ms": 6877916,
+      "in_flight": 0,
+      "io_ticks_ms": 2708100,
+      "time_in_queue_ms": 10315752,
+      "read_bytes": 2327009444864
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 656326.449914909,
+        "utc": "2026-11-19T22:41:26Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 8601,
+      "reads_merged": 1489,
+      "sectors_read": 54898440,
+      "read_ticks_ms": 13387,
+      "writes_completed": 18,
+      "writes_merged": 34,
+      "sectors_written": 1168,
+      "write_ticks_ms": 30,
+      "io_ticks_ms": 8196,
+      "time_in_queue_ms": 13426,
+      "read_bytes": 28108001280
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 0,
+        "writes_merged": 0,
+        "sectors_written": 0,
+        "write_ticks_ms": 0,
+        "io_ticks_ms": 0,
+        "time_in_queue_ms": 0,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 5,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 0
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132337344512,
+          "max": 132337344512
+        },
+        "guest_mem_available": {
+          "min": 8569511936,
+          "max": 8709976064
+        },
+        "host_available_bytes": {
+          "min": 3134193664,
+          "max": 5443162112
+        },
+        "host_commit_headroom_bytes": {
+          "min": 30279421952,
+          "max": 32545529856
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": 253755392,
+          "max": 419430400
+        },
+        "host_pages_input_per_s": {
+          "min": 6.17399438727783,
+          "max": 949.3387967964239
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.936,
+          "host_available_bytes": 5443162112,
+          "guest_mem_available": 8709976064,
+          "host_pagefile_growth_since_baseline": 408944640,
+          "host_commit_headroom_bytes": 32545529856,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132337344512
+        },
+        {
+          "t": 6.303,
+          "host_available_bytes": 3345932288,
+          "guest_mem_available": 8624435200,
+          "host_pagefile_growth_since_baseline": 408944640,
+          "host_commit_headroom_bytes": 30463492096,
+          "host_pages_input_per_s": 19.615099925980754,
+          "backing_volume_free": 132337344512
+        },
+        {
+          "t": 11.644,
+          "host_available_bytes": 3244957696,
+          "guest_mem_available": 8616583168,
+          "host_pagefile_growth_since_baseline": 419430400,
+          "host_commit_headroom_bytes": 30313881600,
+          "host_pages_input_per_s": 6.17399438727783,
+          "backing_volume_free": 132337344512
+        },
+        {
+          "t": 17.01,
+          "host_available_bytes": 3173867520,
+          "guest_mem_available": 8569511936,
+          "host_pagefile_growth_since_baseline": 253755392,
+          "host_commit_headroom_bytes": 30334570496,
+          "host_pages_input_per_s": 949.3387967964239,
+          "backing_volume_free": 132337344512
+        },
+        {
+          "t": 22.32,
+          "host_available_bytes": 3134193664,
+          "guest_mem_available": 8586432512,
+          "host_pagefile_growth_since_baseline": 257949696,
+          "host_commit_headroom_bytes": 30279421952,
+          "host_pages_input_per_s": 19.078201737816396,
+          "backing_volume_free": 132337344512
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T22:41:26Z",
+  "produced_sha256": {
+    "F-sync-host-start.json": "ca1aa13955e629232bda4a53a12b764c3f64c942cedd92c74bddfdc47de9c47d",
+    "F-sync-scope.final.txt": "09db206de7b8ea512788b1dbfbd5e2a3c5a9260a1a0e2d738fbe6bc8985965a9",
+    "F-sync-scope.json": "d426fb601e5efd8d4a4a06acc2ec958fd258624f1583284b16032db33ca97736",
+    "F-sync-scope.log": "09e61526694d7c6aac5c2b72024363867adf48bf1d766006338f122d2201adcc"
+  }
+}

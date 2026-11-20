@@ -1,0 +1,412 @@
+{
+ "after": {
+  "backing_volume": {
+   "free": 164443549696,
+   "path_checked": "../../../../../mnt/c",
+   "total": 1798804860928
+  },
+  "checkpoint_volume": {
+   "free": 891494227968,
+   "path_checked": "checkpoints/qwen2.5-14b-97e1e76",
+   "total": 1081101176832
+  },
+  "guest": {
+   "meminfo": {
+    "Active": 1041690624,
+    "Active(anon)": 533155840,
+    "Active(file)": 508534784,
+    "AnonHugePages": 0,
+    "AnonPages": 1743663104,
+    "Balloon": 0,
+    "Bounce": 0,
+    "Buffers": 28774400,
+    "Cached": 2210009088,
+    "CommitLimit": 14331858944,
+    "Committed_AS": 7423291392,
+    "DirectMap1G": 15032385536,
+    "DirectMap2M": 6387924992,
+    "DirectMap4k": 53477376,
+    "Dirty": 368640,
+    "FileHugePages": 0,
+    "FilePmdMapped": 0,
+    "HardwareCorrupted": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "HugePages_Total": 0,
+    "Hugepagesize": 2097152,
+    "Hugetlb": 0,
+    "Inactive": 2967183360,
+    "Inactive(anon)": 2708955136,
+    "Inactive(file)": 258228224,
+    "KReclaimable": 83345408,
+    "KernelStack": 11829248,
+    "Mapped": 654577664,
+    "MemAvailable": 7521972224,
+    "MemFree": 6869397504,
+    "MemTotal": 11483848704,
+    "Mlocked": 0,
+    "NFS_Unstable": 0,
+    "PageTables": 26148864,
+    "Percpu": 11108352,
+    "SReclaimable": 83345408,
+    "SUnreclaim": 194445312,
+    "SecPageTables": 0,
+    "Shmem": 1472069632,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "Slab": 277790720,
+    "SwapCached": 228696064,
+    "SwapFree": 8069312512,
+    "SwapTotal": 8589934592,
+    "Unevictable": 0,
+    "VmallocChunk": 0,
+    "VmallocTotal": 35184372087808,
+    "VmallocUsed": 45764608,
+    "Writeback": 0,
+    "WritebackTmp": 0
+   },
+   "psi": {
+    "full": {
+     "avg10": 0.0,
+     "avg300": 0.0,
+     "avg60": 0.0,
+     "total": 52738568.0
+    },
+    "some": {
+     "avg10": 0.0,
+     "avg300": 0.0,
+     "avg60": 0.0,
+     "total": 52864156.0
+    }
+   },
+   "user_cgroup": {
+    "memory.current": "2316533760",
+    "memory.max": "max",
+    "memory.swap.max": "max"
+   },
+   "vmstat": {
+    "pgmajfault": 256221,
+    "pswpin": 261910,
+    "pswpout": 460254
+   }
+  },
+  "utc": "2026-11-18T22:20:12Z",
+  "windows": {
+   "AvailableBytes": 4658057216,
+   "CFreeBytes": 164443549696,
+   "CSizeBytes": 1798804860928,
+   "CommitLimit": 53407961088,
+   "CommittedBytes": 21648805888,
+   "DimmBytes": 17179869184,
+   "FreePhysicalMemoryKB": 4550296,
+   "Frequency100ns": 10000000,
+   "PageFiles": [
+    {
+     "AllocatedBaseSize": 34816,
+     "CurrentUsage": 1606,
+     "Name": "C:\\pagefile.sys",
+     "PeakUsage": 13799
+    }
+   ],
+   "PageReads": 73552509,
+   "PageWrites": 910159,
+   "PagesInput": 775542132,
+   "PagesOutput": 220566977,
+   "Timestamp100ns": 134395176119200000,
+   "TotalPhysicalMemory": 16900739072
+  }
+ },
+ "baseline_sha256": "e27ffc4acfedabff2f0d7d0dace33bbecd480c09be41ce54b9991cedc148e3d7",
+ "baseline_used": true,
+ "baseline_utc": "2026-11-18T22:19:40Z",
+ "before": {
+  "backing_volume": {
+   "free": 164443549696,
+   "path_checked": "../../../../../mnt/c",
+   "total": 1798804860928
+  },
+  "checkpoint_volume": {
+   "free": 891494227968,
+   "path_checked": "checkpoints/qwen2.5-14b-97e1e76",
+   "total": 1081101176832
+  },
+  "guest": {
+   "meminfo": {
+    "Active": 1041637376,
+    "Active(anon)": 533155840,
+    "Active(file)": 508481536,
+    "AnonHugePages": 0,
+    "AnonPages": 1746063360,
+    "Balloon": 0,
+    "Bounce": 0,
+    "Buffers": 28749824,
+    "Cached": 2209988608,
+    "CommitLimit": 14331858944,
+    "Committed_AS": 7446814720,
+    "DirectMap1G": 15032385536,
+    "DirectMap2M": 6387924992,
+    "DirectMap4k": 53477376,
+    "Dirty": 4096,
+    "FileHugePages": 0,
+    "FilePmdMapped": 0,
+    "HardwareCorrupted": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "HugePages_Total": 0,
+    "Hugepagesize": 2097152,
+    "Hugetlb": 0,
+    "Inactive": 2968678400,
+    "Inactive(anon)": 2710421504,
+    "Inactive(file)": 258256896,
+    "KReclaimable": 83345408,
+    "KernelStack": 12132352,
+    "Mapped": 654577664,
+    "MemAvailable": 7519522816,
+    "MemFree": 6866972672,
+    "MemTotal": 11483848704,
+    "Mlocked": 0,
+    "NFS_Unstable": 0,
+    "PageTables": 26443776,
+    "Percpu": 11108352,
+    "SReclaimable": 83345408,
+    "SUnreclaim": 194420736,
+    "SecPageTables": 0,
+    "Shmem": 1472057344,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "Slab": 277766144,
+    "SwapCached": 228696064,
+    "SwapFree": 8069312512,
+    "SwapTotal": 8589934592,
+    "Unevictable": 0,
+    "VmallocChunk": 0,
+    "VmallocTotal": 35184372087808,
+    "VmallocUsed": 45944832,
+    "Writeback": 0,
+    "WritebackTmp": 0
+   },
+   "psi": {
+    "full": {
+     "avg10": 0.0,
+     "avg300": 0.0,
+     "avg60": 0.0,
+     "total": 52738568.0
+    },
+    "some": {
+     "avg10": 0.0,
+     "avg300": 0.0,
+     "avg60": 0.0,
+     "total": 52864156.0
+    }
+   },
+   "user_cgroup": {
+    "memory.current": "2316165120",
+    "memory.max": "max",
+    "memory.swap.max": "max"
+   },
+   "vmstat": {
+    "pgmajfault": 256221,
+    "pswpin": 261910,
+    "pswpout": 460254
+   }
+  },
+  "utc": "2026-11-18T22:19:40Z",
+  "windows": {
+   "AvailableBytes": 4502691840,
+   "CFreeBytes": 164443615232,
+   "CSizeBytes": 1798804860928,
+   "CommitLimit": 53407961088,
+   "CommittedBytes": 21548523520,
+   "DimmBytes": 17179869184,
+   "FreePhysicalMemoryKB": 4397120,
+   "Frequency100ns": 10000000,
+   "PageFiles": [
+    {
+     "AllocatedBaseSize": 34816,
+     "CurrentUsage": 1592,
+     "Name": "C:\\pagefile.sys",
+     "PeakUsage": 13799
+    }
+   ],
+   "PageReads": 73552361,
+   "PageWrites": 910143,
+   "PagesInput": 775541714,
+   "PagesOutput": 220563065,
+   "Timestamp100ns": 134395175815390000,
+   "TotalPhysicalMemory": 16900739072
+  }
+ },
+ "checks": [
+  {
+   "kind": "observation",
+   "ok": true,
+   "op": ">=",
+   "quantity": "host_available_bytes",
+   "required": true,
+   "threshold": 536870912,
+   "value": 4502691840
+  },
+  {
+   "kind": "estimate",
+   "ok": true,
+   "op": ">=",
+   "quantity": "host_commit_headroom_bytes",
+   "required": true,
+   "threshold": 2147483648,
+   "value": 31759155200
+  },
+  {
+   "kind": "estimate",
+   "ok": true,
+   "op": "<=",
+   "quantity": "host_pages_input_per_s",
+   "required": true,
+   "threshold": 1024,
+   "value": 13.758599124452783
+  },
+  {
+   "kind": "estimate",
+   "ok": true,
+   "op": "<=",
+   "quantity": "host_pagefile_growth_since_baseline",
+   "required": true,
+   "threshold": 1073741824,
+   "value": 14680064
+  },
+  {
+   "kind": "observation",
+   "ok": true,
+   "op": ">=",
+   "quantity": "guest_mem_available",
+   "required": true,
+   "threshold": 2147483648,
+   "value": 7519522816
+  },
+  {
+   "kind": "estimate",
+   "ok": true,
+   "op": "<=",
+   "quantity": "guest_swap_growth_since_baseline",
+   "required": true,
+   "threshold": 268435456,
+   "value": 0
+  },
+  {
+   "kind": "observation",
+   "ok": true,
+   "op": ">=",
+   "quantity": "backing_volume_free",
+   "required": true,
+   "threshold": 72329391373,
+   "value": 164443549696
+  }
+ ],
+ "interval_s": 30.0,
+ "missing": [],
+ "note": "No system setting was changed; values are point observations.",
+ "profile": "download",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "quantities": {
+  "backing_volume_free": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 164443549696
+  },
+  "checkpoint_volume_free": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 891494227968
+  },
+  "guest_mem_available": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 7519522816
+  },
+  "guest_mem_total": {
+   "kind": "capacity",
+   "unit": "B",
+   "value": 11483848704
+  },
+  "guest_psi_memory_some_avg10": {
+   "kind": "observation",
+   "unit": "%",
+   "value": 0.0
+  },
+  "guest_swap_growth_since_baseline": {
+   "kind": "estimate",
+   "unit": "B",
+   "value": 0
+  },
+  "guest_swap_used": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 520622080
+  },
+  "host_available_bytes": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 4502691840
+  },
+  "host_c_free_cim": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 164443549696
+  },
+  "host_commit_headroom_bytes": {
+   "kind": "estimate",
+   "unit": "B",
+   "value": 31759155200
+  },
+  "host_commit_limit": {
+   "kind": "capacity",
+   "unit": "B",
+   "value": 53407961088
+  },
+  "host_committed_bytes": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 21648805888
+  },
+  "host_installed_dimm_bytes": {
+   "kind": "capacity",
+   "unit": "B",
+   "value": 17179869184
+  },
+  "host_page_reads_per_s": {
+   "kind": "estimate",
+   "unit": "pages/s",
+   "value": 4.87146571870577
+  },
+  "host_pagefile_growth_since_baseline": {
+   "kind": "estimate",
+   "unit": "B",
+   "value": 14680064
+  },
+  "host_pagefile_in_use": {
+   "kind": "observation",
+   "unit": "B",
+   "value": 1684013056
+  },
+  "host_pages_input_per_s": {
+   "kind": "estimate",
+   "unit": "pages/s",
+   "value": 13.758599124452783
+  },
+  "host_pages_output_per_s": {
+   "kind": "estimate",
+   "unit": "pages/s",
+   "value": 128.76468845660116
+  },
+  "host_total_physical_memory": {
+   "kind": "capacity",
+   "unit": "B",
+   "value": 16900739072
+  }
+ },
+ "read_only": true,
+ "schema": "inwime-hostmem10/1",
+ "verdict": "GO",
+ "violated": []
+}
