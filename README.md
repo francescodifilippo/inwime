@@ -1,3 +1,5 @@
+> **InWiMe oggi — visione e roadmap:** [scopo finale, requisiti irrinunciabili, prove concluse, piano delle release e traguardi futuri](docs/VISION_AND_ROADMAP.md). La documentazione storica dei benchmark qui sotto non rappresenta da sola lo stato attuale: gli incrementi 7–10 hanno eseguito LLM pubblici addestrati, fino a Qwen2.5-14B BF16 con pesi attivi oltre la RAM fisica host (incremento 10, gate A–H PASS). La prossima tappa è la release v0.1.0-alpha ([#26](https://github.com/francescodifilippo/inwime/issues/26)).
+
 # Benchmark BF16 con streaming esplicito
 
 **Fonti e antecedenti del progetto:** [related work e attribuzioni](docs/RELATED_WORK.md) · [catalogo storico completo F01–F62](docs/INWIME_TECHNIQUE_WATCHLIST.md).

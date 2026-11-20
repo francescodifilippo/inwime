@@ -1,6 +1,6 @@
 # Codex repository instructions
 
-Read `PROJECT_BRIEF.md` before any implementation. The user wants local CPU/GPU inference for extremely large LLMs via **dynamic streaming from NVMe**, using a 16 GB RAM MSI Katana GF66 (i7-12700H; RTX 3050 Laptop 4 GiB). Correctness first, speed second.
+Read `docs/VISION_AND_ROADMAP.md` for the current mission and roadmap, then `PROJECT_BRIEF.md` for historical context and operational constraints, before any implementation. The user wants local CPU/GPU inference for extremely large LLMs via **dynamic streaming from NVMe**, using a 16 GB RAM MSI Katana GF66 (i7-12700H; RTX 3050 Laptop 4 GiB). Correctness first, speed second.
 
 ## Non-negotiable
 - Never silently quantize original model weights. BF16/F16 primary; native lower precision only when original checkpoint uses that representation, documented separately. Optional quantized kernels may be added later.
@@ -19,5 +19,5 @@ Read `PROJECT_BRIEF.md` before any implementation. The user wants local CPU/GPU 
 3. Run test and benchmark, report failures and measured evidence.
 4. Commit only when the user wants versioned code; ask before pushes.
 
-## First run
+## Historical first run (already completed; not an active task)
 Request: `Read PROJECT_BRIEF.md. Audit hardware, drivers, storage, CUDA and any existing PoC. Build a small BF16 streamed-matrix benchmark with bounded RAM and VRAM; compare to CPU reference. No quantization.`
