@@ -1,0 +1,338 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "O7-stock_fp64-a3",
+  "kind": "oracle",
+  "profile": "oracle",
+  "cache": "as-is",
+  "purpose": "oracle10 7B end-to-end equivalence (stock_fp64, diagnostic) vs M9 oracle9 capture",
+  "utc_start": "2026-11-20T09:33:35Z",
+  "command": [
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "stock_fp64",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "8",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-stock_fp64.npz"
+  ],
+  "memory_max": 6442450944,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "O7-stock_fp64-a3-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "60e034d84eb73b4740d8499565343669410fa209c2b9cc20219b7fedd914bda4"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 695486.947517745,
+      "utc": "2026-11-20T09:34:07Z",
+      "reads_completed": 2445193,
+      "reads_merged": 1254381,
+      "sectors_read": 5567500082,
+      "read_ticks_ms": 3529017,
+      "writes_completed": 892490,
+      "writes_merged": 1254880,
+      "sectors_written": 224275352,
+      "write_ticks_ms": 8297309,
+      "in_flight": 0,
+      "io_ticks_ms": 3043660,
+      "time_in_queue_ms": 12360686,
+      "read_bytes": 2850560041984
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 695486.947689091,
+        "utc": "2026-11-20T09:34:07Z",
+        "reads_completed": 200270,
+        "reads_merged": 62278,
+        "sectors_read": 2103568,
+        "read_ticks_ms": 49292,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105628,
+        "time_in_queue_ms": 8383331,
+        "read_bytes": 1077026816
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-O7-stock_fp64-a3",
+    "--output",
+    "results/increment10/campaign/O7-stock_fp64-a3-scope.json",
+    "--memory-max",
+    "6442450944",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "stock_fp64",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "8",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-stock_fp64.npz"
+  ],
+  "wall_s": 32.627743978984654,
+  "supervisor_exit": 0,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 695520.834878123,
+      "utc": "2026-11-20T09:34:41Z",
+      "reads_completed": 2453928,
+      "reads_merged": 1255421,
+      "sectors_read": 5596228194,
+      "read_ticks_ms": 3554989,
+      "writes_completed": 892637,
+      "writes_merged": 1255028,
+      "sectors_written": 224278960,
+      "write_ticks_ms": 8297715,
+      "in_flight": 0,
+      "io_ticks_ms": 3051208,
+      "time_in_queue_ms": 12387103,
+      "read_bytes": 2865268835328
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 695520.835502812,
+        "utc": "2026-11-20T09:34:41Z",
+        "reads_completed": 200270,
+        "reads_merged": 62278,
+        "sectors_read": 2103568,
+        "read_ticks_ms": 49292,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105628,
+        "time_in_queue_ms": 8383331,
+        "read_bytes": 1077026816
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 8735,
+      "reads_merged": 1040,
+      "sectors_read": 28728112,
+      "read_ticks_ms": 25972,
+      "writes_completed": 147,
+      "writes_merged": 148,
+      "sectors_written": 3608,
+      "write_ticks_ms": 406,
+      "io_ticks_ms": 7548,
+      "time_in_queue_ms": 26417,
+      "read_bytes": 14708793344
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 0,
+        "writes_merged": 0,
+        "sectors_written": 0,
+        "write_ticks_ms": 0,
+        "io_ticks_ms": 0,
+        "time_in_queue_ms": 0,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 6,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 3
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 131488940032,
+          "max": 131496030208
+        },
+        "guest_mem_available": {
+          "min": 6105141248,
+          "max": 8682774528
+        },
+        "host_available_bytes": {
+          "min": 284024832,
+          "max": 2956906496
+        },
+        "host_commit_headroom_bytes": {
+          "min": 25512374272,
+          "max": 32242143232
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": -809500672,
+          "max": 2152726528
+        },
+        "host_pages_input_per_s": {
+          "min": 483.1565233575284,
+          "max": 8627.476393260507
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.945,
+          "host_available_bytes": 2956906496,
+          "guest_mem_available": 8682774528,
+          "host_pagefile_growth_since_baseline": -807403520,
+          "host_commit_headroom_bytes": 32242143232,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 131488940032
+        },
+        {
+          "t": 6.301,
+          "host_available_bytes": 511791104,
+          "guest_mem_available": 7574233088,
+          "host_pagefile_growth_since_baseline": -809500672,
+          "host_commit_headroom_bytes": 29839626240,
+          "host_pages_input_per_s": 483.1565233575284,
+          "backing_volume_free": 131496030208
+        },
+        {
+          "t": 11.775,
+          "host_available_bytes": 284024832,
+          "guest_mem_available": 6756118528,
+          "host_pagefile_growth_since_baseline": -51380224,
+          "host_commit_headroom_bytes": 26660528128,
+          "host_pages_input_per_s": 1419.1956124314443,
+          "backing_volume_free": 131496017920
+        },
+        {
+          "t": 17.249,
+          "host_available_bytes": 1347694592,
+          "guest_mem_available": 6511595520,
+          "host_pagefile_growth_since_baseline": 1414529024,
+          "host_commit_headroom_bytes": 25546907648,
+          "host_pages_input_per_s": 4427.0072992700725,
+          "backing_volume_free": 131496017920
+        },
+        {
+          "t": 22.637,
+          "host_available_bytes": 1870884864,
+          "guest_mem_available": 6105141248,
+          "host_pagefile_growth_since_baseline": 1787822080,
+          "host_commit_headroom_bytes": 25516486656,
+          "host_pages_input_per_s": 8627.476393260507,
+          "backing_volume_free": 131496017920
+        },
+        {
+          "t": 28.036,
+          "host_available_bytes": 2378211328,
+          "guest_mem_available": 7959502848,
+          "host_pagefile_growth_since_baseline": 2152726528,
+          "host_commit_headroom_bytes": 25512374272,
+          "host_pages_input_per_s": 1354.6230969179353,
+          "backing_volume_free": 131496017920
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-20T09:34:41Z",
+  "produced_sha256": {
+    "O7-stock_fp64-a3-host-start.json": "60e034d84eb73b4740d8499565343669410fa209c2b9cc20219b7fedd914bda4",
+    "O7-stock_fp64-a3-scope.final.txt": "2a852594d5c5532dc45ebedd046643815f815a7baddc1438226ad584568db91a",
+    "O7-stock_fp64-a3-scope.json": "5a2d8ce33726f587630961548cdb23f984dcc5e90a84476fe269f4f4240b2f63",
+    "O7-stock_fp64-a3-scope.log": "be87b34638fa6a9103bc04828785809bcc75f650e314cd528deb25af308912b7",
+    "artifacts/increment10/oracle10-7b-stock_fp64.npz": "3a1adf78a6b63e5d3c17f292be2486654601c8abc9cf58cb4d717be5726f5347",
+    "artifacts/increment10/oracle10-7b-stock_fp64.json": "aa07a9e6e4014ceea89ce265ef52978132cc33f87d51afe635fdef5b7ebbef3b"
+  }
+}

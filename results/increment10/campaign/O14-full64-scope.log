@@ -1,0 +1,8 @@
+{
+ "contract": "full64",
+ "head_mode": "blocked",
+ "oracle_wall_s": 114.14633280900307,
+ "peak_rss_bytes": 3146129408,
+ "upstream_greedy_matches_sequence": true,
+ "planned_peak": 3211436032
+}

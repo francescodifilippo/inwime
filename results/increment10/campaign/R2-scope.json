@@ -1,0 +1,4357 @@
+{
+  "label": "m10-R2",
+  "unit": "inwime9-m10-R2-1795124864",
+  "scope": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/inwime9-m10-R2-1795124864.scope",
+  "command": [
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--family",
+    "qwen2",
+    "--mode",
+    "pipeline",
+    "--as-mib",
+    "384",
+    "--output",
+    "results/increment10/campaign/R2-forward.json",
+    "--cache-state",
+    "evicted-under-scope"
+  ],
+  "memory_max": 2147483648,
+  "swap_max": 0,
+  "condition": "evicted",
+  "available_stop_bytes": 805306368,
+  "global_before": {
+    "MemTotal": 11483848704,
+    "MemFree": 8061652992,
+    "MemAvailable": 8640937984,
+    "Buffers": 15327232,
+    "Cached": 972533760,
+    "SwapCached": 228564992,
+    "Active": 1171144704,
+    "Inactive": 1741692928,
+    "Active(anon)": 531996672,
+    "Inactive(anon)": 1674076160,
+    "Active(file)": 639148032,
+    "Inactive(file)": 67616768,
+    "Unevictable": 0,
+    "Mlocked": 0,
+    "SwapTotal": 8589934592,
+    "SwapFree": 8070266880,
+    "Dirty": 397312,
+    "Writeback": 139264,
+    "AnonPages": 1899610112,
+    "Mapped": 667729920,
+    "Shmem": 280317952,
+    "KReclaimable": 56758272,
+    "Slab": 193138688,
+    "SReclaimable": 56758272,
+    "SUnreclaim": 136380416,
+    "KernelStack": 12222464,
+    "PageTables": 27361280,
+    "SecPageTables": 0,
+    "NFS_Unstable": 0,
+    "Bounce": 0,
+    "WritebackTmp": 0,
+    "CommitLimit": 14331858944,
+    "Committed_AS": 6531670016,
+    "VmallocTotal": 35184372087808,
+    "VmallocUsed": 46186496,
+    "VmallocChunk": 0,
+    "Percpu": 11108352,
+    "HardwareCorrupted": 0,
+    "AnonHugePages": 0,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "FileHugePages": 0,
+    "FilePmdMapped": 0,
+    "Balloon": 0,
+    "HugePages_Total": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "Hugepagesize": 2097152,
+    "Hugetlb": 0,
+    "DirectMap4k": 53477376,
+    "DirectMap2M": 6387924992,
+    "DirectMap1G": 15032385536
+  },
+  "files": [
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors",
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors"
+  ],
+  "global_oom_kill_before": 2,
+  "residency_initial": {
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3885134104
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995327992
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995348776
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3979614448
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 1698724408
+    }
+  },
+  "residency_after_eviction": {
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3885134104
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995327992
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995348776
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3979614448
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": {
+      "resident_bytes": 0,
+      "size_bytes": 1698724408
+    }
+  },
+  "host_disk_before": {
+    "captured_unix_s": 1795124864.8050098,
+    "disks": [
+      {
+        "Name": "0 C:",
+        "DiskReadBytesPersec": 5067564173824,
+        "DiskReadsPersec": 80973020,
+        "DiskWriteBytesPersec": 1714402003456
+      },
+      {
+        "Name": "1",
+        "DiskReadBytesPersec": 3227134976,
+        "DiskReadsPersec": 3242,
+        "DiskWriteBytesPersec": 65536
+      },
+      {
+        "Name": "2",
+        "DiskReadBytesPersec": 1249792,
+        "DiskReadsPersec": 78,
+        "DiskWriteBytesPersec": 295936
+      }
+    ]
+  },
+  "global_at_launch": {
+    "MemTotal": 11483848704,
+    "MemFree": 8057233408,
+    "MemAvailable": 8637927424,
+    "Buffers": 15855616,
+    "Cached": 972980224,
+    "SwapCached": 228564992,
+    "Active": 1172189184,
+    "Inactive": 1742548992,
+    "Active(anon)": 532013056,
+    "Inactive(anon)": 1674551296,
+    "Active(file)": 640176128,
+    "Inactive(file)": 67997696,
+    "Unevictable": 0,
+    "Mlocked": 0,
+    "SwapTotal": 8589934592,
+    "SwapFree": 8070266880,
+    "Dirty": 499712,
+    "Writeback": 0,
+    "AnonPages": 1899917312,
+    "Mapped": 667873280,
+    "Shmem": 280317952,
+    "KReclaimable": 56758272,
+    "Slab": 193269760,
+    "SReclaimable": 56758272,
+    "SUnreclaim": 136511488,
+    "KernelStack": 12255232,
+    "PageTables": 27496448,
+    "SecPageTables": 0,
+    "NFS_Unstable": 0,
+    "Bounce": 0,
+    "WritebackTmp": 0,
+    "CommitLimit": 14331858944,
+    "Committed_AS": 6531923968,
+    "VmallocTotal": 35184372087808,
+    "VmallocUsed": 46301184,
+    "VmallocChunk": 0,
+    "Percpu": 11108352,
+    "HardwareCorrupted": 0,
+    "AnonHugePages": 0,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "FileHugePages": 0,
+    "FilePmdMapped": 0,
+    "Balloon": 0,
+    "HugePages_Total": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "Hugepagesize": 2097152,
+    "Hugetlb": 0,
+    "DirectMap4k": 53477376,
+    "DirectMap2M": 6387924992,
+    "DirectMap1G": 15032385536
+  },
+  "launcher": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "--collect",
+    "--expand-environment=no",
+    "--unit=inwime9-m10-R2-1795124864",
+    "-p",
+    "MemoryMax=2147483648",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "OOMPolicy=continue",
+    "--",
+    "/bin/sh",
+    "<repo>/tools/cgroup9_finalize.sh",
+    "<repo>/results/increment10/campaign/R2-scope.final.txt",
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--family",
+    "qwen2",
+    "--mode",
+    "pipeline",
+    "--as-mib",
+    "384",
+    "--output",
+    "results/increment10/campaign/R2-forward.json",
+    "--cache-state",
+    "evicted-under-scope"
+  ],
+  "exit_code": 0,
+  "watchdog_reason": null,
+  "wall_s": 203.06829130707774,
+  "samples": 4007,
+  "sample_interval_s": 0.05,
+  "sampled_peaks": {
+    "memory.current": 2147483648,
+    "memory.swap.current": 0,
+    "memory.peak": 2147483648,
+    "stat.anon": 142508032,
+    "stat.file": 2003800064,
+    "stat.kernel": 7249920,
+    "stat.kernel_stack": 32768,
+    "stat.pagetables": 454656,
+    "stat.sock": 0,
+    "stat.shmem": 0,
+    "stat.file_mapped": 5496832,
+    "stat.file_dirty": 4096,
+    "stat.file_writeback": 0,
+    "stat.inactive_anon": 142491648,
+    "stat.active_anon": 16384,
+    "stat.inactive_file": 1997934592,
+    "stat.active_file": 207826944,
+    "stat.slab": 6761600,
+    "stat.workingset_refault_file": 54334953,
+    "stat.workingset_activate_file": 0,
+    "stat.pgscan": 61065940,
+    "stat.pgsteal": 61064576,
+    "stat.pgfault": 45445,
+    "stat.pgmajfault": 18,
+    "pid1509371.sh.VmRSS": 2056192,
+    "pid1509371.sh.VmHWM": 2056192,
+    "pid1509371.sh.VmSize": 2961408,
+    "pid1509371.sh.VmPeak": 2961408,
+    "pid1509371.sh.VmSwap": 0,
+    "pid1509371.sh.io.read_bytes": 2109440,
+    "pid1509371.sh.io.rchar": 14076,
+    "pid1509372.python.VmRSS": 162205696,
+    "pid1509372.python.VmHWM": 162205696,
+    "pid1509372.python.VmSize": 249946112,
+    "pid1509372.python.VmPeak": 317038592,
+    "pid1509372.python.VmSwap": 0,
+    "pid1509372.python.io.read_bytes": 252117979136,
+    "pid1509372.python.io.rchar": 253413320988,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 122772,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    }
+  },
+  "minimum_global_memavailable": 8308011008,
+  "series": [
+    {
+      "t": 1.017,
+      "current": 895574016,
+      "file": 752173056,
+      "anon": 142442496,
+      "kernel": 897024,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484806656,
+      "cached": 1732128768,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 2.03,
+      "current": 2146365440,
+      "file": 2002964480,
+      "anon": 142442496,
+      "kernel": 942080,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 2,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8492777472,
+      "cached": 2982920192,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 3.043,
+      "current": 2145914880,
+      "file": 2001702912,
+      "anon": 142442496,
+      "kernel": 999424,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 763,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8497659904,
+      "cached": 2981658624,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 4.056,
+      "current": 2146041856,
+      "file": 2001473536,
+      "anon": 142438400,
+      "kernel": 1073152,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 1516,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8485560320,
+      "cached": 2981421056,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 5.07,
+      "current": 2147450880,
+      "file": 2002358272,
+      "anon": 142438400,
+      "kernel": 1130496,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 2264,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481910784,
+      "cached": 2982313984,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 6.082,
+      "current": 2145914880,
+      "file": 2000515072,
+      "anon": 142438400,
+      "kernel": 1204224,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 3034,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468324352,
+      "cached": 2980470784,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 7.096,
+      "current": 2145923072,
+      "file": 2000261120,
+      "anon": 142438400,
+      "kernel": 1261568,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 3787,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8477319168,
+      "cached": 2980216832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 8.109,
+      "current": 2145927168,
+      "file": 2000261120,
+      "anon": 142438400,
+      "kernel": 1323008,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 4555,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8471584768,
+      "cached": 2980212736,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 9.122,
+      "current": 2146254848,
+      "file": 2000515072,
+      "anon": 142438400,
+      "kernel": 1400832,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 5324,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8479617024,
+      "cached": 2980487168,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 10.135,
+      "current": 2145996800,
+      "file": 2000257024,
+      "anon": 142438400,
+      "kernel": 1454080,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 6065,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478048256,
+      "cached": 2980335616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 11.148,
+      "current": 2146177024,
+      "file": 2000531456,
+      "anon": 142438400,
+      "kernel": 1527808,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 6818,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8479518720,
+      "cached": 2980610048,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 12.161,
+      "current": 2146426880,
+      "file": 2000257024,
+      "anon": 142438400,
+      "kernel": 1585152,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 7579,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8473255936,
+      "cached": 2980335616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 13.174,
+      "current": 2146689024,
+      "file": 2000257024,
+      "anon": 142438400,
+      "kernel": 1642496,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 8343,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8476745728,
+      "cached": 2980335616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 14.186,
+      "current": 2146443264,
+      "file": 1999478784,
+      "anon": 142438400,
+      "kernel": 1716224,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 9111,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468971520,
+      "cached": 2979557376,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 15.201,
+      "current": 2147221504,
+      "file": 2000257024,
+      "anon": 142438400,
+      "kernel": 1773568,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 9843,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478912512,
+      "cached": 2980335616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 16.214,
+      "current": 2145652736,
+      "file": 1998413824,
+      "anon": 142438400,
+      "kernel": 1847296,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 10607,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468332544,
+      "cached": 2978492416,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 17.227,
+      "current": 2147360768,
+      "file": 1999863808,
+      "anon": 142438400,
+      "kernel": 1904640,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 11359,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8470347776,
+      "cached": 2979549184,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 18.24,
+      "current": 2145918976,
+      "file": 1998159872,
+      "anon": 142438400,
+      "kernel": 1957888,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 12084,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475742208,
+      "cached": 2978238464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 19.253,
+      "current": 2146181120,
+      "file": 1998413824,
+      "anon": 142438400,
+      "kernel": 2039808,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 12849,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8474492928,
+      "cached": 2978492416,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 20.266,
+      "current": 2145394688,
+      "file": 1997213696,
+      "anon": 142487552,
+      "kernel": 2215936,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 13462,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465461248,
+      "cached": 2977382400,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 21.279,
+      "current": 2147381248,
+      "file": 1999065088,
+      "anon": 142487552,
+      "kernel": 2334720,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 14072,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8391786496,
+      "cached": 2979233792,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 22.292,
+      "current": 2146537472,
+      "file": 1998233600,
+      "anon": 142487552,
+      "kernel": 2469888,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 14677,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475242496,
+      "cached": 2978402304,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 23.305,
+      "current": 2146177024,
+      "file": 1997922304,
+      "anon": 142487552,
+      "kernel": 2625536,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 15264,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8493228032,
+      "cached": 2978091008,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 24.319,
+      "current": 2145583104,
+      "file": 1997180928,
+      "anon": 142487552,
+      "kernel": 2760704,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 15819,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8485490688,
+      "cached": 2977349632,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 25.332,
+      "current": 2145501184,
+      "file": 1997000704,
+      "anon": 142487552,
+      "kernel": 2875392,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 16403,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8482529280,
+      "cached": 2977169408,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 26.345,
+      "current": 2146713600,
+      "file": 1998176256,
+      "anon": 142487552,
+      "kernel": 2994176,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 17020,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8463646720,
+      "cached": 2978344960,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 27.358,
+      "current": 2146439168,
+      "file": 1997553664,
+      "anon": 142487552,
+      "kernel": 3149824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 17663,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8450088960,
+      "cached": 2978373632,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 28.37,
+      "current": 2146357248,
+      "file": 1997750272,
+      "anon": 142487552,
+      "kernel": 3264512,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 18256,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8462286848,
+      "cached": 2978377728,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 29.384,
+      "current": 2145742848,
+      "file": 1997201408,
+      "anon": 142487552,
+      "kernel": 3383296,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 18841,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8454119424,
+      "cached": 2977828864,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 30.397,
+      "current": 2146377728,
+      "file": 1997484032,
+      "anon": 142487552,
+      "kernel": 3538944,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 19436,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469348352,
+      "cached": 2978111488,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 31.41,
+      "current": 2145509376,
+      "file": 1996558336,
+      "anon": 142487552,
+      "kernel": 3674112,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 20015,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8395771904,
+      "cached": 2977296384,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 32.425,
+      "current": 2145689600,
+      "file": 1996312576,
+      "anon": 142487552,
+      "kernel": 3792896,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 20595,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8464039936,
+      "cached": 2977050624,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 33.438,
+      "current": 2146701312,
+      "file": 1997234176,
+      "anon": 142487552,
+      "kernel": 3952640,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 21192,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8456163328,
+      "cached": 2977972224,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 34.452,
+      "current": 2146422784,
+      "file": 1996910592,
+      "anon": 142487552,
+      "kernel": 4071424,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 21777,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469331968,
+      "cached": 2977648640,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 35.465,
+      "current": 2147258368,
+      "file": 1997512704,
+      "anon": 142487552,
+      "kernel": 4194304,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 22377,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8480833536,
+      "cached": 2978250752,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 36.478,
+      "current": 2145652736,
+      "file": 1995776000,
+      "anon": 142487552,
+      "kernel": 4354048,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 22991,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8461594624,
+      "cached": 2976514048,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 37.493,
+      "current": 2146832384,
+      "file": 1996898304,
+      "anon": 142487552,
+      "kernel": 4468736,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 23558,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8487485440,
+      "cached": 2977636352,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 38.505,
+      "current": 2146979840,
+      "file": 1997090816,
+      "anon": 142487552,
+      "kernel": 4612096,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 24158,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484020224,
+      "cached": 2977828864,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 39.518,
+      "current": 2145652736,
+      "file": 1996730368,
+      "anon": 142487552,
+      "kernel": 4763648,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 24764,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478015488,
+      "cached": 2995769344,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 40.531,
+      "current": 2146394112,
+      "file": 1996173312,
+      "anon": 142487552,
+      "kernel": 4886528,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 25340,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481472512,
+      "cached": 2996396032,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 41.544,
+      "current": 2146373632,
+      "file": 1996075008,
+      "anon": 142487552,
+      "kernel": 4919296,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 25946,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484544512,
+      "cached": 2996297728,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 42.557,
+      "current": 2146439168,
+      "file": 1996046336,
+      "anon": 142487552,
+      "kernel": 5017600,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 26613,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8461115392,
+      "cached": 2996269056,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 43.572,
+      "current": 2147246080,
+      "file": 1996668928,
+      "anon": 142487552,
+      "kernel": 5054464,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 27219,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483778560,
+      "cached": 2996899840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 44.585,
+      "current": 2145800192,
+      "file": 1995247616,
+      "anon": 142487552,
+      "kernel": 5173248,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 27823,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8438206464,
+      "cached": 2995478528,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 45.598,
+      "current": 2146701312,
+      "file": 1996275712,
+      "anon": 142487552,
+      "kernel": 5292032,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 28413,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8410460160,
+      "cached": 2996506624,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 46.612,
+      "current": 2146234368,
+      "file": 1995530240,
+      "anon": 142487552,
+      "kernel": 5443584,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 28972,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8457453568,
+      "cached": 2995761152,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 47.626,
+      "current": 2147172352,
+      "file": 1996259328,
+      "anon": 142487552,
+      "kernel": 5533696,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 29698,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8444149760,
+      "cached": 2996490240,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 48.64,
+      "current": 2146705408,
+      "file": 1995751424,
+      "anon": 142487552,
+      "kernel": 5627904,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 30411,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8450736128,
+      "cached": 2995982336,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 49.653,
+      "current": 2147024896,
+      "file": 1995718656,
+      "anon": 142487552,
+      "kernel": 5726208,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 31005,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8474238976,
+      "cached": 2995949568,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 50.665,
+      "current": 2146762752,
+      "file": 1995444224,
+      "anon": 142487552,
+      "kernel": 5844992,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 31635,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8485961728,
+      "cached": 2995773440,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 51.679,
+      "current": 2145419264,
+      "file": 1993768960,
+      "anon": 142487552,
+      "kernel": 5873664,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 32217,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8495849472,
+      "cached": 2994098176,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 52.692,
+      "current": 2145841152,
+      "file": 1993814016,
+      "anon": 142487552,
+      "kernel": 6021120,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 32839,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481234944,
+      "cached": 2994143232,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 53.704,
+      "current": 2146963456,
+      "file": 1995034624,
+      "anon": 142487552,
+      "kernel": 6201344,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 33455,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8454348800,
+      "cached": 2995363840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 54.717,
+      "current": 2146045952,
+      "file": 1994256384,
+      "anon": 142487552,
+      "kernel": 6295552,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 34070,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8493703168,
+      "cached": 2994585600,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 55.73,
+      "current": 2146807808,
+      "file": 1994952704,
+      "anon": 142487552,
+      "kernel": 6336512,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 34736,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484999168,
+      "cached": 2995281920,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 56.743,
+      "current": 2146975744,
+      "file": 1994924032,
+      "anon": 142487552,
+      "kernel": 6488064,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 35312,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465080320,
+      "cached": 2993438720,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 57.756,
+      "current": 2146369536,
+      "file": 1994735616,
+      "anon": 142487552,
+      "kernel": 6623232,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 35909,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483577856,
+      "cached": 2995064832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 58.77,
+      "current": 2146598912,
+      "file": 1994838016,
+      "anon": 142487552,
+      "kernel": 6664192,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 36513,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8496836608,
+      "cached": 2995167232,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 59.782,
+      "current": 2147123200,
+      "file": 1994969088,
+      "anon": 142487552,
+      "kernel": 6815744,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 37091,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8490450944,
+      "cached": 2995298304,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 60.794,
+      "current": 2146713600,
+      "file": 1993953280,
+      "anon": 142487552,
+      "kernel": 6963200,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 37692,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8495321088,
+      "cached": 2994176000,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 61.807,
+      "current": 2144915456,
+      "file": 1991847936,
+      "anon": 142487552,
+      "kernel": 7139328,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 38353,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8462413824,
+      "cached": 2992267264,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 62.821,
+      "current": 2146803712,
+      "file": 1993785344,
+      "anon": 142487552,
+      "kernel": 7184384,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 38964,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8491376640,
+      "cached": 2994204672,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 63.834,
+      "current": 2146525184,
+      "file": 1993691136,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 39545,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8493424640,
+      "cached": 2994110464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 64.847,
+      "current": 2147237888,
+      "file": 1994366976,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 40138,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465399808,
+      "cached": 2994786304,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 65.862,
+      "current": 2146439168,
+      "file": 1993633792,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 40738,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8404496384,
+      "cached": 2994053120,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 66.875,
+      "current": 2147065856,
+      "file": 1994227712,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 41304,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465522688,
+      "cached": 2994647040,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 67.889,
+      "current": 2147143680,
+      "file": 1994219520,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 41915,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8437719040,
+      "cached": 2994638848,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 68.903,
+      "current": 2147225600,
+      "file": 1994125312,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 42510,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8462880768,
+      "cached": 2994544640,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 69.916,
+      "current": 2145394688,
+      "file": 1992294400,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 43072,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8388399104,
+      "cached": 2992820224,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 70.93,
+      "current": 2146390016,
+      "file": 1993580544,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 43845,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8491479040,
+      "cached": 2994106368,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 71.942,
+      "current": 2145992704,
+      "file": 1993670656,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 44571,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465063936,
+      "cached": 2994196480,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 72.956,
+      "current": 2144866304,
+      "file": 1992560640,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 45220,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8450990080,
+      "cached": 2993086464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 73.97,
+      "current": 2144624640,
+      "file": 1992175616,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 45824,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8436252672,
+      "cached": 2992701440,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 74.984,
+      "current": 2147090432,
+      "file": 1994731520,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 46449,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8482385920,
+      "cached": 2995257344,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 75.997,
+      "current": 2146439168,
+      "file": 1994391552,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 47073,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8397725696,
+      "cached": 2994917376,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 77.011,
+      "current": 2145513472,
+      "file": 1993383936,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 47655,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8472227840,
+      "cached": 2993909760,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 78.025,
+      "current": 2145640448,
+      "file": 1993515008,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 48289,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8488792064,
+      "cached": 2994040832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 79.038,
+      "current": 2145914880,
+      "file": 1993732096,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 48896,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481648640,
+      "cached": 2994257920,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 80.051,
+      "current": 2147225600,
+      "file": 1995096064,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 49470,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8386342912,
+      "cached": 2995314688,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 81.065,
+      "current": 2146734080,
+      "file": 1994797056,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 50084,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478007296,
+      "cached": 2995425280,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 82.078,
+      "current": 2145787904,
+      "file": 1993539584,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 50686,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475250688,
+      "cached": 2994167808,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 83.091,
+      "current": 2145390592,
+      "file": 1993199616,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 51256,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8458280960,
+      "cached": 2993827840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 84.104,
+      "current": 2146701312,
+      "file": 1994727424,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 51861,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484696064,
+      "cached": 2995355648,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 85.118,
+      "current": 2147024896,
+      "file": 1995345920,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 52473,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469889024,
+      "cached": 2995974144,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 86.13,
+      "current": 2145931264,
+      "file": 1994199040,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 53091,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478564352,
+      "cached": 2994831360,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 87.144,
+      "current": 2145779712,
+      "file": 1993990144,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 53684,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8489648128,
+      "cached": 2994622464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 88.157,
+      "current": 2145914880,
+      "file": 1994084352,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 54269,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8451305472,
+      "cached": 2994716672,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 89.17,
+      "current": 2146516992,
+      "file": 1994764288,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 54860,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8446550016,
+      "cached": 2995396608,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 90.184,
+      "current": 2147110912,
+      "file": 1995243520,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 55473,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8461250560,
+      "cached": 2996600832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 91.198,
+      "current": 2145423360,
+      "file": 1993592832,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 56056,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475205632,
+      "cached": 2994950144,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 92.21,
+      "current": 2146271232,
+      "file": 1994399744,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 56606,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8496439296,
+      "cached": 2995757056,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 93.223,
+      "current": 2147053568,
+      "file": 1995395072,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 57318,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483610624,
+      "cached": 2996752384,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 94.236,
+      "current": 2147229696,
+      "file": 1995251712,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 58037,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469331968,
+      "cached": 2996129792,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 95.25,
+      "current": 2145525760,
+      "file": 1993891840,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 58632,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8478736384,
+      "cached": 2995187712,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 96.263,
+      "current": 2147221504,
+      "file": 1995599872,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 59264,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483610624,
+      "cached": 2996436992,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 97.276,
+      "current": 2145419264,
+      "file": 1993805824,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 59843,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483188736,
+      "cached": 2995163136,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 98.289,
+      "current": 2145525760,
+      "file": 1993793536,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 60469,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8497995776,
+      "cached": 2995150848,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 99.303,
+      "current": 2146119680,
+      "file": 1994137600,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 61051,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8500420608,
+      "cached": 2995494912,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 100.316,
+      "current": 2147225600,
+      "file": 1995325440,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 61664,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8459284480,
+      "cached": 2995724288,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 101.331,
+      "current": 2147028992,
+      "file": 1994797056,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 62295,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483504128,
+      "cached": 2996244480,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 102.344,
+      "current": 2147442688,
+      "file": 1995665408,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 62863,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8445247488,
+      "cached": 2997112832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 103.358,
+      "current": 2147418112,
+      "file": 1995735040,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 63449,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8484630528,
+      "cached": 2997182464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 104.372,
+      "current": 2145652736,
+      "file": 1994223616,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 64099,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8473935872,
+      "cached": 2995671040,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 105.385,
+      "current": 2144927744,
+      "file": 1993166848,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 64639,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468803584,
+      "cached": 2994614272,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 106.398,
+      "current": 2146144256,
+      "file": 1994256384,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 65227,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8426545152,
+      "cached": 2995703808,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 107.412,
+      "current": 2147434496,
+      "file": 1995710464,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 65810,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8466067456,
+      "cached": 2997157888,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 108.424,
+      "current": 2147000320,
+      "file": 1995415552,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 66402,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8460488704,
+      "cached": 2996600832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 109.437,
+      "current": 2147082240,
+      "file": 1995218944,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 67018,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8444968960,
+      "cached": 2996666368,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 110.45,
+      "current": 2145808384,
+      "file": 1993945088,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 67595,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8473092096,
+      "cached": 2995486720,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 111.464,
+      "current": 2146701312,
+      "file": 1995096064,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 68195,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8444170240,
+      "cached": 2996637696,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 112.476,
+      "current": 2144866304,
+      "file": 1992876032,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 68785,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8447950848,
+      "cached": 2994384896,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 113.49,
+      "current": 2144792576,
+      "file": 1995161600,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 69370,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468226048,
+      "cached": 2996703232,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 114.502,
+      "current": 2147352576,
+      "file": 1995624448,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 69980,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469073920,
+      "cached": 2997166080,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 115.515,
+      "current": 2147225600,
+      "file": 1995329536,
+      "anon": 142487552,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 70533,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8460218368,
+      "cached": 2996871168,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 116.529,
+      "current": 2146177024,
+      "file": 1994534912,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 71254,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8433623040,
+      "cached": 2996076544,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 117.543,
+      "current": 2145964032,
+      "file": 1994285056,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 71992,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475897856,
+      "cached": 2995826688,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 118.556,
+      "current": 2147385344,
+      "file": 1995624448,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 72599,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8472875008,
+      "cached": 2997166080,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 119.569,
+      "current": 2145882112,
+      "file": 1994297344,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 73198,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8486379520,
+      "cached": 2995838976,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 120.581,
+      "current": 2147061760,
+      "file": 1995235328,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 73821,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475672576,
+      "cached": 2996854784,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 121.594,
+      "current": 2143354880,
+      "file": 1991069696,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 74389,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8496824320,
+      "cached": 2992689152,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 122.608,
+      "current": 2146275328,
+      "file": 1994338304,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 74975,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483045376,
+      "cached": 2993860608,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 123.622,
+      "current": 2147336192,
+      "file": 1995177984,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 75587,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8494739456,
+      "cached": 2996797440,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 124.636,
+      "current": 2146177024,
+      "file": 1994158080,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 76241,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8503087104,
+      "cached": 2995777536,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 125.649,
+      "current": 2146050048,
+      "file": 1994256384,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 76808,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8514068480,
+      "cached": 2995875840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 126.662,
+      "current": 2145685504,
+      "file": 1993523200,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 77431,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8471924736,
+      "cached": 2995142656,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 127.676,
+      "current": 2146779136,
+      "file": 1994719232,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 78038,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8493989888,
+      "cached": 2996338688,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 128.689,
+      "current": 2146963456,
+      "file": 1994407936,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 78618,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8473546752,
+      "cached": 2995765248,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 129.702,
+      "current": 2146783232,
+      "file": 1994326016,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 79224,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8491687936,
+      "cached": 2995945472,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 130.716,
+      "current": 2145992704,
+      "file": 1993572352,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 79852,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8486711296,
+      "cached": 2995302400,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 131.729,
+      "current": 2146107392,
+      "file": 1993740288,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 80459,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8497876992,
+      "cached": 2995470336,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 132.742,
+      "current": 2146873344,
+      "file": 1994485760,
+      "anon": 142487552,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 81049,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8496246784,
+      "cached": 2996215808,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 133.756,
+      "current": 2145402880,
+      "file": 1993334784,
+      "anon": 142503936,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 81576,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8460869632,
+      "cached": 2995064832,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 134.769,
+      "current": 2145390592,
+      "file": 1993637888,
+      "anon": 142503936,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 82175,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8435458048,
+      "cached": 2995372032,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 135.782,
+      "current": 2145738752,
+      "file": 1994141696,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 82741,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8412606464,
+      "cached": 2995875840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 136.795,
+      "current": 2145390592,
+      "file": 1993617408,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 83354,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8393412608,
+      "cached": 2995351552,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 137.809,
+      "current": 2146177024,
+      "file": 1995448320,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 83914,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8337043456,
+      "cached": 2997075968,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 138.823,
+      "current": 2147299328,
+      "file": 1995464704,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 84544,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8377274368,
+      "cached": 2998140928,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 139.837,
+      "current": 2147307520,
+      "file": 1995722752,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 85234,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8448720896,
+      "cached": 2996404224,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 140.849,
+      "current": 2147172352,
+      "file": 1995227136,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 85942,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8467066880,
+      "cached": 2997743616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 141.862,
+      "current": 2147225600,
+      "file": 1995501568,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 86557,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8451346432,
+      "cached": 2998280192,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 142.876,
+      "current": 2146099200,
+      "file": 1994407936,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 87152,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8459878400,
+      "cached": 2997186560,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 143.889,
+      "current": 2147340288,
+      "file": 1995759616,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 87746,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8476712960,
+      "cached": 2998538240,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 144.902,
+      "current": 2146963456,
+      "file": 1994833920,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 88324,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468766720,
+      "cached": 2997612544,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 145.916,
+      "current": 2146439168,
+      "file": 1994141696,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 88899,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8479444992,
+      "cached": 2996707328,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 146.929,
+      "current": 2147115008,
+      "file": 1995476992,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 89543,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8441692160,
+      "cached": 2998255616,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 147.942,
+      "current": 2145804288,
+      "file": 1993695232,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 90145,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475136000,
+      "cached": 2996473856,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 148.957,
+      "current": 2146177024,
+      "file": 1994608640,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 90703,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8448589824,
+      "cached": 3129573376,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 149.97,
+      "current": 2146205696,
+      "file": 1994690560,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 91278,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8422502400,
+      "cached": 3162263552,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 150.984,
+      "current": 2146701312,
+      "file": 1995227136,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 91886,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8416747520,
+      "cached": 3162800128,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 151.998,
+      "current": 2144559104,
+      "file": 1993302016,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 92451,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8446324736,
+      "cached": 3160875008,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 153.012,
+      "current": 2145759232,
+      "file": 1994354688,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 93025,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8485535744,
+      "cached": 3161927680,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 154.025,
+      "current": 2146959360,
+      "file": 1995628544,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 93622,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8476327936,
+      "cached": 3163205632,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 155.039,
+      "current": 2145026048,
+      "file": 1993957376,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 94232,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8472805376,
+      "cached": 3161321472,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 156.052,
+      "current": 2147016704,
+      "file": 1995681792,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 94833,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8486150144,
+      "cached": 3163258880,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 157.065,
+      "current": 2146955264,
+      "file": 1995415552,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 95399,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465293312,
+      "cached": 3162992640,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 158.079,
+      "current": 2147225600,
+      "file": 1995821056,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 95984,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8438505472,
+      "cached": 3163398144,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 159.092,
+      "current": 2147405824,
+      "file": 1995784192,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 96581,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8482476032,
+      "cached": 3163361280,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 160.106,
+      "current": 2146635776,
+      "file": 1994715136,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 97137,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8448692224,
+      "cached": 3162406912,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 161.118,
+      "current": 2145959936,
+      "file": 1993920512,
+      "anon": 142503936,
+      "kernel": 7245824,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 97732,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8474361856,
+      "cached": 3161612288,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 162.132,
+      "current": 2146963456,
+      "file": 1995382784,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 98367,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481665024,
+      "cached": 3163074560,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 163.145,
+      "current": 2146439168,
+      "file": 1994534912,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 99157,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8480579584,
+      "cached": 3162001408,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 164.158,
+      "current": 2147024896,
+      "file": 1995354112,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 99799,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8489771008,
+      "cached": 3165847552,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 165.172,
+      "current": 2144546816,
+      "file": 1992810496,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 100395,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8490156032,
+      "cached": 3163303936,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 166.185,
+      "current": 2145550336,
+      "file": 1993428992,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 100995,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8483680256,
+      "cached": 3163922432,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 167.198,
+      "current": 2145570816,
+      "file": 1993658368,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 101618,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8446754816,
+      "cached": 3164151808,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 168.21,
+      "current": 2145189888,
+      "file": 1993486336,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 102215,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8426606592,
+      "cached": 3163979776,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 169.223,
+      "current": 2146189312,
+      "file": 1994502144,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 102803,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468201472,
+      "cached": 3164995584,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 170.237,
+      "current": 2147426304,
+      "file": 1995911168,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 103416,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8491261952,
+      "cached": 3166507008,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 171.25,
+      "current": 2147225600,
+      "file": 1995616256,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 104016,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8467509248,
+      "cached": 3165229056,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 172.263,
+      "current": 2147438592,
+      "file": 1995812864,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 104600,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8435367936,
+      "cached": 3166380032,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 173.276,
+      "current": 2146500608,
+      "file": 1994752000,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 105214,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468275200,
+      "cached": 3165347840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 174.289,
+      "current": 2145652736,
+      "file": 1993850880,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 105806,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8487743488,
+      "cached": 3164446720,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 175.302,
+      "current": 2145771520,
+      "file": 1994190848,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 106398,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8456413184,
+      "cached": 3164786688,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 176.315,
+      "current": 2146701312,
+      "file": 1994862592,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 106964,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8461901824,
+      "cached": 3165458432,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 177.329,
+      "current": 2147356672,
+      "file": 1995575296,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 107560,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8508432384,
+      "cached": 3166171136,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 178.343,
+      "current": 2144591872,
+      "file": 1992986624,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 108164,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465387520,
+      "cached": 3163582464,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 179.356,
+      "current": 2145591296,
+      "file": 1994125312,
+      "anon": 142503936,
+      "kernel": 7237632,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 108747,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8512040960,
+      "cached": 3164721152,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 180.372,
+      "current": 2147233792,
+      "file": 1995489280,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 109292,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8465321984,
+      "cached": 3166183424,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 181.385,
+      "current": 2144260096,
+      "file": 1992454144,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 109853,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8409059328,
+      "cached": 3163140096,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 182.397,
+      "current": 2147209216,
+      "file": 1995259904,
+      "anon": 142508032,
+      "kernel": 7249920,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 110470,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8405975040,
+      "cached": 3165962240,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 183.41,
+      "current": 2144964608,
+      "file": 1992658944,
+      "anon": 142508032,
+      "kernel": 7249920,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 111034,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8447954944,
+      "cached": 3163205632,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 184.424,
+      "current": 2146328576,
+      "file": 1994162176,
+      "anon": 142508032,
+      "kernel": 7249920,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 111629,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8438222848,
+      "cached": 3164864512,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 185.437,
+      "current": 2146963456,
+      "file": 1994973184,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 112319,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8444686336,
+      "cached": 3165675520,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 186.45,
+      "current": 2147045376,
+      "file": 1995296768,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 113030,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8485466112,
+      "cached": 3165999104,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 187.465,
+      "current": 2145525760,
+      "file": 1993732096,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 113659,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8481320960,
+      "cached": 3164434432,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 188.477,
+      "current": 2146185216,
+      "file": 1994481664,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 114264,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8475885568,
+      "cached": 3165184000,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 189.49,
+      "current": 2146963456,
+      "file": 1994924032,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 114879,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8459747328,
+      "cached": 3165626368,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 190.504,
+      "current": 2147225600,
+      "file": 1995345920,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 115464,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8468754432,
+      "cached": 3166126080,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 191.517,
+      "current": 2144874496,
+      "file": 1993306112,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 116052,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8489062400,
+      "cached": 3164708864,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 192.531,
+      "current": 2146205696,
+      "file": 1994448896,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 116629,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8482619392,
+      "cached": 3165851648,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 193.545,
+      "current": 2147295232,
+      "file": 1995857920,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 117237,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8477978624,
+      "cached": 3167260672,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 194.557,
+      "current": 2145914880,
+      "file": 1994248192,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 117846,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8452222976,
+      "cached": 3165528064,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 195.57,
+      "current": 2146766848,
+      "file": 1994776576,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 118440,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8471883776,
+      "cached": 3165130752,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 196.584,
+      "current": 2146738176,
+      "file": 1994678272,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 119032,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8479690752,
+      "cached": 3166081024,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 197.596,
+      "current": 2147459072,
+      "file": 1995935744,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 119622,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8469045248,
+      "cached": 3167338496,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 198.609,
+      "current": 2146439168,
+      "file": 1994854400,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 120210,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8480813056,
+      "cached": 3166257152,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 199.622,
+      "current": 2147237888,
+      "file": 1995599872,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 120813,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8516255744,
+      "cached": 3167002624,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 200.636,
+      "current": 2147360768,
+      "file": 1995694080,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 121412,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8512245760,
+      "cached": 3167174656,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 201.649,
+      "current": 2146906112,
+      "file": 1995403264,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 122030,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8506052608,
+      "cached": 3166883840,
+      "swap_free": 8070266880
+    },
+    {
+      "t": 202.663,
+      "current": 2147459072,
+      "file": 1995915264,
+      "anon": 142508032,
+      "kernel": 7241728,
+      "swap": 0,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 122605,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "mem_available": 8512229376,
+      "cached": 3167395840,
+      "swap_free": 8070266880
+    }
+  ],
+  "scope_removed_after_exit": true,
+  "global_after": {
+    "MemTotal": 11483848704,
+    "MemFree": 5840711680,
+    "MemAvailable": 8634028032,
+    "Buffers": 21696512,
+    "Cached": 3179384832,
+    "SwapCached": 228564992,
+    "Active": 1388380160,
+    "Inactive": 3725729792,
+    "Active(anon)": 532017152,
+    "Inactive(anon)": 1661272064,
+    "Active(file)": 856363008,
+    "Inactive(file)": 2064457728,
+    "Unevictable": 0,
+    "Mlocked": 0,
+    "SwapTotal": 8589934592,
+    "SwapFree": 8070266880,
+    "Dirty": 442368,
+    "Writeback": 0,
+    "AnonPages": 1886543872,
+    "Mapped": 677830656,
+    "Shmem": 280317952,
+    "KReclaimable": 56709120,
+    "Slab": 192864256,
+    "SReclaimable": 56709120,
+    "SUnreclaim": 136155136,
+    "KernelStack": 12206080,
+    "PageTables": 27041792,
+    "SecPageTables": 0,
+    "NFS_Unstable": 0,
+    "Bounce": 0,
+    "WritebackTmp": 0,
+    "CommitLimit": 14331858944,
+    "Committed_AS": 6369738752,
+    "VmallocTotal": 35184372087808,
+    "VmallocUsed": 46157824,
+    "VmallocChunk": 0,
+    "Percpu": 11108352,
+    "HardwareCorrupted": 0,
+    "AnonHugePages": 0,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "FileHugePages": 1933574144,
+    "FilePmdMapped": 0,
+    "Balloon": 0,
+    "HugePages_Total": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "Hugepagesize": 2097152,
+    "Hugetlb": 0,
+    "DirectMap4k": 53477376,
+    "DirectMap2M": 6387924992,
+    "DirectMap1G": 15032385536
+  },
+  "global_oom_kill_after": 2,
+  "finalizer": {
+    "cgroup.path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/inwime9-m10-R2-1795124864.scope",
+    "worker.exit": 0,
+    "memory.peak": 2147483648,
+    "memory.current": 2020274176,
+    "memory.max": 2147483648,
+    "memory.swap.max": 0,
+    "memory.swap.current": 0,
+    "memory.swap.peak": 0,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 122772,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "memory.events.local": {
+      "low": 0,
+      "high": 0,
+      "max": 122772,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "memory.swap.events": {
+      "high": 0,
+      "max": 0,
+      "fail": 0
+    },
+    "memory.stat": {
+      "anon": 1478656,
+      "file": 2009350144,
+      "kernel": 7962624,
+      "kernel_stack": 16384,
+      "pagetables": 1015808,
+      "sec_pagetables": 0,
+      "percpu": 2112,
+      "sock": 0,
+      "vmalloc": 0,
+      "shmem": 0,
+      "file_mapped": 1441792,
+      "file_dirty": 86016,
+      "file_writeback": 0,
+      "swapcached": 0,
+      "anon_thp": 0,
+      "file_thp": 1933574144,
+      "shmem_thp": 0,
+      "inactive_anon": 1445888,
+      "active_anon": 16384,
+      "inactive_file": 1798852608,
+      "active_file": 210493440,
+      "unevictable": 0,
+      "slab_reclaimable": 6774504,
+      "slab_unreclaimable": 137440,
+      "slab": 6911944,
+      "workingset_refault_anon": 0,
+      "workingset_refault_file": 54335117,
+      "workingset_activate_anon": 0,
+      "workingset_activate_file": 0,
+      "workingset_restore_anon": 0,
+      "workingset_restore_file": 0,
+      "workingset_nodereclaim": 0,
+      "pgdemote_kswapd": 0,
+      "pgdemote_direct": 0,
+      "pgdemote_khugepaged": 0,
+      "pgdemote_proactive": 0,
+      "pgscan": 61065940,
+      "pgsteal": 61064576,
+      "pswpin": 0,
+      "pswpout": 0,
+      "pgscan_kswapd": 0,
+      "pgscan_direct": 61065940,
+      "pgscan_khugepaged": 0,
+      "pgscan_proactive": 0,
+      "pgsteal_kswapd": 0,
+      "pgsteal_direct": 61064576,
+      "pgsteal_khugepaged": 0,
+      "pgsteal_proactive": 0,
+      "pgfault": 50549,
+      "pgmajfault": 28,
+      "pgrefill": 0,
+      "pgactivate": 50801,
+      "pgdeactivate": 0,
+      "pglazyfree": 0,
+      "pglazyfreed": 0,
+      "swpin_zero": 0,
+      "swpout_zero": 0,
+      "thp_fault_alloc": 0,
+      "thp_collapse_alloc": 0,
+      "thp_swpout": 0,
+      "thp_swpout_fallback": 0
+    }
+  },
+  "residency_after": {
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": {
+      "resident_bytes": 22183936,
+      "size_bytes": 3885134104
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": {
+      "resident_bytes": 27172864,
+      "size_bytes": 3995327992
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": {
+      "resident_bytes": 29265920,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": {
+      "resident_bytes": 29270016,
+      "size_bytes": 3995348776
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": {
+      "resident_bytes": 35561472,
+      "size_bytes": 3979614448
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": {
+      "resident_bytes": 29265920,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": {
+      "resident_bytes": 115597312,
+      "size_bytes": 3995328064
+    },
+    "<repo>/checkpoints/qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": {
+      "resident_bytes": 1698717696,
+      "size_bytes": 1698724408
+    }
+  },
+  "host_disk_after": {
+    "captured_unix_s": 1795125068.5241113,
+    "disks": [
+      {
+        "Name": "0 C:",
+        "DiskReadBytesPersec": 5319922384384,
+        "DiskReadsPersec": 81055250,
+        "DiskWriteBytesPersec": 1714422787072
+      },
+      {
+        "Name": "1",
+        "DiskReadBytesPersec": 3227134976,
+        "DiskReadsPersec": 3242,
+        "DiskWriteBytesPersec": 65536
+      },
+      {
+        "Name": "2",
+        "DiskReadBytesPersec": 1249792,
+        "DiskReadsPersec": 78,
+        "DiskWriteBytesPersec": 295936
+      }
+    ]
+  },
+  "host_disk_delta": {
+    "0 C:": {
+      "DiskReadBytesPersec": 252358210560,
+      "DiskReadsPersec": 82230,
+      "DiskWriteBytesPersec": 20783616
+    },
+    "1": {
+      "DiskReadBytesPersec": 0,
+      "DiskReadsPersec": 0,
+      "DiskWriteBytesPersec": 0
+    },
+    "2": {
+      "DiskReadBytesPersec": 0,
+      "DiskReadsPersec": 0,
+      "DiskWriteBytesPersec": 0
+    }
+  },
+  "limitations": [
+    "sampling can miss transients; memory.peak from the finalizer is the kernel high-water mark",
+    "io.stat unavailable: io controller not enabled for child cgroups",
+    "host disk counters are global for the Windows physical disk (all host activity)",
+    "fincore reports residency, not which cgroup is charged"
+  ]
+}

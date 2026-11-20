@@ -1,0 +1,8 @@
+{
+ "contract": "stock_fp32",
+ "head_mode": "resident",
+ "oracle_wall_s": 42.83073064207565,
+ "peak_rss_bytes": 3783614464,
+ "upstream_greedy_matches_sequence": true,
+ "planned_peak": 3136409600
+}

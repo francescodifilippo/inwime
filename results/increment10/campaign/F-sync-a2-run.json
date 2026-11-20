@@ -1,0 +1,386 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "F-sync-a2",
+  "kind": "fault",
+  "profile": "runtime",
+  "cache": "as-is",
+  "purpose": "faults N1-N4 (sync)",
+  "utc_start": "2026-11-19T22:44:07Z",
+  "command": [
+    "python3",
+    "-m",
+    "tools.fault10",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--mode",
+    "sync",
+    "--output",
+    "results/increment10/campaign/F-sync-a2-faults.json"
+  ],
+  "memory_max": 2147483648,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "F-sync-a2-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "0d3be367f20b888a84a51768d54bc0dc2e1554d91f99062ffa7f9f4e4dc0d175"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 656519.050570985,
+      "utc": "2026-11-19T22:44:39Z",
+      "reads_completed": 2217822,
+      "reads_merged": 1174032,
+      "sectors_read": 4545726050,
+      "read_ticks_ms": 3017594,
+      "writes_completed": 745145,
+      "writes_merged": 835117,
+      "sectors_written": 214290184,
+      "write_ticks_ms": 6881290,
+      "in_flight": 0,
+      "io_ticks_ms": 2709232,
+      "time_in_queue_ms": 10321466,
+      "read_bytes": 2327411737600
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 656519.050615003,
+        "utc": "2026-11-19T22:44:39Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-F-sync-a2",
+    "--output",
+    "results/increment10/campaign/F-sync-a2-scope.json",
+    "--memory-max",
+    "2147483648",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "python3",
+    "-m",
+    "tools.fault10",
+    "checkpoints/qwen2.5-14b-97e1e76",
+    "--mode",
+    "sync",
+    "--output",
+    "results/increment10/campaign/F-sync-a2-faults.json"
+  ],
+  "wall_s": 73.70183959405404,
+  "supervisor_exit": 0,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 656594.005108635,
+      "utc": "2026-11-19T22:45:54Z",
+      "reads_completed": 2238746,
+      "reads_merged": 1174251,
+      "sectors_read": 4697541386,
+      "read_ticks_ms": 3056819,
+      "writes_completed": 745274,
+      "writes_merged": 835204,
+      "sectors_written": 214293640,
+      "write_ticks_ms": 6882111,
+      "in_flight": 0,
+      "io_ticks_ms": 2733816,
+      "time_in_queue_ms": 10361533,
+      "read_bytes": 2405141189632
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 656594.00517341,
+        "utc": "2026-11-19T22:45:54Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 20924,
+      "reads_merged": 219,
+      "sectors_read": 151815336,
+      "read_ticks_ms": 39225,
+      "writes_completed": 129,
+      "writes_merged": 87,
+      "sectors_written": 3456,
+      "write_ticks_ms": 821,
+      "io_ticks_ms": 24584,
+      "time_in_queue_ms": 40067,
+      "read_bytes": 77729452032
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 0,
+        "writes_merged": 0,
+        "sectors_written": 0,
+        "write_ticks_ms": 0,
+        "io_ticks_ms": 0,
+        "time_in_queue_ms": 0,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 14,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 0
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132337799168,
+          "max": 132338323456
+        },
+        "guest_mem_available": {
+          "min": 8508502016,
+          "max": 8657068032
+        },
+        "host_available_bytes": {
+          "min": 1028059136,
+          "max": 3200987136
+        },
+        "host_commit_headroom_bytes": {
+          "min": 27430064128,
+          "max": 30293565440
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": 276824064,
+          "max": 1270874112
+        },
+        "host_pages_input_per_s": {
+          "min": 0.3755163349605708,
+          "max": 285.23111612175876
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.939,
+          "host_available_bytes": 3200987136,
+          "guest_mem_available": 8657068032,
+          "host_pagefile_growth_since_baseline": 277872640,
+          "host_commit_headroom_bytes": 30293565440,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 6.307,
+          "host_available_bytes": 1354653696,
+          "guest_mem_available": 8520216576,
+          "host_pagefile_growth_since_baseline": 276824064,
+          "host_commit_headroom_bytes": 28426297344,
+          "host_pages_input_per_s": 193.13543599257886,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 11.677,
+          "host_available_bytes": 1269858304,
+          "guest_mem_available": 8556785664,
+          "host_pagefile_growth_since_baseline": 282066944,
+          "host_commit_headroom_bytes": 28345569280,
+          "host_pages_input_per_s": 9.30925339787749,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 17.019,
+          "host_available_bytes": 1092685824,
+          "guest_mem_available": 8550547456,
+          "host_pagefile_growth_since_baseline": 283115520,
+          "host_commit_headroom_bytes": 28125990912,
+          "host_pages_input_per_s": 28.134898453512204,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 22.365,
+          "host_available_bytes": 1149878272,
+          "guest_mem_available": 8546156544,
+          "host_pagefile_growth_since_baseline": 643825664,
+          "host_commit_headroom_bytes": 27843026944,
+          "host_pages_input_per_s": 285.23111612175876,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 27.748,
+          "host_available_bytes": 1382215680,
+          "guest_mem_available": 8563740672,
+          "host_pagefile_growth_since_baseline": 968884224,
+          "host_commit_headroom_bytes": 27741859840,
+          "host_pages_input_per_s": 261.09563602599815,
+          "backing_volume_free": 132338163712
+        },
+        {
+          "t": 33.121,
+          "host_available_bytes": 1215234048,
+          "guest_mem_available": 8552251392,
+          "host_pagefile_growth_since_baseline": 958398464,
+          "host_commit_headroom_bytes": 27570819072,
+          "host_pages_input_per_s": 211.79973943793038,
+          "backing_volume_free": 132338192384
+        },
+        {
+          "t": 38.443,
+          "host_available_bytes": 1395101696,
+          "guest_mem_available": 8550703104,
+          "host_pagefile_growth_since_baseline": 1270874112,
+          "host_commit_headroom_bytes": 27430064128,
+          "host_pages_input_per_s": 218.2330827067669,
+          "backing_volume_free": 132338323456
+        },
+        {
+          "t": 43.781,
+          "host_available_bytes": 1233752064,
+          "guest_mem_available": 8550899712,
+          "host_pagefile_growth_since_baseline": 764411904,
+          "host_commit_headroom_bytes": 27894943744,
+          "host_pages_input_per_s": 148.8406881077038,
+          "backing_volume_free": 132338323456
+        },
+        {
+          "t": 49.146,
+          "host_available_bytes": 1366003712,
+          "guest_mem_available": 8540016640,
+          "host_pagefile_growth_since_baseline": 455081984,
+          "host_commit_headroom_bytes": 28254732288,
+          "host_pages_input_per_s": 12.122342409548676,
+          "backing_volume_free": 132338323456
+        },
+        {
+          "t": 54.528,
+          "host_available_bytes": 1243676672,
+          "guest_mem_available": 8538509312,
+          "host_pagefile_growth_since_baseline": 455081984,
+          "host_commit_headroom_bytes": 28128722944,
+          "host_pages_input_per_s": 30.105928266121538,
+          "backing_volume_free": 132338323456
+        },
+        {
+          "t": 59.889,
+          "host_available_bytes": 1385914368,
+          "guest_mem_available": 8538185728,
+          "host_pagefile_growth_since_baseline": 824180736,
+          "host_commit_headroom_bytes": 27897012224,
+          "host_pages_input_per_s": 20.705092333519868,
+          "backing_volume_free": 132337799168
+        },
+        {
+          "t": 65.198,
+          "host_available_bytes": 1231060992,
+          "guest_mem_available": 8508502016,
+          "host_pagefile_growth_since_baseline": 780140544,
+          "host_commit_headroom_bytes": 27782524928,
+          "host_pages_input_per_s": 0.3755163349605708,
+          "backing_volume_free": 132337799168
+        },
+        {
+          "t": 70.68,
+          "host_available_bytes": 1028059136,
+          "guest_mem_available": 8545832960,
+          "host_pagefile_growth_since_baseline": 731906048,
+          "host_commit_headroom_bytes": 27638906880,
+          "host_pages_input_per_s": 6.103199556130941,
+          "backing_volume_free": 132337799168
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T22:45:54Z",
+  "produced_sha256": {
+    "F-sync-a2-faults.json": "0885f4506437bb669bcc0af0d696cba6b7b7b5633ebd7a480a5e1262e2124f39",
+    "F-sync-a2-host-start.json": "0d3be367f20b888a84a51768d54bc0dc2e1554d91f99062ffa7f9f4e4dc0d175",
+    "F-sync-a2-scope.final.txt": "48565b84a4bed935bfc84dc4867e25e339ad02be6dfab62d6de236cd1197c4cc",
+    "F-sync-a2-scope.json": "85036a359c483eda2e95a72a0b842dbc578657e122b84fff7878512eedf6c0b1",
+    "F-sync-a2-scope.log": "09efe79fdd276a7c1e9e07f3ec1ecc8465418f91d1dbbd83f5890045c5b41afb",
+    "results/increment10/campaign/F-sync-a2-faults.json": "0885f4506437bb669bcc0af0d696cba6b7b7b5633ebd7a480a5e1262e2124f39"
+  }
+}

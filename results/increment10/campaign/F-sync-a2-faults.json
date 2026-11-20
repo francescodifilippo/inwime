@@ -1,0 +1,71 @@
+{
+  "schema": "inwime-fault10/1",
+  "checkpoint": "checkpoints/qwen2.5-14b-97e1e76",
+  "mode": "sync",
+  "passed": true,
+  "ids": {
+    "io": "N1",
+    "short": "N2",
+    "cancel": "N3",
+    "budget": "N4"
+  },
+  "rlimit_as_bytes": [
+    268435456,
+    268435456
+  ],
+  "integrity": "metadata",
+  "cases": [
+    {
+      "mode": "sync",
+      "fault": "io",
+      "caught": "OSError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "fault_at_read": 195,
+      "reads_before_layer0_o": 145,
+      "decode_reads_before_fault": 195,
+      "inference_read_bytes": 28082067456,
+      "wall_s": 24.114523814059794
+    },
+    {
+      "mode": "sync",
+      "fault": "short",
+      "caught": "ReadError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "fault_at_read": 195,
+      "reads_before_layer0_o": 145,
+      "decode_reads_before_fault": 195,
+      "inference_read_bytes": 28082591743,
+      "wall_s": 23.97824806906283
+    },
+    {
+      "mode": "sync",
+      "fault": "cancel",
+      "caught": "CancelledError",
+      "budget_rejected_before_payload": true,
+      "old_kv_all_bytes_preserved": true,
+      "descriptor_preserved": true,
+      "candidate_was_modified": true,
+      "fail_stop_no_resume": true,
+      "drained": true,
+      "released": true,
+      "fault_at_read": 195,
+      "reads_before_layer0_o": 145,
+      "decode_reads_before_fault": 195,
+      "inference_read_bytes": 28082591744,
+      "wall_s": 24.137144765933044
+    }
+  ],
+  "peak_rss_bytes": 77983744
+}

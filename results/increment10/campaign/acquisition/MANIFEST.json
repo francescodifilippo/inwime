@@ -1,0 +1,38 @@
+{
+ "incident-acquisition.json": {
+  "original_sha256": "bbf1894a1d794ca756b27da11250895c30f9f6bc70efe7115784603e49589440",
+  "sanitized_sha256": "6a98c257080a327c6564a4ebfff98effd66aba1846b939359a8bc1e75909b4b3",
+  "original_location": "tmp (volatile): acquisition.json"
+ },
+ "incident-authorization.json": {
+  "original_sha256": "1c4a1c8f540a24643656caffa1a6bd6ae1df4226c3a254b994ef3d43d0176354",
+  "sanitized_sha256": "667adacda9d26a51053a189baa36dda1b3e97118fe6e75b5783284fef7403919",
+  "original_location": "tmp (volatile): authorization.json"
+ },
+ "incident-hostmem-baseline.json": {
+  "original_sha256": "e27ffc4acfedabff2f0d7d0dace33bbecd480c09be41ce54b9991cedc148e3d7",
+  "sanitized_sha256": "cc8b6fc6cdb2458f4007a5bc1757f0b77db2915a9ec92ea82aa357de34e02541",
+  "original_location": "tmp (volatile): baseline.json"
+ },
+ "incident-hostmem-download.json": {
+  "original_sha256": "d073b550159a767ac65a540e8ec7668d86c5f428f875645fd46cde241f6ed722",
+  "sanitized_sha256": "2df141c1a5a88e91d31a11e582d87b2bff5c2feb548a8fece6fb57379b493ead",
+  "original_location": "tmp (volatile): download.json"
+ },
+ "resume-acquisition-20261119T183903Z.json": {
+  "original_sha256": "6f791d6f8574cee3c9e4c81334e49ee91f825b799dca0e0b6a66c2897846e12f",
+  "sanitized_sha256": "6a84e55a58a6845801e5957b630eb46f85e98148f31e27fb8749aa396e988720",
+  "original_location": "owner recovery folder: acquisition-resume-20261119T183903Z.json"
+ },
+ "transfer_accounting": {
+  "incident_payload_bytes": 19449945445,
+  "resume_payload_bytes": 10101739432,
+  "total": 29551684877,
+  "download_total_bytes": 29551684877,
+  "equal": true,
+  "incident_stop": "host stop condition: host_available_bytes=267665408 violates >= 300000000 (pause-and-annotate); .part retained, resume only after a new hostgate10 GO",
+  "incident_part_retained": {
+   "model-00005-of-00008.safetensors": 3567255552
+  }
+ }
+}

@@ -1,0 +1,593 @@
+{
+  "schema": "inwime-gate10/1",
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "base_commit": "639de22ed7e30a796b831595cd0f9823d585de16",
+  "parameters": {
+    "anon_kernel_peak_max_bytes": 268435456,
+    "worker_vmhwm_max_bytes": 268435456,
+    "resident_after_eviction_max_fraction": 0.01,
+    "l1_min_fraction": 0.9,
+    "l4_min_fraction": 0.9,
+    "guest_swap_growth_max_bytes": 268435456
+  },
+  "verdicts": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS",
+    "F": "PASS",
+    "G": "PASS",
+    "H": "PASS"
+  },
+  "overall": "PASS",
+  "conditions": {
+    "A": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "acquisition_manifest_pinned": true,
+          "acquisition_sha_equals_pins": true,
+          "acquisition_committed_equals_official": true,
+          "final_rehash_equals_pins": true,
+          "R1_startup_sha_equals_pins": true,
+          "R2_startup_sha_equals_pins": true,
+          "R3_startup_sha_equals_pins": true
+        }
+      }
+    },
+    "B": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "R1.finalizer_recorded": true,
+          "R1.exit_zero": true,
+          "R1.no_watchdog": true,
+          "R1.limits_requested": true,
+          "R1.limits_observed_by_kernel": true,
+          "R1.finalizer_in_same_scope": true,
+          "R1.peak_within_limit": true,
+          "R1.no_oom": true,
+          "R1.no_swap": true,
+          "R1.global_oom_kill_unchanged": true,
+          "R1.sampled": true,
+          "R1.anon_kernel_below_threshold": true,
+          "R1.worker_in_supervisor_unit": true,
+          "R1.worker_saw_limits_before_weights": true,
+          "R1.worker_report_is_this_file": true,
+          "R1.worker_pid_sampled": true,
+          "R1.worker_vmhwm_below_threshold": true,
+          "R1.worker_no_swap": true,
+          "R1.worker_address_space_bounded": true,
+          "R1.mode": true,
+          "R1.rlimit_as_per_mode": true,
+          "R2.finalizer_recorded": true,
+          "R2.exit_zero": true,
+          "R2.no_watchdog": true,
+          "R2.limits_requested": true,
+          "R2.limits_observed_by_kernel": true,
+          "R2.finalizer_in_same_scope": true,
+          "R2.peak_within_limit": true,
+          "R2.no_oom": true,
+          "R2.no_swap": true,
+          "R2.global_oom_kill_unchanged": true,
+          "R2.sampled": true,
+          "R2.anon_kernel_below_threshold": true,
+          "R2.worker_in_supervisor_unit": true,
+          "R2.worker_saw_limits_before_weights": true,
+          "R2.worker_report_is_this_file": true,
+          "R2.worker_pid_sampled": true,
+          "R2.worker_vmhwm_below_threshold": true,
+          "R2.worker_no_swap": true,
+          "R2.worker_address_space_bounded": true,
+          "R2.mode": true,
+          "R2.rlimit_as_per_mode": true,
+          "R3.finalizer_recorded": true,
+          "R3.exit_zero": true,
+          "R3.no_watchdog": true,
+          "R3.limits_requested": true,
+          "R3.limits_observed_by_kernel": true,
+          "R3.finalizer_in_same_scope": true,
+          "R3.peak_within_limit": true,
+          "R3.no_oom": true,
+          "R3.no_swap": true,
+          "R3.global_oom_kill_unchanged": true,
+          "R3.sampled": true,
+          "R3.anon_kernel_below_threshold": true,
+          "R3.worker_in_supervisor_unit": true,
+          "R3.worker_saw_limits_before_weights": true,
+          "R3.worker_report_is_this_file": true,
+          "R3.worker_pid_sampled": true,
+          "R3.worker_vmhwm_below_threshold": true,
+          "R3.worker_no_swap": true,
+          "R3.worker_address_space_bounded": true,
+          "R3.mode": true,
+          "R3.rlimit_as_per_mode": true,
+          "R4.finalizer_recorded": true,
+          "R4.exit_zero": true,
+          "R4.no_watchdog": true,
+          "R4.limits_requested": true,
+          "R4.limits_observed_by_kernel": true,
+          "R4.finalizer_in_same_scope": true,
+          "R4.peak_within_limit": true,
+          "R4.no_oom": true,
+          "R4.no_swap": true,
+          "R4.global_oom_kill_unchanged": true,
+          "R4.sampled": true,
+          "R4.anon_kernel_below_threshold": true,
+          "R4.worker_in_supervisor_unit": true,
+          "R4.worker_saw_limits_before_weights": true,
+          "R4.worker_report_is_this_file": true,
+          "R4.worker_pid_sampled": true,
+          "R4.worker_vmhwm_below_threshold": true,
+          "R4.worker_no_swap": true,
+          "R4.worker_address_space_bounded": true,
+          "R4.mode": true,
+          "R4.rlimit_as_per_mode": true
+        },
+        "runs": {
+          "R1": {
+            "unit": "inwime9-m10-R1-1795124502",
+            "memory_peak": 2147483648,
+            "max_events": 122530,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 149749760,
+            "sampled_file_peak": 2003816448,
+            "global_swap_used_before": 519667712,
+            "global_swap_used_after": 519667712,
+            "minimum_global_memavailable": 8355934208,
+            "worker_vmhwm": 161632256,
+            "worker_vmpeak": 174428160,
+            "worker_block_read_bytes": 222550786048,
+            "startup_block_read_bytes": 29540892672,
+            "logical_inference_bytes": 223863537664,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 252325173248,
+                "DiskReadsPersec": 85156,
+                "DiskWriteBytesPersec": 289821184
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "memory_peak_equals_max_is_not_oom": true
+          },
+          "R2": {
+            "unit": "inwime9-m10-R2-1795124864",
+            "memory_peak": 2147483648,
+            "max_events": 122772,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 149757952,
+            "sampled_file_peak": 2003800064,
+            "global_swap_used_before": 519667712,
+            "global_swap_used_after": 519667712,
+            "minimum_global_memavailable": 8308011008,
+            "worker_vmhwm": 162160640,
+            "worker_vmpeak": 317038592,
+            "worker_block_read_bytes": 222550831104,
+            "startup_block_read_bytes": 29540892672,
+            "logical_inference_bytes": 223863537664,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 252358210560,
+                "DiskReadsPersec": 82230,
+                "DiskWriteBytesPersec": 20783616
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "memory_peak_equals_max_is_not_oom": true
+          },
+          "R3": {
+            "unit": "inwime9-m10-R3-1795125225",
+            "memory_peak": 2147483648,
+            "max_events": 121538,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 149102592,
+            "sampled_file_peak": 2003099648,
+            "global_swap_used_before": 519667712,
+            "global_swap_used_after": 519667712,
+            "minimum_global_memavailable": 8326451200,
+            "worker_vmhwm": 161579008,
+            "worker_vmpeak": 174428160,
+            "worker_block_read_bytes": 222550880256,
+            "startup_block_read_bytes": 29540757504,
+            "logical_inference_bytes": 223863537664,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 252182740480,
+                "DiskReadsPersec": 83774,
+                "DiskWriteBytesPersec": 33665536
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "memory_peak_equals_max_is_not_oom": true
+          },
+          "R4": {
+            "unit": "inwime9-m10-R4-1795125497",
+            "memory_peak": 2147483648,
+            "max_events": 115283,
+            "oom": 0,
+            "oom_kill": 0,
+            "swap_peak": 0,
+            "sampled_anon_plus_kernel_peak": 144736256,
+            "sampled_file_peak": 2004652032,
+            "global_swap_used_before": 519667712,
+            "global_swap_used_after": 519667712,
+            "minimum_global_memavailable": 8315031552,
+            "worker_vmhwm": 161529856,
+            "worker_vmpeak": 174428160,
+            "worker_block_read_bytes": 208051068928,
+            "startup_block_read_bytes": 27551559680,
+            "logical_inference_bytes": 223863537664,
+            "host_disk_delta": {
+              "0 C:": {
+                "DiskReadBytesPersec": 235648849408,
+                "DiskReadsPersec": 77457,
+                "DiskWriteBytesPersec": 5559673856
+              },
+              "1": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              },
+              "2": {
+                "DiskReadBytesPersec": 0,
+                "DiskReadsPersec": 0,
+                "DiskWriteBytesPersec": 0
+              }
+            },
+            "memory_peak_equals_max_is_not_oom": true
+          }
+        }
+      }
+    },
+    "C": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "R1.condition_evicted": true,
+          "R1.evicted_files_are_the_checkpoint": true,
+          "R1.residency_sizes_equal_files": true,
+          "R1.resident_after_eviction_within_limit": true,
+          "R1.cache_declared_cold": true,
+          "R1.l1_inference": true,
+          "R1.l1_every_phase": true,
+          "R1.l3_at_least_l1": true,
+          "R1.l4_when_readable": true,
+          "R1.host_monitored": true,
+          "R2.condition_evicted": true,
+          "R2.evicted_files_are_the_checkpoint": true,
+          "R2.residency_sizes_equal_files": true,
+          "R2.resident_after_eviction_within_limit": true,
+          "R2.cache_declared_cold": true,
+          "R2.l1_inference": true,
+          "R2.l1_every_phase": true,
+          "R2.l3_at_least_l1": true,
+          "R2.l4_when_readable": true,
+          "R2.host_monitored": true,
+          "R3.condition_evicted": true,
+          "R3.evicted_files_are_the_checkpoint": true,
+          "R3.residency_sizes_equal_files": true,
+          "R3.resident_after_eviction_within_limit": true,
+          "R3.cache_declared_cold": true,
+          "R3.l1_inference": true,
+          "R3.l1_every_phase": true,
+          "R3.l3_at_least_l1": true,
+          "R3.l4_when_readable": true,
+          "R3.host_monitored": true
+        },
+        "runs": {
+          "R1": {
+            "resident_bytes_after_eviction": 0,
+            "file_bytes": 29540133920,
+            "l0_inference": 223863537664,
+            "l1_inference": 222550786048,
+            "l1_total": 252091678720,
+            "l3_read_bytes": 252195885056,
+            "l4_read_bytes_global": 252325173248,
+            "l4_readable": true,
+            "attribution_invalidated": false,
+            "host_pages_input_max": {
+              "min": 0.18674136321195142,
+              "max": 3322.2572860590312
+            }
+          },
+          "R2": {
+            "resident_bytes_after_eviction": 0,
+            "file_bytes": 29540133920,
+            "l0_inference": 223863537664,
+            "l1_inference": 222550831104,
+            "l1_total": 252091723776,
+            "l3_read_bytes": 252351389696,
+            "l4_read_bytes_global": 252358210560,
+            "l4_readable": true,
+            "attribution_invalidated": false,
+            "host_pages_input_max": {
+              "min": 0.18688095683049896,
+              "max": 128.72959279414525
+            }
+          },
+          "R3": {
+            "resident_bytes_after_eviction": 0,
+            "file_bytes": 29540133920,
+            "l0_inference": 223863537664,
+            "l1_inference": 222550880256,
+            "l1_total": 252091637760,
+            "l3_read_bytes": 252138557440,
+            "l4_read_bytes_global": 252182740480,
+            "l4_readable": true,
+            "attribution_invalidated": false,
+            "host_pages_input_max": {
+              "min": 0.1849112426035503,
+              "max": 732.4545116969922
+            }
+          }
+        },
+        "attribution_invalidated": []
+      }
+    },
+    "D": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "cold_run": true,
+          "really_read": true,
+          "unique_equals_protocol_recomputation": true,
+          "unique_equals_header_recomputation": true,
+          "ram_measured_is_host_capacity": true,
+          "exceeds_host_ram": true,
+          "exceeds_memtotal": true,
+          "all_tensors_used": true
+        },
+        "unique_active_bf16_bytes": 27983013888,
+        "host_total_physical_memory": 16900739072,
+        "host_dimm_bytes": 17179869184,
+        "memtotal": 11483848704,
+        "ratio_host_ram": 1.6288257837295532,
+        "ratio_memtotal": 2.4367278435367306
+      }
+    },
+    "E": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "R1.forward": true,
+          "R1.prompt": true,
+          "R1.layers": true,
+          "R1.counters_from_headers": true,
+          "R1.gemv_coefficients": true,
+          "R1.kv_lengths": true,
+          "R2.forward": true,
+          "R2.prompt": true,
+          "R2.layers": true,
+          "R2.counters_from_headers": true,
+          "R2.gemv_coefficients": true,
+          "R2.kv_lengths": true,
+          "R3.forward": true,
+          "R3.prompt": true,
+          "R3.layers": true,
+          "R3.counters_from_headers": true,
+          "R3.gemv_coefficients": true,
+          "R3.kv_lengths": true,
+          "R4.forward": true,
+          "R4.prompt": true,
+          "R4.layers": true,
+          "R4.counters_from_headers": true,
+          "R4.gemv_coefficients": true,
+          "R4.kv_lengths": true,
+          "R2.digests_equal_R1": true,
+          "R3.digests_equal_R1": true,
+          "R4.digests_equal_R1": true,
+          "continuation_equal": true
+        },
+        "continuation": [
+          12095,
+          13,
+          576,
+          6722
+        ],
+        "generated_text": "The capital of France is Paris. The capital"
+      }
+    },
+    "F": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "7b_e2e.stock_fp32": true,
+          "7b_e2e.full64": true,
+          "14b.stock_fp32.recomputed_equals_stored": true,
+          "14b.stock_fp32.pass_full": true,
+          "14b.full64.recomputed_equals_stored": true,
+          "14b.full64.pass_full": true,
+          "14b.stock_fp64.reported_raw": true
+        },
+        "parity_14b": {
+          "stock_fp32": {
+            "verdict": "PASS",
+            "coverage": "FULL",
+            "kinds": {
+              "logits": {
+                "elements": 1216512,
+                "failures": 0,
+                "max_abs_error": 3.8926334816835606e-05,
+                "max_threshold_utilization": 0.011655277454730726
+              },
+              "hidden": {
+                "elements": 1966080,
+                "failures": 0,
+                "max_abs_error": 0.014527768959851528,
+                "max_threshold_utilization": 0.24455661357277117
+              },
+              "kv": {
+                "elements": 786432,
+                "failures": 0,
+                "max_abs_error": 1.1747431361897043e-05,
+                "max_threshold_utilization": 0.0030441862179994587
+              }
+            },
+            "top10_ordered_equal_positions": 8
+          },
+          "full64": {
+            "verdict": "PASS",
+            "coverage": "FULL",
+            "kinds": {
+              "logits": {
+                "elements": 1216512,
+                "failures": 0,
+                "max_abs_error": 2.9309887850104133e-13,
+                "max_threshold_utilization": 8.48926352334584e-09
+              },
+              "hidden": {
+                "elements": 1966080,
+                "failures": 0,
+                "max_abs_error": 4.729372449219227e-11,
+                "max_threshold_utilization": 1.7155680102575208e-07
+              },
+              "kv": {
+                "elements": 786432,
+                "failures": 0,
+                "max_abs_error": 1.9539925233402755e-13,
+                "max_threshold_utilization": 3.49734085595778e-09
+              }
+            },
+            "top10_ordered_equal_positions": 8
+          },
+          "stock_fp64": {
+            "verdict": "FAIL",
+            "coverage": "FULL",
+            "kinds": {
+              "logits": {
+                "elements": 1216512,
+                "failures": 0,
+                "max_abs_error": 6.056540126753163e-06,
+                "max_threshold_utilization": 0.28605866635426286
+              },
+              "hidden": {
+                "elements": 1966080,
+                "failures": 51,
+                "max_abs_error": 0.0020870138359896373,
+                "max_threshold_utilization": 2.8291117179249365
+              },
+              "kv": {
+                "elements": 786432,
+                "failures": 0,
+                "max_abs_error": 3.170764772519874e-06,
+                "max_threshold_utilization": 0.09591102247729333
+              }
+            },
+            "top10_ordered_equal_positions": 8
+          }
+        }
+      }
+    },
+    "G": {
+      "verdict": "PASS",
+      "facts": {
+        "fault_attempts": {
+          "sync": [
+            "F-sync",
+            "F-sync-a2"
+          ],
+          "pipeline": [
+            "F-pipeline"
+          ]
+        },
+        "checks": {
+          "R1": true,
+          "R2": true,
+          "R3": true,
+          "R4": true,
+          "O14-stock_fp32": true,
+          "O14-full64": true,
+          "O7-stock_fp32": true,
+          "O7-full64": true,
+          "F-sync-a2": true,
+          "F-sync-a2.faults": true,
+          "F-pipeline": true,
+          "F-pipeline.faults": true,
+          "N6.planned_oom": true,
+          "every_recorded_run_supervised": true
+        },
+        "recorded_runs": {
+          "F-pipeline": true,
+          "F-sync-a2": true,
+          "F-sync": true,
+          "N6": true,
+          "O14-full64": true,
+          "O14-stock_fp32": true,
+          "O14-stock_fp64-a2": true,
+          "O7-full64-a2": true,
+          "O7-stock_fp32": true,
+          "R1": true,
+          "R2": true,
+          "R3": true,
+          "R4": true
+        }
+      }
+    },
+    "H": {
+      "verdict": "PASS",
+      "facts": {
+        "checks": {
+          "protocol_chain": true,
+          "inventory_on_archived_junit": true,
+          "gates_7_8_9": true,
+          "runtime_and_kernel_unchanged": true,
+          "no_preexisting_file_modified": true
+        },
+        "inventory": {
+          "verdict": "PASS",
+          "required_passed": 1246,
+          "required_total": 1246,
+          "fail_reasons": [],
+          "not_proven_reasons": []
+        },
+        "gate9": {
+          "A": "PASS",
+          "B": "PASS",
+          "C": "PASS",
+          "D": "PASS",
+          "E": "PASS",
+          "F": "PASS",
+          "G": "PASS",
+          "H": "PASS"
+        },
+        "modified_preexisting": [
+          ".github/workflows/offline-cpu.yml"
+        ]
+      }
+    }
+  }
+}

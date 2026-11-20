@@ -1,0 +1,131 @@
+{
+ "schema": "inwime-test-inventory/1",
+ "mode": "ci",
+ "protocol_check": {
+  "passed": true,
+  "problems": [],
+  "amendments": [
+   "001-acquisition-host-gate-and-ci-inventory.json",
+   "002-acquisition-in-run-host-monitor.json"
+  ]
+ },
+ "inventory": {
+  "path": "results/increment10/test-inventory-a002.json",
+  "sha256": "ed9efe7ab927510abdc17588b592af51f15214d8b1be83d59709de3879278fa3",
+  "total_node_ids": 1180
+ },
+ "runner": {
+  "schema": "inwime-test-inventory/1",
+  "inventory_counts": {
+   "baseline-m1-m9": 910,
+   "m10-acquire": 55,
+   "m10-amendment": 38,
+   "m10-fixture": 17,
+   "m10-hostgate": 44,
+   "m10-hostmem": 18,
+   "m10-hostmonitor": 45,
+   "m10-inventory": 15,
+   "m10-limits": 2,
+   "m10-oracle": 21,
+   "m10-protocol": 15,
+   "total": 1180
+  },
+  "test_files_changed_or_missing": [],
+  "test_files_added": [],
+  "junit_sha256": "3e903afcd31394696590ecf0fed275b3d0b06c92c70ad45a0ae1ccd99ba95293",
+  "junit_declared": {
+   "tests": 1180,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 11
+  },
+  "junit_observed": {
+   "tests": 1180,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 11
+  },
+  "missing_required": [],
+  "not_passed": {},
+  "duplicates": [],
+  "extra_not_in_inventory": [],
+  "groups": {
+   "baseline-m1-m9": {
+    "expected": 910,
+    "passed": 899
+   },
+   "m10-acquire": {
+    "expected": 55,
+    "passed": 55
+   },
+   "m10-amendment": {
+    "expected": 38,
+    "passed": 38
+   },
+   "m10-fixture": {
+    "expected": 17,
+    "passed": 17
+   },
+   "m10-hostgate": {
+    "expected": 44,
+    "passed": 44
+   },
+   "m10-hostmem": {
+    "expected": 18,
+    "passed": 18
+   },
+   "m10-hostmonitor": {
+    "expected": 45,
+    "passed": 45
+   },
+   "m10-inventory": {
+    "expected": 15,
+    "passed": 15
+   },
+   "m10-limits": {
+    "expected": 2,
+    "passed": 2
+   },
+   "m10-oracle": {
+    "expected": 21,
+    "passed": 21
+   },
+   "m10-protocol": {
+    "expected": 15,
+    "passed": 15
+   }
+  },
+  "not_verifiable_on_runner": [
+   "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+   "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+  ],
+  "required_passed": 1169,
+  "required_total": 1180,
+  "runner_verdict": "PASS",
+  "fail_reasons": [],
+  "not_proven_reasons": [
+   "11 required node IDs not verifiable on this runner (local attestation required)"
+  ],
+  "verdict": "NOT PROVEN"
+ },
+ "local_attestation": {
+  "source": "archived JUnit of a local run (not a runner result)",
+  "path": "results/increment10/amendment-002/local-attestation.json",
+  "verdict": "PASS",
+  "required_passed": 1180,
+  "required_total": 1180,
+  "fail_reasons": [],
+  "not_proven_reasons": []
+ },
+ "runner_verdict": "PASS",
+ "full_inventory_verdict_on_runner": "NOT PROVEN"
+}

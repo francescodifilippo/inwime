@@ -1,0 +1,17 @@
+{
+ "pytest-final-a1.txt": {
+  "original_sha256": "61b598d9a11c9ad30962f60ae75ea43256db422d760b57f9bf146b45bc1d0d0a",
+  "sanitized_sha256": "0c2af32bfe1575609c8ea6b3a34b4bef0ce2d0798b27d45e4a862707acf7012c",
+  "change": "absolute paths replaced by <repo>/<home> in failure tracebacks; not used by any verdict"
+ },
+ "pytest-final-a3-basetemp-missing.txt": {
+  "original_sha256": "05f7ccc2c86ee104153823b303d4e6c7d3d7f16922a38e88dcd5d1a327e861ec",
+  "sanitized_sha256": "1600476b9d17e7c2c45474bfd32ea10e616f0fc012b90da2b21ec52dab94d567",
+  "change": "absolute paths replaced by <repo>/<home> in failure tracebacks; not used by any verdict"
+ },
+ "pytest-final-a3-basetemp-missing.xml": {
+  "original_sha256": "964d3ddb08cd6cef67f6216fc735888f8d39b9cae7a161117f2d4cde7824040b",
+  "sanitized_sha256": "87ec53c2ba50a2bb419cf504bbf5353bfb4a19f23b90dc9c16579d3194094936",
+  "change": "absolute paths replaced by <repo>/<home> in failure tracebacks; not used by any verdict"
+ }
+}

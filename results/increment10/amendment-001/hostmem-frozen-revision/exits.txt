@@ -1,0 +1,3 @@
+download exit 3
+runtime exit 3
+oracle exit 3

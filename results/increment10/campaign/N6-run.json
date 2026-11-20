@@ -1,0 +1,275 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "N6",
+  "kind": "fault",
+  "profile": "runtime",
+  "cache": "as-is",
+  "purpose": "N6: planned OOM of SmolLM2-1.7B in a 32 MiB scope (expected kernel OOM kill, FAIL expected)",
+  "utc_start": "2026-11-19T22:54:54Z",
+  "command": [
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/smollm2-1.7b-d4c18cc",
+    "--family",
+    "llama",
+    "--mode",
+    "sync",
+    "--as-mib",
+    "256",
+    "--output",
+    "results/increment10/campaign/N6-forward.json",
+    "--cache-state",
+    "as-is"
+  ],
+  "memory_max": 33554432,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "N6-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "8249046cb2c65b3694266d67eea10b4263bd68626d4a0a715ddd464035c74349"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 657165.901259379,
+      "utc": "2026-11-19T22:55:26Z",
+      "reads_completed": 2260557,
+      "reads_merged": 1177611,
+      "sectors_read": 4837386922,
+      "read_ticks_ms": 3099470,
+      "writes_completed": 746170,
+      "writes_merged": 835822,
+      "sectors_written": 214325752,
+      "write_ticks_ms": 6884972,
+      "in_flight": 0,
+      "io_ticks_ms": 2759240,
+      "time_in_queue_ms": 10407313,
+      "read_bytes": 2476742104064
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 657165.901405768,
+        "utc": "2026-11-19T22:55:26Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-N6",
+    "--output",
+    "results/increment10/campaign/N6-scope.json",
+    "--memory-max",
+    "33554432",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "<recovery>/venv/bin/python",
+    "-m",
+    "tools.benchmark_increment9",
+    "checkpoints/smollm2-1.7b-d4c18cc",
+    "--family",
+    "llama",
+    "--mode",
+    "sync",
+    "--as-mib",
+    "256",
+    "--output",
+    "results/increment10/campaign/N6-forward.json",
+    "--cache-state",
+    "as-is"
+  ],
+  "wall_s": 2.933871353045106,
+  "supervisor_exit": 137,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 657170.093137009,
+      "utc": "2026-11-19T22:55:30Z",
+      "reads_completed": 2264592,
+      "reads_merged": 1178058,
+      "sectors_read": 4839158570,
+      "read_ticks_ms": 3100280,
+      "writes_completed": 746174,
+      "writes_merged": 835830,
+      "sectors_written": 214325848,
+      "write_ticks_ms": 6884980,
+      "in_flight": 0,
+      "io_ticks_ms": 2759992,
+      "time_in_queue_ms": 10408132,
+      "read_bytes": 2477649187840
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 657170.093198095,
+        "utc": "2026-11-19T22:55:30Z",
+        "reads_completed": 200108,
+        "reads_merged": 62254,
+        "sectors_read": 2102080,
+        "read_ticks_ms": 49161,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105544,
+        "time_in_queue_ms": 8383199,
+        "read_bytes": 1076264960
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 4035,
+      "reads_merged": 447,
+      "sectors_read": 1771648,
+      "read_ticks_ms": 810,
+      "writes_completed": 4,
+      "writes_merged": 8,
+      "sectors_written": 96,
+      "write_ticks_ms": 8,
+      "io_ticks_ms": 752,
+      "time_in_queue_ms": 819,
+      "read_bytes": 907083776
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 0,
+        "writes_merged": 0,
+        "sectors_written": 0,
+        "write_ticks_ms": 0,
+        "io_ticks_ms": 0,
+        "time_in_queue_ms": 0,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 1,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 0
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132347396096,
+          "max": 132347396096
+        },
+        "guest_mem_available": {
+          "min": 8644464640,
+          "max": 8644464640
+        },
+        "host_available_bytes": {
+          "min": 6640783360,
+          "max": 6640783360
+        },
+        "host_commit_headroom_bytes": {
+          "min": 32767451136,
+          "max": 32767451136
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": 468713472,
+          "max": 468713472
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.959,
+          "host_available_bytes": 6640783360,
+          "guest_mem_available": 8644464640,
+          "host_pagefile_growth_since_baseline": 468713472,
+          "host_commit_headroom_bytes": 32767451136,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132347396096
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T22:55:30Z",
+  "produced_sha256": {
+    "N6-host-start.json": "8249046cb2c65b3694266d67eea10b4263bd68626d4a0a715ddd464035c74349",
+    "N6-scope.final.txt": "9f9d267e777b9ab3f90baf146ccbc6b64c868d996642470bb7e6ac87edfb3ded",
+    "N6-scope.json": "17636db2132d8e654795077d96f59063985401917274de57a0b546ca7aa8cccb",
+    "N6-scope.log": "0089bb674406997eb0e6850cf01c46d23d8689610788516cebf2a31b9276d691"
+  }
+}

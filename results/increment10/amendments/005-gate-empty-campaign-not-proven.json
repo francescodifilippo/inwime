@@ -1,0 +1,36 @@
+{
+ "schema": "inwime-protocol-m10-amendment/1",
+ "number": 5,
+ "slug": "gate-empty-campaign-not-proven",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "previous_sha256": "0eeb15705309ed53bee259cdb940df5033f96ebe37e33f5a4f918e7ec3deadea",
+ "author": "Assistant session at the owner's request; owner acceptance pending through the review of PR #24",
+ "utc": "2026-11-20T00:14:04Z",
+ "reason": [
+  "The first final suite run (kept as campaign/pytest-final-a1.*: 1245 passed, 1 failed) showed that report_increment10 condition G returned FAIL instead of NOT PROVEN when the campaign directory holds no run record (every_recorded_run_supervised was False on an empty set). An empty campaign is missing evidence, not a contradiction: it now raises Missing (NOT PROVEN). No other change; no verdict on real evidence depended on it (the real campaign has 11+ run records)."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendments_001_004_unchanged": true,
+  "tests_unchanged_since_004": true
+ },
+ "frozen_evidence_preserved": {
+  "results/increment10/amendments/004-campaign-and-gate-tooling.json": "0eeb15705309ed53bee259cdb940df5033f96ebe37e33f5a4f918e7ec3deadea",
+  "results/increment10/test-inventory-a004.json": "0aebbb2d2db678421e1120507668c5aa2c6b6d7c0e1b9e1a269ec5f52b0969ba",
+  "results/increment10/campaign/pytest-final-a1.xml": "e5681897c31b25fab2663e1e8488fba13012d692c62e659c00cbb5d000dca1fd"
+ },
+ "changes": {
+  "pinned_tools_sha256": {
+   "tools/report_increment10.py": {
+    "from": "36661e9b8a7a2bf04e4d467c68985465891f26fa2f2643a59f7cbf2a1c328f42",
+    "to": "c00edfb020d0413f2f71a4e3bb611ac78b899dd3c0c8b0c6e5fa5ab9788a8a2e"
+   }
+  }
+ }
+}

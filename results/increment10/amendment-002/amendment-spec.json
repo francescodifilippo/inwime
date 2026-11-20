@@ -1,0 +1,78 @@
+{
+ "slug": "acquisition-in-run-host-monitor",
+ "author": "Claude Opus 5.5 (assistant session) at the owner's request; owner acceptance pending through the review of PR #24",
+ "reason": [
+  "PR #24 review at e8c588f: execute checked host readiness only at the start; during transfer() only Guard.check() (free space) ran, so the preregistered host abort criteria were not watched while bytes flow and the start GO could go stale.",
+  "This amendment adds a read-only, bounded in-run monitor (tools/hostmonitor10.py) that applies the frozen host_memory_preflight.abort_criteria during the acquisition, stops cooperatively, keeps the owned .part and allows resume only after a new hostgate10 GO.",
+  "The amended inventory and the local attestation path follow the new and changed test files; the runner-unverifiable set is unchanged."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendment_001_unchanged": true,
+  "note": "abort thresholds, sustain times and actions are read from the frozen protocol.json; the amendment only states what each action means for an acquisition and how sampling is bounded"
+ },
+ "tools": [
+  "tools/acquire10.py",
+  "tools/protocol10.py",
+  "tools/hostmonitor10.py"
+ ],
+ "test_inventory": "results/increment10/test-inventory-a002.json",
+ "sections": {
+  "acquisition_host_monitor": {
+   "criteria": "host_memory_preflight.abort_criteria",
+   "action_mapping": {
+    "pause-and-annotate": "stop",
+    "kill-scope-invalidate-run": "stop",
+    "stop-acquisition-retain-part": "stop",
+    "annotate-io-attribution-invalid": "annotate"
+   },
+   "sample_interval_s": 5,
+   "max_unmonitored_s": 20,
+   "startup_timeout_s": 60,
+   "max_line_bytes": 65536,
+   "max_samples_kept": 2048,
+   "max_errors_kept": 64,
+   "max_annotations": 256,
+   "rule": "acquire10 --execute starts the monitor under the lock after the second host gate check and before the first payload request; no first valid sample within startup_timeout_s, or a first sample that already meets a stop condition, refuses the payload. While bytes flow the monitor is polled before each request and after each chunk. A stop condition (frozen abort criterion whose action maps to stop, sustain times as preregistered), no valid sample for more than max_unmonitored_s, or a dead sampler raise HostPressureStop: the owned .part and its marker are kept, the lock is released, the sampler child is terminated, the stop evidence includes the monitor summary. Resume = a new acquire10 --execute with a new fresh hostgate10 GO; the .part is re-hashed and only the remainder is requested. A sample is valid only if every abort quantity is readable (paging rate may be absent only on the first sample). The sampler is one powershell.exe running read-only CIM queries; nothing on Windows or WSL is changed.",
+   "limits": "reaction latency up to one sampling interval plus the preregistered sustain time; stops this acquisition only; one powershell.exe sampler (about 100 MB) for the duration of the transfer"
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-002/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ },
+ "frozen_evidence": [
+  "results/increment10/protocol.json",
+  "results/increment10/protocol.sha256",
+  "results/increment10/test-inventory.json",
+  "results/increment10/SHA256SUMS",
+  "results/increment10/test-inventory-a001.json",
+  "results/increment10/amendments/001-acquisition-host-gate-and-ci-inventory.json",
+  "results/increment10/amendment-001/SHA256SUMS",
+  "results/increment10/amendment-001/local-attestation.json"
+ ]
+}

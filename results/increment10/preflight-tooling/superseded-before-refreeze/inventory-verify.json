@@ -1,0 +1,72 @@
+{
+ "schema": "inwime-test-inventory/1",
+ "inventory_counts": {
+  "baseline-m1-m9": 910,
+  "m10-acquire": 55,
+  "m10-fixture": 17,
+  "m10-hostmem": 16,
+  "m10-inventory": 15,
+  "m10-limits": 2,
+  "m10-oracle": 21,
+  "m10-protocol": 15,
+  "total": 1051
+ },
+ "test_files_changed_or_missing": [],
+ "test_files_added": [],
+ "junit_sha256": "7ea8b6ba1693604c50b30dc32663974b344176bb829f07914b5a6b1ba5ac93f7",
+ "junit_declared": {
+  "tests": 1051,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+ },
+ "junit_observed": {
+  "tests": 1051,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+ },
+ "missing_required": [],
+ "not_passed": {},
+ "duplicates": [],
+ "extra_not_in_inventory": [],
+ "groups": {
+  "baseline-m1-m9": {
+   "expected": 910,
+   "passed": 910
+  },
+  "m10-acquire": {
+   "expected": 55,
+   "passed": 55
+  },
+  "m10-fixture": {
+   "expected": 17,
+   "passed": 17
+  },
+  "m10-hostmem": {
+   "expected": 16,
+   "passed": 16
+  },
+  "m10-inventory": {
+   "expected": 15,
+   "passed": 15
+  },
+  "m10-limits": {
+   "expected": 2,
+   "passed": 2
+  },
+  "m10-oracle": {
+   "expected": 21,
+   "passed": 21
+  },
+  "m10-protocol": {
+   "expected": 15,
+   "passed": 15
+  }
+ },
+ "required_passed": 1051,
+ "required_total": 1051,
+ "fail_reasons": [],
+ "not_proven_reasons": [],
+ "verdict": "PASS"
+}
