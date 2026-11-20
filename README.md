@@ -15,7 +15,44 @@ Con un compilatore C l'installazione include il kernel nativo FP64 di M10, compi
 - lo spazio utilizzabile al netto di un margine di 30 GiB (`--host-margin-gib`);
 - l'esito del self-test bit per bit del kernel.
 
-I dati non rilevabili compaiono come `unknown`. I nomi utente nei percorsi sono oscurati per default (`--show-paths` li mostra). Catalogo, download dei modelli e API arrivano con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
+I dati non rilevabili compaiono come `unknown`. I nomi utente nei percorsi sono oscurati per default (`--show-paths` li mostra).
+
+### Catalogo Hugging Face
+
+```sh
+inwime models search qwen --family qwen2 --license apache-2.0 --max-params 8B --sort downloads --page 2
+inwime models info Qwen/Qwen2.5-7B-Instruct@a09a35458c702b33eeacc393d103063234e8bc28   # --json: inwime-model-info/1
+```
+
+`search` interroga l'intero catalogo, senza whitelist, con filtri per testo, autore, task, famiglia, licenza e dimensione. La dimensione è il numero di parametri dichiarato dal Hub (`--min-params`, `--max-params`), non i byte. Ordina per popolarità o data e restituisce una pagina alla volta (`--limit`, `--page`). I Checkpoint da certificare nella v0.1 (`*`) e i repository con una Revisione verificata (`v`) sono evidenziati, ma la scelta resta libera.
+
+`info` non scarica pesi e non scrive nella cache. Risolve la Revisione nello SHA completo e legge config, tokenizer, chat template, indice e header safetensors (byte range). Mostra:
+- architettura e `model_type`;
+- dtype nativo e dichiarato, sharding;
+- dimensione dei pesi presa da siblings e LFS;
+- contesto, licenza, stato gated;
+- chat template e template con tool.
+
+Poi mostra gli Stati di capacità e la Vista di supporto:
+- `supported`: `numerically_verified` raggiunto, solo per le Revisioni verificate in M7–M10;
+- `partial`: un adapter InWiMe risolve il grafo, ma il Checkpoint non è verificato;
+- `unknown`: tutti gli altri casi, sia quando il supporto non è determinabile sia quando manca qualcosa di noto. La diagnosi dice cosa.
+
+La diagnosi elenca tutto ciò che manca, non solo il primo stato fallito. Per esempio `Qwen/Qwen2.5-0.5B-Instruct` oggi risulta `unknown`: ha la testa legata (`tie_word_embeddings=true`) e l'adapter Qwen2 la supporterà solo con il ticket del Motore.
+
+La diagnosi copre architettura, operatori, dtype, tokenizer e `trust_remote_code` (non supportato nella v0.1). `resource_plan_feasible` dipende dall'host e il catalogo non lo valuta.
+
+Autenticazione: solo quella standard di `huggingface_hub` (`hf auth login`, `HF_TOKEN`). L'endpoint segue `HF_ENDPOINT`. Codici di uscita:
+- 3: repository o revisione inesistente;
+- 4: modello gated senza autenticazione;
+- 5: licenza gated non accettata;
+- 6: rate limit (HTTP 429) ancora attivo dopo i tentativi. `info` ritenta fino a 3 volte, rispettando l'attesa annunciata se non supera 60 s. `search` usa i tentativi di `huggingface_hub`;
+- 7: Hub irraggiungibile o `HF_HUB_OFFLINE`;
+- 8: un file di metadati supera il limite di 16 MiB (non viene scaricato).
+
+Con la telemetria attiva, `huggingface_hub` salva in `HF_HOME` il proprio registro degli agent harness. `HF_HUB_DISABLE_TELEMETRY=1` lo evita.
+
+Download dei modelli e API arrivano con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
 
 # Benchmark BF16 con streaming esplicito
 
