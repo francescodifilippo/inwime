@@ -5,7 +5,7 @@
   "m10-acquire": 61,
   "m10-amendment": 38,
   "m10-amendment003": 13,
-  "m10-campaign": 53,
+  "m10-campaign": 61,
   "m10-fixture": 17,
   "m10-hostgate": 44,
   "m10-hostmem": 18,
@@ -14,19 +14,19 @@
   "m10-limits": 2,
   "m10-oracle": 21,
   "m10-protocol": 15,
-  "total": 1252
+  "total": 1260
  },
  "test_files_changed_or_missing": [],
  "test_files_added": [],
- "junit_sha256": "9adb2b7692c1f3333b67a97bdbc29f019d2858b82d73e00a86abcf771c6f52ed",
+ "junit_sha256": "d880ec8d28b4900fcd0a3b1791ae2a3ed575ad8a777766b555ead4b607a838c1",
  "junit_declared": {
-  "tests": 1252,
+  "tests": 1260,
   "failures": 0,
   "errors": 0,
   "skipped": 0
  },
  "junit_observed": {
-  "tests": 1252,
+  "tests": 1260,
   "failures": 0,
   "errors": 0,
   "skipped": 0
@@ -53,8 +53,8 @@
    "passed": 13
   },
   "m10-campaign": {
-   "expected": 53,
-   "passed": 53
+   "expected": 61,
+   "passed": 61
   },
   "m10-fixture": {
    "expected": 17,
@@ -90,8 +90,8 @@
   }
  },
  "not_verifiable_on_runner": [],
- "required_passed": 1252,
- "required_total": 1252,
+ "required_passed": 1260,
+ "required_total": 1260,
  "fail_reasons": [],
  "not_proven_reasons": [],
  "verdict": "PASS"

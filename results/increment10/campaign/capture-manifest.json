@@ -88,6 +88,14 @@
   "artifacts/increment10/oracle10-7b-stock_fp32.npz": {
    "nbytes": 9649698,
    "sha256": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef"
+  },
+  "artifacts/increment10/oracle10-7b-stock_fp64.json": {
+   "nbytes": 2607,
+   "sha256": "aa07a9e6e4014ceea89ce265ef52978132cc33f87d51afe635fdef5b7ebbef3b"
+  },
+  "artifacts/increment10/oracle10-7b-stock_fp64.npz": {
+   "nbytes": 17266826,
+   "sha256": "3a1adf78a6b63e5d3c17f292be2486654601c8abc9cf58cb4d717be5726f5347"
   }
  }
 }

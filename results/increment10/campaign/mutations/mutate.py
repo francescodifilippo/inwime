@@ -30,6 +30,9 @@ M = {
  'G: R2 scope memory.peak edited after the run': ('G', lambda c: (lambda d: (d['finalizer'].update({'memory.peak': 1}), w(c/'R2-scope.json', d)))(j(c/'R2-scope.json'))),
  'G: unjustified retry of O14-full64': ('G', lambda c: [shutil.copy(c/f'O14-full64-{k}.json', c/f'O14-full64-a2-{k}.json') for k in ('run', 'scope', 'host-start')]),
  'C: sustained paging in R3 samples without annotation': ('C', lambda c: (lambda d: ([x.update(host_pages_input_per_s=5000) for x in d['observer']['summary']['last_samples'][3:12]], w(c/'R3-run.json', d)))(j(c/'R3-run.json'))),
+ 'F: 7B e2e stock_fp64 diagnostic verdict edited (amendment 007)': ('F', lambda c: (lambda d: (d.update(verdict='FAIL'), w(c/'equivalence-7b-e2e-stock_fp64.json', d)))(j(c/'equivalence-7b-e2e-stock_fp64.json'))),
+ 'F: 7B e2e stock_fp64 capture not bound to its run record (amendment 007)': ('F', lambda c: (lambda d: (d['produced_sha256'].update({'artifacts/increment10/oracle10-7b-stock_fp64.npz': '0'*64}), w(c/'O7-stock_fp64-a3-run.json', d)))(j(c/'O7-stock_fp64-a3-run.json'))),
+ 'G: O7-stock_fp64-a3 swap used (amendment 007)': ('G', lambda c: (lambda d: (d['finalizer'].update({'memory.swap.peak': 4096}), w(c/'O7-stock_fp64-a3-scope.json', d)))(j(c/'O7-stock_fp64-a3-scope.json'))),
  'E: R2 forward missing, blocked file present': ('E', lambda c: ((c/'R2-run.json').unlink(), (c/'blocked-R2.json').write_text(json.dumps(dict(cause='host start check not GO', utc='2026-11-19T00:00:00Z'))))),
 }
 rows = []

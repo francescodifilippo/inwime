@@ -18,7 +18,7 @@ risultato è stato sovrascritto o cancellato.
 | `R1..R4-forward.json` | `tools/benchmark_increment9.py` (invariato) | forward 14B: fasi, contatori per tensore, `/proc/PID/io`, digest; R1 con catture complete in `artifacts/increment10/R1-capture/` |
 | `F-sync*`, `F-pipeline*` | `tools/fault10.py` | guasti N1–N4 sul 14B reale; `F-sync` (tentativo 1) è il FAIL della sonda con guasto alla lettura 100, conservato |
 | `N6-*` | `tools/benchmark_increment9.py` in scope da 32 MiB | OOM pianificato di SmolLM2-1.7B (FAIL atteso) |
-| `O7-*`, `equivalence-7b-e2e-*.json` | `tools/oracle10.py`, `tools/equivalence10_e2e.py` | equivalenza 7B end-to-end di `oracle10` contro le catture `oracle9` di M9 |
+| `O7-*`, `equivalence-7b-e2e-*.json` | `tools/oracle10.py`, `tools/equivalence10_e2e.py` | equivalenza 7B end-to-end di `oracle10` contro le catture `oracle9` di M9; `O7-stock_fp64-a3` (diagnostica, 20/11) letta dal gate dall'emendamento 007 |
 | `O14-*`, `parity-14b-*.json` | `tools/oracle10.py`, `tools/parity10.py` | oracolo 14B e parità a copertura piena con R1 |
 | `integrity-final.json` | `tools/integrity9.py` (invariato) | re-hash finale degli 8 shard |
 | `check-oracle10.txt` | `tools/check_oracle10.py` | N9: sensibilità dell'oracolo (peso perturbato, epsilon errato) |

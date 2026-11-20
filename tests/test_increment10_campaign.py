@@ -444,3 +444,74 @@ def test_produced_files_bound_directly_or_through_the_sanitization_map(tmp_path)
     assert all(g10.produced_bound(e, 'X', rec).values())
     (c/'X-forward.json').write_text('{"b": 2}')            # edited after the run: detected
     assert g10.produced_bound(e, 'X', rec)['X-forward.json'] is False
+
+
+# ---------------------------------------------------------------- amendment 007: diagnostic 7B equivalence in the gate
+
+def e2e_evidence(tmp_path, contract, mutate=None, bind_new=True):
+    """Synthetic 7B end-to-end evidence laid out as the gate reads it: oracle10 capture bound to an
+    O7 run record, oracle9 capture bound to an increment-9 capture manifest, stored comparison."""
+    root, c, a = tmp_path/'root', tmp_path/'campaign', tmp_path/'art'
+    for d in (root/'artifacts'/'increment9', root/'results'/'increment9', root/'results'/'increment10', c, a):
+        d.mkdir(parents=True, exist_ok=True)
+    (root/'results'/'increment10'/'protocol.json').write_text(json.dumps(PROTOCOL))
+    old = arrays()
+    new = copy.deepcopy(old)
+    if mutate:
+        mutate(new)
+    meta_old = dict(META, contract=contract, argmax=old['logits'].argmax(-1).tolist())
+    oldp, newp = root/'artifacts'/'increment9'/f'oracle-{contract}.npz', a/f'oracle10-7b-{contract}.npz'
+    mo = save(oldp, old, meta_old)
+    mn = save(newp, new, dict(meta_old, argmax=new['logits'].argmax(-1).tolist()))
+    (root/'results'/'increment9'/'capture-manifest.json').write_text(json.dumps(
+        {'files': {f'artifacts/increment9/oracle-{contract}.npz': dict(sha256=sha(oldp))}}))
+    (c/f'O7-{contract}-a3-run.json').write_text(json.dumps({'produced_sha256': {
+        f'artifacts/increment10/oracle10-7b-{contract}.npz': sha(newp) if bind_new else '0'*64}}))
+    stored = e2e.evaluate(newp, mn, oldp, mo, PROTOCOL)
+    stored['inputs'] = dict(new_sha256=sha(newp), old_sha256=sha(oldp))
+    stored = json.loads(json.dumps(stored))
+    (c/f'equivalence-7b-e2e-{contract}.json').write_text(json.dumps(stored))
+    return g10.Evidence(campaign=c, artifacts=a, root=root), stored
+
+
+@pytest.mark.parametrize('mutate,verdict', [
+    (None, 'PASS'),
+    (lambda a: a['hidden'].__setitem__((1, 2, 3), a['hidden'][1, 2, 3] + 1e-6), 'FAIL'),
+])
+def test_diagnostic_7b_equivalence_is_reported_raw(tmp_path, mutate, verdict):
+    e, stored = e2e_evidence(tmp_path, 'stock_fp64', mutate)
+    assert stored['verdict'] == verdict
+    assert g10.e2e_recomputed(e, 'stock_fp64', stored) is True     # raw verdict, recomputed == stored
+
+
+@pytest.mark.parametrize('tamper', ['verdict', 'comparison', 'unbound_capture', 'input_digest'])
+def test_diagnostic_7b_equivalence_contradicted_is_false(tmp_path, tamper):
+    e, stored = e2e_evidence(tmp_path, 'stock_fp64', bind_new=tamper != 'unbound_capture')
+    if tamper == 'verdict':
+        stored['verdict'] = 'FAIL'
+    elif tamper == 'comparison':
+        stored['comparison']['kinds']['logits']['max_abs_difference'] = 1e-3
+    elif tamper == 'input_digest':
+        stored['inputs']['new_sha256'] = '0'*64
+    assert g10.e2e_recomputed(e, 'stock_fp64', stored) is False
+
+
+def test_gating_7b_equivalence_still_requires_pass(tmp_path):
+    e, stored = e2e_evidence(tmp_path, 'full64', lambda a: a['logits'].__setitem__((0, 0), a['logits'][0, 0] + 1e-8))
+    assert stored['verdict'] == 'FAIL'
+    assert g10.e2e_recomputed(e, 'full64', stored) is False
+
+
+def test_diagnostic_7b_check_exists_only_with_a_run_record(tmp_path):
+    c = tmp_path/'campaign'
+    c.mkdir()
+    e = g10.Evidence(campaign=c, artifacts=tmp_path/'a', root=ROOT)
+    assert '7b_e2e.stock_fp64.reported_raw' not in g10.gate(e, only=['F'])['conditions']['F']['facts']['checks']
+    (c/'blocked-O7-stock_fp64.json').write_text(json.dumps(dict(cause='host not GO', utc='2026-11-20T00:00:00Z')))
+    e = g10.Evidence(campaign=c, artifacts=tmp_path/'a', root=ROOT)     # blocked only: still no check
+    assert '7b_e2e.stock_fp64.reported_raw' not in g10.gate(e, only=['F'])['conditions']['F']['facts']['checks']
+    (c/'O7-stock_fp64-a3-run.json').write_text('{}')
+    e = g10.Evidence(campaign=c, artifacts=tmp_path/'a', root=ROOT)
+    r = g10.gate(e, only=['F'])
+    assert '7b_e2e.stock_fp64.reported_raw' in r['conditions']['F']['facts']['checks']
+    assert r['verdicts']['F'] != 'PASS'

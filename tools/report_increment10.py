@@ -405,6 +405,11 @@ def condition_f(f, e):
                  else eq()['comparison']['kinds']['logits']['max_abs_difference'] <= 1e-9
                  and eq()['comparison']['logits_argmax_identical'] is True)
             and sha256(e.artifacts/f'oracle10-7b-{c}.npz') == eq()['inputs']['new_sha256']))(eq, contract)
+    # Diagnostic 7B equivalence (amendment 007): judged only when its oracle run has a record; it never
+    # makes F pass, it can only contradict it (recomputation != stored, unbound capture, unknown verdict).
+    if e.attempts(f'O7-{DIAGNOSTIC}'):
+        eq = lambda: e.file(f'equivalence-7b-e2e-{DIAGNOSTIC}.json')
+        lazy[f'7b_e2e.{DIAGNOSTIC}.reported_raw'] = lambda: e2e_recomputed(e, DIAGNOSTIC, eq())
     for contract in (*GATING, DIAGNOSTIC):
         stored = (lambda c: lambda: e.file(f'parity-14b-{c}.json'))(contract)
 
@@ -449,12 +454,24 @@ def condition_f(f, e):
         except (Missing, *INCOMPLETE):
             raw[contract] = None
     f['parity_14b'] = raw
+    e2e = {}
+    for contract in (*GATING, DIAGNOSTIC):
+        try:
+            s = e.file(f'equivalence-7b-e2e-{contract}.json')
+            e2e[contract] = dict(verdict=s['verdict'], run=e.latest(f'O7-{contract}'), elements=s.get('elements'),
+                                 kinds={k: {x: v.get(x) for x in ('bit_identical', 'max_abs_difference')}
+                                        for k, v in s['comparison']['kinds'].items()},
+                                 logits_argmax_identical=s['comparison'].get('logits_argmax_identical'))
+        except (Missing, *INCOMPLETE):
+            e2e[contract] = None
+    f['equivalence_7b'] = e2e
     return true(c)
 
 
 def e2e_recomputed(e, contract, stored):
     """7B end-to-end equivalence recomputed from the capture files; both sides bound to their records
-    (oracle10 capture = O7 run record produced_sha256; oracle9 capture = results/increment9/capture-manifest.json)."""
+    (oracle10 capture = O7 run record produced_sha256; oracle9 capture = results/increment9/capture-manifest.json).
+    Gating contracts must PASS; the diagnostic contract is reported raw (PASS or FAIL, recomputed == stored)."""
     from . import equivalence10_e2e as e2e
     new = e.artifacts/f'oracle10-7b-{contract}.npz'
     old = e.root/'artifacts'/'increment9'/f'oracle-{contract}.npz'
@@ -465,7 +482,10 @@ def e2e_recomputed(e, contract, stored):
     if manifest[f'artifacts/increment9/oracle-{contract}.npz']['sha256'] != sha256(old):
         return False
     fresh = e2e.evaluate(new, e.json(new.with_suffix('.json')), old, e.json(old.with_suffix('.json')), e.protocol())
-    return (fresh['verdict'] == stored['verdict'] == PASS
+    allowed = (PASS,) if contract in GATING else (PASS, FAIL)
+    return (fresh['verdict'] == stored['verdict'] and fresh['verdict'] in allowed
+            and fresh['problems'] == stored['problems'] == []
+            and stored['inputs']['new_sha256'] == sha256(new) and stored['inputs']['old_sha256'] == sha256(old)
             and json.loads(json.dumps(fresh['comparison'])) == stored['comparison'])
 
 
@@ -532,6 +552,9 @@ def condition_g(f, e):
     for contract in GATING:
         o7 = (lambda c: lambda: e.latest(f'O7-{c}'))(contract)
         lazy[f'O7-{contract}'] = (lambda o: lambda: true(supervised(e, o(), GIB6)))(o7)
+    for family in (f'O14-{DIAGNOSTIC}', f'O7-{DIAGNOSTIC}'):   # diagnostic oracles: only when recorded (007)
+        if e.attempts(family):
+            lazy[family] = (lambda run: lambda: true(supervised(e, run, GIB6)))(e.latest(family))
     flags = ('budget_rejected_before_payload', 'old_kv_all_bytes_preserved', 'descriptor_preserved',
              'candidate_was_modified', 'fail_stop_no_resume', 'drained', 'released')
     attempts = {}

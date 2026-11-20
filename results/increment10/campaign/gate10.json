@@ -429,6 +429,7 @@
           "7b_e2e.stock_fp32": true,
           "7b_e2e.full64.recomputed_and_bound": true,
           "7b_e2e.full64": true,
+          "7b_e2e.stock_fp64.reported_raw": true,
           "14b.stock_fp32.recomputed_equals_stored": true,
           "14b.stock_fp32.pass_full": true,
           "14b.full64.recomputed_equals_stored": true,
@@ -511,6 +512,80 @@
             },
             "top10_ordered_equal_positions": 8
           }
+        },
+        "equivalence_7b": {
+          "stock_fp32": {
+            "verdict": "PASS",
+            "run": "O7-stock_fp32",
+            "elements": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 229376
+            },
+            "kinds": {
+              "logits": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              },
+              "hidden": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              },
+              "kv": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              }
+            },
+            "logits_argmax_identical": true
+          },
+          "full64": {
+            "verdict": "PASS",
+            "run": "O7-full64-a2",
+            "elements": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 229376
+            },
+            "kinds": {
+              "logits": {
+                "bit_identical": false,
+                "max_abs_difference": 9.769962616701378e-15
+              },
+              "hidden": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              },
+              "kv": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              }
+            },
+            "logits_argmax_identical": true
+          },
+          "stock_fp64": {
+            "verdict": "PASS",
+            "run": "O7-stock_fp64-a3",
+            "elements": {
+              "logits": 1216512,
+              "hidden": 802816,
+              "kv": 229376
+            },
+            "kinds": {
+              "logits": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              },
+              "hidden": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              },
+              "kv": {
+                "bit_identical": true,
+                "max_abs_difference": 0.0
+              }
+            },
+            "logits_argmax_identical": true
+          }
         }
       }
     },
@@ -535,6 +610,8 @@
           "O14-full64": true,
           "O7-stock_fp32": true,
           "O7-full64": true,
+          "O14-stock_fp64": true,
+          "O7-stock_fp64": true,
           "F-sync-a2": true,
           "F-sync-a2.faults": true,
           "F-pipeline": true,
@@ -553,6 +630,7 @@
           "O14-stock_fp64-a2": true,
           "O7-full64-a2": true,
           "O7-stock_fp32": true,
+          "O7-stock_fp64-a3": true,
           "R1": true,
           "R2": true,
           "R3": true,
@@ -578,8 +656,8 @@
         },
         "inventory": {
           "verdict": "PASS",
-          "required_passed": 1252,
-          "required_total": 1252,
+          "required_passed": 1260,
+          "required_total": 1260,
           "fail_reasons": [],
           "not_proven_reasons": []
         },

@@ -273,3 +273,10 @@ in `results/increment10/amendments/`, con catena di SHA verificata da
   attraverso la mappa di sanificazione), accetta un tentativo ripetuto con record solo se un
   emendamento lo cita, ricalcola l'equivalenza 7B e la regola del paging sostenuto, verifica la
   crescita dello swap alla fine di ogni prova. Inventario `test-inventory-a006.json` (1252 node ID).
+- 007 (20/11, richiesta del proprietario): eseguita la diagnostica 7B `stock_fp64` di `oracle10`
+  (`O7-stock_fp64-a3`, passo invariato della sequenza; tentativi 1–2 BLOCKED, conservati) con
+  logits, residui e K/V bit-identici a `oracle9`. Il gate la legge solo se esiste un record della
+  prova: F ricalcola l'equivalenza dai file di cattura legati ai record (verdetto grezzo PASS o FAIL),
+  G supervisiona gli oracoli diagnostici come quelli vincolanti. Il diagnostico può solo
+  contraddire F o G, mai farli passare. Inventario `test-inventory-a007.json` (1260 node ID,
+  nessuno rimosso o rinominato).

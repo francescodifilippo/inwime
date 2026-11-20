@@ -6,7 +6,7 @@ kernel invariati. Pesi originali BF16, nessuna quantizzazione, nessun nuovo down
 
 Classi: **MISURATO** (osservato in questa sessione), **DERIVATO** (aritmetica dichiarata),
 **IPOTESI**. Protocollo normativo: [`results/increment10/protocol.json`](../results/increment10/protocol.json)
-con gli emendamenti 001–006. Evidenze: [`results/increment10/campaign/`](../results/increment10/campaign/README.md).
+con gli emendamenti 001–007. Evidenze: [`results/increment10/campaign/`](../results/increment10/campaign/README.md).
 
 **Esito: gate 10 A–H PASS** (`results/increment10/campaign/gate10.json`, ricalcolato da
 `tools/report_increment10.py`), con i limiti della sezione 11. Qwen2.5-14B BF16 originale:
@@ -14,13 +14,17 @@ con gli emendamenti 001–006. Evidenze: [`results/increment10/campaign/`](../re
 Prefill di 5 token e 3 decode reali, `The capital of France is Paris. The capital`, eseguiti in
 uno scope da 2 GiB senza swap e senza OOM. Picco RSS 162 MB. Accordo elemento per elemento con
 un oracolo indipendente bounded su logits, residui e K/V completi: `stock_fp32` e `full64` PASS
-a copertura FULL; `stock_fp64` diagnostico FAIL grezzo, come in M9.
+a copertura FULL; `stock_fp64` diagnostico FAIL grezzo, come in M9. Equivalenza 7B end-to-end di
+`oracle10` con `oracle9` di M9 su tutti e tre i contratti (diagnostica `stock_fp64` eseguita il 20/11,
+emendamento 007).
 
 ## 1. Audit iniziale
 
 - Git: `5116175` pulito su `feat/m10-preflight-tooling`; emendamenti 001/002 già versionati.
-- Il documento `docs/HANDOFF-2026-11-19-M10-acquisition.md` citato nella richiesta **non
-  esiste** nel repository; i fatti dell'acquisizione vengono dai rapporti originali.
+- Il documento `docs/HANDOFF-2026-11-19-M10-acquisition.md` citato nella richiesta non era
+  nel clone locale durante la campagna: era solo sul remoto (commit `43d3a3f`), integrato con
+  un rebase il 20/11. I fatti dell'acquisizione vengono dai rapporti originali; l'handoff non
+  li contraddice (causa del fermo: gate RAM, non checksum, spazio o rete).
 - Checkpoint `checkpoints/qwen2.5-14b-97e1e76/`: 8 shard, SHA256 di acquisizione uguali ai
   digest LFS pinnati (rapporto di ripresa). Non modificato, non riscaricato.
 - Acquisizione: primo tentativo fermato dal gate RAM dopo 19.449.945.445 B, ripresa
@@ -63,7 +67,7 @@ ciascuno con il proprio `blocked-*.json`:
 | Prova bloccata | Criterio violato | Esito successivo |
 |---|---|---|
 | O7-full64 | pagefile | eseguita come `O7-full64-a2` |
-| O7-stock_fp64, -a2 | pagefile; host disponibile, paging | non eseguita (diagnostica, fermata dall'operatore) |
+| O7-stock_fp64, -a2 | pagefile; host disponibile, paging | `-a3` fermata dall'operatore in attesa del GO (senza record); eseguita come `-a3` il 20/11 su richiesta del proprietario (emendamento 007) |
 | O14-stock_fp64 | `PagesInput` | eseguita come `-a2` |
 
 Il baseline non è mai stato rifatto per aggirare il criterio. Due evizioni mirate dei soli file
@@ -75,7 +79,7 @@ memoria all'host. Due cartelle temporanee di pytest create da questa sessione su
 
 ### 4.1 Equivalenza 7B end-to-end di `oracle10` (prerequisito preregistrato)
 
-`oracle10` sul Qwen2.5-7B, stessa sequenza e stessi chunk di M9 (`5,1,1,1`), contro le catture
+`oracle10` sul Qwen2.5-7B, stessa sequenza e stessi chunk di M9 (`5,1,1,1`; `8` per `stock_fp64`), contro le catture
 `oracle9` di M9 (`tools/equivalence10_e2e.py`, identità di contratto, profilo, revisione,
 sequenza e SHA verificata prima del confronto):
 
@@ -83,10 +87,15 @@ sequenza e SHA verificata prima del confronto):
 |---|---|---|---|---|---|
 | `stock_fp32` | bit-identici | bit-identici | bit-identici | uguali | **PASS** (regola: tutto bit-identico) |
 | `full64` | Δmax 9,77e-15 ≤ 1e-9 | bit-identici | bit-identici | uguali | **PASS** |
-| `stock_fp64` (diagnostico) | — | — | — | — | NOT PROVEN: due DEFER, non eseguito |
+| `stock_fp64` (diagnostico, `O7-stock_fp64-a3`, 20/11) | bit-identici | bit-identici | bit-identici | uguali | **PASS** (riportato grezzo, non vincola F) |
 
 Risorse: 42,8 s e 60,5 s, picco RSS 3,78 e 2,74 GB, 56,6 GB BF16 letti per contratto. Sono
-4,4 GB meno di `oracle9`, perché l'embedding è letto per righe.
+4,4 GB meno di `oracle9`, perché l'embedding è letto per righe. `stock_fp64` (un solo chunk da 8):
+25,4 s, picco RSS 2,72 GB, 14,1 GB BF16 letti; scope da 6 GiB con swap 0 e 0 OOM.
+
+Il diagnostico 7B bit-identico mostra che `oracle10` riproduce `oracle9` anche nel profilo
+`stock_fp64`. Il FAIL grezzo del 14B `stock_fp64` (sez. 4.2) resta quindi una proprietà del
+confronto runtime/upstream con i cast FP32 interni, non un difetto del nuovo oracolo.
 
 ### 4.2 Qwen2.5-14B: runtime R1 contro `oracle10` (`tools/parity10.py`)
 
@@ -190,7 +199,7 @@ virtualizzazione: non è la banda isolata dell'NVMe. `io.stat` non è disponibil
 | N5 | SHA errata / file cambiato (fixture) | test M9 invariati, PASS nella suite |
 | N6 | SmolLM2-1.7B in scope da 32 MiB | OOM del kernel attribuito: `oom_kill` 1, contatore globale 2→3, exit 137, nessun rapporto di successo |
 | N7 | worker fuori scope | rifiuto prima dei pesi (test M9 invariati) |
-| N8 | mutazioni di attribuzione e del criterio D | 23 mutazioni delle evidenze reali, nessuna PASS (`gate10-mutations.json`) |
+| N8 | mutazioni di attribuzione e del criterio D | 26 mutazioni delle evidenze reali, nessuna PASS (`gate10-mutations.json`) |
 | N9 | oracolo con peso perturbato ed epsilon errato | `check_oracle10` 4/4 |
 | N10 | acquisizione | test di `acquire10` (emendamento 003) |
 
@@ -213,9 +222,9 @@ senza record.
 | C — I/O | PASS | R1–R3: residenza 0, L1/L0 ≥ 0,90 per fase, ΔL3 ≥ L1, ΔL4 ≥ 0,90·L1, host monitorato, nessuna invalidazione |
 | D — Oltre la RAM host | PASS | 27.983.013.888 B dai contatori = ricalcolo dagli header > max(16.900.739.072, 17.179.869.184) misurati nello stesso run > `MemTotal` 11.483.848.704, su R1 cold realmente letto |
 | E — Forward | PASS | 5+3 token, 48 layer, 579 contatori = forma × 8 dagli header ufficiali, 111.925.002.240 coefficienti GEMV, KV 5/6/7/8, digest R1 = R2 = R3 = R4 |
-| F — Correttezza | PASS | `stock_fp32` e `full64` PASS FULL ricalcolati, equivalenza 7B end-to-end PASS su entrambi, `stock_fp64` riportato grezzo (FAIL) |
-| G — Risorse | PASS | 13 prove registrate supervisionate (anche il tentativo fallito e N6), file prodotti legati ai digest dei record, 0 OOM non pianificati, crescita swap guest ≤ 256 MiB all'avvio e alla fine, host registrato; N1–N4 in entrambe le modalità, N6 attribuito; unica ripetizione con record (`F-sync`) giustificata dall'emendamento 004 |
-| H — Regressioni | PASS | 1252/1252 test, inventario a006 verificato sul JUnit archiviato, catena 001→006, gate 7/8/9 ricalcolati PASS, runtime e kernel invariati, unico file preesistente modificato il workflow CI (emendamento 001) |
+| F — Correttezza | PASS | `stock_fp32` e `full64` PASS FULL ricalcolati, equivalenza 7B end-to-end PASS su entrambi; diagnostici riportati grezzi e ricalcolati: 14B `stock_fp64` FAIL, 7B `stock_fp64` PASS bit-identico |
+| G — Risorse | PASS | 14 prove registrate supervisionate (anche gli oracoli diagnostici) (anche il tentativo fallito e N6), file prodotti legati ai digest dei record, 0 OOM non pianificati, crescita swap guest ≤ 256 MiB all'avvio e alla fine, host registrato; N1–N4 in entrambe le modalità, N6 attribuito; unica ripetizione con record (`F-sync`) giustificata dall'emendamento 004 |
+| H — Regressioni | PASS | 1260/1260 test, inventario a007 verificato sul JUnit archiviato, catena 001→007, gate 7/8/9 ricalcolati PASS, runtime e kernel invariati, unico file preesistente modificato il workflow CI (emendamento 001) |
 
 Precedenza FAIL > BLOCKED > NOT PROVEN > PASS. Un campo mancante accanto a uno contraddetto
 nello stesso controllo dà FAIL. Un BLOCKED senza file di causa vale NOT PROVEN.
@@ -224,14 +233,14 @@ nello stesso controllo dà FAIL. Un BLOCKED senza file di causa vale NOT PROVEN.
 
 | Esecuzione | Esito |
 |---|---|
-| Suite finale (`pytest-final.*`) | **1252 passed**, 0 skip |
-| Esecuzioni precedenti conservate | `-a1`: 1245 passed, 1 failed (gate G su campagna vuota, emendamento 005); `-a2`: 1246 passed (prima dell'emendamento 006); `-a3`: 1014 errori di setup per una directory `--basetemp` rimossa dall'operatore (non fallimenti di test) |
-| `inventory10 verify` contro a006 | PASS 1252/1252 |
-| `protocol10 check` | PASS, emendamenti 001–006 |
-| Nuovi test M10 (`test_increment10_campaign.py`) | 53: driver, BLOCKED, osservatore, equivalenza, parità, algebra dei verdetti, mutazioni N8, posizione del guasto, regole dell'emendamento 006 |
-| Mutazioni sulle evidenze reali | 23, nessuna PASS (prima serie di 20 in `gate10-mutations-a1.json`) |
+| Suite finale (`pytest-final.*`) | **1260 passed**, 0 skip |
+| Esecuzioni precedenti conservate | `-a1`: 1245 passed, 1 failed (gate G su campagna vuota, emendamento 005); `-a2`: 1246 passed (prima dell'emendamento 006); `-a3`: 1014 errori di setup per una directory `--basetemp` rimossa dall'operatore (non fallimenti di test); `-a4`: 1252 passed (prima dell'emendamento 007) |
+| `inventory10 verify` contro a007 | PASS 1260/1260 |
+| `protocol10 check` | PASS, emendamenti 001–007 |
+| Nuovi test M10 (`test_increment10_campaign.py`) | 61: driver, BLOCKED, osservatore, equivalenza, parità, algebra dei verdetti, mutazioni N8, posizione del guasto, regole degli emendamenti 006 e 007 |
+| Mutazioni sulle evidenze reali | 26, nessuna PASS (serie precedenti: 20 in `gate10-mutations-a1.json`, 23 in `-a2`) |
 | Revisione indipendente (subagente, sola lettura) | nessun difetto bloccante; cinque debolezze del gate, corrette dall'emendamento 006 (sez. 10.1) |
-| Non eseguito | diagnostico 7B `stock_fp64` di `oracle10` (due DEFER e un fermo); download reale con la correzione di #25 (per scelta) |
+| Non eseguito | download reale con la correzione di #25 (per scelta: checkpoint già completo) |
 
 ### 10.1 Revisione indipendente
 
@@ -250,11 +259,28 @@ del gate, tutte corrette nell'emendamento 006 e coperte da test e mutazioni:
 4. Crescita dello swap del guest verificata anche alla fine di ogni prova.
 5. Regola del paging sostenuto ricalcolata dai campioni, non solo dalle annotazioni.
 
+### 10.2 Diagnostica 7B `stock_fp64` (emendamento 007)
+
+Il 20/11 il proprietario ha chiesto di completare la diagnostica rimasta. `O7-stock_fp64-a3` è
+partita con il passo invariato della sequenza dopo un controllo di avvio GO (attesa 0 s) e ha
+prodotto catture bit-identiche a `oracle9`. Il gate prima non leggeva questo diagnostico.
+L'emendamento 007 aggiunge due controlli, attivi solo se la prova ha un record:
+
+- F: l'equivalenza è ricalcolata dalle catture, legate al record O7 e al manifesto di M9; il
+  verdetto grezzo (PASS o FAIL) deve coincidere con quello archiviato.
+- G: gli oracoli diagnostici (O7 e O14 `stock_fp64`) sono supervisionati come quelli vincolanti.
+
+Senza record (assente o BLOCKED) non si aggiunge alcun controllo: il diagnostico può solo
+contraddire F o G. Tre nuove mutazioni (verdetto archiviato modificato, cattura non legata al
+record, swap usato) danno FAIL. Suite, inventario, gate e mutazioni precedenti restano con suffisso
+`-a4`/`-a2`.
+
 ## 11. Limiti residui
 
-1. **Equivalenza 7B `stock_fp64` non eseguita**: diagnostica, non vincola F. L'equivalenza del
-   contratto diagnostico 14B resta NOT PROVEN, mentre il suo FAIL grezzo è riportato.
-2. **Strumenti scritti durante la sessione** e pinnati dopo le prove (emendamenti 004–006). Le
+1. **Contratto diagnostico 14B `stock_fp64`**: FAIL grezzo riportato (51 residui, layer 45 e 47),
+   come in M9; non vincola F. L'equivalenza 7B dello stesso profilo è ora PASS bit-identica
+   (emendamento 007).
+2. **Strumenti scritti durante la sessione** e pinnati dopo le prove (emendamenti 004–007). Le
    soglie e i criteri sono quelli congelati. Tre correzioni sono avvenute durante la campagna,
    ciascuna con l'evidenza del fallimento conservata (sonda dei guasti, controlli digest-only
    del gate, gate su campagna vuota).
