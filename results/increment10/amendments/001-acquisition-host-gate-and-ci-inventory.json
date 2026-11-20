@@ -1,0 +1,105 @@
+{
+ "schema": "inwime-protocol-m10-amendment/1",
+ "number": 1,
+ "slug": "acquisition-host-gate-and-ci-inventory",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "previous_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "author": "Claude Opus 5.5 (assistant session) at the owner's request; owner acceptance pending through the review of PR #24",
+ "utc": "2026-11-18T21:22:40Z",
+ "reason": [
+  "PR #24 review, observation 1: acquire10.execute checked owner authorization and space but did not itself enforce a fresh hostmem10 GO for the download profile; dry_run.would_proceed_if_authorized considered storage only.",
+  "PR #24 review, observation 2: the CI workflow did not verify the identity of the executed tests against the M10 inventory; 11 increment-9 tests cannot run on the runner (local unsanitized originals absent) and must be reported as not verifiable, never PASS, with a separate local attestation.",
+  "hostmem10 reports did not identify their baseline file; the acquisition gate needs the baseline SHA256 and UTC time to reject stale or swapped baselines."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "note": "every frozen section is still rebuilt from code and compared byte-for-byte by protocol10 check"
+ },
+ "frozen_evidence_preserved": {
+  "results/increment10/protocol.json": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "results/increment10/protocol.sha256": "4a89601b0c923c975bad772fcb5e0bfba64debf5af0aa4c54ca7184051d8eab4",
+  "results/increment10/test-inventory.json": "12a67e3754f2ba1ddb2d3346102b679f0454d9dbd501f4ac93c98f789d3c6553",
+  "results/increment10/SHA256SUMS": "eccca0f1cefd1c40644559560442e1e969de074da32fb7681021ab54f8426f56",
+  "results/increment10/preflight-tooling/inventory-verify.json": "56222856edfe170214f58a032af436afc28f67bbe90aa694030835a3e41838b5",
+  "results/increment10/preflight-tooling/pytest-final.xml": "437f075a60c320e17f7993386182eb52e66f99c9c402aea6d485b587cdf6cb0f"
+ },
+ "changes": {
+  "pinned_tools_sha256": {
+   "tools/acquire10.py": {
+    "from": "b762717ac6c40ff9360743dc676691909098c8e8e7e6b099c01932c7a74d8cf1",
+    "to": "c9114f6d85a4b92c874d70fb61bf1a0b26057fe924ae80e9bad7deb61541692d"
+   },
+   "tools/hostmem10.py": {
+    "from": "8d95fa5d4cbfd3b35fcdf5722b81b29daf0c7382f9ca2488285a607595f79084",
+    "to": "58dca6965e3fa2d2258e064003dbd46346ff46bef59c24688ed12c911f51aa5f"
+   },
+   "tools/protocol10.py": {
+    "from": "e621ba4430bea3098b9f3a87239966d2773bfd4bd6370a91a38cc85f0ce30bd7",
+    "to": "04effef9bbd276daa8f5793d0f398c80af9a0c54fd021c1d2ae1dc570120a664"
+   },
+   "tools/inventory10.py": {
+    "from": "72a4915ab1aae47343c1fd105c906f0c5c7360413c8383758b694d4cb514a456",
+    "to": "9ea3781a7d462e4637a86684937998000b4c05880a535ea594dfec1af090b56a"
+   },
+   "tools/hostgate10.py": {
+    "from": null,
+    "to": "221d40293987d0f66ea92d20e16472de71f18e10d68436b83273573f4e66a8b7"
+   },
+   ".github/workflows/offline-cpu.yml": {
+    "from": null,
+    "to": "d49d45750c665136dc2b8d6b36e74f2be2020dd8d2f210d5a417030ae7820125"
+   }
+  },
+  "test_inventory": {
+   "from": {
+    "path": "results/increment10/test-inventory.json",
+    "sha256": "12a67e3754f2ba1ddb2d3346102b679f0454d9dbd501f4ac93c98f789d3c6553"
+   },
+   "to": {
+    "path": "results/increment10/test-inventory-a001.json",
+    "sha256": "3b264449048b0a3ab5dd7cda8fab7cba9c50ec3cf1ab869907e87a2739abb158",
+    "total_node_ids": 1135
+   }
+  },
+  "acquisition_host_gate": {
+   "profile": "download",
+   "max_report_age_s": 900,
+   "max_baseline_age_s": 43200,
+   "max_future_skew_s": 60,
+   "interval_tolerance": [
+    0.95,
+    1.5
+   ],
+   "require_recomputed_verdict": "GO",
+   "rule": "acquire10 --execute refuses before any network request, and again under the lock before the first payload request, unless tools/hostgate10.py returns GO: protocol10 check passes; the report names the pinned protocol SHA256, profile download, the preregistered 30 s interval and the SHA256 of the supplied baseline; both Windows samples are present; every quantity and the verdict are recomputed from the raw snapshots with the frozen download criteria; the report is at most 900 s old and not in the future; the baseline precedes it and is at most 12 h old; checkpoint and backing paths and volume sizes match the acquisition. Owner authorization is a separate record and is never implied by GO (nor GO by authorization)."
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-001/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ }
+}

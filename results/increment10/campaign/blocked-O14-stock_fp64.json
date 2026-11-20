@@ -1,0 +1,13 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "O14-stock_fp64",
+  "utc": "2026-11-19T23:37:21Z",
+  "cause": "host start check not GO",
+  "verdict": "DEFER",
+  "violated": [
+    "host_pages_input_per_s"
+  ],
+  "missing": [],
+  "host_report": "O14-stock_fp64-host-start.json",
+  "host_report_sha256": "0d9c3aa65c6db5fbe51765e07aecc916d98411a4585f15d1118b05adb4c2cee5"
+}

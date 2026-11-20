@@ -1,0 +1,72 @@
+{
+ "slug": "acquisition-host-gate-and-ci-inventory",
+ "author": "Claude Opus 5.5 (assistant session) at the owner's request; owner acceptance pending through the review of PR #24",
+ "reason": [
+  "PR #24 review, observation 1: acquire10.execute checked owner authorization and space but did not itself enforce a fresh hostmem10 GO for the download profile; dry_run.would_proceed_if_authorized considered storage only.",
+  "PR #24 review, observation 2: the CI workflow did not verify the identity of the executed tests against the M10 inventory; 11 increment-9 tests cannot run on the runner (local unsanitized originals absent) and must be reported as not verifiable, never PASS, with a separate local attestation.",
+  "hostmem10 reports did not identify their baseline file; the acquisition gate needs the baseline SHA256 and UTC time to reject stale or swapped baselines."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "note": "every frozen section is still rebuilt from code and compared byte-for-byte by protocol10 check"
+ },
+ "tools": [
+  "tools/acquire10.py",
+  "tools/hostmem10.py",
+  "tools/protocol10.py",
+  "tools/inventory10.py",
+  "tools/hostgate10.py",
+  ".github/workflows/offline-cpu.yml"
+ ],
+ "test_inventory": "results/increment10/test-inventory-a001.json",
+ "sections": {
+  "acquisition_host_gate": {
+   "profile": "download",
+   "max_report_age_s": 900,
+   "max_baseline_age_s": 43200,
+   "max_future_skew_s": 60,
+   "interval_tolerance": [
+    0.95,
+    1.5
+   ],
+   "require_recomputed_verdict": "GO",
+   "rule": "acquire10 --execute refuses before any network request, and again under the lock before the first payload request, unless tools/hostgate10.py returns GO: protocol10 check passes; the report names the pinned protocol SHA256, profile download, the preregistered 30 s interval and the SHA256 of the supplied baseline; both Windows samples are present; every quantity and the verdict are recomputed from the raw snapshots with the frozen download criteria; the report is at most 900 s old and not in the future; the baseline precedes it and is at most 12 h old; checkpoint and backing paths and volume sizes match the acquisition. Owner authorization is a separate record and is never implied by GO (nor GO by authorization)."
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-001/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ },
+ "frozen_evidence": [
+  "results/increment10/protocol.json",
+  "results/increment10/protocol.sha256",
+  "results/increment10/test-inventory.json",
+  "results/increment10/SHA256SUMS",
+  "results/increment10/preflight-tooling/inventory-verify.json",
+  "results/increment10/preflight-tooling/pytest-final.xml"
+ ]
+}

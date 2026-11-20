@@ -1,0 +1,392 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "O7-full64-a2",
+  "kind": "oracle",
+  "profile": "oracle",
+  "cache": "as-is",
+  "purpose": "oracle10 7B end-to-end equivalence (full64) vs M9 oracle9 capture",
+  "utc_start": "2026-11-19T21:28:57Z",
+  "command": [
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "full64",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "5,1,1,1",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-full64.npz"
+  ],
+  "memory_max": 6442450944,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "O7-full64-a2-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "444164c5b3ba2297ef8c6a904462dbef0fd035051d87571651063c438004e867"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 652008.241342558,
+      "utc": "2026-11-19T21:29:28Z",
+      "reads_completed": 1896372,
+      "reads_merged": 1117522,
+      "sectors_read": 2436709098,
+      "read_ticks_ms": 2424225,
+      "writes_completed": 738061,
+      "writes_merged": 826120,
+      "sectors_written": 213878088,
+      "write_ticks_ms": 6853310,
+      "in_flight": 0,
+      "io_ticks_ms": 2371360,
+      "time_in_queue_ms": 9697823,
+      "read_bytes": 1247595058176
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 652008.241407829,
+        "utc": "2026-11-19T21:29:28Z",
+        "reads_completed": 200096,
+        "reads_merged": 62253,
+        "sectors_read": 2101976,
+        "read_ticks_ms": 49152,
+        "writes_completed": 186787,
+        "writes_merged": 273744,
+        "sectors_written": 3684240,
+        "write_ticks_ms": 8334024,
+        "in_flight": 0,
+        "io_ticks_ms": 105536,
+        "time_in_queue_ms": 8383185,
+        "read_bytes": 1076211712
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-o7-full64-a2",
+    "--output",
+    "results/increment10/campaign/O7-full64-a2-scope.json",
+    "--memory-max",
+    "6442450944",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "full64",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "5,1,1,1",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-full64.npz"
+  ],
+  "wall_s": 65.2708611789858,
+  "supervisor_exit": 0,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 652074.7644792,
+      "utc": "2026-11-19T21:30:35Z",
+      "reads_completed": 1912725,
+      "reads_merged": 1119164,
+      "sectors_read": 2547400482,
+      "read_ticks_ms": 2499644,
+      "writes_completed": 738199,
+      "writes_merged": 826367,
+      "sectors_written": 213887008,
+      "write_ticks_ms": 6853506,
+      "in_flight": 0,
+      "io_ticks_ms": 2392512,
+      "time_in_queue_ms": 9773478,
+      "read_bytes": 1304269046784
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 652074.764690946,
+        "utc": "2026-11-19T21:30:35Z",
+        "reads_completed": 200096,
+        "reads_merged": 62253,
+        "sectors_read": 2101976,
+        "read_ticks_ms": 49152,
+        "writes_completed": 186788,
+        "writes_merged": 273758,
+        "sectors_written": 3684360,
+        "write_ticks_ms": 8334030,
+        "in_flight": 0,
+        "io_ticks_ms": 105540,
+        "time_in_queue_ms": 8383191,
+        "read_bytes": 1076211712
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 16353,
+      "reads_merged": 1642,
+      "sectors_read": 110691384,
+      "read_ticks_ms": 75419,
+      "writes_completed": 138,
+      "writes_merged": 247,
+      "sectors_written": 8920,
+      "write_ticks_ms": 196,
+      "io_ticks_ms": 21152,
+      "time_in_queue_ms": 75655,
+      "read_bytes": 56673988608
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 1,
+        "writes_merged": 14,
+        "sectors_written": 120,
+        "write_ticks_ms": 6,
+        "io_ticks_ms": 4,
+        "time_in_queue_ms": 6,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 12,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 1
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132128452608,
+          "max": 132129894400
+        },
+        "guest_mem_available": {
+          "min": 6208385024,
+          "max": 8531976192
+        },
+        "host_available_bytes": {
+          "min": 494727168,
+          "max": 4285054976
+        },
+        "host_commit_headroom_bytes": {
+          "min": 25277841408,
+          "max": 30136127488
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": 509607936,
+          "max": 1670381568
+        },
+        "host_pages_input_per_s": {
+          "min": 68.92738665683744,
+          "max": 2114.087843994897
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.988,
+          "host_available_bytes": 4285054976,
+          "guest_mem_available": 8531976192,
+          "host_pagefile_growth_since_baseline": 509607936,
+          "host_commit_headroom_bytes": 30136127488,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132129239040
+        },
+        {
+          "t": 6.408,
+          "host_available_bytes": 1696808960,
+          "guest_mem_available": 6334599168,
+          "host_pagefile_growth_since_baseline": 554696704,
+          "host_commit_headroom_bytes": 27431116800,
+          "host_pages_input_per_s": 199.2653810835629,
+          "backing_volume_free": 132129894400
+        },
+        {
+          "t": 11.848,
+          "host_available_bytes": 494727168,
+          "guest_mem_available": 8252588032,
+          "host_pagefile_growth_since_baseline": 1309671424,
+          "host_commit_headroom_bytes": 25303273472,
+          "host_pages_input_per_s": 2022.6602800294768,
+          "backing_volume_free": 132129828864
+        },
+        {
+          "t": 17.309,
+          "host_available_bytes": 714903552,
+          "guest_mem_available": 6655213568,
+          "host_pagefile_growth_since_baseline": 1276116992,
+          "host_commit_headroom_bytes": 25302052864,
+          "host_pages_input_per_s": 2114.087843994897,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 22.776,
+          "host_available_bytes": 891699200,
+          "guest_mem_available": 6924386304,
+          "host_pagefile_growth_since_baseline": 1577058304,
+          "host_commit_headroom_bytes": 25304674304,
+          "host_pages_input_per_s": 543.8983986747653,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 28.149,
+          "host_available_bytes": 1014575104,
+          "guest_mem_available": 6405849088,
+          "host_pagefile_growth_since_baseline": 1670381568,
+          "host_commit_headroom_bytes": 25308876800,
+          "host_pages_input_per_s": 399.51887490747595,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 33.572,
+          "host_available_bytes": 944766976,
+          "guest_mem_available": 6446460928,
+          "host_pagefile_growth_since_baseline": 1610612736,
+          "host_commit_headroom_bytes": 25294041088,
+          "host_pages_input_per_s": 1135.120147874307,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 38.975,
+          "host_available_bytes": 851079168,
+          "guest_mem_available": 6411837440,
+          "host_pagefile_growth_since_baseline": 1538260992,
+          "host_commit_headroom_bytes": 25306533888,
+          "host_pages_input_per_s": 896.7682363804247,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 44.39,
+          "host_available_bytes": 803135488,
+          "guest_mem_available": 6371823616,
+          "host_pagefile_growth_since_baseline": 1485832192,
+          "host_commit_headroom_bytes": 25285185536,
+          "host_pages_input_per_s": 400.77605321507764,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 49.811,
+          "host_available_bytes": 800632832,
+          "guest_mem_available": 8140226560,
+          "host_pagefile_growth_since_baseline": 1485832192,
+          "host_commit_headroom_bytes": 25300234240,
+          "host_pages_input_per_s": 68.92738665683744,
+          "backing_volume_free": 132128452608
+        },
+        {
+          "t": 55.288,
+          "host_available_bytes": 703950848,
+          "guest_mem_available": 6208385024,
+          "host_pagefile_growth_since_baseline": 1484783616,
+          "host_commit_headroom_bytes": 25277841408,
+          "host_pages_input_per_s": 875.7809628812936,
+          "backing_volume_free": 132128714752
+        },
+        {
+          "t": 60.687,
+          "host_available_bytes": 668823552,
+          "guest_mem_available": 7456808960,
+          "host_pagefile_growth_since_baseline": 1428160512,
+          "host_commit_headroom_bytes": 25282088960,
+          "host_pages_input_per_s": 767.6954352245426,
+          "backing_volume_free": 132128976896
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T21:30:35Z",
+  "produced_sha256": {
+    "O7-full64-a2-host-start.json": "444164c5b3ba2297ef8c6a904462dbef0fd035051d87571651063c438004e867",
+    "O7-full64-a2-scope.final.txt": "e484774b6de12837e129214b05b3405a0978c656756578bc8bc053aa83785cfb",
+    "O7-full64-a2-scope.json": "f8be0bb4a3a11389e9285b97adf0ac4272e0b02685ec57c0b8ebd366b9ee0c1c",
+    "O7-full64-a2-scope.log": "c095c76f7633e0b5a8b3d5b9e4313a0c0874b3e95336a3646220d7e09fd6ff1f",
+    "artifacts/increment10/oracle10-7b-full64.npz": "c4c93648df7f04c957811f46324d5530d88cdc37b2f7afeab4092e45483e785c",
+    "artifacts/increment10/oracle10-7b-full64.json": "788322ecf342cb0c0ab16eb49b58bc82791057abcef794851bea515156c3b4eb"
+  }
+}

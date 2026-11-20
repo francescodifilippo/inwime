@@ -1,0 +1,67 @@
+{
+ "O7-stock_fp32-run.json": {
+  "original_sha256": "89dae4a1f45cdc5e7f59a316045799c8c720c700e1015883c4c26585c03ba597",
+  "sanitized_sha256": "5db04de601b3002da545b3d9f069fabe7aab97722ae4f857a6baac6fe014ba52",
+  "change": "tools.sanitize9.portable applied after writing (campaign10 revision before portable write); values unchanged"
+ },
+ "O7-full64-a2-run.json": {
+  "original_sha256": "c5d43431f69387825a04070c8d71a3d7ff1456da24c0c64b6f28a20a304a419d",
+  "sanitized_sha256": "f7b8bc5119335c808d8353d7b3eda4f9f850eeb1e41d85e6c179a7fcba0c0fe6",
+  "change": "tools.sanitize9.portable applied after writing (campaign10 revision before portable write); values unchanged"
+ },
+ "F-sync-scope.log": {
+  "original_sha256": "09e61526694d7c6aac5c2b72024363867adf48bf1d766006338f122d2201adcc",
+  "sanitized_sha256": "63eec70468b49e4b05805fc2695117492078fb50e8fc05036a8a71025dfcdaac",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "N6-run.json": {
+  "original_sha256": "8cd1e4cbbda6838d5dbfe4d82857684cb7a59aa4117438ca2a583bdb432dec4b",
+  "sanitized_sha256": "2a22867891b9c68f58bd21a3042bf29075e04895eb0a5303288709a2ec1bc09a",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "N6-scope.json": {
+  "original_sha256": "17636db2132d8e654795077d96f59063985401917274de57a0b546ca7aa8cccb",
+  "sanitized_sha256": "68aae415738df458440cf4b26feb005963c020a72abfbcd66a0e6d25bf27eb97",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R1-run.json": {
+  "original_sha256": "6e50f42e690b9a8771fff9481ee351492081dac3c08dd13b2dc42e1b8659d86b",
+  "sanitized_sha256": "540917eaaf13a8635f28b3c0e5d7d0b4eed7cfdf12c0d2e8e8b1781ef9975d75",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R1-scope.json": {
+  "original_sha256": "fa369d018483df60275cebaae732a759bee402310a97457b6840c969602b30c8",
+  "sanitized_sha256": "4b80e6ebf8d8576af1f0642b42a8077990fb135e6502822104817acce89d37e4",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R2-run.json": {
+  "original_sha256": "f151df18814036bab4fa5ee05a5705d3de5247e03bc565b05b2bcd63e9aec45b",
+  "sanitized_sha256": "1741524162b9d500de857ed000ece1056cd45eaabac7e5ea63918dfe59feab21",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R2-scope.json": {
+  "original_sha256": "1ad44a999697b36ae924e0f88bb4c18269582dcac7858ec0e5ea278eef0fa4ec",
+  "sanitized_sha256": "b79ea1025829525d40583c30f10853bf549e70d48f6b73eaf1fa6f6643ffb5ba",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R3-run.json": {
+  "original_sha256": "9726316ad8d6aa0cffc665dac8dc5e372a81eb936536b859750704e928758167",
+  "sanitized_sha256": "08ccc972e04a450ee82b6c70bef8e49bdb7c7ad18b1bf4805ef61b3bf5f654ed",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R3-scope.json": {
+  "original_sha256": "8f4bc366d7eae0276ada98a6a8c7c58ac1879723c72c9a2ec2b67afe01ef01b9",
+  "sanitized_sha256": "660825357f0d5901a9b24d0a8f2a9d27caea9966a8dfb3ee8d1db5169e8f5943",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R4-run.json": {
+  "original_sha256": "4b5fbd013bb548cb86b0903c631ce6a2827e73b2499c718f742293afec53f433",
+  "sanitized_sha256": "253d127155f6d02c0eab6980cc1fc193be1a0f7741206c271141906039606d08",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ },
+ "R4-scope.json": {
+  "original_sha256": "f4b105a7cb88eab6ee98c64f951ad4ba88dc7894868dd8eff7a800ede77b63f4",
+  "sanitized_sha256": "3718f7c77cbec9e0b380ff09226659ec2533ebdf4ce370aae4dbfc49a9d381f8",
+  "change": "absolute paths replaced after writing: <repo> checkout, <recovery> owner folder holding the tokenizer venv; values unchanged"
+ }
+}

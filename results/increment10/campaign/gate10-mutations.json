@@ -1,0 +1,135 @@
+{
+ "mutations": [
+  {
+   "name": "D: W declared as C (R1 cache W)",
+   "condition": "D",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "D: unique bytes of the 7B",
+   "condition": "D",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "D: host RAM missing",
+   "condition": "D",
+   "verdict": "NOT PROVEN"
+  },
+  {
+   "name": "D: MemTotal as host RAM",
+   "condition": "D",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "C: sustained paging annotation on R2",
+   "condition": "C",
+   "verdict": "NOT PROVEN"
+  },
+  {
+   "name": "C: residency 5% after eviction R3",
+   "condition": "C",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "C: L3 below L1 on R1",
+   "condition": "C",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "B: OOM event in R2",
+   "condition": "B",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "B: pipeline RLIMIT 256 MiB",
+   "condition": "B",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "E: R3 digest differs",
+   "condition": "E",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "E: tensor counter off by one",
+   "condition": "E",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "A: final re-hash differs",
+   "condition": "A",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "F: stored full64 parity edited (smaller error)",
+   "condition": "F",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "F: stored stock_fp32 parity bound to another forward",
+   "condition": "F",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "F: 7B e2e full64 verdict FAIL",
+   "condition": "F",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "F: 7B e2e record removed (only blocked file)",
+   "condition": "F",
+   "verdict": "BLOCKED"
+  },
+  {
+   "name": "G: unattributed OOM in N6 global counter",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "G: fault case flag false",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "G: observer killed a scope in R4",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "G: R2 scope memory.peak edited after the run",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "G: unjustified retry of O14-full64",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "C: sustained paging in R3 samples without annotation",
+   "condition": "C",
+   "verdict": "NOT PROVEN"
+  },
+  {
+   "name": "F: 7B e2e stock_fp64 diagnostic verdict edited (amendment 007)",
+   "condition": "F",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "F: 7B e2e stock_fp64 capture not bound to its run record (amendment 007)",
+   "condition": "F",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "G: O7-stock_fp64-a3 swap used (amendment 007)",
+   "condition": "G",
+   "verdict": "FAIL"
+  },
+  {
+   "name": "E: R2 forward missing, blocked file present",
+   "condition": "E",
+   "verdict": "BLOCKED"
+  }
+ ],
+ "any_pass": false
+}

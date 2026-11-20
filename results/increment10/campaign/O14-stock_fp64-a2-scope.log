@@ -1,0 +1,8 @@
+{
+ "contract": "stock_fp64",
+ "head_mode": "blocked",
+ "oracle_wall_s": 123.22913588897791,
+ "peak_rss_bytes": 3149164544,
+ "upstream_greedy_matches_sequence": true,
+ "planned_peak": 3211436032
+}

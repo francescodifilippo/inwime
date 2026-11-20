@@ -1,0 +1,10 @@
+{
+ "approved_by": "FrancescoDF",
+ "approved_utc": "2026-11-18T22:21:22Z",
+ "destination": "<repo>/checkpoints/qwen2.5-14b-97e1e76",
+ "manifest_sha256": "69a3c92cb3f274f077b29838380974de21c51d77f31b0ba21c6aeceeb5df84cd",
+ "max_transfer_bytes": 29551684877,
+ "model": "Qwen/Qwen2.5-14B",
+ "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+ "schema": "inwime-acquire10-authorization/1"
+}

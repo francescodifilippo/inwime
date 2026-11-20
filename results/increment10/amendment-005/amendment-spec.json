@@ -1,0 +1,26 @@
+{
+ "slug": "gate-empty-campaign-not-proven",
+ "author": "Assistant session at the owner's request; owner acceptance pending through the review of PR #24",
+ "reason": [
+  "The first final suite run (kept as campaign/pytest-final-a1.*: 1245 passed, 1 failed) showed that report_increment10 condition G returned FAIL instead of NOT PROVEN when the campaign directory holds no run record (every_recorded_run_supervised was False on an empty set). An empty campaign is missing evidence, not a contradiction: it now raises Missing (NOT PROVEN). No other change; no verdict on real evidence depended on it (the real campaign has 11+ run records)."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendments_001_004_unchanged": true,
+  "tests_unchanged_since_004": true
+ },
+ "tools": [
+  "tools/report_increment10.py"
+ ],
+ "frozen_evidence": [
+  "results/increment10/amendments/004-campaign-and-gate-tooling.json",
+  "results/increment10/test-inventory-a004.json",
+  "results/increment10/campaign/pytest-final-a1.xml"
+ ]
+}

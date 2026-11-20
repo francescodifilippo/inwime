@@ -1,0 +1,5 @@
+phase decode.0 ids=[785, 6722, 315, 9625, 374] greedy=12095 wall=116.51s
+phase decode.1 ids=[12095] greedy=13 wall=23.45s
+phase decode.2 ids=[13] greedy=576 wall=23.38s
+phase decode.3 ids=[576] greedy=6722 wall=23.16s
+results/increment10/campaign/R4-forward.json

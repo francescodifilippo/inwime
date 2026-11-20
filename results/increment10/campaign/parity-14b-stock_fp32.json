@@ -1,0 +1,147 @@
+{
+  "schema": "inwime-parity10/1",
+  "contract": "stock_fp32",
+  "gating": true,
+  "verdict": "PASS",
+  "coverage": "FULL",
+  "problems": [],
+  "comparison": {
+    "precision": "fp32",
+    "atol": 0.002,
+    "rtol": 0.0002,
+    "coverage": "FULL",
+    "verdict": "PASS",
+    "kinds": {
+      "logits": {
+        "state": "compared",
+        "elements": 1216512,
+        "failures": 0,
+        "finite": true,
+        "max_abs_error": 3.8926334816835606e-05,
+        "max_threshold_utilization": 0.011655277454730726,
+        "argmax_equal": true,
+        "required_elements": 1216512
+      },
+      "hidden": {
+        "state": "compared",
+        "elements": 1966080,
+        "failures": 0,
+        "finite": true,
+        "max_abs_error": 0.014527768959851528,
+        "max_threshold_utilization": 0.24455661357277117,
+        "required_elements": 1966080
+      },
+      "kv": {
+        "state": "compared",
+        "elements": 786432,
+        "failures": 0,
+        "finite": true,
+        "max_abs_error": 1.1747431361897043e-05,
+        "max_threshold_utilization": 0.0030441862179994587,
+        "required_elements": 786432
+      }
+    }
+  },
+  "kv_prefixes": [
+    {
+      "length": 5,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 6,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 7,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 8,
+      "byte_identical_prefix": true
+    }
+  ],
+  "argmax": {
+    "runtime": [
+      2701,
+      315,
+      279,
+      374,
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "oracle": [
+      2701,
+      315,
+      279,
+      374,
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "equal_every_position": true,
+    "upstream_greedy": [
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "runtime_continuation": [
+      12095,
+      13,
+      576,
+      6722
+    ]
+  },
+  "top10": {
+    "ordered_equal_positions": 8,
+    "set_equal_positions": 8,
+    "positions": 8
+  },
+  "greedy_equal": true,
+  "sequence": [
+    785,
+    6722,
+    315,
+    9625,
+    374,
+    12095,
+    13,
+    576
+  ],
+  "chunks": [
+    5,
+    1,
+    1,
+    1
+  ],
+  "required_elements": {
+    "logits": 1216512,
+    "hidden": 1966080,
+    "kv": 786432
+  },
+  "oracle": {
+    "capture_sha256": "3591bc50d064a4d601903aa72e84d2331dda9ddb7545af4c5ecff47344d604e2",
+    "head_mode": "resident",
+    "dtype": "float32",
+    "precision_profile": "stock",
+    "versions": {
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.3",
+      "numpy": "2.3.5"
+    },
+    "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+    "peak_rss_bytes": 5268340736,
+    "oracle_wall_s": 75.32937677705195
+  },
+  "inputs": {
+    "forward": "results/increment10/campaign/R1-forward.json",
+    "forward_sha256": "2fe8a6ce2d263243fa6ed0b063c27f64a51eb06cb2a29b795fdd81eab99da2c2",
+    "capture": "artifacts/increment10/R1-capture",
+    "oracle": "artifacts/increment10/oracle10-14b-stock_fp32.npz",
+    "oracle_sha256": "3591bc50d064a4d601903aa72e84d2331dda9ddb7545af4c5ecff47344d604e2",
+    "oracle_meta_sha256": "7f3bed90aa08e189a2ff5757778f7473b5c4449a6713aab514efeb0d8e711cdf"
+  }
+}

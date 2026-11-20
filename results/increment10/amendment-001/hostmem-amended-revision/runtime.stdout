@@ -1,0 +1,29 @@
+{
+ "verdict": "DEFER",
+ "violated": [
+  "host_available_bytes",
+  "host_pages_input_per_s"
+ ],
+ "missing": [],
+ "values": {
+  "host_total_physical_memory": 16900739072,
+  "host_installed_dimm_bytes": 17179869184,
+  "host_available_bytes": 655077376,
+  "host_committed_bytes": 45398016000,
+  "host_commit_limit": 53407961088,
+  "host_commit_headroom_bytes": 8009945088,
+  "host_pagefile_in_use": 8643411968,
+  "host_pages_input_per_s": 5220.027336631086,
+  "host_pages_output_per_s": 0.0,
+  "host_page_reads_per_s": 357.91460557146576,
+  "guest_mem_total": 11483848704,
+  "guest_mem_available": 6872301568,
+  "guest_swap_used": 520855552,
+  "guest_psi_memory_some_avg10": 0.0,
+  "checkpoint_volume_free": 891528863744,
+  "backing_volume_free": 161135443968,
+  "host_c_free_cim": 161135460352,
+  "host_pagefile_growth_since_baseline": 90177536,
+  "guest_swap_growth_since_baseline": 0
+ }
+}

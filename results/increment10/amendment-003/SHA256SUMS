@@ -1,0 +1,10 @@
+1a71bd4870116f4008d36434ac20b67775a7d95d7900465b5a25d3ebdf6fd218  ./README.md
+2d1a29ef3bd0457c0d4e6e660383270876634c2cfff48551c0ae8cd46ccdfcba  ./acquire10-dry-run-real-checkpoint.json
+84e4aafebd269ac408abe0393e11b59a4c8a5ed3d93bb8a10ef35b3eeb9913b7  ./amendment-spec.json
+847fb82efd78a27a0c276ccc3832c31f278dab34f104ef06fe973ddb0a3c2ab5  ./inventory-verify-local.json
+4e578cfd4db80e88c4772832690f273bf0128e4290562855047f2cb09145a350  ./local-attestation.json
+73ac258955bb228b6c2e22ac924ee503aa8b62dee85b95f52368335dd41c361b  ./pytest-local.txt
+940b3fbf83053702cdaea2c7f94088cef9da5ac70a73284b51a40f90440e6cbd  ./pytest-local.xml
+e76bb5b919f4e20cabde30853d84cee440d3be3e21b34d8053c7f0b1f7770997  ./runner-simulation/inventory-ci.json
+021ad84600024cd854ed40a433163ce389b871ebec5fa8df6d3eb1fc9837c8c5  ./runner-simulation/pytest-tail.txt
+850147f4b6c04cd0ebc262ae3076962b008b68b3acc4758d01484e6784ac77b8  ./runner-simulation/pytest.xml

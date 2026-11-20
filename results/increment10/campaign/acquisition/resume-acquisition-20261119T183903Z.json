@@ -1,0 +1,196 @@
+{
+ "authorization": {
+  "approved_by": "FrancescoDF",
+  "approved_utc": "2026-11-18T22:21:22Z",
+  "max_transfer_bytes": 29551684877
+ },
+ "committed": {
+  "model-00005-of-00008.safetensors": {
+   "computed_sha256": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e",
+   "nbytes": 3979614448,
+   "official_lfs_sha256": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e"
+  },
+  "model-00006-of-00008.safetensors": {
+   "computed_sha256": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180",
+   "nbytes": 3995328064,
+   "official_lfs_sha256": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180"
+  },
+  "model-00007-of-00008.safetensors": {
+   "computed_sha256": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba",
+   "nbytes": 3995328064,
+   "official_lfs_sha256": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba"
+  },
+  "model-00008-of-00008.safetensors": {
+   "computed_sha256": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f",
+   "nbytes": 1698724408,
+   "official_lfs_sha256": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f"
+  }
+ },
+ "free_after": 132360126464,
+ "guard_checks": 35,
+ "host_monitor": {
+  "policy": "RAM gate disabled for acquisition, issue #25"
+ },
+ "host_monitor_start": {
+  "reasons": [],
+  "stop": false
+ },
+ "host_readiness": {
+  "before_network": {
+   "baseline_sha256": null,
+   "protocol_sha256": null,
+   "report_age_s": null,
+   "report_sha256": null,
+   "report_utc": null,
+   "values": null,
+   "verdict": "NOT_APPLICABLE"
+  },
+  "before_payload": {
+   "baseline_sha256": null,
+   "protocol_sha256": null,
+   "report_age_s": null,
+   "report_sha256": null,
+   "report_utc": null,
+   "values": null,
+   "verdict": "NOT_APPLICABLE"
+  }
+ },
+ "manifest_sha256": "69a3c92cb3f274f077b29838380974de21c51d77f31b0ba21c6aeceeb5df84cd",
+ "metadata": {
+  "api": {
+   "files_checked": 17,
+   "license": "apache-2.0",
+   "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9"
+  },
+  "config": {
+   "architectures": [
+    "Qwen2ForCausalLM"
+   ],
+   "hidden_size": 5120,
+   "intermediate_size": 13824,
+   "num_attention_heads": 40,
+   "num_hidden_layers": 48,
+   "num_key_value_heads": 8,
+   "rms_norm_eps": 1e-05,
+   "rope_theta": 1000000.0,
+   "tie_word_embeddings": false,
+   "use_sliding_window": false,
+   "vocab_size": 152064
+  },
+  "dtypes": [
+   "BF16"
+  ],
+  "header_bytes_checked": 66592,
+  "payload_bytes": 29540067328,
+  "tensor_count": 579
+ },
+ "minimum_free_during_transfer": 132502798336,
+ "mode": "execute",
+ "model": "Qwen/Qwen2.5-14B",
+ "payload_bytes_transferred": 10101739432,
+ "requests": 45,
+ "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+ "schema": "inwime-acquire10/1",
+ "space_before": {
+  "blockers": [],
+  "effective_free_bytes": 142414450688,
+  "expected_free_after": 132312711256,
+  "free_backing_volume": 142414450688,
+  "free_destination_filesystem": 871673917440,
+  "required_free_bytes": 52879445928,
+  "reserves": {
+   "check_interval": 268435456,
+   "evidence": 1073741824,
+   "fixed_margin": 34359738368,
+   "rollback": 0,
+   "stop_threshold": 42949672960,
+   "swap_growth": 7344226304,
+   "temporary": 0,
+   "verification": 0
+  },
+  "reserves_held": 42777706496,
+  "surplus_bytes": 89535004760,
+  "transfer_bytes": 10101739432
+ },
+ "user_agent": "Python-urllib/3",
+ "utc_end": "2026-11-19T20:02:05Z",
+ "utc_start": "2026-11-19T18:39:03Z",
+ "verification": {
+  "LICENSE": {
+   "computed_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+   "method": "existing file re-hashed"
+  },
+  "README.md": {
+   "computed_sha256": "e408f4734c24731ef86d48993c7747147cc578b1fbe50dec4bfdbae7e83147ec",
+   "method": "existing file re-hashed"
+  },
+  "config.json": {
+   "computed_sha256": "fdb89460be9a6383451437cdf632a3e087522efa682265461f33507e7069f026",
+   "method": "existing file re-hashed"
+  },
+  "generation_config.json": {
+   "computed_sha256": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+   "method": "existing file re-hashed"
+  },
+  "merges.txt": {
+   "computed_sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+   "method": "existing file re-hashed"
+  },
+  "model-00001-of-00008.safetensors": {
+   "computed_sha256": "e015e2bc9a26b4e46d77913d8c667608ae7e48aa1eca04af5786c2408f4bc0fa",
+   "method": "existing file re-hashed"
+  },
+  "model-00002-of-00008.safetensors": {
+   "computed_sha256": "e7efa1adc8257218813dcb494bb2a3d5775fa268735ab39e5b8119e233c21462",
+   "method": "existing file re-hashed"
+  },
+  "model-00003-of-00008.safetensors": {
+   "computed_sha256": "68127c9bc4fab170f7aaf63d5c7ac9e182afd10b74a1c6bb8025afefc11447cb",
+   "method": "existing file re-hashed"
+  },
+  "model-00004-of-00008.safetensors": {
+   "computed_sha256": "7250708a789da850ff40a4a5be335971dfa0d2bd7cba2e9905916dab06744d75",
+   "method": "existing file re-hashed"
+  },
+  "model-00005-of-00008.safetensors": {
+   "computed_sha256": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e",
+   "method": "resumed .part re-hashed then streamed",
+   "resumed_from_bytes": 3567255552,
+   "transferred_bytes": 412358896
+  },
+  "model-00006-of-00008.safetensors": {
+   "computed_sha256": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180",
+   "method": "streamed",
+   "resumed_from_bytes": 0,
+   "transferred_bytes": 3995328064
+  },
+  "model-00007-of-00008.safetensors": {
+   "computed_sha256": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba",
+   "method": "streamed",
+   "resumed_from_bytes": 0,
+   "transferred_bytes": 3995328064
+  },
+  "model-00008-of-00008.safetensors": {
+   "computed_sha256": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f",
+   "method": "streamed",
+   "resumed_from_bytes": 0,
+   "transferred_bytes": 1698724408
+  },
+  "model.safetensors.index.json": {
+   "computed_sha256": "7b4b616a213f09ae889be05d1b135198589496e817d793e2605d5c5b1fe3ae5d",
+   "method": "existing file re-hashed"
+  },
+  "tokenizer.json": {
+   "computed_sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+   "method": "existing file re-hashed"
+  },
+  "tokenizer_config.json": {
+   "computed_sha256": "c91efca15ceff6e9ee9424db58a6f59cd41294e550a86cbd07e3c1fb500b34f9",
+   "method": "existing file re-hashed"
+  },
+  "vocab.json": {
+   "computed_sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+   "method": "existing file re-hashed"
+  }
+ }
+}

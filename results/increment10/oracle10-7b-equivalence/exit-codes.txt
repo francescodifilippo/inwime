@@ -1,0 +1,2 @@
+exit full64 0
+exit stock_fp32 0

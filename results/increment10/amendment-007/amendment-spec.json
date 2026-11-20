@@ -1,0 +1,58 @@
+{
+ "slug": "gate-diagnostic-7b-equivalence",
+ "author": "assistant session at the owner's request (2026-11-20: run the pending fp64 diagnostic and complete the gate); owner acceptance pending through the review of PR #24",
+ "reason": [
+  "The 7B end-to-end equivalence of the diagnostic contract stock_fp64 (oracle10 vs the M9 oracle9 capture) was the only campaign step not run: attempts 1 and 2 were BLOCKED by the host start check (blocked-O7-stock_fp64*.json) and attempt 3 was stopped by the operator while waiting for GO, with no record.",
+  "On 2026-11-20 the owner asked to complete it. O7-stock_fp64-a3 ran under the unchanged step of tools/campaign10_sequence.sh (official start check GO, 6 GiB scope, swap 0, oom 0) and campaign/equivalence-7b-e2e-stock_fp64.json was written by the unchanged tools/equivalence10_e2e.py: logits, residuals and K/V bit-identical to oracle9 (verdict PASS, coverage FULL).",
+  "Until now tools/report_increment10.py did not read the 7B diagnostic. This amendment adds, only when an O7-stock_fp64 attempt has a run record: (F) 7b_e2e.stock_fp64.reported_raw = recomputation from the capture files equals the stored comparison, both captures bound (oracle10 to the run record, oracle9 to results/increment9/capture-manifest.json), verdict PASS or FAIL, no identity problem; (G) the latest O7-stock_fp64 and O14-stock_fp64 attempts are supervised like the gating oracles (6 GiB). The facts of F now also list the raw 7B equivalence of all three contracts.",
+  "The diagnostic can only contradict F or G, never make them pass: without a run record (absent or BLOCKED) no check is added, so the verdict rules of the preregistered contracts are unchanged. e2e_recomputed additionally checks the stored input digests and the empty problem list also for the gating contracts (tightening).",
+  "The previous final suite, inventory verification and gate outputs are kept with suffix -a4 / -a2 (campaign/pytest-final-a4.*, inventory-verify-final-a4.json, gate10-a2.json, gate10-mutations-a2.json)."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendments_001_006_unchanged": true,
+  "note": "only tightenings of the gate; the diagnostic contract never makes a condition pass"
+ },
+ "tools": [
+  "tools/report_increment10.py"
+ ],
+ "test_inventory": "results/increment10/test-inventory-a007.json",
+ "sections": {
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-007/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ },
+ "frozen_evidence": [
+  "results/increment10/amendments/006-gate-review-bindings.json",
+  "results/increment10/test-inventory-a006.json",
+  "results/increment10/campaign/sanitization-post-write.json",
+  "results/increment10/campaign/sanitization-reversal-local.json",
+  "results/increment10/campaign/O7-stock_fp64-a3-run.json",
+  "results/increment10/campaign/equivalence-7b-e2e-stock_fp64.json"
+ ]
+}
