@@ -327,3 +327,7 @@ limiti residui dichiarati) e ha sanificato i percorsi nelle evidenze
 dell'incremento 9, senza ripetere misure. Le evidenze degli incrementi 4–8 e
 V2 contengono ancora percorsi locali: sanificarle è una decisione in sospeso.
 [Evidenze, gate A–H e comandi](results/increment9/README.md).
+
+## Licenza
+
+Il codice di InWiMe è distribuito con licenza [Mozilla Public License 2.0](LICENSE) (MPL-2.0). I Checkpoint dei modelli non fanno parte del repository e restano soggetti alle licenze dei rispettivi autori.
