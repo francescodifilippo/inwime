@@ -1,0 +1,93 @@
+{
+ "note": "local captures excluded from Git (no weights): FP64 runtime outputs of R1 and oracle10 NPZ/metadata",
+ "files": {
+  "artifacts/increment10/R1-capture/decode.0.hidden.f64": {
+   "nbytes": 9830400,
+   "sha256": "d41536e3e0ea7ae6b533f5dcafe3bd14686f408cee9e1f13634b3ec1a9b1c0a4"
+  },
+  "artifacts/increment10/R1-capture/decode.0.kv.f64": {
+   "nbytes": 3932160,
+   "sha256": "949b368adb1703c82f01bb0cf728af77ef13879e8fd25c2e3fc90fdaa2e40288"
+  },
+  "artifacts/increment10/R1-capture/decode.0.logits.f64": {
+   "nbytes": 6082560,
+   "sha256": "cf4d38710cec12f70bcb48a1bfbaf749ede9d35cbd81264364b26d464d5f45ed"
+  },
+  "artifacts/increment10/R1-capture/decode.1.hidden.f64": {
+   "nbytes": 1966080,
+   "sha256": "17591e43dfc63ee13e84e71e2076a4bc837bc20980c1e3db85ed170aa146e086"
+  },
+  "artifacts/increment10/R1-capture/decode.1.kv.f64": {
+   "nbytes": 4718592,
+   "sha256": "34a5384efa59bf880d4331c1eafa6a3085264e7dc0afb394cfdb5ae3f4a0d9a6"
+  },
+  "artifacts/increment10/R1-capture/decode.1.logits.f64": {
+   "nbytes": 1216512,
+   "sha256": "1178bef6ba696a56c5813b8f7c799d29bde0d56244234461973cbdf20af32837"
+  },
+  "artifacts/increment10/R1-capture/decode.2.hidden.f64": {
+   "nbytes": 1966080,
+   "sha256": "1b6ee7f6304417440cd4b03f5b0a809e57487a70773a84892a921c64eab4eed4"
+  },
+  "artifacts/increment10/R1-capture/decode.2.kv.f64": {
+   "nbytes": 5505024,
+   "sha256": "870f54ac4d3722d8313ed4bea0ba6a76ecb756c2bfe09b2ad074b633c1122dbb"
+  },
+  "artifacts/increment10/R1-capture/decode.2.logits.f64": {
+   "nbytes": 1216512,
+   "sha256": "f78278091e23fedff11e373d507de4bbcba9eb1856225606d1b541b83555c552"
+  },
+  "artifacts/increment10/R1-capture/decode.3.hidden.f64": {
+   "nbytes": 1966080,
+   "sha256": "4a2b1147be57d146defe00f06d01550585e4cfa3966e2d3e4e472d113af96246"
+  },
+  "artifacts/increment10/R1-capture/decode.3.kv.f64": {
+   "nbytes": 6291456,
+   "sha256": "ef4527363dcf3a120310a1548985b53f44b4f84897c7e93952622614bdb663b8"
+  },
+  "artifacts/increment10/R1-capture/decode.3.logits.f64": {
+   "nbytes": 1216512,
+   "sha256": "fb27fcfe56c9bb7d55abdedc842c7eaf3bb483cf6f85bc8ffc8e8619cc90783d"
+  },
+  "artifacts/increment10/oracle10-14b-full64.json": {
+   "nbytes": 2924,
+   "sha256": "0ed1cbd883ffa1aa88b2eedc09556d6ce5330f81502db7a17af246eddc045396"
+  },
+  "artifacts/increment10/oracle10-14b-full64.npz": {
+   "nbytes": 30590652,
+   "sha256": "8d330965694e70e716c59a0c70f80ebc1811443aed1e43d4ee0d886da6a71cc2"
+  },
+  "artifacts/increment10/oracle10-14b-stock_fp32.json": {
+   "nbytes": 2930,
+   "sha256": "7f3bed90aa08e189a2ff5757778f7473b5c4449a6713aab514efeb0d8e711cdf"
+  },
+  "artifacts/increment10/oracle10-14b-stock_fp32.npz": {
+   "nbytes": 17271836,
+   "sha256": "3591bc50d064a4d601903aa72e84d2331dda9ddb7545af4c5ecff47344d604e2"
+  },
+  "artifacts/increment10/oracle10-14b-stock_fp64.json": {
+   "nbytes": 2929,
+   "sha256": "f900fdd7f3b7d9078a31952bfa11e71c61025da3575f8e1f7c182403ff95a826"
+  },
+  "artifacts/increment10/oracle10-14b-stock_fp64.npz": {
+   "nbytes": 30588633,
+   "sha256": "109f5a300da0f52cb1ae2fbebd4d46cd52b0ca9efe17c280c35ec47ee85b852f"
+  },
+  "artifacts/increment10/oracle10-7b-full64.json": {
+   "nbytes": 2925,
+   "sha256": "788322ecf342cb0c0ab16eb49b58bc82791057abcef794851bea515156c3b4eb"
+  },
+  "artifacts/increment10/oracle10-7b-full64.npz": {
+   "nbytes": 17264848,
+   "sha256": "c4c93648df7f04c957811f46324d5530d88cdc37b2f7afeab4092e45483e785c"
+  },
+  "artifacts/increment10/oracle10-7b-stock_fp32.json": {
+   "nbytes": 2925,
+   "sha256": "360c6f4592f550d3e17c2468e11f62e8063bf5e5b95b09a62f537377a11c01d2"
+  },
+  "artifacts/increment10/oracle10-7b-stock_fp32.npz": {
+   "nbytes": 9649698,
+   "sha256": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef"
+  }
+ }
+}

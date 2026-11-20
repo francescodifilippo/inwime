@@ -1,0 +1,31 @@
+{
+ "m10-14b-pilot-v2-forward.json": {
+  "original_sha256": "962f85f1d4ae3e3ec08c04238ca6cebf824f3b481598d14bcaebb208bb65226d",
+  "sanitized_sha256": "bebf25b6d9690e8ad8a014b49afd48e4ab8139d43693623d29433bb27124f499"
+ },
+ "m10-14b-pilot-v2-scope.json": {
+  "original_sha256": "29ba13d1b3841cdb86591209814ed25d69a6687241e6f907336be8f63896aaef",
+  "sanitized_sha256": "f1f503e491564a76c508ad131ae91b2f66e94638b0a0357d4bddef39b971e44e"
+ },
+ "m10-14b-pilot-scope.json": {
+  "original_sha256": "52c2295bf9997882e6672906de2cd214121bb362cf4d2ce077e2658313a3fbc4",
+  "sanitized_sha256": "3ed803e588d3844836e4964902841a42e50f3d19a0ea3bd463e7fb8c6094ffab"
+ },
+ "m10-14b-pilot-v2-scope.log": {
+  "original_sha256": "06d5ec603325f1bb5093dcd0f8e2562bd5753daa5408872d34882707a9ff3639",
+  "sanitized_sha256": "624143fab157bd5c8d39784581cd8f740cf65ac64ce6c8923f83f9ee009f5ea8"
+ },
+ "m10-14b-pilot-v2-scope.final.txt": {
+  "original_sha256": "24d8efc2479354fdcf6ef36e2838baafcd67968e5a81ac693866a484b72203c0",
+  "sanitized_sha256": "24d8efc2479354fdcf6ef36e2838baafcd67968e5a81ac693866a484b72203c0"
+ },
+ "m10-14b-pilot-scope.log": {
+  "original_sha256": "f39f11a152f93da84dba820c2a3a39fc8506dc04a3b41f1f8883624a0bc06831",
+  "sanitized_sha256": "b649405e387d12921311b772ba39e5b7c08c194c9e513d938d8c095c4a713415"
+ },
+ "m10-14b-pilot-scope.final.txt": {
+  "original_sha256": "53b96e2db1277543c928fb79e149cd5abd9231dee07ef6d18bae31a8e1e076a1",
+  "sanitized_sha256": "53b96e2db1277543c928fb79e149cd5abd9231dee07ef6d18bae31a8e1e076a1"
+ },
+ "note": "pilot runs of 2026-11-19 (first one failed: tokenizers not installed in the interpreter used; second one succeeded). Informative baseline, not a gate run: no host start check, no eviction (cache as-is), no L3/L4 counters, no captures. Paths: <repo> checkout, <recovery> owner recovery folder."
+}

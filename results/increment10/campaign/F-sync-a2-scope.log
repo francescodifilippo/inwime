@@ -1,0 +1,4 @@
+{"mode": "sync", "fault": "io", "caught": "OSError", "wall_s": 24.114523814059794}
+{"mode": "sync", "fault": "short", "caught": "ReadError", "wall_s": 23.97824806906283}
+{"mode": "sync", "fault": "cancel", "caught": "CancelledError", "wall_s": 24.137144765933044}
+results/increment10/campaign/F-sync-a2-faults.json

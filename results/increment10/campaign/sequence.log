@@ -1,0 +1,30 @@
+2026-11-19T21:31:26Z step R1 start
+2026-11-19T21:45:09Z step R1 exit 0
+2026-11-19T21:45:09Z step R2 start
+2026-11-19T21:51:09Z step R2 exit 0
+2026-11-19T21:51:09Z step R3 start
+2026-11-19T21:57:13Z step R3 exit 0
+2026-11-19T21:57:13Z step R4 start
+2026-11-19T22:01:46Z step R4 exit 0
+2026-11-19T22:01:46Z step F-sync start
+2026-11-19T22:41:26Z step F-sync exit 1
+2026-11-19T22:41:26Z step F-pipeline start
+2026-11-19T22:42:28Z sequence stopped by operator before F-pipeline start check completed: probe defect found in F-sync (fault at read 100 precedes layer-0 K/V work on the 14B); no F-pipeline record created
+2026-11-19T22:43:36Z step F-sync-a2 start
+2026-11-19T22:45:54Z step F-sync-a2 exit 0
+2026-11-19T22:45:54Z step F-pipeline start
+2026-11-19T22:48:17Z step F-pipeline exit 0
+2026-11-19T22:48:17Z step N6 start
+2026-11-19T22:55:30Z step N6 exit 137
+2026-11-19T22:55:30Z step O14-stock_fp32 start
+2026-11-19T22:57:57Z step O14-stock_fp32 exit 0
+2026-11-19T22:57:57Z step O14-full64 start
+2026-11-19T23:24:03Z step O14-full64 exit 0
+2026-11-19T23:24:03Z step O14-stock_fp64 start
+2026-11-19T23:37:21Z step O14-stock_fp64 exit 3
+2026-11-19T23:37:21Z step integrity start
+2026-11-19T23:37:42Z step integrity exit 0
+2026-11-19T23:38:09Z step O14-stock_fp64-a2 start
+2026-11-20T00:16:35Z step O14-stock_fp64-a2 exit 0
+2026-11-20T00:16:35Z step O7-stock_fp64-a3 start
+2026-11-20T00:18:11Z sequence stopped by operator while O7-stock_fp64-a3 waited for host GO (diagnostic only, not gating); no O7-stock_fp64-a3 record created

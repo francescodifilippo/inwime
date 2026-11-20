@@ -1,0 +1,50 @@
+{
+  "files": {
+    "qwen2.5-14b-97e1e76/model-00001-of-00008.safetensors": {
+      "sha256": "e015e2bc9a26b4e46d77913d8c667608ae7e48aa1eca04af5786c2408f4bc0fa",
+      "expected": "e015e2bc9a26b4e46d77913d8c667608ae7e48aa1eca04af5786c2408f4bc0fa",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00002-of-00008.safetensors": {
+      "sha256": "e7efa1adc8257218813dcb494bb2a3d5775fa268735ab39e5b8119e233c21462",
+      "expected": "e7efa1adc8257218813dcb494bb2a3d5775fa268735ab39e5b8119e233c21462",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00003-of-00008.safetensors": {
+      "sha256": "68127c9bc4fab170f7aaf63d5c7ac9e182afd10b74a1c6bb8025afefc11447cb",
+      "expected": "68127c9bc4fab170f7aaf63d5c7ac9e182afd10b74a1c6bb8025afefc11447cb",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00004-of-00008.safetensors": {
+      "sha256": "7250708a789da850ff40a4a5be335971dfa0d2bd7cba2e9905916dab06744d75",
+      "expected": "7250708a789da850ff40a4a5be335971dfa0d2bd7cba2e9905916dab06744d75",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00005-of-00008.safetensors": {
+      "sha256": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e",
+      "expected": "c2754167c1cbaf94b9af9c7eb646a2286a596f9ded5e2e3c4c5e6a4464352c9e",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00006-of-00008.safetensors": {
+      "sha256": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180",
+      "expected": "7045cf78c68178b626546982d12b6e9c8e289f1bf1e65c42225ed13e07847180",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00007-of-00008.safetensors": {
+      "sha256": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba",
+      "expected": "4d870a72c656404ee7524163ba996bf55050fff252dfe639a90715a9e2c47dba",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model-00008-of-00008.safetensors": {
+      "sha256": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f",
+      "expected": "9b693615965d8548eab4d1dc6bb578aa063e8656e2b9d25125ad5b8c7f59565f",
+      "match": true
+    },
+    "qwen2.5-14b-97e1e76/model.safetensors.index.json": {
+      "sha256": "7b4b616a213f09ae889be05d1b135198589496e817d793e2605d5c5b1fe3ae5d",
+      "expected": "7b4b616a213f09ae889be05d1b135198589496e817d793e2605d5c5b1fe3ae5d",
+      "match": true
+    }
+  },
+  "all_match": true
+}

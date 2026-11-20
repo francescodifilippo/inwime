@@ -261,3 +261,15 @@ in `results/increment10/amendments/`, con catena di SHA verificata da
   facoltative e non bloccanti. 001/002 restano storici e invariati; `hostmem10`,
   `hostgate10` e `hostmonitor10` restano per inferenza, oracolo e benchmark. Inventario
   `test-inventory-a003.json` (1199 node ID, nessuno rimosso o rinominato).
+- 004 (19–20/11, completamento di M10): pinna gli strumenti della campagna e del gate
+  (`campaign10`, `campaign10_sequence.sh`, `equivalence10_e2e`, `parity10`, `fault10`,
+  `report_increment10`), scritti durante la sessione e pinnati dopo le prove; inventario
+  `test-inventory-a004.json` (1246 node ID). Registra tre correzioni fatte durante la campagna,
+  ciascuna con l'evidenza del fallimento conservata. Soglie e criteri invariati. Rapporto:
+  [RUNTIME_CPU_INCREMENT_10.md](RUNTIME_CPU_INCREMENT_10.md).
+- 005 (20/11): il gate G dà NOT PROVEN, non FAIL, su una campagna senza record. Trovato dalla
+  prima suite finale (`campaign/pytest-final-a1.*`, conservata). Nessun test cambiato.
+- 006 (20/11, revisione indipendente): il gate lega i file prodotti ai digest dei record (anche
+  attraverso la mappa di sanificazione), accetta un tentativo ripetuto con record solo se un
+  emendamento lo cita, ricalcola l'equivalenza 7B e la regola del paging sostenuto, verifica la
+  crescita dello swap alla fine di ogni prova. Inventario `test-inventory-a006.json` (1252 node ID).

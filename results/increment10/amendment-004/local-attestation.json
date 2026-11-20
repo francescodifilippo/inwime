@@ -1,0 +1,16 @@
+{
+ "schema": "inwime-local-attestation10/1",
+ "source": "local run on the owner host (WSL2), with the local unsanitized increment-9 originals present; NOT a GitHub runner result",
+ "utc": "2026-11-20T00:17:39Z",
+ "command": "make cpu-kernel && python -m pytest -q -p no:cacheprovider --basetemp=build/pytest-tmp/final tests -ra --junitxml=results/increment10/campaign/pytest-final.xml",
+ "python": "3.14.4",
+ "pytest": "9.0.2",
+ "junit": "results/increment10/campaign/pytest-final.xml",
+ "junit_sha256": "060f7ee4bb005984d210588852e226923ff77f3e52ee2483303060ddcabcfe63",
+ "inventory": "results/increment10/test-inventory-a004.json",
+ "inventory_sha256": "0aebbb2d2db678421e1120507668c5aa2c6b6d7c0e1b9e1a269ec5f52b0969ba",
+ "verdict": "PASS",
+ "required_passed": 1246,
+ "required_total": 1246,
+ "note": "the runner cannot reproduce the 11 tests declared not verifiable on runner; this attestation is the only evidence that they pass, and it is labelled as local"
+}

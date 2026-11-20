@@ -1,0 +1,78 @@
+{
+ "schema": "inwime-protocol-m10-amendment/1",
+ "number": 6,
+ "slug": "gate-review-bindings",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "previous_sha256": "1d3bbe417aab2bc011ba38ce9d35941fd199dbf253b1722369c51fc54cb8f5e6",
+ "author": "Assistant session at the owner's request, after an independent review subagent; owner acceptance pending through the review of PR #24",
+ "utc": "2026-11-20T00:28:32Z",
+ "reason": [
+  "Independent review of the uncommitted M10 tooling (no blocking defect; gate A-G recomputed PASS by the reviewer) found five non-blocking weaknesses of tools/report_increment10.py, fixed here:",
+  "(1) produced_sha256 of the run records was never checked: G now binds every produced file directly or through sanitization-post-write.json (original == recorded, sanitized == current). The map covers 13 files (not the two O7 records stated in amendment 004 reason 3, which predates the second sanitization); sanitization-reversal-local.json shows, on the owner machine, that putting the absolute paths back reproduces all 13 original digests.",
+  "(2) Evidence.latest() allowed repeat-until-pass: attempts are ordered numerically and G requires every superseded attempt with a run record to be named by an amendment (only F-sync attempt 1, amendment 004); blocked attempts were never started.",
+  "(3) F: the 14B oracle captures are bound to the O14 run records; the 7B end-to-end equivalence is recomputed from the capture files, the oracle10 side bound to the O7 run record and the oracle9 side to results/increment9/capture-manifest.json.",
+  "(4) G checks guest swap growth also at the end of each run (scope global_after against the campaign baseline).",
+  "(5) C recomputes the sustained-paging rule (PagesInput > 2048/s for >= 30 s) from the kept monitor samples, in addition to the annotations.",
+  "The previous final suite and gate outputs are kept (campaign/pytest-final-a2.*, campaign/gate10-a1.json)."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendments_001_005_unchanged": true,
+  "note": "only tightenings of the gate"
+ },
+ "frozen_evidence_preserved": {
+  "results/increment10/amendments/004-campaign-and-gate-tooling.json": "0eeb15705309ed53bee259cdb940df5033f96ebe37e33f5a4f918e7ec3deadea",
+  "results/increment10/amendments/005-gate-empty-campaign-not-proven.json": "1d3bbe417aab2bc011ba38ce9d35941fd199dbf253b1722369c51fc54cb8f5e6",
+  "results/increment10/test-inventory-a004.json": "0aebbb2d2db678421e1120507668c5aa2c6b6d7c0e1b9e1a269ec5f52b0969ba",
+  "results/increment10/campaign/sanitization-post-write.json": "227002c738ca6bdb098d3be0c69e0aee405de53ddd55f1ef65f9783d2c2e4096",
+  "results/increment10/campaign/sanitization-reversal-local.json": "d7dbf6fe430d9bad366f4bb4eecbc09bc591b9c3d25263ec0993f64ded983915"
+ },
+ "changes": {
+  "pinned_tools_sha256": {
+   "tools/report_increment10.py": {
+    "from": "c00edfb020d0413f2f71a4e3bb611ac78b899dd3c0c8b0c6e5fa5ab9788a8a2e",
+    "to": "c7ef87f9103e19b9cdade8a7348b78d11763dde95cf549304e8c0fac71557698"
+   }
+  },
+  "test_inventory": {
+   "from": {
+    "path": "results/increment10/test-inventory-a004.json",
+    "sha256": "0aebbb2d2db678421e1120507668c5aa2c6b6d7c0e1b9e1a269ec5f52b0969ba",
+    "total_node_ids": 1246
+   },
+   "to": {
+    "path": "results/increment10/test-inventory-a006.json",
+    "sha256": "c6175c4fb9e7eff1f52d552dcc4494a45c22fb43677b2b42e06144b7ca68a209",
+    "total_node_ids": 1252
+   }
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-006/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ }
+}

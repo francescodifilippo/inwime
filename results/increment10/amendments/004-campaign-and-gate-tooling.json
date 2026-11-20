@@ -1,0 +1,98 @@
+{
+ "schema": "inwime-protocol-m10-amendment/1",
+ "number": 4,
+ "slug": "campaign-and-gate-tooling",
+ "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+ "previous_sha256": "c291a61ff72aa105692984b88d3d43759d0bf85e7d7f4ed76c54952a597d5f0e",
+ "author": "Assistant session at the owner's request (M10 completion, 2026-11-19/20); owner acceptance pending through the review of PR #24",
+ "utc": "2026-11-20T00:10:45Z",
+ "reason": [
+  "The protocol preregistered runs R1-R4, oracles, faults N1-N10 and gate A-H, but the run driver, the 7B end-to-end equivalence, the 14B full-coverage parity, the per-mode fault probe and the gate with BLOCKED did not exist (PREPARATION_INCREMENT_10 section 6, limit 5). This amendment pins them.",
+  "Timing, stated plainly: the tools were written during the campaign session of 2026-11-19/20 and are pinned after the runs. Thresholds, workload, start/abort criteria and verdict rules are the frozen ones of protocol.json and are read from it or duplicated as constants and checked against it by tests; no criterion was widened.",
+  "Corrections made during the campaign, each with its failed evidence kept: (1) the M9 fault probe injects at read 100, which on the 14B falls inside layer-0 q_proj before any K/V write, so the probe check \"candidate bank was modified\" failed (F-sync attempt 1); tools/fault10.py places the fault midway through layer-0 o_proj (the structural point of M9 on the 7B) and keeps the check unchanged; (2) the gate reused the gate-9 forward checks that assume captures in every run, while the protocol has captures for R1 only; digest-only runs get explicit replacement checks; (3) campaign10 records are written through sanitize9.portable (two earlier O7 records sanitized after writing, digests kept).",
+  "Run mapping of the frozen abort actions inside tools/campaign10.RUN_POLICY: pause-and-annotate and the I/O-attribution criterion are annotations, kill-scope-invalidate-run kills the run scope only (cgroup.kill), the acquisition stop action is an annotation for runs."
+ ],
+ "invariants": {
+  "start_criteria_unchanged": true,
+  "abort_criteria_unchanged": true,
+  "numerical_thresholds_unchanged": true,
+  "workload_unchanged": true,
+  "verdict_rules_unchanged": true,
+  "required_tests_removed_or_renamed": [],
+  "runtime_and_kernel_unchanged": true,
+  "amendments_001_003_unchanged": true,
+  "checkpoint_unchanged": true,
+  "note": "only new tools are pinned (from null); no previously pinned tool changes"
+ },
+ "frozen_evidence_preserved": {
+  "results/increment10/protocol.json": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "results/increment10/protocol.sha256": "4a89601b0c923c975bad772fcb5e0bfba64debf5af0aa4c54ca7184051d8eab4",
+  "results/increment10/amendments/001-acquisition-host-gate-and-ci-inventory.json": "5beae6e4069a31de514501cc4659c6b8a79b640c4078669fd26d4504d0321b66",
+  "results/increment10/amendments/002-acquisition-in-run-host-monitor.json": "02b78daeb346875222cdd79562920aaa87cc8f0aaa7e006bf2da4501b7305d89",
+  "results/increment10/amendments/003-acquisition-without-host-memory-gate.json": "c291a61ff72aa105692984b88d3d43759d0bf85e7d7f4ed76c54952a597d5f0e",
+  "results/increment10/test-inventory-a003.json": "00fc390aed3ba7438c3107d730539a7e5fbb0e066924e9af1a6f7f30221b9abb",
+  "results/increment10/amendment-003/SHA256SUMS": "36fa74b67fb2ee3e63cf0d5cfe5b1f407fb4ed982ccf907e907a952fb1d062e6"
+ },
+ "changes": {
+  "pinned_tools_sha256": {
+   "tools/campaign10.py": {
+    "from": null,
+    "to": "590ca281893c9d696231a0db89f69a971e28610527036a52f87b7a1a168733fc"
+   },
+   "tools/campaign10_sequence.sh": {
+    "from": null,
+    "to": "c9ac5eb2ccf8141b05365241648e4fc537b26a2035709e6d693c736dbcf9d3a7"
+   },
+   "tools/equivalence10_e2e.py": {
+    "from": null,
+    "to": "361d460252a04dbfebe09c7be52a7f636dc4816e0973271239ce654c1e6298be"
+   },
+   "tools/parity10.py": {
+    "from": null,
+    "to": "e38d704554e51417f54dc9f8b709d469dc4d3f3283916288bf615b12b4397eed"
+   },
+   "tools/fault10.py": {
+    "from": null,
+    "to": "7426ead86c078ac6e55ececd3fe27b5c3b4cb2628c76186b0eeea54546f83466"
+   },
+   "tools/report_increment10.py": {
+    "from": null,
+    "to": "36661e9b8a7a2bf04e4d467c68985465891f26fa2f2643a59f7cbf2a1c328f42"
+   }
+  },
+  "test_inventory": {
+   "from": {
+    "path": "results/increment10/test-inventory-a003.json",
+    "sha256": "00fc390aed3ba7438c3107d730539a7e5fbb0e066924e9af1a6f7f30221b9abb",
+    "total_node_ids": 1199
+   },
+   "to": {
+    "path": "results/increment10/test-inventory-a004.json",
+    "sha256": "0aebbb2d2db678421e1120507668c5aa2c6b6d7c0e1b9e1a269ec5f52b0969ba",
+    "total_node_ids": 1246
+   }
+  },
+  "ci_runner_verification": {
+   "runner": "GitHub Actions ubuntu-24.04, .github/workflows/offline-cpu.yml",
+   "not_verifiable_on_runner": {
+    "skip_message": "local unsanitized originals are not on this machine",
+    "node_ids": [
+     "tests/test_increment9_hardening.py::test_absent_manifest_is_not_proven[real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[entry_not_object-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_absent-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[files_string-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_list-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[json_null-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[original_digest_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[rules_changed-real]",
+     "tests/test_increment9_hardening.py::test_present_manifest_violating_the_schema_is_fail[sanitized_digest_changed-real]"
+    ],
+    "cause": "tests/test_increment9_hardening.py \"-real\" cases need the local unsanitized M9 originals, which are deliberately not in Git (sanitization of increment 9)"
+   },
+   "local_attestation": "results/increment10/amendment-004/local-attestation.json",
+   "rule": "runner verdict PASS = every runner-verifiable required test passed, nothing missing, extra or duplicated, and each declared test either passed or was skipped with exactly the declared message; such a skip is NOT VERIFIABLE ON RUNNER and keeps the full-inventory verdict of the runner at NOT PROVEN. The archived local attestation must be a full PASS of the same inventory with its pinned JUnit SHA256. CI succeeds only if both hold."
+  }
+ }
+}

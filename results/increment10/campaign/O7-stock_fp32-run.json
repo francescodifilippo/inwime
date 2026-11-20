@@ -1,0 +1,374 @@
+{
+  "schema": "inwime-campaign10/1",
+  "run": "O7-stock_fp32",
+  "kind": "oracle",
+  "profile": "oracle",
+  "cache": "as-is",
+  "purpose": "oracle10 7B end-to-end equivalence (stock_fp32) vs M9 oracle9 capture",
+  "utc_start": "2026-11-19T21:11:12Z",
+  "command": [
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "stock_fp32",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "5,1,1,1",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-stock_fp32.npz"
+  ],
+  "memory_max": 6442450944,
+  "condition": "as-is",
+  "files": [],
+  "protocol_sha256": "8491cf5c69a2fb888740982c9b31b821b800a2dbe6f4437cce860c6efee19dd7",
+  "baseline": "results/increment10/campaign/hostmem-baseline.json",
+  "baseline_sha256": "ce397351259fe0e65081dcbe311798f5d97bf9b58850ad38437d7d09a156ee24",
+  "python": "3.14.4",
+  "read_only_host": true,
+  "host_start": {
+    "path": "O7-stock_fp32-host-start.json",
+    "exit_code": 0,
+    "verdict": "GO",
+    "violated": [],
+    "missing": [],
+    "sha256": "6135d2c437a7e732ddffba8b60593e4547fb8e62682f64410099e85e2778c268"
+  },
+  "block_devices": {
+    "checkpoint": {
+      "major_minor": "8:48",
+      "name": "sdd",
+      "stat_path": "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/fd1d2cbd-ce7c-535c-966b-eb5f811c95f0/host0/target0:0:0/0:0:0:3/block/sdd/stat"
+    },
+    "swap": [
+      {
+        "name": "sdc",
+        "stat_path": "/sys/class/block/sdc/stat"
+      }
+    ]
+  },
+  "l3_before": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 650946.623787887,
+      "utc": "2026-11-19T21:11:46Z",
+      "reads_completed": 1872264,
+      "reads_merged": 1115333,
+      "sectors_read": 2324877634,
+      "read_ticks_ms": 2335004,
+      "writes_completed": 734662,
+      "writes_merged": 818967,
+      "sectors_written": 213651608,
+      "write_ticks_ms": 6836747,
+      "in_flight": 0,
+      "io_ticks_ms": 2347460,
+      "time_in_queue_ms": 9591178,
+      "read_bytes": 1190337348608
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 650946.623846112,
+        "utc": "2026-11-19T21:11:46Z",
+        "reads_completed": 200095,
+        "reads_merged": 62253,
+        "sectors_read": 2101968,
+        "read_ticks_ms": 49152,
+        "writes_completed": 186714,
+        "writes_merged": 273546,
+        "sectors_written": 3682072,
+        "write_ticks_ms": 8333431,
+        "in_flight": 0,
+        "io_ticks_ms": 105472,
+        "time_in_queue_ms": 8382592,
+        "read_bytes": 1076207616
+      }
+    ]
+  },
+  "observer_started": {
+    "stop": false,
+    "reasons": []
+  },
+  "supervisor": [
+    "/usr/bin/python3",
+    "-m",
+    "tools.cgroup9",
+    "--label",
+    "m10-o7-fp32",
+    "--output",
+    "results/increment10/campaign/O7-stock_fp32-scope.json",
+    "--memory-max",
+    "6442450944",
+    "--swap-max",
+    "0",
+    "--condition",
+    "as-is",
+    "--host-disk",
+    "--",
+    "<repo>/.venv-oracle7/bin/python",
+    "-m",
+    "tools.oracle10",
+    "checkpoints/qwen2.5-7b-d149729",
+    "--contract",
+    "stock_fp32",
+    "--sequence",
+    "785,6722,315,9625,374,12095,13,1084",
+    "--prompt-length",
+    "5",
+    "--chunks",
+    "5,1,1,1",
+    "--memory-budget",
+    "5368709120",
+    "--scope-memory-max",
+    "6442450944",
+    "--threads",
+    "2",
+    "--output",
+    "artifacts/increment10/oracle10-7b-stock_fp32.npz"
+  ],
+  "wall_s": 48.79816187499091,
+  "supervisor_exit": 0,
+  "l3_after": {
+    "checkpoint": {
+      "device": "sdd",
+      "monotonic_s": 650996.67395584,
+      "utc": "2026-11-19T21:12:36Z",
+      "reads_completed": 1889046,
+      "reads_merged": 1117151,
+      "sectors_read": 2435619986,
+      "read_ticks_ms": 2418831,
+      "writes_completed": 734883,
+      "writes_merged": 819440,
+      "sectors_written": 213659808,
+      "write_ticks_ms": 6837718,
+      "in_flight": 0,
+      "io_ticks_ms": 2367812,
+      "time_in_queue_ms": 9675996,
+      "read_bytes": 1247037432832
+    },
+    "swap": [
+      {
+        "device": "sdc",
+        "monotonic_s": 650996.674315063,
+        "utc": "2026-11-19T21:12:36Z",
+        "reads_completed": 200095,
+        "reads_merged": 62253,
+        "sectors_read": 2101968,
+        "read_ticks_ms": 49152,
+        "writes_completed": 186787,
+        "writes_merged": 273744,
+        "sectors_written": 3684240,
+        "write_ticks_ms": 8334024,
+        "in_flight": 0,
+        "io_ticks_ms": 105532,
+        "time_in_queue_ms": 8383184,
+        "read_bytes": 1076207616
+      }
+    ]
+  },
+  "l3_delta": {
+    "checkpoint": {
+      "reads_completed": 16782,
+      "reads_merged": 1818,
+      "sectors_read": 110742352,
+      "read_ticks_ms": 83827,
+      "writes_completed": 221,
+      "writes_merged": 473,
+      "sectors_written": 8200,
+      "write_ticks_ms": 971,
+      "io_ticks_ms": 20352,
+      "time_in_queue_ms": 84818,
+      "read_bytes": 56700084224
+    },
+    "swap": [
+      {
+        "reads_completed": 0,
+        "reads_merged": 0,
+        "sectors_read": 0,
+        "read_ticks_ms": 0,
+        "writes_completed": 73,
+        "writes_merged": 198,
+        "sectors_written": 2168,
+        "write_ticks_ms": 593,
+        "io_ticks_ms": 60,
+        "time_in_queue_ms": 592,
+        "read_bytes": 0
+      }
+    ]
+  },
+  "observer": {
+    "start": {
+      "stop": false,
+      "reasons": []
+    },
+    "kills": [],
+    "summary": {
+      "schema": "inwime-hostmonitor10/1",
+      "read_only": true,
+      "policy": {
+        "action_mapping": {
+          "pause-and-annotate": "annotate",
+          "kill-scope-invalidate-run": "kill-scope",
+          "annotate-io-attribution-invalid": "annotate",
+          "stop-acquisition-retain-part": "annotate"
+        },
+        "sample_interval_s": 5.0,
+        "startup_timeout_s": 90.0,
+        "max_unmonitored_s": 60.0,
+        "max_line_bytes": 65536,
+        "max_annotations": 64,
+        "max_errors_kept": 64,
+        "max_samples_kept": 2000
+      },
+      "criteria_source": "protocol.json host_memory_preflight.abort_criteria (frozen)",
+      "counts": {
+        "valid": 10,
+        "invalid": 0,
+        "errors": 0,
+        "transient_violations": 2
+      },
+      "dropped_lines": 0,
+      "extremes": {
+        "backing_volume_free": {
+          "min": 132153712640,
+          "max": 132154650624
+        },
+        "guest_mem_available": {
+          "min": 5204754432,
+          "max": 7414960128
+        },
+        "host_available_bytes": {
+          "min": 767918080,
+          "max": 3471675392
+        },
+        "host_commit_headroom_bytes": {
+          "min": 25286418432,
+          "max": 29997391872
+        },
+        "host_pagefile_growth_since_baseline": {
+          "min": -13631488,
+          "max": 1806696448
+        },
+        "host_pages_input_per_s": {
+          "min": 415.20043533466355,
+          "max": 7098.497193554228
+        }
+      },
+      "annotations": [],
+      "stopped": false,
+      "stop_reasons": [],
+      "errors": [],
+      "last_samples": [
+        {
+          "t": 0.969,
+          "host_available_bytes": 3471675392,
+          "guest_mem_available": 7414960128,
+          "host_pagefile_growth_since_baseline": -13631488,
+          "host_commit_headroom_bytes": 29997391872,
+          "host_pages_input_per_s": null,
+          "backing_volume_free": 132154650624
+        },
+        {
+          "t": 6.5,
+          "host_available_bytes": 767918080,
+          "guest_mem_available": 6728376320,
+          "host_pagefile_growth_since_baseline": 221249536,
+          "host_commit_headroom_bytes": 27011108864,
+          "host_pages_input_per_s": 415.20043533466355,
+          "backing_volume_free": 132153794560
+        },
+        {
+          "t": 11.982,
+          "host_available_bytes": 1267122176,
+          "guest_mem_available": 6352252928,
+          "host_pagefile_growth_since_baseline": 586153984,
+          "host_commit_headroom_bytes": 25374961664,
+          "host_pages_input_per_s": 7098.497193554228,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 17.417,
+          "host_available_bytes": 1807347712,
+          "guest_mem_available": 6282698752,
+          "host_pagefile_growth_since_baseline": 1283457024,
+          "host_commit_headroom_bytes": 25372708864,
+          "host_pages_input_per_s": 834.7457627118645,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 22.83,
+          "host_available_bytes": 2120294400,
+          "guest_mem_available": 6314196992,
+          "host_pagefile_growth_since_baseline": 1806696448,
+          "host_commit_headroom_bytes": 25368711168,
+          "host_pages_input_per_s": 1552.0103282921432,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 28.247,
+          "host_available_bytes": 1933672448,
+          "guest_mem_available": 5204754432,
+          "host_pagefile_growth_since_baseline": 1710227456,
+          "host_commit_headroom_bytes": 25357156352,
+          "host_pages_input_per_s": 1106.9380203515263,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 33.673,
+          "host_available_bytes": 1827803136,
+          "guest_mem_available": 6808641536,
+          "host_pagefile_growth_since_baseline": 1697644544,
+          "host_commit_headroom_bytes": 25361125376,
+          "host_pages_input_per_s": 856.4329099944782,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 39.074,
+          "host_available_bytes": 1723101184,
+          "guest_mem_available": 7049814016,
+          "host_pagefile_growth_since_baseline": 1687158784,
+          "host_commit_headroom_bytes": 25357070336,
+          "host_pages_input_per_s": 552.0621416682079,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 44.499,
+          "host_available_bytes": 1760813056,
+          "guest_mem_available": 6960513024,
+          "host_pagefile_growth_since_baseline": 1558183936,
+          "host_commit_headroom_bytes": 25356279808,
+          "host_pages_input_per_s": 680.8785529715763,
+          "backing_volume_free": 132153798656
+        },
+        {
+          "t": 49.9,
+          "host_available_bytes": 1687339008,
+          "guest_mem_available": 7307276288,
+          "host_pagefile_growth_since_baseline": 1449132032,
+          "host_commit_headroom_bytes": 25286418432,
+          "host_pages_input_per_s": 2377.034023668639,
+          "backing_volume_free": 132153712640
+        }
+      ]
+    }
+  },
+  "utc_end": "2026-11-19T21:12:36Z",
+  "produced_sha256": {
+    "O7-stock_fp32-host-start.json": "6135d2c437a7e732ddffba8b60593e4547fb8e62682f64410099e85e2778c268",
+    "O7-stock_fp32-scope.final.txt": "a068456405fd4433d14d385ad8dc2645458d6d766b01a3848b037fa7d2bdf938",
+    "O7-stock_fp32-scope.json": "ee956b7e06be160543e3ee1450c531fcddcc035d2b7f6b7d682a7e5ef52e6abc",
+    "O7-stock_fp32-scope.log": "4ba52404f3365b848c8160a42a5d867e9bb9009949f73f38a9c32cade401809a",
+    "artifacts/increment10/oracle10-7b-stock_fp32.npz": "7c861b114873a6612bcf1fcda29d4d5f9c50321b3ecd89d5c65191b355dc72ef",
+    "artifacts/increment10/oracle10-7b-stock_fp32.json": "360c6f4592f550d3e17c2468e11f62e8063bf5e5b95b09a62f537377a11c01d2"
+  }
+}

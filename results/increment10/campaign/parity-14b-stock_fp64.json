@@ -1,0 +1,147 @@
+{
+  "schema": "inwime-parity10/1",
+  "contract": "stock_fp64",
+  "gating": false,
+  "verdict": "FAIL",
+  "coverage": "FULL",
+  "problems": [],
+  "comparison": {
+    "precision": "fp64",
+    "atol": 2e-05,
+    "rtol": 2e-06,
+    "coverage": "FULL",
+    "verdict": "FAIL",
+    "kinds": {
+      "logits": {
+        "state": "compared",
+        "elements": 1216512,
+        "failures": 0,
+        "finite": true,
+        "max_abs_error": 6.056540126753163e-06,
+        "max_threshold_utilization": 0.28605866635426286,
+        "argmax_equal": true,
+        "required_elements": 1216512
+      },
+      "hidden": {
+        "state": "compared",
+        "elements": 1966080,
+        "failures": 51,
+        "finite": true,
+        "max_abs_error": 0.0020870138359896373,
+        "max_threshold_utilization": 2.8291117179249365,
+        "required_elements": 1966080
+      },
+      "kv": {
+        "state": "compared",
+        "elements": 786432,
+        "failures": 0,
+        "finite": true,
+        "max_abs_error": 3.170764772519874e-06,
+        "max_threshold_utilization": 0.09591102247729333,
+        "required_elements": 786432
+      }
+    }
+  },
+  "kv_prefixes": [
+    {
+      "length": 5,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 6,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 7,
+      "byte_identical_prefix": true
+    },
+    {
+      "length": 8,
+      "byte_identical_prefix": true
+    }
+  ],
+  "argmax": {
+    "runtime": [
+      2701,
+      315,
+      279,
+      374,
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "oracle": [
+      2701,
+      315,
+      279,
+      374,
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "equal_every_position": true,
+    "upstream_greedy": [
+      12095,
+      13,
+      576,
+      6722
+    ],
+    "runtime_continuation": [
+      12095,
+      13,
+      576,
+      6722
+    ]
+  },
+  "top10": {
+    "ordered_equal_positions": 8,
+    "set_equal_positions": 8,
+    "positions": 8
+  },
+  "greedy_equal": true,
+  "sequence": [
+    785,
+    6722,
+    315,
+    9625,
+    374,
+    12095,
+    13,
+    576
+  ],
+  "chunks": [
+    5,
+    1,
+    1,
+    1
+  ],
+  "required_elements": {
+    "logits": 1216512,
+    "hidden": 1966080,
+    "kv": 786432
+  },
+  "oracle": {
+    "capture_sha256": "109f5a300da0f52cb1ae2fbebd4d46cd52b0ca9efe17c280c35ec47ee85b852f",
+    "head_mode": "blocked",
+    "dtype": "float64",
+    "precision_profile": "stock",
+    "versions": {
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.3",
+      "numpy": "2.3.5"
+    },
+    "revision": "97e1e76335b7017d8f67c08a19d103c0504298c9",
+    "peak_rss_bytes": 3149164544,
+    "oracle_wall_s": 123.22913588897791
+  },
+  "inputs": {
+    "forward": "results/increment10/campaign/R1-forward.json",
+    "forward_sha256": "2fe8a6ce2d263243fa6ed0b063c27f64a51eb06cb2a29b795fdd81eab99da2c2",
+    "capture": "artifacts/increment10/R1-capture",
+    "oracle": "artifacts/increment10/oracle10-14b-stock_fp64.npz",
+    "oracle_sha256": "109f5a300da0f52cb1ae2fbebd4d46cd52b0ca9efe17c280c35ec47ee85b852f",
+    "oracle_meta_sha256": "f900fdd7f3b7d9078a31952bfa11e71c61025da3575f8e1f7c182403ff95a826"
+  }
+}

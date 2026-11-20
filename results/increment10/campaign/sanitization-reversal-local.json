@@ -1,0 +1,86 @@
+{
+ "schema": "inwime-sanitization-reversal10/1",
+ "utc": "2026-11-20T00:27:54Z",
+ "method": "local only: placeholders replaced back by the absolute paths of this machine (not written here); SHA256 compared with original_sha256 of sanitization-post-write.json",
+ "files": {
+  "O7-stock_fp32-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<repo>"
+   ]
+  },
+  "O7-full64-a2-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<repo>"
+   ]
+  },
+  "F-sync-scope.log": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<repo>"
+   ]
+  },
+  "N6-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "N6-scope.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R1-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R1-scope.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R2-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R2-scope.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R3-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R3-scope.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R4-run.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  },
+  "R4-scope.json": {
+   "reconstructed_original_sha256_matches": true,
+   "reversed_placeholders": [
+    "<recovery>"
+   ]
+  }
+ },
+ "all_match": true
+}
