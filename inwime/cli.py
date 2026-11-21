@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from . import __version__, catalog, doctor, installer, registry, storage
+from . import __version__, catalog, doctor, installer, registry, server, storage
 
 
 def build_parser():
@@ -56,7 +56,28 @@ def build_parser():
     u = models.add_parser('use', help='choose the active model among the installed and imported ones')
     u.add_argument('name', metavar='ID', help='REPO@SHA or import path as shown by `inwime models list`; '
                    'REPO alone if one revision is installed')
+    v = commands.add_parser('serve', help='OpenAI-compatible HTTP API over the active model (loopback only by '
+                            'default, bearer API key required)')
+    v.add_argument('--host', default=server.DEFAULT_HOST,
+                   help='address to listen on (default: %s); a non-loopback address also needs '
+                   '--allow-non-loopback' % server.DEFAULT_HOST)
+    v.add_argument('--port', type=int, default=server.DEFAULT_PORT,
+                   help='TCP port (default: %d; 0 picks a free one)' % server.DEFAULT_PORT)
+    v.add_argument('--allow-non-loopback', action='store_true',
+                   help='explicitly accept a --host that other machines may reach')
     return parser
+
+
+def serve_main(parser, args):
+    if not 0 <= args.port <= 65535:
+        parser.error('--port must be between 0 and 65535')
+    try:
+        return server.serve(args.host, args.port, args.allow_non_loopback)
+    except server.ServeError as error:
+        sys.stderr.write('inwime: %s\n' % catalog.printable(error))
+        return error.exit_status
+    except KeyboardInterrupt:
+        return 130
 
 
 def models_main(parser, args):
@@ -114,6 +135,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.command == 'models':
         return models_main(parser, args)
+    if args.command == 'serve':
+        return serve_main(parser, args)
     if args.command != 'doctor':
         parser.print_help()
         return 2

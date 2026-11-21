@@ -13,6 +13,9 @@ requires-python = ">=3.11"
 dependencies = [
     "huggingface_hub==2.4.0",
     "httpx2==2.16.2",            # imported directly by the catalog for network errors
+    "starlette==1.10.0",         # `inwime serve` HTTP API
+    "uvicorn==0.54.0",
+    "tokenizers==0.23.3",        # tokenizer.json of the Checkpoint, without Transformers or torch
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
