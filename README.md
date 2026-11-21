@@ -77,7 +77,7 @@ Ogni file viene verificato dopo il download:
 - i file LFS (pesi) con lo SHA256 dichiarato dal Hub;
 - gli altri file con dimensione e git blob id.
 
-Un file che non supera la verifica rende l'installazione `failed`. Se l'ha scaricato questa installazione, il file viene rimosso dalla cache. I pesi verificati diventano di sola lettura e non vengono mai convertiti né quantizzati. I file di pesi in formati che il loader safetensors non legge (`.bin`, `.gguf`, `.onnx`, ...) non vengono scaricati se il Checkpoint ha pesi safetensors.
+Un file che non supera la verifica rende l'installazione `failed`. Se l'ha scaricato questa installazione, il file viene rimosso dalla cache. Se invece era già nella cache, scaricato da un altro strumento, resta dov'è: il messaggio indica il percorso da rimuovere prima di riprovare. Ogni file verificato diventa di sola lettura, anche se l'installazione poi fallisce. I pesi non vengono mai convertiti né quantizzati. I file di pesi in formati che il loader safetensors non legge (`.bin`, `.gguf`, `.onnx`, ...) non vengono scaricati se il Checkpoint ha pesi safetensors.
 
 Resume: un'installazione interrotta si riprende rilanciando lo stesso comando. I file già nella cache non vengono riscaricati, solo verificati di nuovo. Dentro un singolo file, `huggingface_hub` riprende un trasferimento interrotto con richieste a byte range, ma solo nello stesso processo: un file lasciato a metà da un processo terminato riparte da zero. Una sola installazione alla volta: una seconda esce subito.
 
@@ -86,7 +86,7 @@ Il Registro dei modelli sta in `INWIME_HOME`, altrimenti in `$XDG_DATA_HOME/inwi
 - i riferimenti ai Checkpoint importati (`imported/*.json`);
 - il modello attivo (`active.json`).
 
-`import` non copia e non modifica nulla. Registra il percorso con dimensione e data di modifica dei file, così `list` segnala un Checkpoint cambiato (`changed`) o sparito (`missing`). `list` legge solo file locali e mostra, per ogni Checkpoint, lo stato, lo spazio occupato e la Vista di supporto calcolata da config e header locali. Gli stati sono `verified`, `failed`, `incomplete`, `missing`, `imported` e `changed`. `use` accetta solo Checkpoint `verified` o `imported`.
+`import` non copia e non modifica nulla. Registra il percorso con dimensione e data di modifica dei file, così `list` segnala un Checkpoint cambiato (`changed`) o sparito (`missing`). `list` legge solo file locali e mostra, per ogni Checkpoint, lo stato, lo spazio occupato e la Vista di supporto calcolata da config e header locali. Gli stati sono `verified`, `failed`, `incomplete`, `missing`, `imported` e `changed`. `verified` vuol dire che l'installazione ha verificato ogni file e che i file sono ancora presenti con la dimensione registrata: `list` e un nuovo `install` non ricalcolano gli hash. Non va confuso con lo Stato di capacità `numerically_verified`. `use` accetta solo Checkpoint `verified` o `imported`.
 
 Codici di uscita aggiuntivi:
 - 9: conferma non data;

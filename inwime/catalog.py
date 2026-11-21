@@ -383,7 +383,8 @@ def printable(text):
                    for c in str(text))
 
 
-def _lines(lines):
+def render_lines(lines):
+    """Lines for the terminal, each made inert with `printable`."""
     return '\n'.join(printable(line) for line in lines) + '\n'
 
 def _count(n):
@@ -395,7 +396,7 @@ def _count(n):
     return str(n)
 
 
-def _bytes(n):
+def format_bytes(n):
     if n is None:
         return 'unknown'
     return '%.2f GiB (%d bytes)' % (n/2**30, n) if n >= 2**30 else '%.2f MiB (%d bytes)' % (n/2**20, n)
@@ -419,7 +420,7 @@ def render_search(result):
     lines.append('* v0.1 certification target   v verified revision (see `inwime models info`)')
     lines.append('page %d, %d per page%s' % (result['page'], result['limit'],
                  '; more results: repeat with --page %d' % (result['page']+1) if result['has_more'] else ''))
-    return _lines(lines)
+    return render_lines(lines)
 
 
 def render_info(info):
@@ -435,7 +436,7 @@ def render_info(info):
                                                      info['model_type'] or 'unknown'),
            '  context length:  %s' % (info['context_length'] or 'unknown'),
            '  declared dtype:  %s' % (info['declared_dtype'] or 'unknown'),
-           '  weights:         %s, %s' % (w['format'] or 'no safetensors', _bytes(w['bytes'])),
+           '  weights:         %s, %s' % (w['format'] or 'no safetensors', format_bytes(w['bytes'])),
            '  files:           %d%s' % (len(w['files']), ' (sharded, with index)' if w['sharded'] else ''),
            '  parameters:      %s' % ('%s by dtype %s' % (w['parameters'], w['dtypes'])
                                      if w['headers_read'] else 'unknown (headers not read)'),
@@ -456,4 +457,4 @@ def render_info(info):
     if cap['diagnosis']:
         out += ['', 'Diagnosis:']
         out += ['  - [%s] %s' % (d['category'], d['message']) for d in cap['diagnosis']]
-    return _lines(out)
+    return render_lines(out)

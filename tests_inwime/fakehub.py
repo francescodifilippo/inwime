@@ -136,6 +136,8 @@ class FakeHub:
             if len(parts) >= 5 and parts[2] == 'resolve':
                 return self.resolve(request, '/'.join(parts[:2]), parts[3], '/'.join(parts[4:]),
                                     token, head)
+        except (BrokenPipeError, ConnectionResetError):     # the client went away (killed)
+            return None
         except Exception as error:      # a bug in the fake must not look like a Hub answer
             self.unexpected.append((request.command, request.path, repr(error)))
             return self.send(request, 418, {'error': 'fake hub failure'}, head)

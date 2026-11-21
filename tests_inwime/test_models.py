@@ -164,6 +164,8 @@ def test_sha256_mismatch_fails_the_install_and_leaves_no_valid_checkpoint(hub, r
     # The corrupt blob it downloaded is removed from the cache, so nothing can load it.
     assert hashlib.sha256(files[WEIGHT]).hexdigest() not in blobs(home)
     assert not (snapshot(home, REPO, hm.sha(1))/WEIGHT).exists()
+    # Files verified before the failure are already read-only originals.
+    assert stat.S_IMODE((snapshot(home, REPO, hm.sha(1))/'config.json').resolve().stat().st_mode) & 0o222 == 0
     # Once the Hub serves the right bytes, the install completes.
     hub.corrupt.clear()
     done = run('install', REPO, input='yes\n', free=PLENTY)
@@ -298,7 +300,7 @@ def test_reinstalling_a_verified_checkpoint_downloads_nothing(hub, run, home):
     hub.requests.clear()
     done = run('install', REPO, free=PLENTY)
     assert done.returncode == 0, done.stderr
-    assert 'already installed and verified' in done.stdout and "Type 'yes'" not in done.stdout
+    assert 'already installed: %s@%s' % (REPO, hm.sha(1)) in done.stdout and "Type 'yes'" not in done.stdout
     assert weights_fetched(hub) == []
 
 
@@ -451,3 +453,63 @@ def test_weights_in_formats_never_loaded_are_not_downloaded(hub, run, home):
     m = manifest(home, REPO, hm.sha(1))
     assert m['excluded_files'] == ['pytorch_model.bin']
     assert {f['name'] for f in m['files']} == set(files) - {'pytorch_model.bin'}
+
+
+def test_a_full_sha_must_resolve_to_itself(hub, run, home):
+    # A branch may be named like a commit: confirming it with --yes would pin another Revisione.
+    repo = hub.add(hm.repo(REPO, hm.checkpoint(hm.QWEN2), revision=hm.sha(1)))
+    repo.branches[hm.sha(5)] = hm.sha(1)
+    done = run('install', REPO+'@'+hm.sha(5), '--yes', free=PLENTY)
+    assert done.returncode == 2 and hm.sha(1) in done.stderr, done.stderr
+    assert weights_fetched(hub) == [] and not cache(home).exists()
+
+
+def test_hub_identifiers_cannot_steer_local_paths(hub, run, home):
+    # A hostile endpoint answers with a revision and file names that would escape the
+    # registry and the cache if used as path components.
+    files = hm.checkpoint(hm.QWEN2)
+    hub.add(hm.Repo(id='acme/evil', revisions={'../../../escape': files}, branches={'main': '../../../escape'}))
+    done = run('install', 'acme/evil', input='yes\n', free=PLENTY)
+    assert done.returncode == 7 and 'invalid revision' in done.stderr, done.stderr
+    hub.add(hm.repo('acme/evil2', dict(files, **{'../../outside.json': b'{}'}), revision=hm.sha(3)))
+    done = run('install', 'acme/evil2', input='yes\n', free=PLENTY)
+    assert done.returncode == 7 and 'invalid file name' in done.stderr, done.stderr
+    assert not cache(home).exists() and not (home/'.local/share/inwime/installed').exists()
+    assert not any(home.parent.glob('**/escape*')) and not (home.parent/'outside.json').exists()
+
+
+def test_install_killed_mid_file_is_listed_incomplete_and_resumes(hub, run, home):
+    import signal
+    import threading
+    import time
+    files = add_tiny(hub)
+    add_tiny(hub, 'acme/other', n=2)
+    hub.hold[SECOND] = gate = threading.Event()
+    victim = run.start('install', REPO+'@'+hm.sha(1), '--yes', free=PLENTY)
+    deadline = time.monotonic()+60
+    while not hub.downloads(SECOND):
+        assert victim.poll() is None and time.monotonic() < deadline, victim.communicate()
+        time.sleep(0.05)
+    victim.send_signal(signal.SIGKILL)
+    victim.communicate(timeout=30)
+    gate.set()
+    models, _ = listing(run)
+    assert models[REPO+'@'+hm.sha(1)]['state'] == 'incomplete'
+    # Another install holding the lock does not make the killed one look alive.
+    del hub.hold[SECOND]
+    hub.hold[WEIGHT] = other_gate = threading.Event()
+    other = run.start('install', 'acme/other@'+hm.sha(2), '--yes', free=PLENTY)
+    try:
+        while not any(r['path'].startswith('/acme/other/') for r in hub.downloads(WEIGHT)):
+            assert other.poll() is None and time.monotonic() < deadline+60, other.communicate()
+            time.sleep(0.05)
+        assert listing(run)[0][REPO+'@'+hm.sha(1)]['state'] == 'incomplete'
+    finally:
+        other_gate.set()
+        other.communicate(timeout=60)
+    hub.requests.clear()
+    done = run('install', REPO+'@'+hm.sha(1), '--yes', free=PLENTY)
+    assert done.returncode == 0, done.stderr
+    assert weights_fetched(hub) == [SECOND]
+    assert (snapshot(home, REPO, hm.sha(1))/SECOND).read_bytes() == files[SECOND]
+    assert listing(run)[0][REPO+'@'+hm.sha(1)]['state'] == 'verified'

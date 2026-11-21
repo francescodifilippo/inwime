@@ -40,8 +40,17 @@ def home(env=None):
     env = os.environ if env is None else env
     if env.get('INWIME_HOME'):
         return Path(env['INWIME_HOME'])
-    data = Path(env['XDG_DATA_HOME']) if env.get('XDG_DATA_HOME') else Path(env.get('HOME', '~'))/'.local/share'
+    data = Path(env['XDG_DATA_HOME']) if env.get('XDG_DATA_HOME') else \
+        Path(env.get('HOME') or os.path.expanduser('~'))/'.local/share'
     return data/'inwime'
+
+
+def utc_now():
+    return datetime.now(timezone.utc).isoformat(timespec='seconds')
+
+
+def lock_path():
+    return home()/'locks'/'install.lock'
 
 
 def write_json(path, data):
@@ -71,8 +80,9 @@ def manifest_path(repo_id, revision):
 @contextlib.contextmanager
 def install_lock(holder):
     """Exclusive, non-blocking: a second install fails at once instead of waiting. The kernel
-    releases the lock when the holder exits, even if it is killed."""
-    path = home()/'locks'/'install.lock'
+    releases the lock when the holder exits, even if it is killed. Yields `announce(text)`,
+    which records what the holder is installing once it is known."""
+    path = lock_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o644)
     try:
@@ -82,31 +92,33 @@ def install_lock(holder):
             other = os.pread(fd, 4096, 0).decode('utf-8', 'replace').strip() or 'unknown'
             raise ModelsError('locked', 'another install is running (%s); retry when it ends'
                               % catalog.printable(other)) from None
-        os.ftruncate(fd, 0)
-        os.pwrite(fd, ('%s, pid %d\n' % (holder, os.getpid())).encode(), 0)
-        yield
+
+        def announce(text):
+            os.ftruncate(fd, 0)
+            os.pwrite(fd, ('%s, pid %d\n' % (text, os.getpid())).encode(), 0)
+        announce(holder)
+        yield announce
     finally:
         os.close(fd)
 
 
-def install_running():
-    """Whether an install holds the lock now."""
-    path = home()/'locks'/'install.lock'
+def install_running(entry_id):
+    """Whether an install of `entry_id` holds the lock now."""
     try:
-        fd = os.open(path, os.O_RDONLY)
+        fd = os.open(lock_path(), os.O_RDONLY)
     except FileNotFoundError:
         return False
     try:
         fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
         return False
     except BlockingIOError:
-        return True
+        return os.pread(fd, 4096, 0).decode('utf-8', 'replace').startswith(entry_id+',')
     finally:
         os.close(fd)
 
-
 def intact(manifest):
-    """Whether a manifest records a verified install whose files are all still in the cache."""
+    """Whether a manifest records a verified install whose files are all still in the cache with
+    their recorded sizes. Files are not hashed again here: hashing is the installer's job."""
     if not manifest or manifest.get('status') != 'verified':
         return False
     snapshot = Path(manifest['snapshot_dir'])
@@ -146,7 +158,7 @@ def import_checkpoint(path):
                           % catalog.printable(directory))
     files = scan(directory)
     record = {'schema': SCHEMA_IMPORT, 'inwime_version': __version__, 'path': str(directory),
-              'imported_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+              'imported_utc': utc_now(),
               'bytes': sum(f['size'] for f in files), 'files': files}
     write_json(import_record_path(directory), record)
     return record
@@ -215,8 +227,9 @@ def installed_state(manifest):
     status = manifest.get('status')
     if status == 'verified':
         return 'verified' if intact(manifest) else 'missing'
-    if status == 'installing':
-        return 'installing' if install_running() else 'incomplete'
+    if status in ('installing', 'incomplete'):
+        entry_id = '%s@%s' % (manifest['repo_id'], manifest['revision'])
+        return 'installing' if status == 'installing' and install_running(entry_id) else 'incomplete'
     return 'failed'
 
 
@@ -232,12 +245,19 @@ def imported_state(record):
 USABLE = ('verified', 'imported')
 
 
-def occupied(directory):
+def blobs(directory):
+    """{(device, inode): size} of the files of a directory, symlinks followed: a blob shared by
+    two snapshots is counted once in a total."""
+    found = {}
     try:
-        return sum(f['size'] for f in scan(directory))
+        for entry in os.scandir(directory):
+            with contextlib.suppress(OSError):
+                if entry.is_file():
+                    st = entry.stat()
+                    found[(st.st_dev, st.st_ino)] = st.st_size
     except OSError:
-        return 0
-
+        pass
+    return found
 
 def entries():
     """Installed and imported Checkpoint, each with its state, space and Stati di capacità."""
@@ -257,7 +277,8 @@ def entries():
                       'path': r['path'], 'state': imported_state(r), 'record': str(path)})
     active_id = active()
     for entry in found:
-        entry['bytes'] = occupied(entry['path'])
+        entry['blobs'] = blobs(entry['path'])
+        entry['bytes'] = sum(entry['blobs'].values())
         entry['active'] = entry['id'] == active_id
         assessment = None
         if entry['state'] in USABLE:
@@ -271,8 +292,11 @@ def entries():
 
 def inventory():
     models = entries()
+    unique = {}
+    for m in models:
+        unique.update(m.pop('blobs'))
     return {'schema': SCHEMA_LIST, 'registry': str(home()), 'active': active(),
-            'bytes_total': sum(m['bytes'] for m in models), 'models': models}
+            'bytes_total': sum(unique.values()), 'models': models}
 
 
 def active():
@@ -285,15 +309,15 @@ def render_list(result):
     for m in result['models']:
         support = '%s (%s)' % (m['support'], m['reached']) if m['support'] else '-'
         rows.append(('*' if m['active'] else ' ', m['id'], m['source'], m['state'], support,
-                     catalog._bytes(m['bytes'])))
+                     catalog.format_bytes(m['bytes'])))
     widths = [max(len(r[i]) for r in rows) for i in range(len(rows[0]))]
     lines = ['  '.join(c.ljust(w) for c, w in zip(r, widths)).rstrip() for r in rows]
     if not result['models']:
         lines.append('no models: `inwime models install REPO@SHA` or `inwime models import PATH`')
-    lines += ['', 'total %s; * active model%s' % (catalog._bytes(result['bytes_total']),
+    lines += ['', 'total %s; * active model%s' % (catalog.format_bytes(result['bytes_total']),
                                                   '' if result['active'] else ' (none selected)'),
               'registry: %s' % result['registry']]
-    return catalog._lines(lines)
+    return catalog.render_lines(lines)
 
 
 def use(name):
@@ -320,5 +344,5 @@ def use(name):
             're-run `inwime models install` to complete or repair it' if entry['source'] == 'installed'
             else 're-run `inwime models import` after checking the directory'))
     write_json(home()/'active.json', {'id': entry['id'], 'source': entry['source'], 'path': entry['path'],
-                                      'selected_utc': datetime.now(timezone.utc).isoformat(timespec='seconds')})
+                                      'selected_utc': utc_now()})
     return entry

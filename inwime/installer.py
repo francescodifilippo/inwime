@@ -27,7 +27,6 @@ import os
 import re
 import stat
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__, catalog, doctor, probe, registry, storage, wsl_host
@@ -54,10 +53,6 @@ class SpaceProbe:
         return storage.describe(self.path, **self.kwargs)
 
 
-def now():
-    return datetime.now(timezone.utc).isoformat(timespec='seconds')
-
-
 def cache_dir():
     return doctor.default_store(os.environ)
 
@@ -66,11 +61,35 @@ def storage_folder(repo_id):
     return cache_dir()/('models--'+repo_id.replace('/', '--'))
 
 
-def plan(repo_id, requested):
-    """What an install of `repo_id@requested` would download, from the Hub's metadata."""
+SHA256 = re.compile(r'^[0-9a-f]{64}$')
+
+
+def safe_name(name):
+    """A file name of the Revisione usable as a relative path inside the snapshot."""
+    parts = name.split('/')
+    return (bool(name) and not name.startswith('/') and '\\' not in name and '\0' not in name
+            and all(part not in ('', '.', '..') for part in parts))
+
+
+def make_plan(repo_id, requested):
+    """What an install of `repo_id@requested` would download, from the Hub's metadata.
+
+    Every identifier the Hub returns becomes a path component (registry file, snapshot, blob),
+    so each is validated first: a hostile endpoint cannot steer writes outside the cache.
+    """
     model = catalog.call(catalog.api().model_info, repo_id, revision=requested, files_metadata=True)
     revision = model.sha
+    if not isinstance(revision, str) or not COMMIT.match(revision):
+        raise ModelsError('hub_error', 'the Hub answered an invalid revision for %s' % repo_id)
     siblings = {s.rfilename: s for s in model.siblings or ()}
+    for name, s in siblings.items():
+        if not safe_name(name):
+            raise ModelsError('hub_error', 'the Hub lists an invalid file name in %s@%s: %s'
+                              % (repo_id, revision, catalog.printable(name)[:120]))
+        if (s.lfs is not None and not SHA256.match(str(s.lfs.sha256))) or \
+                (s.lfs is None and s.blob_id is not None and not COMMIT.match(str(s.blob_id))):
+            raise ModelsError('hub_error', 'the Hub declares an invalid hash for %s in %s@%s'
+                              % (catalog.printable(name)[:120], repo_id, revision))
     # Weight files the safetensors loader never reads (pickle, GGUF, ONNX... beside safetensors)
     # are not downloaded; without safetensors weights, every file is.
     index = catalog.read_json(repo_id, revision, siblings, catalog.SAFETENSORS_INDEX)
@@ -99,18 +118,19 @@ def plan(repo_id, requested):
     total = sum(f['expected']['size'] or 0 for f in files)
     missing = sum(f['expected']['size'] or 0 for f in files if not f['cached'])
     return {'repo_id': repo_id, 'requested_ref': requested, 'revision': revision,
-            'gated': model.gated if model.gated in ('auto', 'manual') else False,
+            'id': '%s@%s' % (repo_id, revision),
             'files': files, 'bytes_total': total, 'bytes_to_download': missing, 'duplicates': duplicates,
             'excluded_files': excluded,
             'cache_dir': str(cache_dir()), 'snapshot_dir': str(folder/'snapshots'/revision)}
 
 
-def check_access(p):
+def check_access(plan):
     """One HEAD request on a file of the Revisione: authentication and licence problems of a gated
     or private repository surface before the summary, not after the confirmation."""
     from huggingface_hub import get_hf_file_metadata, hf_hub_url
-    if p['files']:
-        url = hf_hub_url(p['repo_id'], p['files'][0]['name'], revision=p['revision'], endpoint=catalog.endpoint())
+    if plan['files']:
+        url = hf_hub_url(plan['repo_id'], plan['files'][0]['name'], revision=plan['revision'],
+                         endpoint=catalog.endpoint())
         catalog.call(get_hf_file_metadata, url, endpoint=catalog.endpoint())
 
 
@@ -126,32 +146,28 @@ def check_space(space, needed, margin):
                           % (needed, free-needed, margin))
 
 
-def _size(n):
-    return catalog._bytes(n)
-
-
-def render_summary(p, space, margin):
+def render_summary(plan, space, margin):
+    size = catalog.format_bytes
     free = space['physical_free_bytes']
-    cached = [f for f in p['files'] if f['cached']]
-    lines = ['Install %s' % p['repo_id'],
-             '  revision:        %s (requested: %s)' % (p['revision'], p['requested_ref']),
-             '  files:           %d, %s' % (len(p['files']), _size(p['bytes_total'])),
-             '  to download:     %s' % _size(p['bytes_to_download']),
+    cached = [f for f in plan['files'] if f['cached']]
+    lines = ['Install %s' % plan['repo_id'],
+             '  revision:        %s (requested: %s)' % (plan['revision'], plan['requested_ref']),
+             '  files:           %d, %s' % (len(plan['files']), size(plan['bytes_total'])),
+             '  to download:     %s' % size(plan['bytes_to_download']),
              '  already cached:  %d files (verified, not downloaded again)' % len(cached),
-             '  destination:     %s' % p['snapshot_dir'],
-             '  storage:         %s on %s, physical free %s' % (space['backing'], space['mount_point'],
-                                                              _size(free)),
-             '  after download:  %s free, margin %s' % (_size(None if free is None else
-                                                            free-p['bytes_to_download']), _size(margin))]
-    if p['excluded_files']:
+             '  destination:     %s' % plan['snapshot_dir'],
+             '  storage:         %s on %s, physical free %s' % (space['backing'], space['mount_point'], size(free)),
+             '  after download:  %s free, margin %s' % (size(None if free is None else
+                                                           free-plan['bytes_to_download']), size(margin))]
+    if plan['excluded_files']:
         lines.insert(3, '  not downloaded:  %s (weight formats the safetensors loader never reads)'
-                     % ', '.join(p['excluded_files']))
-    if p['duplicates']:
+                     % ', '.join(plan['excluded_files']))
+    if plan['duplicates']:
         lines.insert(5, '  duplicates:      %d files, %d bytes identical to blobs of %s, stored again '
                      '(the Hugging Face cache keeps one copy per repository)'
-                     % (len(p['duplicates']), sum(d['bytes'] for d in p['duplicates']),
-                        ', '.join(sorted({d['repo_id'] for d in p['duplicates']}))))
-    return catalog._lines(lines)
+                     % (len(plan['duplicates']), sum(d['bytes'] for d in plan['duplicates']),
+                        ', '.join(sorted({d['repo_id'] for d in plan['duplicates']}))))
+    return catalog.render_lines(lines)
 
 
 def confirm_from_stdin():
@@ -193,10 +209,12 @@ def verify(path, entry):
 
 def quarantine(local, entry):
     """Remove a blob that failed verification if this install downloaded it, so no tool loads it
-    and a retry downloads it again. A blob that was already in the cache is left untouched."""
+    and a retry downloads it again. A blob that was already in the cache belongs to whoever put
+    it there: it is reported, never deleted."""
     blob = os.path.realpath(local)
     if entry['cached']:
-        return '; the blob was already in the cache and is left untouched: %s' % blob
+        return ('; the corrupt blob was already in the cache and is left untouched: %s. Remove it '
+                '(for example with `hf cache rm`) before retrying' % blob)
     if os.path.islink(local):
         os.unlink(local)
     with contextlib.suppress(FileNotFoundError):
@@ -205,15 +223,17 @@ def quarantine(local, entry):
 
 
 def read_only(path):
-    """Remove the write permissions of an original file (the blob the snapshot links to)."""
+    """Remove the write permissions of a verified original (the blob the snapshot links to).
+    Blobs are content-addressed and immutable by design, so this holds for blobs another tool
+    downloaded too."""
     blob = os.path.realpath(path)
     os.chmod(blob, stat.S_IMODE(os.stat(blob).st_mode) & ~0o222)
 
 
-def download(p, entry):
+def download(plan, entry):
     from huggingface_hub import hf_hub_download
-    return hf_hub_download(p['repo_id'], entry['name'], revision=p['revision'], cache_dir=p['cache_dir'],
-                           endpoint=catalog.endpoint())
+    return hf_hub_download(plan['repo_id'], entry['name'], revision=plan['revision'],
+                           cache_dir=plan['cache_dir'], endpoint=catalog.endpoint())
 
 
 def install(spec, *, margin_bytes=storage.DEFAULT_MARGIN_BYTES, yes=False, confirm=confirm_from_stdin,
@@ -222,63 +242,77 @@ def install(spec, *, margin_bytes=storage.DEFAULT_MARGIN_BYTES, yes=False, confi
     if yes and not COMMIT.match(requested):
         raise ModelsError('usage', '--yes needs the revision as a full 40-hex SHA (%s@<sha>); without --yes '
                           'the summary shows what %r resolves to' % (repo_id, requested))
-    with catalog.translated(repo_id):
-        p = plan(repo_id, requested)
-        if registry.intact(registry.read_json(registry.manifest_path(repo_id, p['revision']))):
-            out.write('already installed and verified: %s@%s (requested: %s)\n'
-                      % (repo_id, p['revision'], requested))
-            return None
-        check_access(p)
-    with registry.install_lock('%s@%s' % (repo_id, p['revision'])):
-        return _acquire(p, margin_bytes, yes, confirm, out)
+    # The lock comes first: the plan records which blobs are already cached, and that must not
+    # change before the download decides what it may delete.
+    with registry.install_lock('%s@%s' % (repo_id, requested)) as announce:
+        with catalog.translated(repo_id):
+            plan = make_plan(repo_id, requested)
+            announce(plan['id'])
+            if COMMIT.match(requested) and plan['revision'] != requested:
+                raise ModelsError('usage', '%s resolves to %s, not to itself: it names a branch or tag, not '
+                                  'a commit; install %s if that is the Revisione wanted'
+                                  % (requested, plan['revision'], plan['id']))
+            previous = registry.read_json(registry.manifest_path(repo_id, plan['revision']))
+            if registry.intact(previous):
+                out.write(catalog.render_lines([
+                    'already installed: %s (requested: %s), verified on %s; every file is still present '
+                    'with its recorded size (not hashed again)' % (plan['id'], requested,
+                                                                   previous['finished_utc'])]))
+                return None
+            check_access(plan)
+        return _acquire(plan, margin_bytes, yes, confirm, out)
 
 
-def _acquire(p, margin_bytes, yes, confirm, out):
-    repo_id, requested = p['repo_id'], p['requested_ref']
-    space_probe = SpaceProbe(Path(p['cache_dir']), margin_bytes)
+def _acquire(plan, margin_bytes, yes, confirm, out):
+    space_probe = SpaceProbe(Path(plan['cache_dir']), margin_bytes)
     space = space_probe.measure()
-    out.write(render_summary(p, space, margin_bytes))
+    out.write(render_summary(plan, space, margin_bytes))
     out.flush()
-    check_space(space, p['bytes_to_download'], margin_bytes)
+    check_space(space, plan['bytes_to_download'], margin_bytes)
     if not yes and not confirm():
         raise ModelsError('declined', 'download not confirmed: nothing was downloaded')
     out.write('\n')
-    check_space(space_probe.measure(), p['bytes_to_download'], margin_bytes)
+    check_space(space_probe.measure(), plan['bytes_to_download'], margin_bytes)
     manifest = {'schema': registry.SCHEMA_MANIFEST, 'inwime_version': __version__, 'client': catalog.client(),
-                'endpoint': catalog.public_endpoint(), 'repo_id': repo_id, 'requested_ref': requested,
-                'revision': p['revision'], 'cache_dir': p['cache_dir'], 'snapshot_dir': p['snapshot_dir'],
-                'started_utc': now(), 'finished_utc': None, 'status': 'installing', 'failure': None,
-                'margin_bytes': margin_bytes, 'bytes_total': p['bytes_total'], 'read_only': False,
-                'duplicates': p['duplicates'], 'excluded_files': p['excluded_files'], 'files': []}
-    path = registry.manifest_path(repo_id, p['revision'])
+                'endpoint': catalog.public_endpoint(), 'repo_id': plan['repo_id'],
+                'requested_ref': plan['requested_ref'], 'revision': plan['revision'],
+                'cache_dir': plan['cache_dir'], 'snapshot_dir': plan['snapshot_dir'],
+                'started_utc': registry.utc_now(), 'finished_utc': None, 'status': 'installing',
+                'failure': None, 'margin_bytes': margin_bytes, 'bytes_total': plan['bytes_total'],
+                'read_only': False, 'duplicates': plan['duplicates'],
+                'excluded_files': plan['excluded_files'], 'files': []}
+    path = registry.manifest_path(plan['repo_id'], plan['revision'])
     registry.write_json(path, manifest)
     try:
-        remaining = p['bytes_to_download']
-        for i, entry in enumerate(p['files']):
+        remaining = plan['bytes_to_download']
+        for i, entry in enumerate(plan['files']):
             if i:
                 check_space(space_probe.measure(), remaining, margin_bytes)
             try:
-                with catalog.translated(repo_id):
-                    local = download(p, entry)
-            except OSError as error:      # disk full, permissions, Hub unreachable mid-install
+                with catalog.translated(plan['repo_id']):
+                    local = download(plan, entry)
+            except (OSError, ValueError) as error:   # disk full, permissions, Hub unreachable mid-install
                 raise ModelsError('download_failed', 'cannot download %s: %s' % (
-                    entry['name'], error.strerror or type(error).__name__)) from None
+                    entry['name'], getattr(error, 'strerror', None) or type(error).__name__)) from None
             if not entry['cached']:
                 remaining -= entry['expected']['size'] or 0
             record = verify(local, entry)
             manifest['files'].append(record)
-            out.write('  %-10s %s\n' % (record['outcome'], catalog.printable(entry['name'])))
+            out.write(catalog.render_lines(['  %-10s %s' % (record['outcome'], entry['name'])]))
             if record['outcome'] != 'verified':
-                raise ModelsError('verification_failed', '%s of %s@%s: %s%s' % (
-                    entry['name'], repo_id, p['revision'], record['detail'], quarantine(local, entry)))
+                raise ModelsError('verification_failed', '%s of %s: %s%s' % (
+                    entry['name'], plan['id'], record['detail'], quarantine(local, entry)))
+            read_only(local)
+            record['read_only'] = True
     except BaseException as error:
-        manifest.update(status='failed', finished_utc=now(), failure=catalog.printable(
-            error if isinstance(error, catalog.CatalogError) else type(error).__name__))
+        # An interruption leaves an install to resume; anything else is a failure.
+        interrupted = isinstance(error, KeyboardInterrupt)
+        manifest.update(status='incomplete' if interrupted else 'failed', finished_utc=registry.utc_now(),
+                        failure='interrupted' if interrupted else catalog.printable(
+                            error if isinstance(error, catalog.CatalogError) else type(error).__name__))
         registry.write_json(path, manifest)
         raise
-    for record in manifest['files']:
-        read_only(Path(p['snapshot_dir'])/record['name'])
-    manifest.update(status='verified', finished_utc=now(), read_only=True)
+    manifest.update(status='verified', finished_utc=registry.utc_now(), read_only=True)
     registry.write_json(path, manifest)
-    out.write('installed and verified: %s@%s\n  manifest: %s\n' % (repo_id, p['revision'], path))
+    out.write(catalog.render_lines(['installed and verified: %s' % plan['id'], '  manifest: %s' % path]))
     return manifest
