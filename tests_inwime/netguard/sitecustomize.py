@@ -53,3 +53,9 @@ def connect_ex(self, address):
 socket.getaddrinfo = getaddrinfo
 socket.socket.connect = connect
 socket.socket.connect_ex = connect_ex
+
+
+# Test-only fake of the physical free space seen by `inwime models install` (fakestorage.py).
+if os.environ.get('INWIME_FAKE_FREE_BYTES'):
+    import fakestorage
+    fakestorage.install()

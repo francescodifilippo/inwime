@@ -4,6 +4,11 @@ Implements the routes `huggingface_hub` uses for the catalog: model listing with
 pagination, revision info with blobs, and file resolution with byte ranges. Access control
 mirrors the real Hub's X-Error-Code responses. Every request is recorded; requests to routes
 the fake does not implement are recorded as unexpected and answered with 418.
+
+File downloads behave like the Hub's: LFS files (weights) carry their SHA256 as ETag, other
+files their git blob id. Faults can be injected per file name: `fail` answers HTTP 500,
+`cut` closes the connection halfway through the body, `corrupt` serves different bytes of the
+same length than the metadata declares, and `hold` delays the body until an Event is set.
 """
 import hashlib
 import json
@@ -16,6 +21,16 @@ from urllib.parse import parse_qs, unquote, urlencode, urlsplit
 
 
 DTYPE_BYTES = {'BF16': 2, 'F16': 2, 'F32': 4, 'I8': 1}
+LFS_SUFFIXES = ('.safetensors', '.bin', '.gguf', '.pt')
+
+
+def git_blob_id(data):
+    return hashlib.sha1(b'blob %d\0' % len(data) + data).hexdigest()
+
+
+def etag(name, data):
+    """What the Hub sends as ETag: SHA256 for LFS files, the git blob id for the others."""
+    return hashlib.sha256(data).hexdigest() if name.endswith(LFS_SUFFIXES) else git_blob_id(data)
 
 
 def safetensors_bytes(tensors, dtype='BF16'):
@@ -60,6 +75,10 @@ class FakeHub:
         self.requests = []
         self.unexpected = []
         self.throttle = {}                # path prefix -> remaining 429 answers
+        self.fail = {}                    # file name -> remaining HTTP 500 answers to GET
+        self.cut = {}                     # file name -> remaining GETs cut halfway
+        self.corrupt = set()              # file names served with flipped bytes
+        self.hold = {}                    # file name -> threading.Event released by the test
         self.lock = threading.Lock()
         hub = self
 
@@ -204,8 +223,8 @@ class FakeHub:
         siblings = []
         for name, data in sorted(repo.revisions[sha].items()):
             entry = {'rfilename': name, 'size': repo.reported_sizes.get(name, len(data)),
-                     'blobId': hashlib.sha1(b'blob %d\0' % len(data) + data).hexdigest()}
-            if name.endswith(('.safetensors', '.bin', '.gguf', '.pt')):
+                     'blobId': git_blob_id(data)}
+            if name.endswith(LFS_SUFFIXES):
                 entry['lfs'] = {'size': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
                                 'pointerSize': 134}
             siblings.append(entry)
@@ -229,14 +248,47 @@ class FakeHub:
         if filename not in files:
             return self.send(request, 404, {'error': 'Entry not found'}, head, error_code='EntryNotFound')
         data = files[filename]
-        headers = {'X-Repo-Commit': sha, 'ETag': '"%s"' % hashlib.sha256(data).hexdigest()}
+        headers = {'X-Repo-Commit': sha, 'ETag': '"%s"' % etag(filename, data)}
+        if head:
+            return self.send(request, 200, data, head, headers=headers)
+        with self.lock:
+            failing = self.fail.get(filename, 0)
+            cutting = self.cut.get(filename, 0)
+            if failing:
+                self.fail[filename] = failing-1
+            if cutting:
+                self.cut[filename] = cutting-1
+        if failing:
+            return self.send(request, 500, {'error': 'injected failure'}, head)
+        if filename in self.hold:
+            self.hold[filename].wait(60)
+        if filename in self.corrupt:
+            data = bytes(b ^ 0xff for b in data)
         span = request.headers.get('Range')
+        status = 200
         if span:
             first, _, last = span[len('bytes='):].partition('-')
-            first, last = int(first), min(int(last), len(data)-1)
+            first, last = int(first), min(int(last) if last else len(data)-1, len(data)-1)
             headers['Content-Range'] = 'bytes %d-%d/%d' % (first, last, len(data))
-            return self.send(request, 206, data[first:last+1], head, headers=headers)
-        return self.send(request, 200, data, head, headers=headers)
+            data, status = data[first:last+1], 206
+        if cutting:
+            request.send_response(status)
+            request.send_header('Content-Length', str(len(data)))
+            for name, value in headers.items():
+                request.send_header(name, value)
+            request.end_headers()
+            request.wfile.write(data[:len(data)//2])
+            request.wfile.flush()
+            request.close_connection = True
+            import socket
+            request.connection.shutdown(socket.SHUT_RDWR)
+            return None
+        return self.send(request, status, data, head, headers=headers)
+
+    def downloads(self, filename=None):
+        """GET requests of file contents (not headers through byte ranges of the catalog)."""
+        return [r for r in self.requests if r['method'] == 'GET' and '/resolve/' in r['path']
+                and (filename is None or r['path'].endswith('/'+filename))]
 
     def served_bytes(self, suffix):
         """Upper bound of payload bytes requested for files ending with `suffix`."""
@@ -247,5 +299,7 @@ class FakeHub:
             if r['range'] is None:
                 return math.inf
             first, _, last = r['range'][len('bytes='):].partition('-')
+            if not last:
+                return math.inf
             total += int(last)-int(first)+1
         return total
