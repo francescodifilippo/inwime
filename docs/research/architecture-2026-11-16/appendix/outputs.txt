@@ -1,0 +1,71 @@
+Raw outputs of the scratch micro-measurements (2026-11-16/17, i7-12700H, WSL2 6.18.58.1,
+gcc 15.2.0, Python 3.14.4; host NOT isolated, no thermal control; synthetic in-memory data).
+Build: gcc -O3 -march=native -fopenmp -ffp-contract=off -o kbench kbench.c   (same for kbench2.c)
+
+$ python3 micro_python.py
+KV copy python loop: 458752 elems 29.8 ms -> 64.9 ns/elem
+attention 1 layer T=4: 2.9 ms -> per layer-token-position 0.72 ms; x28 layers = 0.08 s/token
+attention 1 layer T=8: 4.7 ms -> per layer-token-position 0.59 ms; x28 layers = 0.13 s/token
+attention 1 layer T=16: 9.6 ms -> per layer-token-position 0.60 ms; x28 layers = 0.27 s/token
+
+$ ./kbench 18944 3584
+matrix 18944x3584 = 67.9 M weights, 135.8 MB BF16; threads available 20
+A repo-semantics 1T: expand 1.59 Gw/s (3.18 GB/s BF16), ordered FP64 gemv 2.08 Gw/s, combined 0.90 Gw/s (1.80 GB/s BF16)
+T= 1  B fused BF16->FP64 AVX2:   5.66 Gw/s ( 11.31 GB/s BF16) | C fused BF16->FP32 AVX2:   7.91 Gw/s ( 15.83 GB/s BF16)
+T= 2  B fused BF16->FP64 AVX2:  10.05 Gw/s ( 20.10 GB/s BF16) | C fused BF16->FP32 AVX2:  13.88 Gw/s ( 27.76 GB/s BF16)
+T= 4  B fused BF16->FP64 AVX2:  15.05 Gw/s ( 30.09 GB/s BF16) | C fused BF16->FP32 AVX2:  20.02 Gw/s ( 40.03 GB/s BF16)
+T= 6  B fused BF16->FP64 AVX2:  17.01 Gw/s ( 34.02 GB/s BF16) | C fused BF16->FP32 AVX2:  20.56 Gw/s ( 41.12 GB/s BF16)
+T= 8  B fused BF16->FP64 AVX2:  17.53 Gw/s ( 35.06 GB/s BF16) | C fused BF16->FP32 AVX2:  19.52 Gw/s ( 39.04 GB/s BF16)
+T=12  B fused BF16->FP64 AVX2:  20.36 Gw/s ( 40.72 GB/s BF16) | C fused BF16->FP32 AVX2:  21.57 Gw/s ( 43.15 GB/s BF16)
+T=14  B fused BF16->FP64 AVX2:  20.41 Gw/s ( 40.81 GB/s BF16) | C fused BF16->FP32 AVX2:  21.24 Gw/s ( 42.47 GB/s BF16)
+T=20  B fused BF16->FP64 AVX2:  14.72 Gw/s ( 29.44 GB/s BF16) | C fused BF16->FP32 AVX2:  15.71 Gw/s ( 31.42 GB/s BF16)
+max|y|=7.56e+03  max|A-B|=3.64e-11 (FP64 reorder)  max|A-C|=0.00154 (FP32 accumulate)
+D GEMM tokens= 16 T= 1: 0.65 Gw/s weights (1.29 GB/s BF16), 20.6 GFLOP/s
+D GEMM tokens= 16 T= 6: 2.68 Gw/s weights (5.36 GB/s BF16), 85.8 GFLOP/s
+D GEMM tokens= 16 T=14: 3.54 Gw/s weights (7.08 GB/s BF16), 113.3 GFLOP/s
+D GEMM tokens= 16 T=20: 3.99 Gw/s weights (7.98 GB/s BF16), 127.6 GFLOP/s
+D GEMM tokens= 64 T= 1: 0.35 Gw/s weights (0.70 GB/s BF16), 44.9 GFLOP/s
+D GEMM tokens= 64 T= 6: 1.22 Gw/s weights (2.44 GB/s BF16), 156.1 GFLOP/s
+D GEMM tokens= 64 T=14: 1.54 Gw/s weights (3.08 GB/s BF16), 196.8 GFLOP/s
+D GEMM tokens= 64 T=20: 1.65 Gw/s weights (3.30 GB/s BF16), 211.0 GFLOP/s
+D GEMM tokens=256 T= 1: 0.05 Gw/s weights (0.09 GB/s BF16), 24.0 GFLOP/s
+D GEMM tokens=256 T= 6: 0.23 Gw/s weights (0.45 GB/s BF16), 116.3 GFLOP/s
+D GEMM tokens=256 T=14: 0.31 Gw/s weights (0.61 GB/s BF16), 156.9 GFLOP/s
+D GEMM tokens=256 T=20: 0.32 Gw/s weights (0.64 GB/s BF16), 164.9 GFLOP/s
+
+$ ./kbench 4736 3584      (33.9 MB matrix: partly cache-resident with many threads; NOT used for the DRAM-regime figures)
+A repo-semantics 1T: expand 1.53 Gw/s (3.06 GB/s BF16), ordered FP64 gemv 2.08 Gw/s, combined 0.88 Gw/s (1.76 GB/s BF16)
+T= 1  B fused BF16->FP64 AVX2:   5.53 Gw/s ( 11.07 GB/s BF16) | C fused BF16->FP32 AVX2:   8.39 Gw/s ( 16.78 GB/s BF16)
+T= 6  B fused BF16->FP64 AVX2:  18.49 Gw/s ( 36.98 GB/s BF16) | C fused BF16->FP32 AVX2:  29.73 Gw/s ( 59.45 GB/s BF16)
+T=14  B fused BF16->FP64 AVX2:  24.97 Gw/s ( 49.95 GB/s BF16) | C fused BF16->FP32 AVX2:  43.32 Gw/s ( 86.64 GB/s BF16)
+
+$ ./kbench2 18944 3584
+matrix 18944x3584 = 67.9 M weights (135.8 MB BF16)
+REF fused scalar ordered 1T: 2.10 Gw/s
+T= 1  E8 ordered-per-row x8 rows:   4.92 Gw/s (  9.84 GB/s BF16) | E16 x16 rows:   4.81 Gw/s (  9.62 GB/s BF16)
+T= 2  E8 ordered-per-row x8 rows:   8.75 Gw/s ( 17.49 GB/s BF16) | E16 x16 rows:   8.49 Gw/s ( 16.99 GB/s BF16)
+T= 4  E8 ordered-per-row x8 rows:  12.16 Gw/s ( 24.32 GB/s BF16) | E16 x16 rows:  12.07 Gw/s ( 24.14 GB/s BF16)
+T= 6  E8 ordered-per-row x8 rows:  13.28 Gw/s ( 26.55 GB/s BF16) | E16 x16 rows:  12.75 Gw/s ( 25.50 GB/s BF16)
+T= 8  E8 ordered-per-row x8 rows:  13.63 Gw/s ( 27.27 GB/s BF16) | E16 x16 rows:  12.89 Gw/s ( 25.77 GB/s BF16)
+T=12  E8 ordered-per-row x8 rows:  17.08 Gw/s ( 34.17 GB/s BF16) | E16 x16 rows:  14.78 Gw/s ( 29.55 GB/s BF16)
+T=14  E8 ordered-per-row x8 rows:  17.28 Gw/s ( 34.56 GB/s BF16) | E16 x16 rows:  14.83 Gw/s ( 29.66 GB/s BF16)
+bit-identical to ordered scalar reference: E8 YES, E16 YES
+
+$ ./kbench2 2048 18944
+matrix 2048x18944 = 38.8 M weights (77.6 MB BF16)
+REF fused scalar ordered 1T: 1.98 Gw/s
+T= 1  E8 ordered-per-row x8 rows:   5.12 Gw/s ( 10.25 GB/s BF16) | E16 x16 rows:   4.68 Gw/s (  9.35 GB/s BF16)
+T= 2  E8 ordered-per-row x8 rows:   8.27 Gw/s ( 16.54 GB/s BF16) | E16 x16 rows:   8.20 Gw/s ( 16.39 GB/s BF16)
+T= 4  E8 ordered-per-row x8 rows:  12.38 Gw/s ( 24.76 GB/s BF16) | E16 x16 rows:  11.86 Gw/s ( 23.71 GB/s BF16)
+T= 6  E8 ordered-per-row x8 rows:  13.45 Gw/s ( 26.90 GB/s BF16) | E16 x16 rows:  12.98 Gw/s ( 25.96 GB/s BF16)
+T= 8  E8 ordered-per-row x8 rows:  13.54 Gw/s ( 27.07 GB/s BF16) | E16 x16 rows:  12.68 Gw/s ( 25.35 GB/s BF16)
+T=12  E8 ordered-per-row x8 rows:  16.74 Gw/s ( 33.47 GB/s BF16) | E16 x16 rows:  15.39 Gw/s ( 30.78 GB/s BF16)
+T=14  E8 ordered-per-row x8 rows:  17.77 Gw/s ( 35.54 GB/s BF16) | E16 x16 rows:  15.14 Gw/s ( 30.29 GB/s BF16)
+bit-identical to ordered scalar reference: E8 YES, E16 YES
+
+$ python3 compare_with_repo_kernel.py <repo>/build/libinwime_cpu.so ./libe8.so
+(prototype 8-row fused kernel vs the repository's compiled kernel, runtime-like tiling of 262144 elements)
+rows=2048 cols=3584  bit-identical to build/libinwime_cpu.so (tiled, row-cutting): True  sha cfd2d878dfb098d1 / cfd2d878dfb098d1
+rows=1027 cols=5120  bit-identical to build/libinwime_cpu.so (tiled, row-cutting): True  sha 8e39beca02791617 / 8e39beca02791617
+rows=515 cols=18944  bit-identical to build/libinwime_cpu.so (tiled, row-cutting): True  sha 3a57faf0b79d702f / 3a57faf0b79d702f
+rows=64 cols=13827  bit-identical to build/libinwime_cpu.so (tiled, row-cutting): True  sha eaa968e8cdd69624 / eaa968e8cdd69624
