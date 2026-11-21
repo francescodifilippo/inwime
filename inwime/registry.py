@@ -299,9 +299,17 @@ def inventory():
             'bytes_total': sum(unique.values()), 'models': models}
 
 
-def active():
+def active_record():
+    """`active.json` (id, source, path) when a model is active, else None."""
     record = read_json(home()/'active.json')
-    return record.get('id') if isinstance(record, dict) else None
+    if isinstance(record, dict) and record.get('id') and record.get('path'):
+        return record
+    return None
+
+
+def active():
+    record = active_record()
+    return record['id'] if record else None
 
 
 def render_list(result):

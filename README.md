@@ -97,7 +97,37 @@ Codici di uscita aggiuntivi:
 
 `doctor` e `list` non contattano mai il Hub e non scaricano nulla.
 
-L'API arriva con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
+### API HTTP (`inwime serve`, tracer bullet)
+
+```sh
+inwime serve                       # http://127.0.0.1:8642, modello attivo scelto con `models use`
+KEY=$(cat "${INWIME_HOME:-$HOME/.local/share/inwime}/server/api-key")
+curl -s http://127.0.0.1:8642/v1/models -H "Authorization: Bearer $KEY"
+curl -s http://127.0.0.1:8642/v1/completions -H "Authorization: Bearer $KEY" \
+     -H 'Content-Type: application/json' \
+     -d '{"model": "<id del modello attivo>", "prompt": "Il cielo è", "max_tokens": 8}'
+```
+
+Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni processo ha un solo Coordinatore. Il Coordinatore possiede il modello attivo e l'unico worker che calcola. Le richieste vengono eseguite una alla volta, in ordine di arrivo, fuori dall'event loop HTTP.
+- **Rete:** il server ascolta solo su loopback. Un indirizzo diverso richiede `--host` insieme a `--allow-non-loopback`.
+- **API key:** è obbligatoria come bearer. Il primo avvio la genera in `<Registro dei modelli>/server/api-key`, con permessi 0600. Il server non la stampa e non la registra. Il server non parte se il file è accessibile ad altri utenti. I log di accesso sono disattivati.
+- **`GET /v1/models`:** restituisce il modello attivo.
+- **`POST /v1/completions`:** restituisce una completion greedy non-stream. A parità vince il token con l'ID più basso, come nel Percorso congelato. Il limite di token è `max_tokens` o `max_completion_tokens`; se mancano entrambi vale 16, come in OpenAI. Parametri come `temperature`, `top_p`, `n`, `stream` e `stop` sono accettati solo al loro valore greedy. Altri valori ricevono 400 `unsupported_parameter`.
+- **Errori in stile OpenAI:** 400 (anche `context_length_exceeded`, prima di iniziare il calcolo), 401, 404 (`model_not_found`, endpoint sconosciuto), 405 e 500. Senza key valida ogni risposta è 401.
+- **Integrità:** all'avvio il server calcola lo SHA256 di ogni file di pesi e stampa i byte letti. Ogni richiesta riapre i file e controlla che dispositivo, inode, dimensione e date coincidano con quelli verificati. Se un file è cambiato, la richiesta riceve 500 `checkpoint_changed` fino al riavvio. Lo SHA256 non viene ricalcolato a ogni richiesta.
+
+Limiti di questa versione:
+- Il calcolo usa il Percorso congelato: un token per volta e un solo thread.
+- Il server accetta solo Checkpoint Qwen2 con testa non tied e con `tokenizer.json`. I Qwen2.5 piccoli con testa tied arrivano con [#38](https://github.com/francescodifilippo/inwime/issues/38).
+- Un Checkpoint installato con `models install` viene servito dalla cache Hugging Face senza scriverci nulla. All'avvio il server controlla che ogni file di pesi punti al blob verificato dall'installazione. Un Checkpoint importato con `models import` deve invece avere il descrittore del runtime (`safetensors.json`).
+- La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la memoria del Percorso congelato cresce con prompt + limite di token.
+- Chat, streaming SSE e campionamento arrivano con [#39](https://github.com/francescodifilippo/inwime/issues/39). Coda limitata, 429 e cancellazione arrivano con [#40](https://github.com/francescodifilippo/inwime/issues/40).
+
+Codici di uscita di `serve`:
+- 1: altri errori di avvio (file della key, porta occupata);
+- 2: indirizzo non loopback senza `--allow-non-loopback`;
+- 3: nessun modello attivo;
+- 13: modello attivo non servibile.
 
 # Benchmark BF16 con streaming esplicito
 
