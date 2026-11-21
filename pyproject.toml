@@ -15,7 +15,9 @@ dependencies = [
     "httpx2==2.16.2",            # imported directly by the catalog for network errors
     "starlette==1.10.0",         # `inwime serve` HTTP API
     "uvicorn==0.54.0",
-    "tokenizers==0.23.3",        # tokenizer.json of the Checkpoint, without Transformers or torch
+    "tokenizers==0.23.3",        # tokenizer.json of the Checkpoint
+    "transformers==5.24.0",      # AutoTokenizer.apply_chat_template for chat prompts; never torch
+    "jinja2==3.1.6",             # chat template renderer used by Transformers
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

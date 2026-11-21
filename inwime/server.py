@@ -5,8 +5,10 @@ start, stored in `<INWIME_HOME>/server/api-key` with mode 0600, and never printe
 the server refuses to start if that file is readable or writable by anyone else. Access logs
 are off.
 
-Tracer bullet (#37): `GET /v1/models` and non-stream greedy `POST /v1/completions`. Sampling,
-streaming and chat come with #39; the queue limit and cancellation with #40.
+Endpoints: `GET /v1/models`, `POST /v1/completions` and `POST /v1/chat/completions`, whole or
+streamed as SSE. A request is validated and prepared (tokenized, or rendered with the chat
+template) before it waits for the worker, so a refused request gets its HTTP error at once.
+The queue limit and cancellation come with #40.
 """
 import asyncio
 import hmac
@@ -22,15 +24,17 @@ import uuid
 
 from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route
 
-from . import catalog, registry
+from . import catalog, chat, registry
 from .engine import Coordinatore, EngineError, NotServable
+from .generation import SamplingError, client_parameters
 
 DEFAULT_HOST = '127.0.0.1'
 DEFAULT_PORT = 8642
 DEFAULT_MAX_TOKENS = 16           # OpenAI's documented default for /v1/completions
+DEFAULT_KEEPALIVE_SECONDS = 15.0  # SSE comment interval while no model output is ready
 KEY_BYTES = 32
 
 
@@ -110,25 +114,27 @@ def invalid(message, param=None, code=None):
     return EngineError(400, message, param=param, code=code)
 
 
-# Parameters this version accepts only at their greedy, single-choice, non-stream values.
-FIXED = {'stream': (None, False), 'temperature': (None, 0), 'top_p': (None, 1), 'n': (None, 1),
-         'best_of': (None, 1), 'echo': (None, False), 'logprobs': (None,), 'stop': (None,),
+# Parameters this version accepts only at their neutral values: one choice, no logprobs, no logit
+# bias, no presence or frequency penalty.
+FIXED = {'n': (None, 1), 'best_of': (None, 1), 'echo': (None, False), 'logprobs': (None,),
          'suffix': (None,), 'presence_penalty': (None, 0), 'frequency_penalty': (None, 0),
-         'logit_bias': (None,), 'top_k': (None,), 'repetition_penalty': (None, 1)}
+         'logit_bias': (None,)}
 
 
-def token_limit(body):
-    """`max_tokens` or its newer name `max_completion_tokens`; OpenAI's default 16 if neither."""
+def token_limit(body, default=DEFAULT_MAX_TOKENS):
+    """`max_tokens` or its newer name `max_completion_tokens`; `default` if neither."""
     given = {name: body[name] for name in ('max_tokens', 'max_completion_tokens') if body.get(name) is not None}
     if len(set(map(repr, given.values()))) > 1:
         raise invalid('max_tokens and max_completion_tokens differ', 'max_completion_tokens')
-    name, value = next(iter(given.items()), ('max_tokens', DEFAULT_MAX_TOKENS))
+    if not given:
+        return default
+    name, value = next(iter(given.items()))
     if type(value) is not int or value < 1:
         raise invalid('%s must be a positive integer' % name, name)
     return value
 
 
-def completion_request(body, model_id):
+def check_model(body, model_id):
     if not isinstance(body, dict):
         raise invalid('the request body must be a JSON object')
     model = body.get('model')
@@ -137,22 +143,71 @@ def completion_request(body, model_id):
     if model != model_id:
         raise EngineError(404, 'the model %r does not exist: the active model is %r' % (model, model_id),
                           code='model_not_found', param='model')
+
+
+def check_fixed(body, fixed):
+    for name, allowed in fixed.items():
+        value = body.get(name)
+        if not any(value is a or (type(value) in (int, float) and type(a) is int and value == a)
+                   for a in allowed):
+            raise invalid('%s=%s is not supported yet: this version serves one choice, without logprobs, '
+                          'logit bias or presence and frequency penalties' % (name, json.dumps(value)), name,
+                          'unsupported_parameter')
+
+
+def sampling_parameters(body):
+    try:
+        return client_parameters(body)
+    except SamplingError as error:
+        raise invalid(str(error), error.param) from error
+
+
+class Request:
+    """A validated request: the arguments of its preparation and how to answer it."""
+
+    def __init__(self, body, arguments):
+        self.arguments = arguments
+        if not (body.get('stream') is None or type(body.get('stream')) is bool):
+            raise invalid('stream must be a boolean', 'stream')
+        self.stream = body.get('stream') is True
+        options = body.get('stream_options')
+        if options is not None and not isinstance(options, dict):
+            raise invalid('stream_options must be an object', 'stream_options')
+        self.include_usage = self.stream and (options or {}).get('include_usage') is True
+        self.diagnostics = body.get('inwime_diagnostics') is True
+
+
+def completion_request(body, model_id):
+    check_model(body, model_id)
     prompt = body.get('prompt')
     if not isinstance(prompt, str):
         raise invalid('prompt must be a single string in this version', 'prompt')
     max_tokens = token_limit(body)
-    for name, allowed in FIXED.items():
-        value = body.get(name)
-        if not any(value is a or (type(value) in (int, float) and type(a) is int and value == a)
-                   for a in allowed):
-            raise invalid('%s=%s is not supported yet: this version serves greedy, single-choice, non-stream '
-                          'completions only' % (name, json.dumps(value)), name, 'unsupported_parameter')
-    return prompt, max_tokens
+    check_fixed(body, FIXED)
+    return Request(body, (prompt, max_tokens, sampling_parameters(body)))
+
+
+CHAT_FIXED = {k: v for k, v in FIXED.items() if k not in ('best_of', 'echo', 'suffix', 'logprobs')}
+CHAT_FIXED.update({'logprobs': (None, False), 'top_logprobs': (None,), 'tool_choice': (None, 'auto')})
+
+
+def chat_request(body, model_id):
+    check_model(body, model_id)
+    try:
+        messages = chat.messages(body.get('messages'))
+    except ValueError as error:
+        raise invalid(str(error), 'messages') from error
+    tools = body.get('tools')
+    if tools is not None and not (isinstance(tools, list) and all(isinstance(t, dict) for t in tools)):
+        raise invalid('tools must be an array of objects', 'tools')
+    max_tokens = token_limit(body, None)
+    check_fixed(body, CHAT_FIXED)
+    return Request(body, (messages, tools or None, max_tokens, sampling_parameters(body)))
 
 
 # -- application -------------------------------------------------------------------------------
 
-def build_app(coordinatore, key):
+def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
     expected = ('Bearer '+key).encode()
 
     def authorized(request):
@@ -169,32 +224,137 @@ def build_app(coordinatore, key):
         return JSONResponse({'object': 'list', 'data': [
             {'id': coordinatore.model_id, 'object': 'model', 'created': started, 'owned_by': 'inwime'}]})
 
-    async def completions(request):
+    async def read_json(request):
+        try:
+            return json.loads(await request.body())
+        except (ValueError, UnicodeDecodeError):
+            raise EngineError(400, 'the request body is not valid JSON')
+
+    def failure(error):
+        """An inference failure as an OpenAI error object and HTTP status."""
+        if isinstance(error, EngineError):
+            return error.status, {'message': error.message, 'type': error.type, 'param': error.param,
+                                  'code': error.code}
+        # The exception text may hold paths: only its type reaches the client and the log.
+        name = catalog.printable(type(error).__name__)
+        sys.stderr.write('inwime serve: inference failed: %s\n' % name)
+        return 500, {'message': 'inference failed (%s); see the server log' % name, 'type': 'server_error',
+                     'param': None, 'code': 'inference_failed'}
+
+    def failure_response(error):
+        status, error = failure(error)
+        return error_response(status, error['message'], type=error['type'], code=error['code'],
+                              param=error['param'])
+
+    def usage(result):
+        return {'prompt_tokens': result['prompt_tokens'], 'completion_tokens': result['completion_tokens'],
+                'total_tokens': result['prompt_tokens']+result['completion_tokens']}
+
+    class Reply:
+        """The OpenAI objects of one response, chat or text completion, whole or in chunks."""
+
+        def __init__(self, is_chat, request):
+            self.chat, self.request = is_chat, request
+            self.id = ('chatcmpl-' if is_chat else 'cmpl-')+uuid.uuid4().hex
+            self.created, self.first = int(time.time()), True
+
+        def whole(self, result):
+            if self.chat:
+                choice = {'index': 0, 'message': {'role': 'assistant', 'content': result['text']},
+                          'logprobs': None, 'finish_reason': result['finish_reason']}
+            else:
+                choice = {'text': result['text'], 'index': 0, 'logprobs': None,
+                          'finish_reason': result['finish_reason']}
+            reply = {'id': self.id, 'object': 'chat.completion' if self.chat else 'text_completion',
+                     'created': self.created, 'model': coordinatore.model_id, 'choices': [choice],
+                     'usage': usage(result)}
+            if self.request.diagnostics:
+                reply['inwime'] = result['diagnostics']
+            return reply
+
+        def chunk(self, text, finish_reason=None, choices=True):
+            if self.chat:
+                delta = {'content': text} if text else {}
+                if self.first:
+                    delta = {'role': 'assistant', **delta}
+                choice = {'index': 0, 'delta': delta, 'logprobs': None, 'finish_reason': finish_reason}
+            else:
+                choice = {'text': text, 'index': 0, 'logprobs': None, 'finish_reason': finish_reason}
+            self.first = False
+            chunk = {'id': self.id, 'object': 'chat.completion.chunk' if self.chat else 'text_completion',
+                     'created': self.created, 'model': coordinatore.model_id,
+                     'choices': [choice] if choices else []}
+            if self.request.include_usage:
+                chunk['usage'] = None
+            return chunk
+
+    def event(value):
+        return 'data: %s\n\n' % json.dumps(value, separators=(',', ':'))
+
+    async def sse(reply, prepared):
+        """Headers and a first keepalive go out before the request reaches the worker; then one
+        `: keepalive` comment per interval without model output. Comments carry no data: a client
+        never mistakes them for progress of the model."""
+        loop = asyncio.get_running_loop()
+        queue, done = asyncio.Queue(), object()
+
+        def put(item):
+            try:
+                loop.call_soon_threadsafe(queue.put_nowait, item)
+            except RuntimeError:        # the event loop is gone: the server is shutting down
+                pass
+
+        yield ': keepalive\n\n'
+        future = coordinatore.generate(prepared, put)
+        future.add_done_callback(lambda f: put(done))
+        while True:
+            try:
+                item = await asyncio.wait_for(queue.get(), keepalive_seconds)
+            except TimeoutError:
+                yield ': keepalive\n\n'
+                continue
+            if item is done:
+                break
+            yield event(reply.chunk(item))
+        try:
+            result = future.result()
+        except Exception as error:
+            yield event({'error': failure(error)[1]})
+            yield 'data: [DONE]\n\n'
+            return
+        last = reply.chunk('', result['finish_reason'])
+        if reply.request.diagnostics:
+            last['inwime'] = result['diagnostics']
+        yield event(last)
+        if reply.request.include_usage:
+            yield event(dict(reply.chunk('', choices=False), usage=usage(result)))
+        yield 'data: [DONE]\n\n'
+
+    async def serve_request(request, is_chat):
         if not authorized(request):
             return unauthorized()
         try:
-            body = json.loads(await request.body())
-        except (ValueError, UnicodeDecodeError):
-            return error_response(400, 'the request body is not valid JSON')
-        try:
-            prompt, max_tokens = completion_request(body, coordinatore.model_id)
-            result = await asyncio.wrap_future(coordinatore.complete(prompt, max_tokens))
-        except EngineError as error:
-            return error_response(error.status, error.message, type=error.type, code=error.code,
-                                  param=error.param)
+            body = await read_json(request)
+            parsed = (chat_request if is_chat else completion_request)(body, coordinatore.model_id)
+            prepare = coordinatore.prepare_chat if is_chat else coordinatore.prepare_completion
+            prepared = await asyncio.to_thread(prepare, *parsed.arguments)
         except Exception as error:
-            # The exception text may hold paths: only its type reaches the client and the log.
-            name = catalog.printable(type(error).__name__)
-            sys.stderr.write('inwime serve: inference failed: %s\n' % name)
-            return error_response(500, 'inference failed (%s); see the server log' % name,
-                                  type='server_error', code='inference_failed')
-        return JSONResponse({
-            'id': 'cmpl-'+uuid.uuid4().hex, 'object': 'text_completion', 'created': int(time.time()),
-            'model': coordinatore.model_id,
-            'choices': [{'text': result['text'], 'index': 0, 'logprobs': None,
-                         'finish_reason': result['finish_reason']}],
-            'usage': {'prompt_tokens': result['prompt_tokens'], 'completion_tokens': result['completion_tokens'],
-                      'total_tokens': result['prompt_tokens']+result['completion_tokens']}})
+            return failure_response(error)
+        reply = Reply(is_chat, parsed)
+        if parsed.stream:
+            return StreamingResponse(sse(reply, prepared), media_type='text/event-stream',
+                                     headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
+        try:
+            result = await asyncio.wrap_future(coordinatore.generate(prepared))
+        except Exception as error:
+            return failure_response(error)
+        return JSONResponse(reply.whole(result))
+
+    async def completions(request):
+        return await serve_request(request, is_chat=False)
+
+    async def chat_completions(request):
+        return await serve_request(request, is_chat=True)
 
     async def http_error(request, exc):
         if not authorized(request):            # nothing about the routes is disclosed without the key
@@ -212,7 +372,8 @@ def build_app(coordinatore, key):
 
     started = int(time.time())
     return Starlette(routes=[Route('/v1/models', models, methods=['GET']),
-                             Route('/v1/completions', completions, methods=['POST'])],
+                             Route('/v1/completions', completions, methods=['POST']),
+                             Route('/v1/chat/completions', chat_completions, methods=['POST'])],
                      exception_handlers={HTTPException: http_error, Exception: server_error})
 
 
@@ -234,7 +395,8 @@ def bind(host, port):
     return sock
 
 
-def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sys.stdout):
+def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sys.stdout,
+          keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
     import uvicorn
     if not is_loopback(host) and not allow_non_loopback:
         raise ServeError(2, '%s is not a loopback address: the server listens on loopback only unless '
@@ -268,7 +430,7 @@ def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sy
                       'key can use the server\n')
         out.write('listening on http://%s:%d\n' % (shown, address[1]))
         out.flush()
-        config = uvicorn.Config(build_app(coordinatore, key), log_level='warning', access_log=False,
+        config = uvicorn.Config(build_app(coordinatore, key, keepalive_seconds), log_level='warning', access_log=False,
                                 lifespan='off')
         uvicorn.Server(config).run(sockets=[sock])
     finally:

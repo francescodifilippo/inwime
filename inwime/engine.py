@@ -11,12 +11,14 @@ hands the same session a catalog of the verified blobs.
 The frozen runtime is bound to the thread that creates it, so every runtime is created, used
 and closed on the worker thread. Requests run one at a time in arrival order.
 
-Tracer bullet (#37): greedy completions only, through `inwime_runtime.tokenizer.greedy`
-unchanged (the M10 decoding rule: the lowest token id wins a tie). The context capacity is the
-Checkpoint's `max_position_embeddings`; the memory-based capacity plan comes with #42.
+Tokens are chosen by `generation.Sampling` on the frozen FP64 logits; at temperature 0 it is the
+M10 greedy rule of `inwime_runtime.tokenizer.greedy` (the lowest token id wins a tie). Chat
+prompts are rendered by Transformers (`chat.py`). The context capacity is the Checkpoint's
+`max_position_embeddings`; the memory-based capacity plan comes with #42.
 """
 from concurrent.futures import Future
 import queue
+import secrets
 import threading
 from pathlib import Path
 
@@ -24,9 +26,16 @@ from inwime_runtime.core import CheckpointError, Coordinator
 from inwime_runtime.llama import llama_plan, read_config
 from inwime_runtime.math_cpu import NativeMath, ScalarMath
 from inwime_runtime.qwen2 import Qwen2Catalog, Qwen2Runtime
-from inwime_runtime.tokenizer import LlamaTokenizer, greedy
+from inwime_runtime.tokenizer import LlamaTokenizer
 
-from . import kernel, snapshot
+from . import catalog, chat, kernel, snapshot
+from .generation import Sampling, TextStream
+
+
+# Chat token limit when the client sets none. OpenAI's is the rest of the context, but the
+# Percorso congelato holds FP64 logits for its whole capacity (prompt + limit): for a 32k-context
+# Qwen2.5 that would be tens of GB. Until the capacity plan (#42), a fixed limit.
+DEFAULT_CHAT_MAX_TOKENS = 512
 
 
 class EngineError(Exception):
@@ -151,20 +160,67 @@ class Coordinatore:
             self.tokenizer = LlamaTokenizer(self.directory)
         except Exception as error:      # the tokenizers library raises a bare Exception
             raise NotServable('tokenizer: %s: %s' % (type(error).__name__, error)) from error
+        self.chat, self.chat_unavailable = chat.load(self.directory)
+        try:
+            self.generation_config = read_config(self.directory/'generation_config.json')
+        except (OSError, ValueError):
+            self.generation_config = {}
+        if not isinstance(self.generation_config, dict):
+            self.generation_config = {}
 
     def _session(self, capacity, integrity):
         if self.catalog is not None:
             return CatalogQwen2Runtime(self.catalog, capacity, integrity=integrity, math_backend=self.math)
         return Qwen2Runtime(self.directory, capacity=capacity, integrity=integrity, math_backend=self.math)
 
-    def _complete(self, prompt, max_tokens):
+    # -- requests -----------------------------------------------------------------------------
+    #
+    # A request is prepared off the worker (tokenization and chat rendering only read the
+    # tokenizers), so a refused request gets its HTTP error at once, even behind a long inference.
+
+    def _check_context(self, prompt_tokens, max_tokens, param):
+        if prompt_tokens+max_tokens > self.context:
+            raise EngineError(400, "this model's maximum context length is %d tokens; the request has %d "
+                              'prompt tokens and max_tokens %d' % (self.context, prompt_tokens, max_tokens),
+                              code='context_length_exceeded', param=param)
+
+    def _sampling(self, client):
+        return Sampling(client, self.generation_config, secrets.randbits(63))
+
+    def prepare_completion(self, prompt, max_tokens, client):
+        """`client`: the sampling parameters the request sets (generation.client_parameters)."""
         ids = self.tokenizer.encode(prompt)
         if not ids:
             raise EngineError(400, 'the prompt has no tokens', param='prompt')
-        if len(ids)+max_tokens > self.context:
-            raise EngineError(400, "this model's maximum context length is %d tokens; the request has %d "
-                              'prompt tokens and max_tokens %d' % (self.context, len(ids), max_tokens),
-                              code='context_length_exceeded', param='prompt')
+        self._check_context(len(ids), max_tokens, 'prompt')
+        return Prepared(ids, max_tokens, self.tokenizer.decode, self._sampling(client))
+
+    def prepare_chat(self, messages, tools, max_tokens, client):
+        """`max_tokens` None: DEFAULT_CHAT_MAX_TOKENS, or the rest of the context if smaller."""
+        if self.chat is None:
+            raise EngineError(400, 'the active model %s cannot chat: %s; /v1/completions remains available'
+                              % (self.model_id, self.chat_unavailable), code='chat_template_unavailable',
+                              param='messages')
+        try:
+            _, ids = self.chat.render(messages, tools)
+        except Exception as error:      # jinja2 errors, or the template's own raise_exception()
+            raise EngineError(400, 'the chat template rejected the messages: %s'
+                              % catalog.printable(str(error))[:500], code='chat_template_error',
+                              param='messages') from error
+        if max_tokens is None:
+            max_tokens = max(1, min(DEFAULT_CHAT_MAX_TOKENS, self.context-len(ids)))
+        self._check_context(len(ids), max_tokens, 'messages')
+        return Prepared(ids, max_tokens, self.chat.decode, self._sampling(client))
+
+    def generate(self, prepared, emit=None):
+        """Compute a prepared request on the worker; returns a concurrent Future of its result.
+        `emit(text)` is called on the worker with each piece of text as it becomes final."""
+        return self.submit(self._generate, prepared, emit)
+
+    def _generate(self, prepared, emit):
+        """Prefill the prompt ids, then choose and decode tokens until `max_tokens` tokens, an EOS
+        token (counted, without text) or a stop sequence (its token counted, its text dropped)."""
+        ids, max_tokens, sampling = prepared.ids, prepared.max_tokens, prepared.sampling
         changed = EngineError(500, 'the Checkpoint files changed after their verification at start-up; '
                               'restart the server to verify them again', type='server_error',
                               code='checkpoint_changed')
@@ -173,17 +229,40 @@ class Coordinatore:
         except CheckpointError as error:
             # Admitted at start-up, so any rejection now means its files changed since then.
             raise changed from error
+        text = TextStream(prepared.decode, sampling.stop)
+        emit = emit or (lambda delta: None)
+        generated = []
         with session as runtime:
             if runtime.control.stamps != self.verified:
                 # Same device, inode, size and times as the files hashed at start-up, or no inference.
                 raise changed
-            result = greedy(runtime, self.tokenizer, prompt, max_tokens)
-        generated = result['generated_ids']
-        text_ids = generated[:-1] if result['stopped_on_eos'] else generated
-        return {'text': self.tokenizer.decode(text_ids),
-                'finish_reason': 'stop' if result['stopped_on_eos'] else 'length',
-                'prompt_tokens': len(result['input_ids']), 'completion_tokens': len(generated)}
+            vocab = runtime.spec.vocab
+            with runtime.prefill(ids) as result:
+                chosen = sampling.choose(result.logits[(len(ids)-1)*vocab:len(ids)*vocab], ids)
+            while True:
+                generated.append(chosen)
+                if chosen in self.tokenizer.eos:
+                    break
+                delta = text.push(chosen)
+                if delta:
+                    emit(delta)
+                if text.stopped or len(generated) == max_tokens:
+                    break
+                with runtime.decode(chosen) as result:
+                    chosen = sampling.choose(result.logits[:vocab], ids+generated)
+        delta = text.finish()
+        if delta:
+            emit(delta)
+        stopped = text.stopped or generated[-1] in self.tokenizer.eos
+        return {'text': text.released, 'finish_reason': 'stop' if stopped else 'length',
+                'prompt_tokens': len(ids), 'completion_tokens': len(generated),
+                'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
+                                'sampling': sampling.describe(),
+                                'computation': {'path': 'percorso congelato', 'kernel': self.math.name}}}
 
-    def complete(self, prompt, max_tokens):
-        """A greedy completion, computed on the worker; returns a concurrent Future."""
-        return self.submit(self._complete, prompt, max_tokens)
+
+class Prepared:
+    """A request ready for the worker: prompt ids, token limit, decoder of its text, sampling."""
+
+    def __init__(self, ids, max_tokens, decode, sampling):
+        self.ids, self.max_tokens, self.decode, self.sampling = ids, max_tokens, decode, sampling

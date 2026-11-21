@@ -65,14 +65,20 @@ def build_parser():
                    help='TCP port (default: %d; 0 picks a free one)' % server.DEFAULT_PORT)
     v.add_argument('--allow-non-loopback', action='store_true',
                    help='explicitly accept a --host that other machines may reach')
+    v.add_argument('--keepalive-seconds', type=float, default=server.DEFAULT_KEEPALIVE_SECONDS,
+                   help='interval of the SSE `: keepalive` comments sent while a streamed request has no '
+                   'new model output (default: %g)' % server.DEFAULT_KEEPALIVE_SECONDS)
     return parser
 
 
 def serve_main(parser, args):
     if not 0 <= args.port <= 65535:
         parser.error('--port must be between 0 and 65535')
+    if not 0 < args.keepalive_seconds <= 3600:
+        parser.error('--keepalive-seconds must be greater than 0 and at most 3600')
     try:
-        return server.serve(args.host, args.port, args.allow_non_loopback)
+        return server.serve(args.host, args.port, args.allow_non_loopback,
+                            keepalive_seconds=args.keepalive_seconds)
     except server.ServeError as error:
         sys.stderr.write('inwime: %s\n' % catalog.printable(error))
         return error.exit_status

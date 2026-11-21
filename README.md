@@ -97,7 +97,7 @@ Codici di uscita aggiuntivi:
 
 `doctor` e `list` non contattano mai il Hub e non scaricano nulla.
 
-### API HTTP (`inwime serve`, tracer bullet)
+### API HTTP (`inwime serve`)
 
 ```sh
 inwime serve                       # http://127.0.0.1:8642, modello attivo scelto con `models use`
@@ -106,13 +106,27 @@ curl -s http://127.0.0.1:8642/v1/models -H "Authorization: Bearer $KEY"
 curl -s http://127.0.0.1:8642/v1/completions -H "Authorization: Bearer $KEY" \
      -H 'Content-Type: application/json' \
      -d '{"model": "<id del modello attivo>", "prompt": "Il cielo è", "max_tokens": 8}'
+curl -sN http://127.0.0.1:8642/v1/chat/completions -H "Authorization: Bearer $KEY" \
+     -H 'Content-Type: application/json' \
+     -d '{"model": "<id>", "messages": [{"role": "user", "content": "Ciao"}], "stream": true}'
 ```
 
 Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni processo ha un solo Coordinatore. Il Coordinatore possiede il modello attivo e l'unico worker che calcola. Le richieste vengono eseguite una alla volta, in ordine di arrivo, fuori dall'event loop HTTP.
 - **Rete:** il server ascolta solo su loopback. Un indirizzo diverso richiede `--host` insieme a `--allow-non-loopback`.
 - **API key:** è obbligatoria come bearer. Il primo avvio la genera in `<Registro dei modelli>/server/api-key`, con permessi 0600. Il server non la stampa e non la registra. Il server non parte se il file è accessibile ad altri utenti. I log di accesso sono disattivati.
 - **`GET /v1/models`:** restituisce il modello attivo.
-- **`POST /v1/completions`:** restituisce una completion greedy non-stream. A parità vince il token con l'ID più basso, come nel Percorso congelato. Il limite di token è `max_tokens` o `max_completion_tokens`; se mancano entrambi vale 16, come in OpenAI. Parametri come `temperature`, `top_p`, `n`, `stream` e `stop` sono accettati solo al loro valore greedy. Altri valori ricevono 400 `unsupported_parameter`.
+- **`POST /v1/chat/completions`:** il prompt è renderizzato con il chat template del Checkpoint da `AutoTokenizer.apply_chat_template()` di Transformers 5.24.0, sempre con `trust_remote_code=False`. Testo e token ID sono quelli di Transformers, inclusi ruoli `system`, `user`, `assistant` e `tool`, `tools` e `add_generation_prompt`. Le parti di contenuto di tipo testo vengono unite in una stringa. Un Checkpoint senza chat template riceve 400 `chat_template_unavailable` sulla chat; `/v1/completions` resta disponibile. Il limite di token è `max_tokens` o `max_completion_tokens`. Se mancano entrambi vale 512, o il resto del contesto se è minore: il Percorso congelato tiene i `logits` FP64 per l'intera capacità, quindi il resto di un contesto da 32k token richiederebbe decine di GB. Il limite cambierà con il piano di capacità ([#42](https://github.com/francescodifilippo/inwime/issues/42)).
+- **`POST /v1/completions`:** il prompt è tokenizzato con `tokenizer.json`, come nel Percorso congelato. Se mancano `max_tokens` e `max_completion_tokens`, il limite vale 16, come in OpenAI.
+- **Streaming SSE (`"stream": true`):** header e un primo commento `: keepalive` partono prima che la richiesta raggiunga il worker. Finché non c'è testo nuovo del modello, segue un commento ogni 15 s (`--keepalive-seconds`). I commenti non contengono dati e non simulano progressi. `stream_options.include_usage` aggiunge un ultimo chunk con `usage` e `choices` vuoto. Lo stream termina con `data: [DONE]`. Un errore durante il calcolo arriva come evento `{"error": ...}`, seguito da `[DONE]`.
+- **Campionamento:** `temperature`, `top_p`, `top_k`, `repetition_penalty`, `seed` e `stop` seguono questa precedenza:
+  1. il valore del client;
+  2. `generation_config.json` del Checkpoint;
+  3. i default di `GenerationConfig` di Transformers (`temperature` 1.0, `top_p` 1.0, `top_k` 50, `repetition_penalty` 1.0).
+
+  Come in Transformers, `generation_config.json` campiona solo con `do_sample: true`, e `do_sample` assente vale `false`. Senza `do_sample: true` e senza `temperature` del client la temperatura effettiva è quindi 0, cioè greedy. La `repetition_penalty` di `generation_config.json` vale anche in greedy, come in Transformers: Qwen2.5-Instruct dichiara 1.1, quindi un confronto con il greedy del Percorso congelato richiede `repetition_penalty` 1 dal client. `temperature` 0 è greedy: vince il logit più alto e, a parità, il token con l'ID più basso, come nel Percorso congelato. `top_k` 0 disattiva il filtro. Lo stesso `seed` dà gli stessi token sullo stesso Checkpoint, Percorso computazionale e piattaforma. Senza `seed`, il server ne sceglie uno casuale.
+- **Stop ed EOS:** le stop sequence (al massimo 4) sono riconosciute anche quando attraversano più token. Il testo che potrebbe essere l'inizio di una stop sequence resta trattenuto, quindi lo stream non emette mai frammenti da sopprimere. Le stop sequence si cercano nel testo restituito, che non contiene i token speciali: una stop sequence come `<|im_end|>` non scatta mai, l'EOS sì. Ogni ID EOS di `generation_config.json` termina la generazione. L'EOS e il token che completa la stop sequence contano in `completion_tokens`, ma non producono testo.
+- **Estensione diagnostica:** con `"inwime_diagnostics": true` la risposta, o l'ultimo chunk con `finish_reason`, contiene un oggetto `inwime`. L'oggetto riporta i token ID del prompt e della risposta, i parametri di campionamento effettivi con la loro origine (`client`, `generation_config`, `default`, `server`) e il Percorso computazionale. Senza il campo, la risposta è OpenAI standard.
+- **Parametri non supportati:** `n` diverso da 1, `logprobs`, `logit_bias`, `presence_penalty` e `frequency_penalty` diversi da 0 e `tool_choice` diverso da `auto` ricevono 400 `unsupported_parameter`.
 - **Errori in stile OpenAI:** 400 (anche `context_length_exceeded`, prima di iniziare il calcolo), 401, 404 (`model_not_found`, endpoint sconosciuto), 405 e 500. Senza key valida ogni risposta è 401.
 - **Integrità:** all'avvio il server calcola lo SHA256 di ogni file di pesi e stampa i byte letti. Ogni richiesta riapre i file e controlla che dispositivo, inode, dimensione e date coincidano con quelli verificati. Se un file è cambiato, la richiesta riceve 500 `checkpoint_changed` fino al riavvio. Lo SHA256 non viene ricalcolato a ogni richiesta.
 
@@ -121,7 +135,8 @@ Limiti di questa versione:
 - Il server accetta solo Checkpoint Qwen2 con testa non tied e con `tokenizer.json`. I Qwen2.5 piccoli con testa tied arrivano con [#38](https://github.com/francescodifilippo/inwime/issues/38).
 - Un Checkpoint installato con `models install` viene servito dalla cache Hugging Face senza scriverci nulla. All'avvio il server controlla che ogni file di pesi punti al blob verificato dall'installazione. Un Checkpoint importato con `models import` deve invece avere il descrittore del runtime (`safetensors.json`).
 - La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la memoria del Percorso congelato cresce con prompt + limite di token.
-- Chat, streaming SSE e campionamento arrivano con [#39](https://github.com/francescodifilippo/inwime/issues/39). Coda limitata, 429 e cancellazione arrivano con [#40](https://github.com/francescodifilippo/inwime/issues/40).
+- Coda limitata, 429 e cancellazione arrivano con [#40](https://github.com/francescodifilippo/inwime/issues/40). Fino ad allora, un client che si disconnette non ferma il calcolo della sua richiesta.
+- Le chiamate `<tool_call>` del modello restano testo; la loro conversione in `tool_calls` OpenAI arriva con [#44](https://github.com/francescodifilippo/inwime/issues/44).
 
 Codici di uscita di `serve`:
 - 1: altri errori di avvio (file della key, porta occupata);
