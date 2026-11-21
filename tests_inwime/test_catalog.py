@@ -5,69 +5,10 @@ name resolution or connection outside loopback fails and is logged, and each tes
 that the log stays empty and that the fake Hub saw no request it does not implement.
 """
 import json
-import os
-import subprocess
-import sys
 from pathlib import Path
 
-import pytest
-
-import inwime
-from fakehub import FakeHub
 import hubmodels as hm
-
-
-PACKAGE_PARENT = str(Path(inwime.__file__).resolve().parents[1])
-GUARD = str(Path(__file__).resolve().parent/'netguard')
-SCRUBBED = ('HF_TOKEN', 'HUGGING_FACE_HUB_TOKEN', 'HF_HUB_OFFLINE', 'TRANSFORMERS_OFFLINE',
-            'HF_TOKEN_PATH', 'HF_HUB_CACHE', 'XDG_CACHE_HOME', 'HTTP_PROXY', 'HTTPS_PROXY',
-            'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy')
-
-
-@pytest.fixture
-def hub():
-    with FakeHub() as h:
-        yield h
-        assert h.unexpected == []
-
-
-@pytest.fixture
-def home(tmp_path):
-    h = tmp_path/'home-of-alice'
-    h.mkdir()
-    return h
-
-
-class Run:
-    def __init__(self, hub, home, tmp_path):
-        self.hub, self.home, self.guard_log = hub, home, tmp_path/'netguard.log'
-
-    def __call__(self, *args, token=None, endpoint=None, env=None, expect_guard=False):
-        full = {k: v for k, v in os.environ.items() if k not in SCRUBBED}
-        full.update(HOME=str(self.home), HF_HOME=str(self.home/'.cache/huggingface'),
-                    HF_ENDPOINT=endpoint or self.hub.endpoint, HF_HUB_DISABLE_TELEMETRY='1',
-                    NO_PROXY='*', INWIME_CPU_KERNEL='off', INWIME_NETGUARD_LOG=str(self.guard_log),
-                    PYTHONPATH=os.pathsep.join((GUARD, PACKAGE_PARENT)))
-        if token:
-            full['HF_TOKEN'] = token
-        full.update(env or {})
-        result = subprocess.run([sys.executable, '-m', 'inwime', 'models', *args], capture_output=True,
-                                text=True, env=full, timeout=120, cwd=self.home)
-        violations = self.guard_log.read_text() if self.guard_log.exists() else ''
-        if not expect_guard:
-            assert violations == '', violations
-        result.violations = violations
-        return result
-
-    def json(self, *args, **kwargs):
-        result = self(*args, '--json', **kwargs)
-        assert result.returncode == 0, result.stderr
-        return json.loads(result.stdout)
-
-
-@pytest.fixture
-def run(hub, home, tmp_path):
-    return Run(hub, home, tmp_path)
+from conftest import PACKAGE_PARENT
 
 
 def test_info_resolves_the_revision_and_reports_the_architecture(hub, run):

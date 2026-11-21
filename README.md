@@ -52,7 +52,52 @@ Autenticazione: solo quella standard di `huggingface_hub` (`hf auth login`, `HF_
 
 Con la telemetria attiva, `huggingface_hub` salva in `HF_HOME` il proprio registro degli agent harness. `HF_HUB_DISABLE_TELEMETRY=1` lo evita.
 
-Download dei modelli e API arrivano con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
+### Installazione e gestione dei modelli
+
+```sh
+inwime models install Qwen/Qwen2.5-0.5B-Instruct            # riepilogo, poi chiede conferma
+inwime models install Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775 --yes
+inwime models import ~/checkpoints/SmolLM2-135M              # riferimento, nessuna copia
+inwime models list                                           # --json: inwime-model-list/1
+inwime models use Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775
+```
+
+`install` non scarica nulla senza conferma esplicita. Prima della conferma mostra un riepilogo:
+- repository e Revisione risolta nello SHA completo (anche se si chiede un branch o un tag);
+- numero di file, dimensione esatta, byte ancora da scaricare e file già presenti nella cache;
+- duplicati: blob identici già presenti nella cache sotto un altro repository;
+- destinazione nella cache Hugging Face standard (`HF_HUB_CACHE`, `HF_HOME`), condivisa con gli altri strumenti;
+- backing e spazio fisico libero del volume (sotto WSL2, il volume Windows che contiene il VHDX), con lo spazio che resterebbe dopo il download.
+
+`--yes` conferma senza chiedere, ma solo con la Revisione scritta come SHA completo di 40 caratteri, già nota all'utente.
+
+Il download è rifiutato se sul volume fisico resterebbero meno di 30 GiB liberi (`--host-margin-gib`) o se lo spazio fisico non è determinabile (fail-closed). Lo spazio viene misurato di nuovo dopo la conferma e prima di ogni file. RAM e paging non fermano mai un'acquisizione (policy #25).
+
+Ogni file viene verificato dopo il download:
+- i file LFS (pesi) con lo SHA256 dichiarato dal Hub;
+- gli altri file con dimensione e git blob id.
+
+Un file che non supera la verifica rende l'installazione `failed`. Se l'ha scaricato questa installazione, il file viene rimosso dalla cache. Se invece era già nella cache, scaricato da un altro strumento, resta dov'è: il messaggio indica il percorso da rimuovere prima di riprovare. Ogni file verificato diventa di sola lettura, anche se l'installazione poi fallisce. I pesi non vengono mai convertiti né quantizzati. I file di pesi in formati che il loader safetensors non legge (`.bin`, `.gguf`, `.onnx`, ...) non vengono scaricati se il Checkpoint ha pesi safetensors.
+
+Resume: un'installazione interrotta si riprende rilanciando lo stesso comando. I file già nella cache non vengono riscaricati, solo verificati di nuovo. Dentro un singolo file, `huggingface_hub` riprende un trasferimento interrotto con richieste a byte range, ma solo nello stesso processo: un file lasciato a metà da un processo terminato riparte da zero. Una sola installazione alla volta: una seconda esce subito.
+
+Il Registro dei modelli sta in `INWIME_HOME`, altrimenti in `$XDG_DATA_HOME/inwime` (default `~/.local/share/inwime`). Contiene:
+- un manifest per ogni installazione (`installed/*.json`, schema `inwime-install-manifest/1`) con identità, endpoint, versione del client, Revisione ed esito della verifica di ogni file. Non contiene credenziali;
+- i riferimenti ai Checkpoint importati (`imported/*.json`);
+- il modello attivo (`active.json`).
+
+`import` non copia e non modifica nulla. Registra il percorso con dimensione e data di modifica dei file, così `list` segnala un Checkpoint cambiato (`changed`) o sparito (`missing`). `list` legge solo file locali e mostra, per ogni Checkpoint, lo stato, lo spazio occupato e la Vista di supporto calcolata da config e header locali. Gli stati sono `verified`, `failed`, `incomplete`, `missing`, `imported` e `changed`. `verified` vuol dire che l'installazione ha verificato ogni file e che i file sono ancora presenti con la dimensione registrata: `list` e un nuovo `install` non ricalcolano gli hash. Non va confuso con lo Stato di capacità `numerically_verified`. `use` accetta solo Checkpoint `verified` o `imported`.
+
+Codici di uscita aggiuntivi:
+- 9: conferma non data;
+- 10: spazio insufficiente o non determinabile;
+- 11: un'altra installazione in corso;
+- 12: verifica fallita;
+- 13: modello non utilizzabile per `use`.
+
+`doctor` e `list` non contattano mai il Hub e non scaricano nulla.
+
+L'API arriva con i ticket successivi dello spec [#32](https://github.com/francescodifilippo/inwime/issues/32).
 
 # Benchmark BF16 con streaming esplicito
 

@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from . import __version__, catalog, doctor, storage
+from . import __version__, catalog, doctor, installer, registry, storage
 
 
 def build_parser():
@@ -21,7 +21,8 @@ def build_parser():
                    help='under WSL, do not query the Windows host through PowerShell')
     d.add_argument('--show-paths', action='store_true', help='do not redact user names in paths')
 
-    m = commands.add_parser('models', help='Hugging Face catalog: search and inspect models')
+    m = commands.add_parser('models', help='Hugging Face catalog and local models: search, inspect, install, '
+                            'import, list, use')
     models = m.add_subparsers(dest='models_command', metavar='MODELS_COMMAND')
     i = models.add_parser('info', help='describe one repository at one revision (no weights downloaded)')
     i.add_argument('spec', metavar='REPO[@REVISION]', help='e.g. Qwen/Qwen2.5-7B-Instruct@<full sha>')
@@ -40,6 +41,21 @@ def build_parser():
                    help='results per page, 1-%d (default: 20)' % catalog.MAX_PAGE_SIZE)
     s.add_argument('--page', type=int, default=1, help='page number, from 1')
     s.add_argument('--json', action='store_true', help='machine-readable output (schema inwime-model-search/1)')
+    n = models.add_parser('install', help='download one Checkpoint into the Hugging Face cache, after a summary '
+                          'and an explicit confirmation; every file is verified')
+    n.add_argument('spec', metavar='REPO[@REVISION]', help='branch, tag or full SHA (default: main), resolved '
+                   'to the full SHA before confirmation')
+    n.add_argument('--yes', action='store_true', help='confirm without asking; accepted only with a full '
+                   '40-hex SHA revision')
+    n.add_argument('--host-margin-gib', type=float, default=storage.DEFAULT_MARGIN_BYTES/storage.GIB,
+                   help='free space that must remain on the physical volume after the download (default: 30)')
+    o = models.add_parser('import', help='register a local Checkpoint directory by reference (no copy, no change)')
+    o.add_argument('path', metavar='PATH', help='directory with config.json, tokenizer and safetensors weights')
+    li = models.add_parser('list', help='installed and imported models, their state, support and space')
+    li.add_argument('--json', action='store_true', help='machine-readable output (schema inwime-model-list/1)')
+    u = models.add_parser('use', help='choose the active model among the installed and imported ones')
+    u.add_argument('name', metavar='ID', help='REPO@SHA or import path as shown by `inwime models list`; '
+                   'REPO alone if one revision is installed')
     return parser
 
 
@@ -47,6 +63,30 @@ def models_main(parser, args):
     if args.models_command is None:
         parser.parse_args(['models', '--help'])
     try:
+        if args.models_command == 'install':
+            if args.host_margin_gib < 0:
+                parser.error('--host-margin-gib must not be negative')
+            installer.install(args.spec, margin_bytes=int(args.host_margin_gib*storage.GIB), yes=args.yes)
+            return 0
+        if args.models_command == 'import':
+            record = registry.import_checkpoint(args.path)
+            sys.stdout.write(catalog.printable('imported by reference, nothing copied: %s (%d files, %d bytes)'
+                                               % (record['path'], len(record['files']), record['bytes']))
+                             + '\n  use it with: inwime models use %s\n' % catalog.printable(record['path']))
+            return 0
+        if args.models_command == 'use':
+            entry = registry.use(args.name)
+            sys.stdout.write(catalog.printable('active model: %s (%s, %s)' % (entry['id'], entry['source'],
+                                                                            entry['state'])) + '\n')
+            return 0
+        if args.models_command == 'list':
+            result = registry.inventory()
+            if args.json:
+                json.dump(result, sys.stdout, indent=1)
+                sys.stdout.write('\n')
+            else:
+                sys.stdout.write(registry.render_list(result))
+            return 0
         if args.models_command == 'info':
             result = catalog.info(args.spec)
         else:
@@ -57,6 +97,9 @@ def models_main(parser, args):
     except catalog.CatalogError as error:
         sys.stderr.write('inwime: %s\n' % catalog.printable(error))
         return error.exit_status
+    except KeyboardInterrupt:
+        sys.stderr.write('inwime: interrupted\n')
+        return 130
     if args.json:
         json.dump(result, sys.stdout, indent=1)
         sys.stdout.write('\n')

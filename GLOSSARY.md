@@ -50,6 +50,10 @@ _Avoid_: modello scaricato, snapshot
 Il commit SHA che fissa in modo univoco il contenuto di un Checkpoint su Hugging Face.
 _Avoid_: branch, tag, versione
 
+**Registro dei modelli**:
+L'inventario locale dei Checkpoint installati (con il manifest di verifica di ogni file) e importati (solo come riferimento a un percorso, mai come copia), e del modello attivo.
+_Avoid_: catalogo (che è il Hub), cache (che è quella di Hugging Face)
+
 **Contesto autorizzato**:
 Il dominio di autorizzazione identificato da una API key del server, entro cui è ammesso il riuso del prefisso KV; non identifica una singola conversazione.
 _Avoid_: sessione, conversazione, utente

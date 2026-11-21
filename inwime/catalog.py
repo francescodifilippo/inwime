@@ -10,6 +10,7 @@ whether a token is configured, to word access errors; it never prints, logs or s
 """
 import contextlib
 import json
+import math
 import os
 import re
 import time
@@ -179,38 +180,44 @@ def read_json(repo_id, revision, siblings, filename, raw=False):
     return (parsed, data) if raw else parsed
 
 
-def weights(repo_id, revision, siblings, index):
-    """The weight files a loader would read, their sizes and their tensor headers."""
+class HeaderError(Exception):
+    """A safetensors header that cannot be read."""
+
+
+def summarize_weights(sizes, index, read_header):
+    """The weight files a loader would read, their sizes and their tensor headers.
+
+    `sizes` maps every file of the Checkpoint to its size; `read_header(name)` returns
+    {tensor: (dtype, shape)} of one safetensors file or raises HeaderError; None skips the
+    headers. Shared by the catalog (headers through byte ranges), the installer (file selection
+    only) and the local registry (headers read from disk).
+    """
     indexed = isinstance(index, dict) and isinstance(index.get('weight_map'), dict)
     if indexed:
         files = sorted(set(index['weight_map'].values()))
-    elif 'model.safetensors' in siblings:
+    elif 'model.safetensors' in sizes:
         files = ['model.safetensors']
     else:
         files = []
-    missing = [f for f in files if f not in siblings]
-    present = [f for f in files if f in siblings]
-    sizes = [file_size(siblings[f]) for f in present]
-    others = sorted(n for n in siblings if n.endswith(WEIGHT_SUFFIXES) and n not in files)
+    missing = [f for f in files if f not in sizes]
+    present = [sizes[f] for f in files if f in sizes]
+    others = sorted(n for n in sizes if n.endswith(WEIGHT_SUFFIXES) and n not in files)
     result = {'format': 'safetensors' if files else None, 'files': files, 'sharded': indexed,
-              'missing_files': missing, 'bytes': None if missing or None in sizes else sum(sizes),
+              'missing_files': missing, 'bytes': None if missing or None in present else sum(present),
               'other_weight_files': others, 'parameters': None, 'dtypes': None, 'headers_read': False,
               'header_error': None}
     tensors = {}
-    if files and not missing and len(files) <= capability.MAX_HEADER_FILES:
-        from huggingface_hub.errors import SafetensorsParsingError
-        hub = api()
+    if read_header is not None and files and not missing and len(files) <= capability.MAX_HEADER_FILES:
         dtypes = {}
         for name in files:
             try:
-                header = call(hub.parse_safetensors_file_metadata, repo_id, name, revision=revision)
-            except SafetensorsParsingError as error:
+                header = read_header(name)
+            except HeaderError as error:
                 result['header_error'] = 'unreadable safetensors header in %s: %s' % (name, error)
                 return result, {}
-            for tensor, meta in header.tensors.items():
-                tensors[tensor] = (meta.dtype, tuple(meta.shape))
-            for dtype, count in header.parameter_count.items():
-                dtypes[dtype] = dtypes.get(dtype, 0) + count
+            for tensor, (dtype, shape) in header.items():
+                tensors[tensor] = (dtype, tuple(shape))
+                dtypes[dtype] = dtypes.get(dtype, 0) + math.prod(shape)
             if len(tensors) > capability.MAX_CATALOG_TENSORS:
                 result['header_error'] = 'more than %d tensors: the catalog stops reading headers' \
                     % capability.MAX_CATALOG_TENSORS
@@ -218,6 +225,21 @@ def weights(repo_id, revision, siblings, index):
         result.update(parameters=sum(dtypes.values()), dtypes=dict(sorted(dtypes.items())),
                       headers_read=True)
     return result, tensors
+
+
+def weights(repo_id, revision, siblings, index):
+    """Weight summary of a Revisione on the Hub; headers read through byte ranges."""
+    from huggingface_hub.errors import SafetensorsParsingError
+    hub = api()
+
+    def read_header(name):
+        try:
+            header = call(hub.parse_safetensors_file_metadata, repo_id, name, revision=revision)
+        except SafetensorsParsingError as error:
+            raise HeaderError(str(error)) from None
+        return {tensor: (meta.dtype, meta.shape) for tensor, meta in header.tensors.items()}
+
+    return summarize_weights({name: file_size(s) for name, s in siblings.items()}, index, read_header)
 
 
 def templates(repo_id, revision, siblings, tokenizer_config):
@@ -361,7 +383,8 @@ def printable(text):
                    for c in str(text))
 
 
-def _lines(lines):
+def render_lines(lines):
+    """Lines for the terminal, each made inert with `printable`."""
     return '\n'.join(printable(line) for line in lines) + '\n'
 
 def _count(n):
@@ -373,7 +396,7 @@ def _count(n):
     return str(n)
 
 
-def _bytes(n):
+def format_bytes(n):
     if n is None:
         return 'unknown'
     return '%.2f GiB (%d bytes)' % (n/2**30, n) if n >= 2**30 else '%.2f MiB (%d bytes)' % (n/2**20, n)
@@ -397,7 +420,7 @@ def render_search(result):
     lines.append('* v0.1 certification target   v verified revision (see `inwime models info`)')
     lines.append('page %d, %d per page%s' % (result['page'], result['limit'],
                  '; more results: repeat with --page %d' % (result['page']+1) if result['has_more'] else ''))
-    return _lines(lines)
+    return render_lines(lines)
 
 
 def render_info(info):
@@ -413,7 +436,7 @@ def render_info(info):
                                                      info['model_type'] or 'unknown'),
            '  context length:  %s' % (info['context_length'] or 'unknown'),
            '  declared dtype:  %s' % (info['declared_dtype'] or 'unknown'),
-           '  weights:         %s, %s' % (w['format'] or 'no safetensors', _bytes(w['bytes'])),
+           '  weights:         %s, %s' % (w['format'] or 'no safetensors', format_bytes(w['bytes'])),
            '  files:           %d%s' % (len(w['files']), ' (sharded, with index)' if w['sharded'] else ''),
            '  parameters:      %s' % ('%s by dtype %s' % (w['parameters'], w['dtypes'])
                                      if w['headers_read'] else 'unknown (headers not read)'),
@@ -434,4 +457,4 @@ def render_info(info):
     if cap['diagnosis']:
         out += ['', 'Diagnosis:']
         out += ['  - [%s] %s' % (d['category'], d['message']) for d in cap['diagnosis']]
-    return _lines(out)
+    return render_lines(out)
