@@ -7,68 +7,15 @@ are compared with the Percorso congelato called directly in the test process.
 """
 import json
 import os
-import re
 import stat
 import subprocess
 import sys
-import urllib.error
-import urllib.request
 
 import pytest
 
 import hubmodels as hm
 import tinyqwen
-
-
-class Server:
-    def __init__(self, run, home, args=()):
-        self.run, self.home = run, home
-        self.process = subprocess.Popen([sys.executable, '-m', 'inwime', 'serve', '--port', '0', *args],
-                                        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, text=True, env=run.environment(),
-                                        cwd=home)
-        self.banner = []
-        for line in self.process.stdout:
-            self.banner.append(line)
-            found = re.search(r'listening on (http://\S+)', line)
-            if found:
-                self.url = found.group(1)
-                break
-        else:
-            raise AssertionError('server did not start: %s%s' % (''.join(self.banner),
-                                                                 self.process.stderr.read()))
-
-    @property
-    def key_file(self):
-        return self.home/'.local/share/inwime/server/api-key'
-
-    @property
-    def key(self):
-        return self.key_file.read_text().strip()
-
-    def request(self, method, path, body=None, key=None, auth=True):
-        headers = {'Content-Type': 'application/json'}
-        if auth:
-            headers['Authorization'] = 'Bearer %s' % (self.key if key is None else key)
-        data = None if body is None else (body if isinstance(body, bytes) else json.dumps(body).encode())
-        request = urllib.request.Request(self.url+path, data=data, method=method, headers=headers)
-        try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                return response.status, json.loads(response.read())
-        except urllib.error.HTTPError as error:
-            return error.code, json.loads(error.read())
-
-    def stop(self):
-        if self.process.returncode is not None:
-            return self.output
-        self.process.terminate()
-        try:
-            out, err = self.process.communicate(timeout=30)
-        except subprocess.TimeoutExpired:
-            self.process.kill()
-            out, err = self.process.communicate()
-        self.output = ''.join(self.banner)+out+err
-        return self.output
+from serving import Server, assert_openai_error, stream
 
 
 @pytest.fixture(autouse=True)
@@ -95,14 +42,6 @@ def server(run, home, active):
     s = Server(run, home)
     yield s
     s.stop()
-
-
-def assert_openai_error(body, code=None):
-    error = body['error']
-    assert isinstance(error['message'], str) and error['message']
-    assert set(error) >= {'message', 'type', 'param', 'code'}
-    if code is not None:
-        assert error['code'] == code
 
 
 def test_models_lists_the_active_model_to_an_authenticated_client(server, active, checkpoint):
@@ -154,6 +93,49 @@ def test_completion_is_the_greedy_continuation_of_the_frozen_path(server, active
                              'total_tokens': 4+max_tokens}
 
 
+def test_streamed_completion_sends_the_greedy_tokens_as_they_come(server, active):
+    s = stream(server, '/v1/completions', {'model': active, 'prompt': 't3 t5 t7 t11', 'max_tokens': 5,
+                                           'stream': True, 'stream_options': {'include_usage': True}})
+    assert s.status == 200 and s.events[0][:2] == ('comment', 'keepalive')
+    *content, last = s.chunks
+    assert all(c['object'] == 'text_completion' for c in s.chunks)
+    # The frozen greedy tokens of test_completion_is_the_greedy_continuation_of_the_frozen_path,
+    # one chunk per token, then the finish.
+    assert [c['choices'][0]['text'] for c in content] == ['t21', ' t32', ' t28', ' t14', ' t24', '']
+    assert content[-1]['choices'][0]['finish_reason'] == 'length'
+    assert last['choices'] == [] and last['usage'] == {'prompt_tokens': 4, 'completion_tokens': 5,
+                                                       'total_tokens': 9}
+    assert s.events[-1][:2] == ('data', '[DONE]')
+
+
+def test_a_stop_sequence_across_tokens_ends_the_completion_without_leaking_into_the_stream(server, active):
+    # Greedy continuation of this prompt: t21 t32 t28 t14 t24. The stop spans tokens 2 and 3.
+    request = {'model': active, 'prompt': 't3 t5 t7 t11', 'max_tokens': 5, 'stop': ['t32 t28', 'zz']}
+    status, body = server.request('POST', '/v1/completions', request)
+    assert status == 200, body
+    assert body['choices'][0]['text'] == 't21 ' and body['choices'][0]['finish_reason'] == 'stop'
+    assert body['usage']['completion_tokens'] == 3
+    s = stream(server, '/v1/completions', dict(request, stream=True))
+    texts = [c['choices'][0]['text'] for c in s.chunks]
+    assert ''.join(texts) == 't21 '
+    assert not any('t3' in t for t in texts)          # " t32" was held back, never sent
+    assert s.chunks[-1]['choices'][0]['finish_reason'] == 'stop'
+
+
+def test_any_eos_id_of_generation_config_ends_the_generation(server, active, checkpoint):
+    # generation_config.json may list several EOS ids; t35 (greedy after "t2 t33") becomes one.
+    (checkpoint/'generation_config.json').write_text(json.dumps({'bos_token_id': 0, 'eos_token_id': [1, 35]}))
+    server.stop()
+    restarted = Server(server.run, server.home)
+    try:
+        status, body = restarted.request('POST', '/v1/completions', {'model': active, 'prompt': 't2 t33', 'max_tokens': 6})
+        assert status == 200, body
+        assert body['choices'][0] == {'text': 't2', 'index': 0, 'logprobs': None, 'finish_reason': 'stop'}
+        assert body['usage']['completion_tokens'] == 2
+    finally:
+        restarted.stop()
+
+
 def test_completion_stops_at_eos_without_emitting_it(server, active):
     status, body = server.request('POST', '/v1/completions', {'model': active, 'prompt': 't2 t33', 'max_tokens': 6})
     assert status == 200, body
@@ -186,8 +168,8 @@ def test_requests_beyond_the_context_are_rejected_before_inference(server, activ
     ({'prompt': 't3', 'max_completion_tokens': -1}, 'max_completion_tokens', None),
     ({'prompt': 't3', 'max_tokens': 2, 'max_completion_tokens': 3}, 'max_completion_tokens', None),
     ({'prompt': 't3', 'logit_bias': {'5': 100}}, 'logit_bias', 'unsupported_parameter'),
-    ({'prompt': 't3', 'stream': True}, 'stream', 'unsupported_parameter'),
-    ({'prompt': 't3', 'temperature': 0.7}, 'temperature', 'unsupported_parameter'),
+    ({'prompt': 't3', 'stream': 'yes'}, 'stream', None),
+    ({'prompt': 't3', 'temperature': 2.5}, 'temperature', None),
     ({'prompt': 't3', 'n': 2}, 'n', 'unsupported_parameter'),
 ])
 def test_invalid_completion_requests_get_400(server, active, body, param, code):
@@ -240,6 +222,18 @@ def test_engine_failure_gets_500_and_the_server_keeps_serving(server, active, ch
     assert body['error']['type'] == 'server_error'
     assert str(checkpoint) not in body['error']['message']
     assert server.request('GET', '/v1/models')[0] == 200
+
+
+def test_an_engine_failure_during_a_stream_ends_it_with_an_error_event(server, active, checkpoint):
+    shard = next(checkpoint.glob('model-00001-*.safetensors'))
+    st = shard.stat()
+    os.utime(shard, ns=(st.st_atime_ns, st.st_mtime_ns+10**9))
+    s = stream(server, '/v1/completions', {'model': active, 'prompt': 't3', 'max_tokens': 2, 'stream': True})
+    assert s.status == 200 and s.events[0][:2] == ('comment', 'keepalive')
+    [data] = s.chunks
+    assert_openai_error(data, 'checkpoint_changed')
+    assert str(checkpoint) not in data['error']['message']
+    assert s.events[-1][:2] == ('data', '[DONE]')
 
 
 def test_concurrent_requests_each_get_their_own_frozen_result(server, active, checkpoint):
@@ -303,7 +297,7 @@ def test_one_coordinatore_per_process(checkpoint, monkeypatch):
     try:
         with pytest.raises(RuntimeError, match='already exists'):
             Coordinatore('tiny', checkpoint)
-        reply = first.complete('t2 t33', 6).result(timeout=60)
+        reply = first.generate(first.prepare_completion('t2 t33', 6, {})).result(timeout=60)
         assert (reply['text'], reply['finish_reason']) == ('t2 t35 t29', 'stop')
     finally:
         first.close()

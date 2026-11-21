@@ -75,11 +75,13 @@ jobs:
           python -m venv "$RUNNER_TEMP/inwime"
           "$RUNNER_TEMP/inwime/bin/pip" install dist/*.whl pytest==9.0.2
           cd "$RUNNER_TEMP"
-          "$RUNNER_TEMP/inwime/bin/python" -c "import importlib.util, sys; sys.exit(importlib.util.find_spec('torch') is not None)"
+          "$RUNNER_TEMP/inwime/bin/python" -c "import importlib.util, sys; sys.exit(importlib.util.find_spec('torch') is not None or importlib.util.find_spec('transformers') is None)"
           "$RUNNER_TEMP/inwime/bin/inwime" --version
           "$RUNNER_TEMP/inwime/bin/inwime" doctor --json --no-host-query > doctor.json
           "$RUNNER_TEMP/inwime/bin/python" -c "import json, sys; r = json.load(open('doctor.json')); k = r['cpu_kernel']; print(r['status'], k['implementation'], k['self_test']); sys.exit(not k['native'])"
 
+      # The chat tests run Transformers' AutoTokenizer and apply_chat_template in this venv,
+      # where the step above proved torch absent.
       - name: Product tests against the installed package
         run: |
           mkdir -p ci-results
