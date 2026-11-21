@@ -118,7 +118,8 @@ Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni process
 
 Limiti di questa versione:
 - Il calcolo usa il Percorso congelato: un token per volta e un solo thread.
-- Il server accetta solo Checkpoint Qwen2 con testa non tied, nel formato del runtime (`safetensors.json`), e con `tokenizer.json`. Quindi oggi serve solo Checkpoint registrati con `models import`. I Checkpoint installati nella cache Hugging Face non sono ancora servibili.
+- Il server accetta solo Checkpoint Qwen2 con testa non tied e con `tokenizer.json`. I Qwen2.5 piccoli con testa tied arrivano con [#38](https://github.com/francescodifilippo/inwime/issues/38).
+- Un Checkpoint installato con `models install` viene servito dalla cache Hugging Face senza scriverci nulla. All'avvio il server controlla che ogni file di pesi punti al blob verificato dall'installazione. Un Checkpoint importato con `models import` deve invece avere il descrittore del runtime (`safetensors.json`).
 - La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la memoria del Percorso congelato cresce con prompt + limite di token.
 - Chat, streaming SSE e campionamento arrivano con [#39](https://github.com/francescodifilippo/inwime/issues/39). Coda limitata, 429 e cancellazione arrivano con [#40](https://github.com/francescodifilippo/inwime/issues/40).
 

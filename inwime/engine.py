@@ -4,7 +4,9 @@ One `Coordinatore` per process. It owns the active model, its tokenizer, the ver
 of its files and the only worker thread that computes; the HTTP layer never touches the
 runtime. Under it, each request gets its own session of the Percorso congelato (the
 `inwime_runtime` Qwen2 adapter), whose `core.Coordinator` is the Gestore delle regioni:
-memory reservations, leases and weight I/O stay there.
+memory reservations, leases and weight I/O stay there. An imported Checkpoint is opened by the
+frozen loader as is; one installed in the Hugging Face cache goes through `snapshot.py`, which
+hands the same session a catalog of the verified blobs.
 
 The frozen runtime is bound to the thread that creates it, so every runtime is created, used
 and closed on the worker thread. Requests run one at a time in arrival order.
@@ -18,12 +20,13 @@ import queue
 import threading
 from pathlib import Path
 
-from inwime_runtime.llama import read_config
+from inwime_runtime.core import CheckpointError, Coordinator
+from inwime_runtime.llama import llama_plan, read_config
 from inwime_runtime.math_cpu import NativeMath, ScalarMath
-from inwime_runtime.qwen2 import Qwen2Runtime
+from inwime_runtime.qwen2 import Qwen2Catalog, Qwen2Runtime
 from inwime_runtime.tokenizer import LlamaTokenizer, greedy
 
-from . import kernel
+from . import kernel, snapshot
 
 
 class EngineError(Exception):
@@ -46,16 +49,37 @@ def math_backend():
     return ScalarMath()
 
 
+class CatalogQwen2Runtime(Qwen2Runtime):
+    """`Qwen2Runtime` over a catalog given by the caller instead of one read from a directory.
+
+    The body is `Qwen2Runtime.__init__` with its defaults (tiles of 262144 elements, synchronous
+    I/O, default budget) minus the construction of the catalog: same plan, same Gestore delle
+    regioni, same computation, all inherited unchanged."""
+
+    def __init__(self, catalog, capacity, *, integrity, math_backend):
+        self.catalog = catalog
+        self.spec, self.capacity = catalog.spec, capacity
+        self.plan = llama_plan(catalog, capacity, 262144, 262144, 'sync')
+        self.math_backend = math_backend
+        self.control = Coordinator(catalog, self.plan, None, None, integrity=integrity,
+                                   math_backend=math_backend)
+        self._published = (0, 0, 0)
+        self.running = self.failed = self.result_open = self.closed = False
+
+
 class Coordinatore:
     _instance = None
     _guard = threading.Lock()
 
-    def __init__(self, model_id, directory):
+    def __init__(self, model_id, directory, manifest=None):
+        """`manifest`: the install manifest of a Checkpoint in the Hugging Face cache; None for an
+        imported directory in the frozen loader's format."""
         with Coordinatore._guard:
             if Coordinatore._instance is not None:
                 raise RuntimeError('a Coordinatore already exists in this process')
             Coordinatore._instance = self
-        self.model_id, self.directory = model_id, Path(directory)
+        self.model_id, self.directory, self.manifest = model_id, Path(directory), manifest
+        self.catalog = None
         self._jobs = queue.SimpleQueue()
         self._worker = threading.Thread(target=self._work, name='inwime-worker', daemon=True)
         self._worker.start()
@@ -112,7 +136,9 @@ class Coordinatore:
                               % (config.get('model_type'),))
         self.math = math_backend()
         try:
-            with Qwen2Runtime(self.directory, capacity=1, integrity='full', math_backend=self.math) as runtime:
+            if self.manifest is not None:
+                self.catalog = Qwen2Catalog(snapshot.snapshot_source(self.manifest))
+            with self._session(1, 'full') as runtime:
                 self.verified = dict(runtime.control.stamps)
                 self.context = runtime.spec.context
                 stats = runtime.control.stats()
@@ -126,6 +152,11 @@ class Coordinatore:
         except Exception as error:      # the tokenizers library raises a bare Exception
             raise NotServable('tokenizer: %s: %s' % (type(error).__name__, error)) from error
 
+    def _session(self, capacity, integrity):
+        if self.catalog is not None:
+            return CatalogQwen2Runtime(self.catalog, capacity, integrity=integrity, math_backend=self.math)
+        return Qwen2Runtime(self.directory, capacity=capacity, integrity=integrity, math_backend=self.math)
+
     def _complete(self, prompt, max_tokens):
         ids = self.tokenizer.encode(prompt)
         if not ids:
@@ -134,13 +165,18 @@ class Coordinatore:
             raise EngineError(400, "this model's maximum context length is %d tokens; the request has %d "
                               'prompt tokens and max_tokens %d' % (self.context, len(ids), max_tokens),
                               code='context_length_exceeded', param='prompt')
-        with Qwen2Runtime(self.directory, capacity=len(ids)+max_tokens-1, integrity='metadata',
-                          math_backend=self.math) as runtime:
+        changed = EngineError(500, 'the Checkpoint files changed after their verification at start-up; '
+                              'restart the server to verify them again', type='server_error',
+                              code='checkpoint_changed')
+        try:
+            session = self._session(len(ids)+max_tokens-1, 'metadata')
+        except CheckpointError as error:
+            # Admitted at start-up, so any rejection now means its files changed since then.
+            raise changed from error
+        with session as runtime:
             if runtime.control.stamps != self.verified:
                 # Same device, inode, size and times as the files hashed at start-up, or no inference.
-                raise EngineError(500, 'the Checkpoint files changed after their verification at start-up; '
-                                  'restart the server to verify them again', type='server_error',
-                                  code='checkpoint_changed')
+                raise changed
             result = greedy(runtime, self.tokenizer, prompt, max_tokens)
         generated = result['generated_ids']
         text_ids = generated[:-1] if result['stopped_on_eos'] else generated

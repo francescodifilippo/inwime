@@ -242,9 +242,15 @@ def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sy
     record = registry.active_record()
     if record is None:
         raise ServeError(3, 'no active model: choose one with `inwime models use ID` (see `inwime models list`)')
+    manifest = None
+    if record.get('source') == 'installed':
+        manifest = registry.read_json(registry.manifest_path(*record['id'].rsplit('@', 1)))
+        if not registry.intact(manifest):
+            raise ServeError(13, 'the active model %s is no longer a verified, complete install: re-run '
+                             '`inwime models install %s`' % (record['id'], record['id']))
     key = api_key()
     try:
-        coordinatore = Coordinatore(record['id'], record['path'])
+        coordinatore = Coordinatore(record['id'], record['path'], manifest)
     except NotServable as error:
         raise ServeError(13, 'the active model %s cannot be served: %s' % (record['id'], error)) from error
     try:

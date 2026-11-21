@@ -16,6 +16,7 @@ import urllib.request
 
 import pytest
 
+import hubmodels as hm
 import tinyqwen
 
 
@@ -307,3 +308,67 @@ def test_one_coordinatore_per_process(checkpoint, monkeypatch):
     finally:
         first.close()
     Coordinatore('tiny', checkpoint).close()      # free again once the first one is closed
+
+
+def install_from_hub(run, hub, checkpoint, repo_id='acme/tiny-qwen2-m10'):
+    """The same Checkpoint as published on a Hub: weights, index, config and tokenizer, without
+    InWiMe's own descriptor. Installed into the Hugging Face cache, then made active."""
+    files = {f.name: f.read_bytes() for f in checkpoint.iterdir()
+             if f.name not in ('safetensors.json', 'provenance.json')}
+    hub.add(hm.repo(repo_id, files, revision=hm.sha(37)))
+    model_id = '%s@%s' % (repo_id, hm.sha(37))
+    installed = run('install', model_id, '--yes', free=500*1024**3)
+    assert installed.returncode == 0, installed.stderr
+    used = run('use', model_id)
+    assert used.returncode == 0, used.stderr
+    return model_id
+
+
+def test_an_installed_checkpoint_is_served_like_the_imported_one(run, hub, home, checkpoint):
+    model_id = install_from_hub(run, hub, checkpoint)
+    server = Server(run, home)
+    try:
+        weights = sum(f.stat().st_size for f in checkpoint.glob('*.safetensors'))
+        assert 'SHA256 check of the weights: %d bytes read' % weights in ''.join(server.banner)
+        assert [m['id'] for m in server.request('GET', '/v1/models')[1]['data']] == [model_id]
+        for prompt in ('t3 t5 t7 t11', 't2 t33'):
+            status, body = server.request('POST', '/v1/completions',
+                                          {'model': model_id, 'prompt': prompt, 'max_tokens': 5})
+            assert status == 200, body
+            reference, tokenizer = tinyqwen.frozen_greedy(checkpoint, prompt, 5)
+            ids = reference['generated_ids']
+            assert body['choices'][0]['text'] == tokenizer.decode(ids[:-1] if reference['stopped_on_eos'] else ids)
+            assert body['usage']['completion_tokens'] == len(ids)
+    finally:
+        server.stop()
+    # Serving wrote nothing into the Hugging Face cache.
+    snapshot = home/'.cache/huggingface/hub/models--acme--tiny-qwen2-m10/snapshots'/hm.sha(37)
+    assert sorted(f.name for f in snapshot.iterdir()) == sorted(
+        f.name for f in checkpoint.iterdir() if f.name not in ('safetensors.json', 'provenance.json'))
+
+
+def test_a_changed_installed_blob_gets_500_until_restart(run, hub, home, checkpoint):
+    model_id = install_from_hub(run, hub, checkpoint)
+    server = Server(run, home)
+    try:
+        blob = next((home/'.cache/huggingface/hub/models--acme--tiny-qwen2-m10/snapshots'/hm.sha(37))
+                    .glob('model-00002-*.safetensors')).resolve()
+        st = blob.stat()
+        os.utime(blob, ns=(st.st_atime_ns, st.st_mtime_ns+10**9))
+        status, body = server.request('POST', '/v1/completions', {'model': model_id, 'prompt': 't3', 'max_tokens': 2})
+        assert status == 500
+        assert_openai_error(body, 'checkpoint_changed')
+    finally:
+        server.stop()
+
+
+def test_an_installed_shard_relinked_to_another_blob_is_refused(run, hub, home, checkpoint):
+    install_from_hub(run, hub, checkpoint)
+    snapshot = home/'.cache/huggingface/hub/models--acme--tiny-qwen2-m10/snapshots'/hm.sha(37)
+    first, second = sorted(snapshot.glob('model-*.safetensors'))[:2]
+    target = os.readlink(second)
+    first.unlink()
+    first.symlink_to(target)
+    refused = serve_command(run, home)
+    assert refused.returncode == 13, refused.stderr
+    assert 'listening' not in refused.stdout and 'Traceback' not in refused.stderr
