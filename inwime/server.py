@@ -8,7 +8,17 @@ are off.
 Endpoints: `GET /v1/models`, `POST /v1/completions` and `POST /v1/chat/completions`, whole or
 streamed as SSE. A request is validated and prepared (tokenized, or rendered with the chat
 template) before it waits for the worker, so a refused request gets its HTTP error at once.
-The queue limit and cancellation come with #40.
+
+The computation runs on the Coordinatore's worker thread, never on the event loop, so
+keepalives and other requests go on during an inference. One inference at a time; up to
+`--queue-size` requests (default 4) wait in arrival order and the next one gets 429
+`queue_full`. That 429 has no `Retry-After`: the server has no founded estimate of when a
+place frees (the token limits of the queued requests only bound their length). A request is
+withdrawn when its client disconnects, when `--max-request-seconds` passes since its arrival
+(503 `request_timeout`; no limit by default) or when the server stops: a waiting one leaves the
+queue at once, a running one is cancelled inside the runtime and keeps its place until the
+worker has unwound it. An identical retry after a client timeout therefore waits for the
+abandoned computation to stop instead of running beside it.
 """
 import asyncio
 import hmac
@@ -24,11 +34,11 @@ import uuid
 
 from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
-from starlette.responses import JSONResponse, StreamingResponse
+from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Route
 
 from . import catalog, chat, registry
-from .engine import Coordinatore, EngineError, NotServable
+from .engine import DEFAULT_QUEUE_SIZE, Coordinatore, EngineError, NotServable, cancelled
 from .generation import SamplingError, client_parameters
 
 DEFAULT_HOST = '127.0.0.1'
@@ -205,10 +215,42 @@ def chat_request(body, model_id):
     return Request(body, (messages, tools or None, max_tokens, sampling_parameters(body)))
 
 
+class JobStream(StreamingResponse):
+    """A streamed response that withdraws its job however the response ends: finished, client
+    disconnected (Starlette then cancels the stream, even before it starts) or server stopping."""
+
+    def __init__(self, job, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.job = job
+
+    async def __call__(self, scope, receive, send):
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            self.job.cancel()
+
+
+async def disconnected(request):
+    """Return when the client of a request whose body has been read closes its connection."""
+    while (await request.receive())['type'] != 'http.disconnect':
+        pass
+
+
 # -- application -------------------------------------------------------------------------------
 
-def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
+def timed_out(limit):
+    return EngineError(503, 'the request took longer than the server limit of %g seconds '
+                       '(--max-request-seconds), waiting and computing included' % limit,
+                       type='server_error', code='request_timeout')
+
+
+def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, max_request_seconds=None):
+    """`max_request_seconds`: None for no time limit; else each request, from its arrival, is
+    cancelled when the limit passes, whether it still waits in the queue or is computing."""
     expected = ('Bearer '+key).encode()
+
+    def remaining(deadline):
+        return None if deadline is None else max(0., deadline-time.monotonic())
 
     def authorized(request):
         given = request.headers.get('authorization', '').encode('latin-1', 'replace')
@@ -288,36 +330,47 @@ def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
                 chunk['usage'] = None
             return chunk
 
-    def event(value):
-        return 'data: %s\n\n' % json.dumps(value, separators=(',', ':'))
+    class Output:
+        """Text the worker emits, handed to the event loop of the stream that waits for it."""
 
-    async def sse(reply, prepared):
-        """Headers and a first keepalive go out before the request reaches the worker; then one
-        `: keepalive` comment per interval without model output. Comments carry no data: a client
-        never mistakes them for progress of the model."""
-        loop = asyncio.get_running_loop()
-        queue, done = asyncio.Queue(), object()
+        def __init__(self):
+            self.loop, self.queue = asyncio.get_running_loop(), asyncio.Queue()
 
-        def put(item):
+        def __call__(self, item):
             try:
-                loop.call_soon_threadsafe(queue.put_nowait, item)
+                self.loop.call_soon_threadsafe(self.queue.put_nowait, item)
             except RuntimeError:        # the event loop is gone: the server is shutting down
                 pass
 
+    def event(value):
+        return 'data: %s\n\n' % json.dumps(value, separators=(',', ':'))
+
+    async def sse(reply, job, output, deadline):
+        """Headers and a first keepalive go out at once, before the request reaches the worker;
+        then one `: keepalive` comment per interval without model output. Comments carry no data:
+        a client never mistakes them for progress of the model."""
+        done = object()
         yield ': keepalive\n\n'
-        future = coordinatore.generate(prepared, put)
-        future.add_done_callback(lambda f: put(done))
+        job.future.add_done_callback(lambda f: output(done))
         while True:
+            left = remaining(deadline)
             try:
-                item = await asyncio.wait_for(queue.get(), keepalive_seconds)
+                item = await asyncio.wait_for(output.queue.get(), min(keepalive_seconds, left)
+                                              if left is not None else keepalive_seconds)
             except TimeoutError:
+                if remaining(deadline) == 0:      # JobStream withdraws the job when the stream ends
+                    yield event({'error': failure(timed_out(max_request_seconds))[1]})
+                    yield 'data: [DONE]\n\n'
+                    return
                 yield ': keepalive\n\n'
                 continue
             if item is done:
                 break
             yield event(reply.chunk(item))
         try:
-            result = future.result()
+            if job.future.cancelled():                # withdrawn from the queue by a server stop
+                raise cancelled()
+            result = job.future.result()
         except Exception as error:
             yield event({'error': failure(error)[1]})
             yield 'data: [DONE]\n\n'
@@ -333,19 +386,41 @@ def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
     async def serve_request(request, is_chat):
         if not authorized(request):
             return unauthorized()
+        deadline = None if max_request_seconds is None else time.monotonic()+max_request_seconds
         try:
             body = await read_json(request)
             parsed = (chat_request if is_chat else completion_request)(body, coordinatore.model_id)
             prepare = coordinatore.prepare_chat if is_chat else coordinatore.prepare_completion
             prepared = await asyncio.to_thread(prepare, *parsed.arguments)
+            output = Output() if parsed.stream else None
+            job = coordinatore.generate(prepared, output)
         except Exception as error:
             return failure_response(error)
         reply = Reply(is_chat, parsed)
         if parsed.stream:
-            return StreamingResponse(sse(reply, prepared), media_type='text/event-stream',
-                                     headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
+            return JobStream(job, sse(reply, job, output, deadline), media_type='text/event-stream',
+                             headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
+        computed = asyncio.wrap_future(job.future)
+        gone = asyncio.ensure_future(disconnected(request))
+        finished = left = False
         try:
-            result = await asyncio.wrap_future(coordinatore.generate(prepared))
+            await asyncio.wait((computed, gone), timeout=remaining(deadline),
+                               return_when=asyncio.FIRST_COMPLETED)
+            finished, left = computed.done(), gone.done()
+        finally:
+            gone.cancel()
+            if not finished:
+                # The time limit passed, the client left or the server is stopping. Decided before
+                # the cancellation, which may complete `computed` at once.
+                job.cancel()
+        if not finished:
+            if left:
+                return Response(status_code=499)      # nobody reads it: the client is gone
+            return failure_response(timed_out(max_request_seconds))
+        if computed.cancelled():                      # withdrawn from the queue by a server stop
+            return failure_response(cancelled())
+        try:
+            result = computed.result()
         except Exception as error:
             return failure_response(error)
         return JSONResponse(reply.whole(result))
@@ -396,7 +471,7 @@ def bind(host, port):
 
 
 def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sys.stdout,
-          keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS):
+          keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, queue_size=DEFAULT_QUEUE_SIZE, max_request_seconds=None):
     import uvicorn
     if not is_loopback(host) and not allow_non_loopback:
         raise ServeError(2, '%s is not a loopback address: the server listens on loopback only unless '
@@ -412,7 +487,7 @@ def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sy
                              '`inwime models install %s`' % (record['id'], record['id']))
     key = api_key()
     try:
-        coordinatore = Coordinatore(record['id'], record['path'], manifest)
+        coordinatore = Coordinatore(record['id'], record['path'], manifest, queue_size)
     except NotServable as error:
         raise ServeError(13, 'the active model %s cannot be served: %s' % (record['id'], error)) from error
     try:
@@ -430,7 +505,8 @@ def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sy
                       'key can use the server\n')
         out.write('listening on http://%s:%d\n' % (shown, address[1]))
         out.flush()
-        config = uvicorn.Config(build_app(coordinatore, key, keepalive_seconds), log_level='warning', access_log=False,
+        config = uvicorn.Config(build_app(coordinatore, key, keepalive_seconds, max_request_seconds),
+                                log_level='warning', access_log=False,
                                 lifespan='off')
         uvicorn.Server(config).run(sockets=[sock])
     finally:

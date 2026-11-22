@@ -11,9 +11,10 @@ import urllib.request
 
 
 class Server:
-    def __init__(self, run, home, args=(), env=None):
+    def __init__(self, run, home, args=(), env=None, module='inwime'):
+        """`module`: run as `python -m <module> serve`; `pacer` wraps the server for the queue tests."""
         self.run, self.home = run, home
-        self.process = subprocess.Popen([sys.executable, '-m', 'inwime', 'serve', '--port', '0', *args],
+        self.process = subprocess.Popen([sys.executable, '-m', module, 'serve', '--port', '0', *args],
                                         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, text=True, env=run.environment(env=env),
                                         cwd=home)

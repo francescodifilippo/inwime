@@ -1,6 +1,7 @@
 """The `inwime` command."""
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -68,6 +69,12 @@ def build_parser():
     v.add_argument('--keepalive-seconds', type=float, default=server.DEFAULT_KEEPALIVE_SECONDS,
                    help='interval of the SSE `: keepalive` comments sent while a streamed request has no '
                    'new model output (default: %g)' % server.DEFAULT_KEEPALIVE_SECONDS)
+    v.add_argument('--queue-size', type=int, default=server.DEFAULT_QUEUE_SIZE,
+                   help='requests that may wait behind the one in progress, in arrival order; more get '
+                   'HTTP 429 (default: %d)' % server.DEFAULT_QUEUE_SIZE)
+    v.add_argument('--max-request-seconds', type=float, default=None,
+                   help='cancel a request this many seconds after its arrival, waiting included, and '
+                   'answer HTTP 503 request_timeout (default: no limit)')
     return parser
 
 
@@ -76,9 +83,14 @@ def serve_main(parser, args):
         parser.error('--port must be between 0 and 65535')
     if not 0 < args.keepalive_seconds <= 3600:
         parser.error('--keepalive-seconds must be greater than 0 and at most 3600')
+    if args.queue_size < 0:
+        parser.error('--queue-size must not be negative')
+    if args.max_request_seconds is not None and not 0 < args.max_request_seconds < math.inf:
+        parser.error('--max-request-seconds must be a positive number of seconds')
     try:
         return server.serve(args.host, args.port, args.allow_non_loopback,
-                            keepalive_seconds=args.keepalive_seconds)
+                            keepalive_seconds=args.keepalive_seconds, queue_size=args.queue_size,
+                            max_request_seconds=args.max_request_seconds)
     except server.ServeError as error:
         sys.stderr.write('inwime: %s\n' % catalog.printable(error))
         return error.exit_status
