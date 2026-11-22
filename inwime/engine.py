@@ -50,7 +50,7 @@ class EngineError(Exception):
         self.status, self.message, self.type, self.code, self.param = status, message, type, code, param
 
 
-def cancelled():
+def cancelled_error():
     return EngineError(503, 'the request was cancelled before it completed', type='server_error',
                        code='request_cancelled')
 
@@ -100,7 +100,7 @@ class Coordinatore:
         self.model_id, self.directory, self.manifest = model_id, Path(directory), manifest
         self.queue_size = queue_size
         self.catalog = None
-        self._jobs = threading.Condition()
+        self._queue_lock = threading.Condition()
         self._waiting = collections.deque()
         self._running = None
         self._closing = False
@@ -120,9 +120,9 @@ class Coordinatore:
 
     def _work(self):
         while True:
-            with self._jobs:
+            with self._queue_lock:
                 while not self._waiting and not self._closing:
-                    self._jobs.wait()
+                    self._queue_lock.wait()
                 if not self._waiting:
                     return
                 job = self._running = self._waiting.popleft()
@@ -133,43 +133,55 @@ class Coordinatore:
                     except BaseException as error:
                         job.future.set_exception(error)
             finally:
-                with self._jobs:
+                with self._queue_lock:
                     self._running = None
-                    self._jobs.notify_all()
+                    self._queue_lock.notify_all()
+
+    def _refuse_if_full(self, limit):
+        """EngineError 429 when the job in progress and `limit` waiting ones fill every place.
+        Counted with the waiting ones: the worker may not have taken the next job yet."""
+        if len(self._waiting)+(self._running is not None) > limit:
+            raise EngineError(429, 'the server is busy: one inference is in progress and %d more '
+                              'wait in the queue, which is full; retry later' % limit,
+                              type='requests', code='queue_full')
+
+    def check_room(self):
+        """Refuse early, before a request is prepared, when the queue is already full. Advisory:
+        `generate` checks again when it admits the prepared request."""
+        with self._queue_lock:
+            self._refuse_if_full(self.queue_size)
 
     def _admit(self, job, limit=None):
         """Queue `job`; with `limit`, refuse it when that many jobs already wait behind a running one."""
-        with self._jobs:
+        with self._queue_lock:
             if self._closing:
                 raise EngineError(503, 'the server is shutting down', type='server_error',
                                   code='shutting_down')
-            if limit is not None and self._running is not None and len(self._waiting) >= limit:
-                raise EngineError(429, 'the server is busy: one inference is in progress and %d more '
-                                  'wait in the queue, which is full; retry later' % len(self._waiting),
-                                  type='requests', code='queue_full')
+            if limit is not None:
+                self._refuse_if_full(limit)
             job.coordinatore = self
             self._waiting.append(job)
-            self._jobs.notify_all()
+            self._queue_lock.notify_all()
         return job
 
     def _cancel(self, job):
-        with self._jobs:
+        with self._queue_lock:
             if job in self._waiting:
                 # Never started: nothing to undo, its place frees at once.
                 self._waiting.remove(job)
                 job.future.cancel()
-                self._jobs.notify_all()
+                self._queue_lock.notify_all()
                 return
         job.cancel_event.set()
 
     def close(self, timeout=60):
         """Cancel the waiting jobs and the one in progress, then stop the worker. The process stays
         bound to this Coordinatore while a job still runs: a second one must never compute next to it."""
-        with self._jobs:
+        with self._queue_lock:
             self._closing = True
             waiting, self._waiting = list(self._waiting), collections.deque()
             running = self._running
-            self._jobs.notify_all()
+            self._queue_lock.notify_all()
         for job in waiting:
             job.future.cancel()
         if running is not None:
@@ -282,7 +294,7 @@ class Coordinatore:
         try:
             return self._compute(prepared, emit, cancel_event)
         except CancelledError as error:
-            raise cancelled() from error
+            raise cancelled_error() from error
 
     def _compute(self, prepared, emit, cancel_event):
         if cancel_event.is_set():
@@ -336,6 +348,13 @@ class Job:
         self.future = Future()
         self.cancel_event = threading.Event()
         self.coordinatore = None
+
+    def result(self):
+        """The result of a done job; EngineError 503 `request_cancelled` if it was withdrawn
+        from the queue before it started."""
+        if self.future.cancelled():
+            raise cancelled_error()
+        return self.future.result()
 
     def cancel(self):
         """Withdraw the job: a waiting one leaves the queue at once; a running one gets its

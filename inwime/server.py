@@ -9,16 +9,10 @@ Endpoints: `GET /v1/models`, `POST /v1/completions` and `POST /v1/chat/completio
 streamed as SSE. A request is validated and prepared (tokenized, or rendered with the chat
 template) before it waits for the worker, so a refused request gets its HTTP error at once.
 
-The computation runs on the Coordinatore's worker thread, never on the event loop, so
-keepalives and other requests go on during an inference. One inference at a time; up to
-`--queue-size` requests (default 4) wait in arrival order and the next one gets 429
-`queue_full`. That 429 has no `Retry-After`: the server has no founded estimate of when a
-place frees (the token limits of the queued requests only bound their length). A request is
-withdrawn when its client disconnects, when `--max-request-seconds` passes since its arrival
-(503 `request_timeout`; no limit by default) or when the server stops: a waiting one leaves the
-queue at once, a running one is cancelled inside the runtime and keeps its place until the
-worker has unwound it. An identical retry after a client timeout therefore waits for the
-abandoned computation to stop instead of running beside it.
+Inferences run one at a time on the Coordinatore's worker, behind a bounded queue (429
+`queue_full` when full, without `Retry-After`: no founded estimate exists). A request is
+withdrawn when its client disconnects, when `--max-request-seconds` passes or when the server
+stops; the README ("Coda e cancellazione") states the guarantees.
 """
 import asyncio
 import hmac
@@ -38,7 +32,7 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Route
 
 from . import catalog, chat, registry
-from .engine import DEFAULT_QUEUE_SIZE, Coordinatore, EngineError, NotServable, cancelled
+from .engine import DEFAULT_QUEUE_SIZE, Coordinatore, EngineError, NotServable
 from .generation import SamplingError, client_parameters
 
 DEFAULT_HOST = '127.0.0.1'
@@ -354,23 +348,22 @@ def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, ma
         job.future.add_done_callback(lambda f: output(done))
         while True:
             left = remaining(deadline)
+            if left == 0:                             # JobStream withdraws the job when the stream ends
+                yield event({'error': failure(timed_out(max_request_seconds))[1]})
+                yield 'data: [DONE]\n\n'
+                return
             try:
-                item = await asyncio.wait_for(output.queue.get(), min(keepalive_seconds, left)
-                                              if left is not None else keepalive_seconds)
+                item = await asyncio.wait_for(output.queue.get(), keepalive_seconds if left is None
+                                              else min(keepalive_seconds, left))
             except TimeoutError:
-                if remaining(deadline) == 0:      # JobStream withdraws the job when the stream ends
-                    yield event({'error': failure(timed_out(max_request_seconds))[1]})
-                    yield 'data: [DONE]\n\n'
-                    return
-                yield ': keepalive\n\n'
+                if remaining(deadline) != 0:
+                    yield ': keepalive\n\n'
                 continue
             if item is done:
                 break
             yield event(reply.chunk(item))
         try:
-            if job.future.cancelled():                # withdrawn from the queue by a server stop
-                raise cancelled()
-            result = job.future.result()
+            result = job.result()
         except Exception as error:
             yield event({'error': failure(error)[1]})
             yield 'data: [DONE]\n\n'
@@ -390,37 +383,43 @@ def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, ma
         try:
             body = await read_json(request)
             parsed = (chat_request if is_chat else completion_request)(body, coordinatore.model_id)
+            coordinatore.check_room()                 # no tokenization for a request refused anyway
             prepare = coordinatore.prepare_chat if is_chat else coordinatore.prepare_completion
-            prepared = await asyncio.to_thread(prepare, *parsed.arguments)
+            try:
+                prepared = await asyncio.wait_for(asyncio.to_thread(prepare, *parsed.arguments),
+                                                  remaining(deadline))
+            except TimeoutError:
+                raise timed_out(max_request_seconds) from None
+            if await request.is_disconnected():
+                return Response(status_code=499)      # nobody reads it: the client is gone
+            reply = Reply(is_chat, parsed)
             output = Output() if parsed.stream else None
             job = coordinatore.generate(prepared, output)
         except Exception as error:
             return failure_response(error)
-        reply = Reply(is_chat, parsed)
         if parsed.stream:
             return JobStream(job, sse(reply, job, output, deadline), media_type='text/event-stream',
                              headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
         computed = asyncio.wrap_future(job.future)
         gone = asyncio.ensure_future(disconnected(request))
-        finished = left = False
+        finished = client_left = False
         try:
             await asyncio.wait((computed, gone), timeout=remaining(deadline),
                                return_when=asyncio.FIRST_COMPLETED)
-            finished, left = computed.done(), gone.done()
+            # The worker's future, not its asyncio copy, which completes one loop iteration later.
+            finished, client_left = job.future.done(), gone.done()
         finally:
             gone.cancel()
             if not finished:
                 # The time limit passed, the client left or the server is stopping. Decided before
-                # the cancellation, which may complete `computed` at once.
+                # the cancellation, which may complete the future at once.
                 job.cancel()
         if not finished:
-            if left:
+            if client_left:
                 return Response(status_code=499)      # nobody reads it: the client is gone
             return failure_response(timed_out(max_request_seconds))
-        if computed.cancelled():                      # withdrawn from the queue by a server stop
-            return failure_response(cancelled())
         try:
-            result = computed.result()
+            result = job.result()
         except Exception as error:
             return failure_response(error)
         return JSONResponse(reply.whole(result))

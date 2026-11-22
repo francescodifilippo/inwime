@@ -9,14 +9,17 @@ Gate files in INWIME_PACER_DIR, checked at every `check_cancelled` of the runtim
 - `hold-prefill`, `hold-decode`: the worker waits there while the file exists, unless the
   request is cancelled (a long computation that checks cancellation);
 - `stall-prefill`, `stall-decode`: the worker waits there while the file exists, cancelled or
-  not (a computation between two cancellation checks).
+  not (a computation between two cancellation checks);
+- `fail-prefill`, `fail-decode`: the runtime raises ReadError there (a failed weight read).
 
 `events`, one line each, in order:
+- `prepared`: `Coordinatore.prepare_completion` or `prepare_chat` tokenized a request;
 - `admitted <prompt ids>` / `refused <prompt ids>`: `Coordinatore.generate` accepted or refused;
 - `prefill <prompt ids>` / `decode <token>`: the worker starts a runtime call;
 - `held prefill|decode`: the worker reached a gate (once per runtime call);
 - `cancel seen prefill|decode`: the cancellation event was set while the worker waited at a gate;
 - `cancelled prefill|decode`: the runtime raised CancelledError;
+- `failed prefill|decode`: the runtime raised another exception;
 - `closed length=<published KV length> failed=<bool>`: a runtime session was closed.
 """
 from concurrent.futures import CancelledError
@@ -55,6 +58,9 @@ def prefill(self, tokens, *, cancel_event=None):
     except CancelledError:
         record('cancelled '+kind)
         raise
+    except Exception:
+        record('failed '+kind)
+        raise
     finally:
         _state.phase = None
 
@@ -64,6 +70,8 @@ _check_cancelled = core.Coordinator.check_cancelled
 
 def check_cancelled(self):
     kind = getattr(_state, 'phase', None)
+    if kind is not None and (DIRECTORY/('fail-'+kind)).exists():
+        raise core.ReadError('injected by the pacer')
     while kind is not None:
         cancelled = self.cancel_event is not None and self.cancel_event.is_set()
         if not ((DIRECTORY/('stall-'+kind)).exists()
@@ -100,6 +108,16 @@ def generate(self, prepared, *args, **kwargs):
     return job
 
 
+def prepared(original):
+    def prepare(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        record('prepared')
+        return result
+    return prepare
+
+
+engine.Coordinatore.prepare_completion = prepared(engine.Coordinatore.prepare_completion)
+engine.Coordinatore.prepare_chat = prepared(engine.Coordinatore.prepare_chat)
 llama.LlamaRuntime.prefill = prefill
 core.Coordinator.check_cancelled = check_cancelled
 decoder.CPURuntime.close = close

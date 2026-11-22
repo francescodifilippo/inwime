@@ -151,6 +151,7 @@ def test_a_full_queue_refuses_with_429_and_no_invented_retry_after(paced):
         assert status == 429
         assert_openai_error(refused, 'queue_full')
         assert 'retry-after' not in headers
+        assert pacer.events().count('prepared') == 2     # refused before any tokenization
         pacer.gate('hold-prefill', closed=False)
         assert text(running.result()) == LONG[2]
         assert text(waiting.result()) == SHORT[2]
@@ -322,3 +323,15 @@ def test_keepalives_and_other_requests_go_on_while_the_worker_computes(paced):
     first, second = [i for i, e in enumerate(s.events) if e[0] == 'data'][:2]
     during = s.events[first+1:second]         # after the first token, while the decode was held
     assert len(during) >= 4 and all(e[:2] == ('comment', 'keepalive') for e in during)
+
+
+@pytest.mark.parametrize('phase, published', [('prefill', 0), ('decode', 4)])
+def test_a_runtime_error_publishes_no_candidate_state_and_frees_the_worker(paced, phase, published):
+    server, pacer = paced('--queue-size', '0')
+    pacer.gate('fail-'+phase)
+    status, _, error = post(server, body(server, *LONG[:2]))
+    assert status == 500
+    assert_openai_error(error, 'inference_failed')
+    assert pacer.events()[-2:] == ['failed '+phase, 'closed length=%d failed=True' % published]
+    pacer.gate('fail-'+phase, closed=False)
+    assert text(post(server, body(server, *SHORT[:2]))) == SHORT[2]
