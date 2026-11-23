@@ -1,11 +1,11 @@
 # InWiMe
 
-InWiMe è un motore di inferenza locale che esegue modelli i cui pesi originali non risiedono interamente in RAM/VRAM, leggendoli in streaming dallo storage con memoria limitata. Priorità: copertura di modelli e hardware, poi correttezza, poi prestazioni.
+InWiMe è un motore di inferenza per **qualunque modello e dimensione, come obiettivo progressivo**, che utilizza le risorse realmente disponibili (CPU, GPU, acceleratori e in prospettiva nodi distribuiti; RAM, VRAM, NVMe e altri storage) e ricorre a streaming/out-of-core quando i pesi non possono risiedere interamente in memoria. La fattibilità richiede i minimi fisici specifici per modello, contesto e hardware, da diagnosticare esplicitamente; nessuna promessa di eseguibilità universale già realizzata. **CPU-first e 16 GiB di RAM descrivono il percorso iniziale di sviluppo/test, non un vincolo finale.** Priorità: fedeltà e correttezza verificabile, copertura ed eseguibilità entro le risorse, poi prestazioni.
 
 ## Architettura
 
 **Motore**:
-L'unico sistema di inferenza InWiMe, composto da componenti modulari (modelli, operatori, formati, dispositivi, storage, risorse) e governato da un solo Coordinatore.
+L'unico sistema di inferenza InWiMe, composto da componenti modulari (modelli, operatori, formati, dispositivi, storage, risorse) e governato da un solo Coordinatore. Un unico Motore può pianificare calcolo e dati su più dispositivi o nodi, senza trasformarsi in una piattaforma di backend indipendenti.
 _Avoid_: backend, engine multipli, runtime esterno
 
 **Coordinatore**:
@@ -78,7 +78,7 @@ La semantica completa del forward (operatori, ordine, forme, stato) è nota tram
 Ogni operatore del grafo ha un'implementazione nel Motore con semantica, dtype e contratto di memoria dichiarati.
 
 **resource_plan_feasible**:
-Esiste un piano di risorse che rispetta i limiti di memoria e storage dell'hardware considerato.
+Esiste un piano di risorse che rispetta i limiti di memoria (RAM/VRAM/stato/workspace), storage, compatibilità degli operatori/dispositivi e altri vincoli oggettivi dell'host considerato. Non implica una velocità interattiva né un minimo RAM/NVMe uguale per tutti i modelli.
 
 **end_to_end_executable**:
 Il Checkpoint ha prodotto token reali attraverso il Motore entro i limiti di risorse dichiarati.
