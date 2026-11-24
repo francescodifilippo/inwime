@@ -9,15 +9,17 @@ frozen loader as is; one installed in the Hugging Face cache goes through `snaps
 hands the same session a catalog of the verified blobs.
 
 The frozen runtime is bound to the thread that creates it, so every runtime is created, used
-and closed on the worker thread. Requests run one at a time in arrival order.
+and closed on the worker thread. Requests run one at a time in arrival order, behind a bounded
+queue; a cancelled request stops at the next cancellation check of the runtime (before each
+layer and each weight read), which rolls back its candidate KV.
 
 Tokens are chosen by `generation.Sampling` on the frozen FP64 logits; at temperature 0 it is the
 M10 greedy rule of `inwime_runtime.tokenizer.greedy` (the lowest token id wins a tie). Chat
 prompts are rendered by Transformers (`chat.py`). The context capacity is the Checkpoint's
 `max_position_embeddings`; the memory-based capacity plan comes with #42.
 """
-from concurrent.futures import Future
-import queue
+import collections
+from concurrent.futures import CancelledError, Future
 import secrets
 import threading
 from pathlib import Path
@@ -37,6 +39,8 @@ from .generation import Sampling, TextStream
 # Qwen2.5 that would be tens of GB. Until the capacity plan (#42), a fixed limit.
 DEFAULT_CHAT_MAX_TOKENS = 512
 
+DEFAULT_QUEUE_SIZE = 4            # requests waiting behind the one in progress
+
 
 class EngineError(Exception):
     """A failure with an OpenAI-style meaning: HTTP status, error type, code and parameter."""
@@ -44,6 +48,14 @@ class EngineError(Exception):
     def __init__(self, status, message, *, type='invalid_request_error', code=None, param=None):
         super().__init__(message)
         self.status, self.message, self.type, self.code, self.param = status, message, type, code, param
+
+
+def shutting_down():
+    """The answer to a request the server will not complete because it is stopping: refused,
+    withdrawn from the queue or cancelled in progress. A cancellation for any other reason (client
+    gone, time limit) reaches no client as such."""
+    return EngineError(503, 'the server is shutting down; the request was not completed',
+                       type='server_error', code='shutting_down')
 
 
 class NotServable(Exception):
@@ -80,48 +92,113 @@ class Coordinatore:
     _instance = None
     _guard = threading.Lock()
 
-    def __init__(self, model_id, directory, manifest=None):
+    def __init__(self, model_id, directory, manifest=None, queue_size=DEFAULT_QUEUE_SIZE):
         """`manifest`: the install manifest of a Checkpoint in the Hugging Face cache; None for an
-        imported directory in the frozen loader's format."""
+        imported directory in the frozen loader's format. `queue_size`: requests that may wait
+        behind the one in progress."""
         with Coordinatore._guard:
             if Coordinatore._instance is not None:
                 raise RuntimeError('a Coordinatore already exists in this process')
             Coordinatore._instance = self
         self.model_id, self.directory, self.manifest = model_id, Path(directory), manifest
+        self.queue_size = queue_size
         self.catalog = None
-        self._jobs = queue.SimpleQueue()
+        self._queue_lock = threading.Condition()
+        self._waiting = collections.deque()
+        self._running = None
+        self._closing = False
         self._worker = threading.Thread(target=self._work, name='inwime-worker', daemon=True)
         self._worker.start()
         try:
-            self.submit(self._load).result()
+            self._admit(Job(self._load)).future.result()
         except BaseException:
             self.close()
             raise
 
-    # -- worker -----------------------------------------------------------------------------
+    # -- worker and queue ---------------------------------------------------------------------
+    #
+    # One job computes at a time, on the worker; up to `queue_size` more wait in arrival order.
+    # The slot of the job in progress frees only when the worker is done with it: its runtime
+    # session is closed, so nothing it reserved is still held.
 
     def _work(self):
         while True:
-            job = self._jobs.get()
-            if job is None:
-                return
-            future, function, args = job
-            if not future.set_running_or_notify_cancel():
-                continue
+            with self._queue_lock:
+                while not self._waiting and not self._closing:
+                    self._queue_lock.wait()
+                if not self._waiting:
+                    return
+                job = self._running = self._waiting.popleft()
             try:
-                future.set_result(function(*args))
-            except BaseException as error:
-                future.set_exception(error)
+                if job.future.set_running_or_notify_cancel():
+                    try:
+                        job.future.set_result(job.function(*job.args))
+                    except BaseException as error:
+                        job.future.set_exception(error)
+            finally:
+                with self._queue_lock:
+                    self._running = None
+                    self._queue_lock.notify_all()
 
-    def submit(self, function, *args):
-        future = Future()
-        self._jobs.put((future, function, args))
-        return future
+    def _refuse(self, limit):
+        """EngineError 503 when the Coordinatore is closing; with `limit`, 429 when the job in
+        progress and `limit` waiting ones fill every place. Counted with the waiting ones: the
+        worker may not have taken the next job yet."""
+        if self._closing:
+            raise shutting_down()
+        if limit is not None and len(self._waiting)+(self._running is not None) > limit:
+            raise EngineError(429, 'the server is busy: one inference is in progress and %d more '
+                              'wait in the queue, which is full; retry later' % limit,
+                              type='requests', code='queue_full')
+
+    def check_room(self):
+        """Refuse early, before a request is prepared, when the queue is already full or the
+        server is stopping. Advisory: `generate` checks again when it admits the prepared request."""
+        with self._queue_lock:
+            self._refuse(self.queue_size)
+
+    def _admit(self, job, limit=None):
+        """Queue `job`; with `limit`, refuse it when that many jobs already wait behind a running one."""
+        with self._queue_lock:
+            self._refuse(limit)
+            job.coordinatore = self
+            self._waiting.append(job)
+            self._queue_lock.notify_all()
+        return job
+
+    def _cancel(self, job):
+        with self._queue_lock:
+            if job in self._waiting:
+                # Never started: nothing to undo, its place frees at once.
+                self._waiting.remove(job)
+                job.future.cancel()
+                self._queue_lock.notify_all()
+                return
+        job.cancel_event.set()
+
+    def drain(self):
+        """Start stopping: refuse new jobs and withdraw the waiting ones (both 503 `shutting_down`).
+        The job in progress goes on; the worker stops once it is done."""
+        with self._queue_lock:
+            self._closing = True
+            waiting, self._waiting = list(self._waiting), collections.deque()
+            self._queue_lock.notify_all()
+        for job in waiting:
+            job.future.cancel()
+
+    def cancel_running(self):
+        """Cancel the job in progress, if any: it stops at the next cancellation check."""
+        with self._queue_lock:
+            running = self._running
+        if running is not None:
+            running.cancel_event.set()
 
     def close(self, timeout=60):
-        """Stop the worker after the job in progress. The process stays bound to this Coordinatore
-        while that job still runs: a second one must never compute next to it."""
-        self._jobs.put(None)
+        """Drain, cancel the job in progress, then stop the worker once that job is unwound. The
+        process stays bound to this Coordinatore while a job still runs: a second one must never
+        compute next to it."""
+        self.drain()
+        self.cancel_running()
         self._worker.join(timeout=timeout)
         if self._worker.is_alive():
             return False
@@ -213,13 +290,28 @@ class Coordinatore:
         return Prepared(ids, max_tokens, self.chat.decode, self._sampling(client))
 
     def generate(self, prepared, emit=None):
-        """Compute a prepared request on the worker; returns a concurrent Future of its result.
-        `emit(text)` is called on the worker with each piece of text as it becomes final."""
-        return self.submit(self._generate, prepared, emit)
+        """Queue a prepared request for the worker; returns its `Job`, whose `future` gives the
+        result. `emit(text)` is called on the worker with each piece of text as it becomes final.
+        Raises EngineError 429 when the queue is full."""
+        job = Job(self._generate, prepared, emit)
+        job.args += (job.cancel_event,)
+        return self._admit(job, self.queue_size)
 
-    def _generate(self, prepared, emit):
+    def _generate(self, prepared, emit, cancel_event):
         """Prefill the prompt ids, then choose and decode tokens until `max_tokens` tokens, an EOS
-        token (counted, without text) or a stop sequence (its token counted, its text dropped)."""
+        token (counted, without text) or a stop sequence (its token counted, its text dropped).
+
+        `cancel_event` goes to every runtime call, which checks it before each layer and each weight
+        read and rolls back its candidate KV when it raises: a cancelled request publishes nothing
+        and its session is closed before the worker takes the next job."""
+        try:
+            return self._compute(prepared, emit, cancel_event)
+        except CancelledError as error:
+            raise shutting_down() from error
+
+    def _compute(self, prepared, emit, cancel_event):
+        if cancel_event.is_set():
+            raise CancelledError('cancelled before it started')
         ids, max_tokens, sampling = prepared.ids, prepared.max_tokens, prepared.sampling
         changed = EngineError(500, 'the Checkpoint files changed after their verification at start-up; '
                               'restart the server to verify them again', type='server_error',
@@ -237,7 +329,7 @@ class Coordinatore:
                 # Same device, inode, size and times as the files hashed at start-up, or no inference.
                 raise changed
             vocab = runtime.spec.vocab
-            with runtime.prefill(ids) as result:
+            with runtime.prefill(ids, cancel_event=cancel_event) as result:
                 chosen = sampling.choose(result.logits[(len(ids)-1)*vocab:len(ids)*vocab], ids)
             while True:
                 generated.append(chosen)
@@ -248,7 +340,7 @@ class Coordinatore:
                     emit(delta)
                 if text.stopped or len(generated) == max_tokens:
                     break
-                with runtime.decode(chosen) as result:
+                with runtime.decode(chosen, cancel_event=cancel_event) as result:
                     chosen = sampling.choose(result.logits[:vocab], ids+generated)
         delta = text.finish()
         if delta:
@@ -259,6 +351,30 @@ class Coordinatore:
                 'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
                                 'sampling': sampling.describe(),
                                 'computation': {'path': 'percorso congelato', 'kernel': self.math.name}}}
+
+
+class Job:
+    """One unit of work for the worker: queued, then computed, cancellable at any point."""
+
+    def __init__(self, function, *args):
+        self.function, self.args = function, args
+        self.future = Future()
+        self.cancel_event = threading.Event()
+        self.coordinatore = None
+
+    def result(self):
+        """The result of a done job; EngineError 503 `shutting_down` if it was withdrawn from the
+        queue before it started."""
+        if self.future.cancelled():
+            raise shutting_down()
+        return self.future.result()
+
+    def cancel(self):
+        """Withdraw the job: a waiting one leaves the queue at once; a running one gets its
+        cancellation event, checked by the runtime, and keeps its slot until the worker has
+        unwound it. Harmless once the job is done."""
+        if self.coordinatore is not None:
+            self.coordinatore._cancel(self)
 
 
 class Prepared:

@@ -297,7 +297,7 @@ def test_one_coordinatore_per_process(checkpoint, monkeypatch):
     try:
         with pytest.raises(RuntimeError, match='already exists'):
             Coordinatore('tiny', checkpoint)
-        reply = first.generate(first.prepare_completion('t2 t33', 6, {})).result(timeout=60)
+        reply = first.generate(first.prepare_completion('t2 t33', 6, {})).future.result(timeout=60)
         assert (reply['text'], reply['finish_reason']) == ('t2 t35 t29', 'stop')
     finally:
         first.close()

@@ -11,9 +11,10 @@ import urllib.request
 
 
 class Server:
-    def __init__(self, run, home, args=(), env=None):
+    def __init__(self, run, home, args=(), env=None, module='inwime'):
+        """`module`: run as `python -m <module> serve`; `pacer` wraps the server for the queue tests."""
         self.run, self.home = run, home
-        self.process = subprocess.Popen([sys.executable, '-m', 'inwime', 'serve', '--port', '0', *args],
+        self.process = subprocess.Popen([sys.executable, '-m', module, 'serve', '--port', '0', *args],
                                         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, text=True, env=run.environment(env=env),
                                         cwd=home)
@@ -49,9 +50,11 @@ class Server:
             return error.code, json.loads(error.read())
 
     def stop(self):
-        if self.process.returncode is not None:
+        """Stop the server, unless it already exited; returns everything it printed."""
+        if hasattr(self, 'output'):
             return self.output
-        self.process.terminate()
+        if self.process.poll() is None:
+            self.process.terminate()
         try:
             out, err = self.process.communicate(timeout=30)
         except subprocess.TimeoutExpired:

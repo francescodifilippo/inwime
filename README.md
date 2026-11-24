@@ -127,7 +127,15 @@ Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni process
 - **Stop ed EOS:** le stop sequence (al massimo 4) sono riconosciute anche quando attraversano più token. Il testo che potrebbe essere l'inizio di una stop sequence resta trattenuto, quindi lo stream non emette mai frammenti da sopprimere. Le stop sequence si cercano nel testo restituito, che non contiene i token speciali: una stop sequence come `<|im_end|>` non scatta mai, l'EOS sì. Ogni ID EOS di `generation_config.json` termina la generazione. L'EOS e il token che completa la stop sequence contano in `completion_tokens`, ma non producono testo.
 - **Estensione diagnostica:** con `"inwime_diagnostics": true` la risposta, o l'ultimo chunk con `finish_reason`, contiene un oggetto `inwime`. L'oggetto riporta i token ID del prompt e della risposta, i parametri di campionamento effettivi con la loro origine (`client`, `generation_config`, `default`, `server`) e il Percorso computazionale. Senza il campo, la risposta è OpenAI standard.
 - **Parametri non supportati:** `n` diverso da 1, `logprobs`, `logit_bias`, `presence_penalty` e `frequency_penalty` diversi da 0 e `tool_choice` diverso da `auto` ricevono 400 `unsupported_parameter`.
-- **Errori in stile OpenAI:** 400 (anche `context_length_exceeded`, prima di iniziare il calcolo), 401, 404 (`model_not_found`, endpoint sconosciuto), 405 e 500. Senza key valida ogni risposta è 401.
+- **Coda e cancellazione:** il calcolo gira nel worker del Coordinatore, mai nell'event loop. Keepalive e altre richieste continuano durante il calcolo. Una sola inferenza alla volta.
+  - Fino a `--queue-size` richieste (default 4) attendono in ordine di arrivo. La successiva riceve 429 `queue_full`, prima di essere tokenizzata.
+  - Il 429 non ha `Retry-After`: il server non ha una stima fondata di quando si libera un posto. I limiti di token delle richieste in coda danno solo un massimo.
+  - Una richiesta viene ritirata quando il client si disconnette, quando scade `--max-request-seconds` dal suo arrivo o quando il server si ferma. Per default non c'è limite di tempo.
+  - Allo scadere del limite la risposta è 503 `request_timeout`, attesa in coda e preparazione incluse. In streaming lo stesso errore arriva come evento, seguito da `[DONE]`.
+  - Una richiesta in coda esce subito. Una richiesta in calcolo si ferma al successivo controllo di cancellazione del runtime, prima di ogni layer e di ogni lettura di pesi. Il runtime scarta la KV candidata, anche su errore: nessuno stato parziale viene pubblicato.
+  - Il posto di una richiesta cancellata resta occupato finché il worker non ha chiuso la sessione. Un retry identico dell'harness dopo un suo timeout attende quindi la fine del calcolo abbandonato e non gira mai in parallelo. Il retry ricalcola tutto: il riuso del prefisso arriva con il Percorso additivo.
+  - All'arresto (SIGINT/Ctrl+C o SIGTERM) il server smette di ascoltare. Le richieste in coda e quelle nuove ricevono subito 503 `shutting_down`. L'inferenza in corso può finire entro `--shutdown-grace-seconds` (default 10). Allo scadere viene cancellata come sopra, sempre con 503 `shutting_down`, e il processo esce quando il worker ha chiuso la sessione. Un secondo Ctrl+C non aspetta più la risposta: l'inferenza viene cancellata subito e il processo aspetta il worker fino a 60 s.
+- **Errori in stile OpenAI:** 400 (anche `context_length_exceeded`, prima di iniziare il calcolo), 401, 404 (`model_not_found`, endpoint sconosciuto), 405, 429 (`queue_full`), 500 e 503 (`request_timeout`; `shutting_down` mentre il server si ferma). Senza key valida ogni risposta è 401.
 - **Integrità:** all'avvio il server calcola lo SHA256 di ogni file di pesi e stampa i byte letti. Ogni richiesta riapre i file e controlla che dispositivo, inode, dimensione e date coincidano con quelli verificati. Se un file è cambiato, la richiesta riceve 500 `checkpoint_changed` fino al riavvio. Lo SHA256 non viene ricalcolato a ogni richiesta.
 
 Limiti di questa versione:
@@ -135,12 +143,12 @@ Limiti di questa versione:
 - Il server accetta solo Checkpoint Qwen2 con testa non tied e con `tokenizer.json`. I Qwen2.5 piccoli con testa tied arrivano con [#38](https://github.com/francescodifilippo/inwime/issues/38).
 - Un Checkpoint installato con `models install` viene servito dalla cache Hugging Face senza scriverci nulla. All'avvio il server controlla che ogni file di pesi punti al blob verificato dall'installazione. Un Checkpoint importato con `models import` deve invece avere il descrittore del runtime (`safetensors.json`).
 - La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la memoria del Percorso congelato cresce con prompt + limite di token.
-- Coda limitata, 429 e cancellazione arrivano con [#40](https://github.com/francescodifilippo/inwime/issues/40). Fino ad allora, un client che si disconnette non ferma il calcolo della sua richiesta.
+- Una richiesta cancellata si ferma solo al successivo controllo del runtime: il calcolo tra due controlli (attention di un layer, o il prodotto su una tile di pesi) non si interrompe a metà. Su un modello grande e un contesto lungo l'attesa può essere sensibile; i controlli dentro i kernel nativi arrivano con il Percorso additivo.
 - Le chiamate `<tool_call>` del modello restano testo; la loro conversione in `tool_calls` OpenAI arriva con [#44](https://github.com/francescodifilippo/inwime/issues/44).
 
 Codici di uscita di `serve`:
 - 1: altri errori di avvio (file della key, porta occupata);
-- 2: indirizzo non loopback senza `--allow-non-loopback`;
+- 2: indirizzo non loopback senza `--allow-non-loopback`, opzioni non valide (per esempio `--queue-size` negativo);
 - 3: nessun modello attivo;
 - 13: modello attivo non servibile.
 
