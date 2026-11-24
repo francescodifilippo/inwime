@@ -294,7 +294,8 @@ def test_max_request_seconds_ends_requests_waiting_in_the_queue_and_in_progress(
 
 
 @pytest.mark.parametrize('args', [('--queue-size', '-1'), ('--max-request-seconds', '0'),
-                                  ('--max-request-seconds', 'nan')])
+                                  ('--max-request-seconds', 'nan'), ('--shutdown-grace-seconds', '-1'),
+                                  ('--shutdown-grace-seconds', 'inf')])
 def test_serve_refuses_invalid_queue_and_time_limits(run, home, active, args):
     import subprocess
     import sys
@@ -335,3 +336,61 @@ def test_a_runtime_error_publishes_no_candidate_state_and_frees_the_worker(paced
     assert pacer.events()[-2:] == ['failed '+phase, 'closed length=%d failed=True' % published]
     pacer.gate('fail-'+phase, closed=False)
     assert text(post(server, body(server, *SHORT[:2]))) == SHORT[2]
+
+
+def exits(server, timeout=30):
+    """The exit status of a server that is shutting down, which must stop without a traceback."""
+    status = server.process.wait(timeout=timeout)
+    assert 'Traceback' not in server.stop()
+    return status
+
+
+def test_a_shutdown_refuses_the_queue_at_once_and_lets_the_inference_in_progress_finish(paced):
+    import signal
+    server, pacer = paced('--shutdown-grace-seconds', '60')
+    pacer.gate('hold-prefill')
+    with ThreadPoolExecutor(2) as pool:
+        running = pool.submit(post, server, body(server, *LONG[:2]))
+        pacer.wait_for('held prefill')
+        waiting = pool.submit(post, server, body(server, *SHORT[:2]))
+        pacer.admitted(2)
+        server.process.send_signal(signal.SIGTERM)   # what systemd, Docker and Kubernetes send
+        status, _, refused = waiting.result(timeout=10)
+        assert status == 503
+        assert_openai_error(refused, 'shutting_down')
+        assert refused['error']['type'] == 'server_error'
+        assert not running.done() and server.process.poll() is None
+        pacer.gate('hold-prefill', closed=False)
+        assert text(running.result()) == LONG[2]
+    exits(server)
+    events = pacer.events()
+    assert sum(e.startswith('prefill ') for e in events) == 1      # the queued request never ran
+    assert events[-1] == 'closed length=5 failed=False'
+
+
+@pytest.mark.parametrize('stream', [False, True])
+def test_a_shutdown_cancels_the_inference_in_progress_when_its_grace_passes(paced, stream):
+    import signal
+    server, pacer = paced('--shutdown-grace-seconds', '0.5')
+    pacer.gate('hold-decode')
+    if stream:
+        streamed = send(server, body(server, *LONG[:2], stream=True))
+    else:
+        pool = ThreadPoolExecutor(1)
+        running = pool.submit(post, server, body(server, *LONG[:2]))
+    pacer.wait_for('held decode')
+    started = time.monotonic()
+    server.process.send_signal(signal.SIGINT)        # Ctrl+C, once
+    if stream:
+        events = stream_events(streamed)
+        assert events[-1] == '[DONE]'
+        assert_openai_error(events[-2], 'shutting_down')
+    else:
+        status, _, error = running.result(timeout=30)
+        pool.shutdown()
+        assert status == 503
+        assert_openai_error(error, 'shutting_down')
+    assert exits(server) == 130
+    assert 0.5 <= time.monotonic()-started < 10
+    # Stopped by the runtime at its own check, with no candidate KV published.
+    assert pacer.events()[-2:] == ['cancelled decode', 'closed length=4 failed=True']

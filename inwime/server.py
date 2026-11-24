@@ -13,6 +13,10 @@ Inferences run one at a time on the Coordinatore's worker, behind a bounded queu
 `queue_full` when full, without `Retry-After`: no founded estimate exists). A request is
 withdrawn when its client disconnects, when `--max-request-seconds` passes or when the server
 stops; the README ("Coda e cancellazione") states the guarantees.
+
+At SIGINT or SIGTERM the server stops listening and answers the waiting requests 503
+`shutting_down` at once; the inference in progress may finish within `--shutdown-grace-seconds`,
+then it is cancelled, and the process exits once the worker has unwound it.
 """
 import asyncio
 import hmac
@@ -39,6 +43,7 @@ DEFAULT_HOST = '127.0.0.1'
 DEFAULT_PORT = 8642
 DEFAULT_MAX_TOKENS = 16           # OpenAI's documented default for /v1/completions
 DEFAULT_KEEPALIVE_SECONDS = 15.0  # SSE comment interval while no model output is ready
+DEFAULT_SHUTDOWN_GRACE_SECONDS = 10.0   # an inference in progress may finish within it at a stop
 KEY_BYTES = 32
 
 
@@ -401,6 +406,8 @@ def build_app(coordinatore, key, keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, ma
             return JobStream(job, sse(reply, job, output, deadline), media_type='text/event-stream',
                              headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
         computed = asyncio.wrap_future(job.future)
+        # Its outcome is read from job.future: retrieved here, an error is not logged as unhandled.
+        computed.add_done_callback(lambda f: f.cancelled() or f.exception())
         gone = asyncio.ensure_future(disconnected(request))
         finished = client_left = False
         try:
@@ -470,8 +477,23 @@ def bind(host, port):
 
 
 def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sys.stdout,
-          keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, queue_size=DEFAULT_QUEUE_SIZE, max_request_seconds=None):
+          keepalive_seconds=DEFAULT_KEEPALIVE_SECONDS, queue_size=DEFAULT_QUEUE_SIZE, max_request_seconds=None,
+          shutdown_grace_seconds=DEFAULT_SHUTDOWN_GRACE_SECONDS):
     import uvicorn
+
+    class Server(uvicorn.Server):
+        async def shutdown(self, sockets=None):
+            """uvicorn waits, without a limit, for the connections still open: the one of the
+            inference in progress ends when that inference finishes or, after the grace, is
+            cancelled. A second Ctrl+C stops the wait; `close` still waits for the worker."""
+            coordinatore.drain()
+            cancel = asyncio.get_running_loop().call_later(shutdown_grace_seconds,
+                                                           coordinatore.cancel_running)
+            try:
+                await super().shutdown(sockets)
+            finally:
+                cancel.cancel()
+
     if not is_loopback(host) and not allow_non_loopback:
         raise ServeError(2, '%s is not a loopback address: the server listens on loopback only unless '
                          '--allow-non-loopback is given' % catalog.printable(host))
@@ -507,7 +529,7 @@ def serve(host=DEFAULT_HOST, port=DEFAULT_PORT, allow_non_loopback=False, out=sy
         config = uvicorn.Config(build_app(coordinatore, key, keepalive_seconds, max_request_seconds),
                                 log_level='warning', access_log=False,
                                 lifespan='off')
-        uvicorn.Server(config).run(sockets=[sock])
+        Server(config).run(sockets=[sock])
     finally:
         coordinatore.close()
     return 0

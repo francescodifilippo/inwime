@@ -50,9 +50,11 @@ class Server:
             return error.code, json.loads(error.read())
 
     def stop(self):
-        if self.process.returncode is not None:
+        """Stop the server, unless it already exited; returns everything it printed."""
+        if hasattr(self, 'output'):
             return self.output
-        self.process.terminate()
+        if self.process.poll() is None:
+            self.process.terminate()
         try:
             out, err = self.process.communicate(timeout=30)
         except subprocess.TimeoutExpired:

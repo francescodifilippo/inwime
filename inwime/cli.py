@@ -75,6 +75,10 @@ def build_parser():
     v.add_argument('--max-request-seconds', type=float, default=None,
                    help='cancel a request this many seconds after its arrival, waiting included, and '
                    'answer HTTP 503 request_timeout (default: no limit)')
+    v.add_argument('--shutdown-grace-seconds', type=float, default=server.DEFAULT_SHUTDOWN_GRACE_SECONDS,
+                   help='at SIGINT or SIGTERM, time left to the inference in progress before it is '
+                   'cancelled; waiting requests get HTTP 503 shutting_down at once (default: %g)'
+                   % server.DEFAULT_SHUTDOWN_GRACE_SECONDS)
     return parser
 
 
@@ -87,10 +91,13 @@ def serve_main(parser, args):
         parser.error('--queue-size must not be negative')
     if args.max_request_seconds is not None and not 0 < args.max_request_seconds < math.inf:
         parser.error('--max-request-seconds must be a positive number of seconds')
+    if not 0 <= args.shutdown_grace_seconds < math.inf:
+        parser.error('--shutdown-grace-seconds must be a non-negative number of seconds')
     try:
         return server.serve(args.host, args.port, args.allow_non_loopback,
                             keepalive_seconds=args.keepalive_seconds, queue_size=args.queue_size,
-                            max_request_seconds=args.max_request_seconds)
+                            max_request_seconds=args.max_request_seconds,
+                            shutdown_grace_seconds=args.shutdown_grace_seconds)
     except server.ServeError as error:
         sys.stderr.write('inwime: %s\n' % catalog.printable(error))
         return error.exit_status
