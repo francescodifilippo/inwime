@@ -5,6 +5,7 @@ may leave the machine) on a tiny Qwen2 Checkpoint made by the M10 fixture genera
 (tinyqwen.py), imported and made active with the ordinary `inwime models` commands. Results
 are compared with the Percorso congelato called directly in the test process.
 """
+import hashlib
 import json
 import os
 import stat
@@ -278,7 +279,8 @@ def test_serve_refuses_a_key_file_other_users_can_read(run, home, active):
 
 @pytest.mark.parametrize('config, reason', [({'tie_word_embeddings': True}, 'tying'), ({}, 'tokenizer')])
 def test_serve_refuses_a_checkpoint_it_cannot_run(run, home, tmp_path, config, reason):
-    # Tied head: rejected by the Percorso congelato (#38 adds it). No config change: the bare
+    # Tied config with a serialized lm_head.weight: refused, its bytes are never assumed equal to
+    # the embedding's (#38 serves the tied head only when stored once). No config change: the bare
     # fixture, which has no tokenizer files.
     fixture = tinyqwen.generator()
     directory = fixture.write(tmp_path/'unservable', config=dict(fixture.CONFIG, **config))
@@ -339,6 +341,51 @@ def test_an_installed_checkpoint_is_served_like_the_imported_one(run, hub, home,
     snapshot = home/'.cache/huggingface/hub/models--acme--tiny-qwen2-m10/snapshots'/hm.sha(37)
     assert sorted(f.name for f in snapshot.iterdir()) == sorted(
         f.name for f in checkpoint.iterdir() if f.name not in ('safetensors.json', 'provenance.json'))
+
+
+def share_blobs(hub_cache, repo_dir):
+    """Move every weight blob of a repository into the cache-wide shared store, as
+    huggingface_hub (2.x) does for files it downloads through Xet: `<cache>/blobs/<2 hex>/<xet hash>`
+    holds the file and the per-repository blob becomes a relative link to it. The fake Hub has
+    no Xet, so the layout is recreated here; the name stands in for the Xet hash."""
+    for blob in (repo_dir/'blobs').iterdir():
+        if blob.stat().st_size < 1024:
+            continue
+        xet = hashlib.sha256(b'xet:'+blob.name.encode()).hexdigest()
+        shared = hub_cache/'blobs'/xet[:2]/xet
+        shared.parent.mkdir(parents=True, exist_ok=True)
+        blob.rename(shared)
+        blob.symlink_to('../../blobs/%s/%s' % (xet[:2], xet))
+
+
+def test_an_installed_checkpoint_in_the_shared_blob_store_is_served(run, hub, home, checkpoint):
+    model_id = install_from_hub(run, hub, checkpoint)
+    hub_cache = home/'.cache/huggingface/hub'
+    share_blobs(hub_cache, hub_cache/'models--acme--tiny-qwen2-m10')
+    server = Server(run, home)
+    try:
+        weights = sum(f.stat().st_size for f in checkpoint.glob('*.safetensors'))
+        assert 'SHA256 check of the weights: %d bytes read' % weights in ''.join(server.banner)
+        status, body = server.request('POST', '/v1/completions',
+                                      {'model': model_id, 'prompt': 't3 t5 t7 t11', 'max_tokens': 5})
+        assert status == 200, body
+        reference, tokenizer = tinyqwen.frozen_greedy(checkpoint, 't3 t5 t7 t11', 5)
+        assert body['usage']['completion_tokens'] == len(reference['generated_ids'])
+    finally:
+        server.stop()
+
+
+def test_a_shared_blob_link_leaving_the_store_is_refused(run, hub, home, checkpoint, tmp_path):
+    install_from_hub(run, hub, checkpoint)
+    repo_dir = home/'.cache/huggingface/hub/models--acme--tiny-qwen2-m10'
+    blob = max((repo_dir/'blobs').iterdir(), key=lambda b: b.stat().st_size)
+    outside = tmp_path/'elsewhere'
+    blob.rename(outside)
+    blob.symlink_to(outside)
+    refused = serve_command(run, home)
+    assert refused.returncode == 13, refused.stderr
+    assert 'shared blob store' in refused.stderr
+    assert 'listening' not in refused.stdout and 'Traceback' not in refused.stderr
 
 
 def test_a_changed_installed_blob_gets_500_until_restart(run, hub, home, checkpoint):

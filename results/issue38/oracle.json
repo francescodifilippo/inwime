@@ -1,0 +1,362 @@
+{
+  "schema": "inwime-tied38-oracle-v1",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775",
+  "cases": [
+    {
+      "rendering_parity": true,
+      "contracts": {
+        "stock_fp32": {
+          "numerical": {
+            "precision": "fp32",
+            "atol": 0.002,
+            "rtol": 0.0002,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 6685184,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.0001318225013200447,
+                "max_threshold_utilization": 0.05343956491606444,
+                "argmax_equal": true,
+                "required_elements": 6685184
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 946176,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.0005360663135434152,
+                "max_threshold_utilization": 0.04211070007194738,
+                "required_elements": 946176
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 270336,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 3.7159718512924655e-05,
+                "max_threshold_utilization": 0.014513755362463162,
+                "required_elements": 270336
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            785,
+            6722,
+            315,
+            15344,
+            374,
+            21718,
+            13,
+            151645
+          ],
+          "token_parity": true,
+          "seconds": 10.394685770850629
+        },
+        "full64": {
+          "numerical": {
+            "precision": "fp64",
+            "atol": 2e-05,
+            "rtol": 2e-06,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 6685184,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 4.036770917537069e-13,
+                "max_threshold_utilization": 1.8774510963727115e-08,
+                "argmax_equal": true,
+                "required_elements": 6685184
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 946176,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.1368683772161603e-12,
+                "max_threshold_utilization": 1.2856671481975627e-08,
+                "required_elements": 946176
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 270336,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.936228954946273e-13,
+                "max_threshold_utilization": 7.576119798594006e-09,
+                "required_elements": 270336
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            785,
+            6722,
+            315,
+            15344,
+            374,
+            21718,
+            13,
+            151645
+          ],
+          "token_parity": true,
+          "seconds": 12.834944346221164
+        }
+      }
+    },
+    {
+      "rendering_parity": true,
+      "contracts": {
+        "stock_fp32": {
+          "numerical": {
+            "precision": "fp32",
+            "atol": 0.002,
+            "rtol": 0.0002,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 6685184,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.00011932342510334593,
+                "max_threshold_utilization": 0.05490665758801398,
+                "argmax_equal": true,
+                "required_elements": 6685184
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 946176,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.0005360663135434152,
+                "max_threshold_utilization": 0.04211070007194738,
+                "required_elements": 946176
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 270336,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 3.75246970012455e-05,
+                "max_threshold_utilization": 0.014513755362463162,
+                "required_elements": 270336
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            1,
+            8747,
+            326,
+            8565,
+            11,
+            2525,
+            650,
+            1079
+          ],
+          "token_parity": true,
+          "seconds": 2.5050002140924335
+        },
+        "full64": {
+          "numerical": {
+            "precision": "fp64",
+            "atol": 2e-05,
+            "rtol": 2e-06,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 6685184,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 4.036770917537069e-13,
+                "max_threshold_utilization": 1.8774510963727115e-08,
+                "argmax_equal": true,
+                "required_elements": 6685184
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 946176,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.1368683772161603e-12,
+                "max_threshold_utilization": 1.3236296319149614e-08,
+                "required_elements": 946176
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 270336,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.936228954946273e-13,
+                "max_threshold_utilization": 7.576119798594006e-09,
+                "required_elements": 270336
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            1,
+            8747,
+            326,
+            8565,
+            11,
+            2525,
+            650,
+            1079
+          ],
+          "token_parity": true,
+          "seconds": 6.18643634300679
+        }
+      }
+    },
+    {
+      "rendering_parity": true,
+      "contracts": {
+        "stock_fp32": {
+          "numerical": {
+            "precision": "fp32",
+            "atol": 0.002,
+            "rtol": 0.0002,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 4861952,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.0003455039999309406,
+                "max_threshold_utilization": 0.12508446285946423,
+                "argmax_equal": true,
+                "required_elements": 4861952
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 688128,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 0.0005360663135434152,
+                "max_threshold_utilization": 0.06401755547675778,
+                "required_elements": 688128
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 196608,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 8.265345712299421e-05,
+                "max_threshold_utilization": 0.037283602890781545,
+                "required_elements": 196608
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            19641,
+            6028,
+            7987,
+            525,
+            2518,
+            11,
+            6303,
+            11
+          ],
+          "token_parity": true,
+          "seconds": 2.2551802180241793
+        },
+        "full64": {
+          "numerical": {
+            "precision": "fp64",
+            "atol": 2e-05,
+            "rtol": 2e-06,
+            "coverage": "FULL",
+            "verdict": "PASS",
+            "kinds": {
+              "logits": {
+                "state": "compared",
+                "elements": 4861952,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 6.465938895416912e-13,
+                "max_threshold_utilization": 2.2974513833152287e-08,
+                "argmax_equal": true,
+                "required_elements": 4861952
+              },
+              "hidden": {
+                "state": "compared",
+                "elements": 688128,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.1368683772161603e-12,
+                "max_threshold_utilization": 1.7196951421228978e-08,
+                "required_elements": 688128
+              },
+              "kv": {
+                "state": "compared",
+                "elements": 196608,
+                "failures": 0,
+                "finite": true,
+                "max_abs_error": 1.936228954946273e-13,
+                "max_threshold_utilization": 7.728064570687509e-09,
+                "required_elements": 196608
+              }
+            },
+            "argmax_equal": true
+          },
+          "greedy_token_ids": [
+            19641,
+            6028,
+            7987,
+            525,
+            2518,
+            11,
+            6303,
+            11
+          ],
+          "token_parity": true,
+          "seconds": 4.923226478975266
+        }
+      }
+    }
+  ],
+  "verdicts": {
+    "stock_fp32": {
+      "numerical": "PASS",
+      "token_parity": "PASS"
+    },
+    "full64": {
+      "numerical": "PASS",
+      "token_parity": "PASS"
+    }
+  },
+  "rendering_parity": "PASS",
+  "thresholds": {
+    "stock_fp32": [
+      0.002,
+      0.0002
+    ],
+    "full64": [
+      2e-05,
+      2e-06
+    ]
+  },
+  "peak_rss_bytes": 5422198784,
+  "versions": {
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "numpy": "2.3.5",
+    "python": "3.14.4"
+  },
+  "threads": 4
+}

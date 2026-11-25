@@ -6,13 +6,17 @@ file to a content-addressed blob (`../../blobs/<sha256>` for weights). Nothing i
 the cache. Instead:
 
 1. every shard link is checked to name the blob whose SHA256 the install manifest verified;
+   when that blob is itself a link into the cache-wide shared store of huggingface_hub 2.x
+   (`<cache>/blobs/<2 hex>/<xet hash>`, used for files downloaded through Xet), the link must
+   have exactly that form and the shard is bound to the store file, a regular file;
 2. the 8-byte prefix and JSON header of each blob are copied into a temporary *sparse* view
    (header bytes allocated, payload left as a hole, apparent size equal to the blob), next to
    a descriptor built from the manifest and a copy of the index;
 3. the unchanged `SafetensorsSource` parses and validates that view, with all its bounds;
 4. the parsed index is rebound to the real blobs: each shard name becomes the relative link
-   target, so the Gestore delle regioni opens `<snapshot>/../../blobs/<sha256>`, a regular
-   file, and checks its identity against the one recorded while reading the header.
+   target, so the Gestore delle regioni opens `<snapshot>/../../blobs/<sha256>` (or the shared
+   store file `<snapshot>/../../../blobs/<2 hex>/<xet hash>`), a regular file, and checks its
+   identity against the one recorded while reading the header.
 
 The view is deleted before this function returns. Payload reads, the SHA256 integrity pass and
 the computation are those of the Percorso congelato.
@@ -30,6 +34,8 @@ from inwime_runtime.core import CheckpointError, IndexedSource, signature
 from inwime_runtime.safetensors_source import SafetensorsSource
 
 BLOB_LINK = re.compile(r'\.\./\.\./blobs/([0-9a-f]{64})\Z')
+# A per-repository blob linked into the shared store: relative to `<repo>/blobs`.
+SHARED_LINK = re.compile(r'\.\./\.\./blobs/([0-9a-f]{2})/(\1[0-9a-f]{62})\Z')
 INDEX = 'model.safetensors.index.json'
 MAX_HEADER_BYTES = 16*2**20          # the frozen loader's aggregate metadata bound
 MAX_INDEX_BYTES = 8*2**20            # the frozen loader's per-file metadata bound
@@ -60,7 +66,15 @@ def blob_link(snapshot, record):
     found = BLOB_LINK.match(target)
     if not found or found.group(1) != record.get('sha256'):
         raise CheckpointError('%s does not link to the blob verified at install' % record['name'])
-    return target
+    blob = snapshot/target
+    if not os.path.islink(blob):
+        return target
+    # The content is verified by the SHA256 pass against the manifest, wherever the file lives.
+    shared = SHARED_LINK.match(os.readlink(blob))
+    if not shared:
+        raise CheckpointError('%s links outside the shared blob store of the Hugging Face cache'
+                              % record['name'])
+    return '../../../blobs/%s/%s' % shared.groups()
 
 
 def copy_header(source, destination, expected_size):
