@@ -69,7 +69,7 @@ def main():
     args = p.parse_args()
     torch.set_num_threads(args.threads)
     motore = json.loads((args.motore/'motore.json').read_text())
-    directory = motore['snapshot_dir']
+    directory = str(Path(motore['snapshot_dir']).expanduser())
     config = json.loads((Path(directory)/'config.json').read_text())
     tokenizer = AutoTokenizer.from_pretrained(directory, local_files_only=True, trust_remote_code=False)
     eos = eos_ids(directory)

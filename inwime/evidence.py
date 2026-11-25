@@ -34,7 +34,7 @@ VERIFIED = (
     Verified('Qwen/Qwen2.5-14B', '97e1e76335b7017d8f67c08a19d103c0504298c9',
              'Percorso congelato, increment 10', 'docs/RUNTIME_CPU_INCREMENT_10.md'),
     Verified('Qwen/Qwen2.5-0.5B-Instruct', '7ae557604adf67be50417f59c2c2f167def9a775',
-             'Percorso congelato with the tied-head catalog (#38)', 'results/issue38/README.md'),
+             'additive tied-head adapter over the frozen Qwen2 session (#38)', 'results/issue38/README.md'),
 )
 
 CERTIFICATION_TARGETS = (

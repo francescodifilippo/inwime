@@ -79,7 +79,8 @@ class CatalogQwen2Runtime(Qwen2Runtime):
     The body is `Qwen2Runtime.__init__` with its defaults (tiles of 262144 elements, synchronous
     I/O, default budget) minus the construction of the catalog: same plan, same Gestore delle
     regioni, same computation, all inherited unchanged. The catalog is the frozen one or the
-    tied-head one of `qwen2_tied`."""
+    tied-head one of `qwen2_tied`; the tile sizes are parameters only so that tests can stream
+    the head through partial leases."""
 
     def __init__(self, catalog, capacity, *, integrity, math_backend, tile_elements=262144,
                  read_elements=262144):
@@ -361,7 +362,8 @@ class Coordinatore:
                 'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
                                 'sampling': sampling.describe(),
                                 'computation': {'path': 'percorso congelato', 'kernel': self.math.name,
-                                                'head': 'tied' if self.tied else 'untied'}}}
+                                                'adapter': ('TiedQwen2Catalog (additive, tied head)' if self.tied
+                                                            else 'Qwen2Catalog (frozen)')}}}
 
 
 class Job:

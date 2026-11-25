@@ -26,7 +26,7 @@ fixture (bit-identità), non quelle sul Checkpoint reale.
 ## Acquisizione
 
 `inwime models install --yes Qwen/Qwen2.5-0.5B-Instruct@7ae55760…` dopo il ricontrollo, senza
-`--yes`, del piano:
+`--yes`, del piano (`install.log` riporta il piano e l'esito del run con `--yes`):
 
 - identità: Revisione completa a 40 hex;
 - manifest: 10 file, 999.604.126 byte;
@@ -55,7 +55,8 @@ store condiviso viene servito, mentre un link che esce dallo store viene rifiuta
   false, `lm_head.weight` con i valori dell'embedding) passa per il `Qwen2Runtime` congelato.
   Su prefill di 5 token e 3 decode, i byte di logits, di tutti i residual e dell'intera KV sono
   identici. Tile da 7 elementi (nessun tensore ne è multiplo, quindi la testa scorre l'embedding
-  in molti lease parziali) e tile da 262.144 (quello del Motore).
+  in molti lease parziali) e tile da 262.144 (quello del Motore), sia con il riferimento Python
+  sia con il kernel nativo `c-fp64-ordered` della configurazione certificata.
 - Nessuna seconda copia persistente:
   - in memoria `tensors['lm_head'] is tensors['embedding']`;
   - ogni categoria del piano è uguale a quella della gemella, tranne i metadati, più piccoli di
@@ -160,4 +161,8 @@ HF_HUB_OFFLINE=1 .venv-oracle7/bin/python -m tools.tied38_oracle \
     --motore $GATE/motore --output $GATE/oracle.json
 ```
 
-`$GATE` è una directory di lavoro fuori dal repository (circa 172 MB di array).
+`$GATE` è una directory di lavoro fuori dal repository (circa 172 MB di array). Nei log
+versionati la directory di lavoro è scritta `$GATE` e la home `~`; `tied38_motore` scrive da sé
+`~` in `motore.json` e `tied38_oracle` lo espande. Le evidenze vengono dal commit `3ccb279`: lì
+la diagnostica di `computation` aveva il campo `head: tied`, poi sostituito da `adapter`
+(`TiedQwen2Catalog (additive, tied head)`).

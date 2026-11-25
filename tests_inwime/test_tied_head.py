@@ -13,7 +13,7 @@ import tinyqwen
 from inwime.engine import CatalogQwen2Runtime
 from inwime.qwen2_tied import TiedQwen2Catalog
 from inwime_runtime.core import CheckpointError
-from inwime_runtime.math_cpu import ScalarMath
+from inwime_runtime.math_cpu import NativeMath, ScalarMath
 from inwime_runtime.qwen2 import Qwen2Runtime
 from inwime_runtime.safetensors_source import SafetensorsSource
 from serving import Server
@@ -24,6 +24,13 @@ PROMPT, CONTINUATION = [3, TINY, 7, 30, 5], [TINY, 12, 2]
 # Tiles of 7 elements: no tensor is a multiple of 7, so the head streams the embedding through
 # many partial leases; 262144 is the Motore's tile, larger than any tensor of the fixture.
 TILES = (7, 262144)
+# The Python reference and the native kernel the Motore certifies (built by `make cpu-kernel`).
+KERNEL = tinyqwen.kernel_path()
+MATHS = ['python'] + (['native'] if KERNEL else [])
+
+
+def math(name):
+    return NativeMath(str(KERNEL)) if name == 'native' else ScalarMath()
 
 
 @pytest.fixture(scope='module')
@@ -32,15 +39,15 @@ def heads(tmp_path_factory):
     return {head: tinyqwen.generator(head).write(root/head) for head in ('tied', 'duplicated')}
 
 
-def tied_session(directory, tile):
+def tied_session(directory, tile, backend):
     catalog = TiedQwen2Catalog(SafetensorsSource(directory))
     return CatalogQwen2Runtime(catalog, len(PROMPT)+len(CONTINUATION), integrity='full',
-                               math_backend=ScalarMath(), tile_elements=tile, read_elements=tile)
+                               math_backend=math(backend), tile_elements=tile, read_elements=tile)
 
 
-def frozen_session(directory, tile):
+def frozen_session(directory, tile, backend):
     return Qwen2Runtime(directory, capacity=len(PROMPT)+len(CONTINUATION), tile_elements=tile,
-                        read_elements=tile, integrity='full', math_backend=ScalarMath())
+                        read_elements=tile, integrity='full', math_backend=math(backend))
 
 
 def capture(runtime):
@@ -55,10 +62,11 @@ def capture(runtime):
         return steps, r.plan.required
 
 
+@pytest.mark.parametrize('backend', MATHS)
 @pytest.mark.parametrize('tile', TILES)
-def test_tied_head_gives_the_bits_of_the_same_tensor_duplicated(heads, tile):
-    tied, tied_plan = capture(tied_session(heads['tied'], tile))
-    duplicated, duplicated_plan = capture(frozen_session(heads['duplicated'], tile))
+def test_tied_head_gives_the_bits_of_the_same_tensor_duplicated(heads, tile, backend):
+    tied, tied_plan = capture(tied_session(heads['tied'], tile, backend))
+    duplicated, duplicated_plan = capture(frozen_session(heads['duplicated'], tile, backend))
     assert tied == duplicated
     # The head never gets a buffer of its own: every category of the plan equals the untied
     # twin's, except metadata, smaller by the header of the tensor it does not have.

@@ -13,7 +13,6 @@ TOOLS = Path(__file__).resolve().parents[1]/'tools'
 
 
 EMBEDDING, HEAD = 'model.embed_tokens.weight', 'lm_head.weight'
-HEADS = ('untied', 'tied', 'duplicated')
 
 
 def generator(head='untied'):
@@ -26,8 +25,6 @@ def generator(head='untied'):
     - 'tied': `tie_word_embeddings` true and no `lm_head.weight`, as Qwen2.5-0.5B serializes it.
     - 'duplicated': the untied twin of 'tied': `lm_head.weight` holds the embedding's values.
     """
-    if head not in HEADS:
-        raise ValueError('head must be one of %s' % (HEADS,))
     spec = importlib.util.spec_from_file_location('fixture_qwen10', TOOLS/'fixture_qwen10.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

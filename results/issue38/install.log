@@ -1,0 +1,33 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Install Qwen/Qwen2.5-0.5B-Instruct
+  revision:        7ae557604adf67be50417f59c2c2f167def9a775 (requested: 7ae557604adf67be50417f59c2c2f167def9a775)
+  files:           10, 953.30 MiB (999604126 bytes)
+  to download:     953.30 MiB (999604126 bytes)
+  already cached:  0 files (verified, not downloaded again)
+  destination:     ~/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775
+  storage:         wsl-vhdx on /, physical free 62.64 GiB (67262545920 bytes)
+  after download:  61.71 GiB (66262941794 bytes) free, margin 30.00 GiB (32212254720 bytes)
+
+  verified   .gitattributes
+  verified   LICENSE
+  verified   README.md
+  verified   config.json
+  verified   generation_config.json
+  verified   merges.txt
+  verified   model.safetensors
+  verified   tokenizer.json
+  verified   tokenizer_config.json
+  verified   vocab.json
+installed and verified: Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775
+  manifest: ~/.local/share/inwime/installed/Qwen--Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775.json
+	Command being timed: "env PYTHONPATH=. .venv-product/bin/python -m inwime models install --yes Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775"
+	User time (seconds): 4.26
+	System time (seconds): 5.99
+	Percent of CPU this job got: 10%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:38.38
+	Maximum resident set size (kbytes): 919368
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 262036
+	File system inputs: 22496
+	File system outputs: 1952704
+	Exit status: 0

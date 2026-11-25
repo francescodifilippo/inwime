@@ -78,6 +78,9 @@ def main():
     if not registry.intact(manifest):
         raise SystemExit('%s is not a verified, complete install' % model_id)
     snapshot_dir = manifest['snapshot_dir']
+    home = str(Path.home())
+    # The report is committed evidence: the home directory is written as '~'.
+    shown = '~'+snapshot_dir[len(home):] if snapshot_dir.startswith(home+'/') else snapshot_dir
     started = time.monotonic()
     motore = Coordinatore(model_id, snapshot_dir, manifest)
     load = dict(seconds=time.monotonic()-started, integrity_read_bytes=motore.integrity_read_bytes,
@@ -105,7 +108,7 @@ def main():
                   % (index, len(prompt), len(completion), reply['text'], served, run['seconds']), flush=True)
     finally:
         motore.close()
-    report = dict(schema='inwime-tied38-motore-v1', model=model_id, snapshot_dir=snapshot_dir,
+    report = dict(schema='inwime-tied38-motore-v1', model=model_id, snapshot_dir=shown,
                   max_tokens=MAX_TOKENS, load=load, cases=cases, peak_rss_bytes=peak_rss_bytes(),
                   host=dict(python=platform.python_version(), machine=platform.machine(),
                             kernel_release=platform.release()))
