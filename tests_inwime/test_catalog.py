@@ -136,13 +136,26 @@ def test_unknown_architecture_is_diagnosed(hub, run):
     assert any('mixture-of-experts' in d['message'] for d in diagnosis(info, 'operators'))
 
 
-def test_adapter_rejection_is_diagnosed_with_the_feature(hub, run):
-    tied = dict(hm.QWEN2, tie_word_embeddings=True)
-    hub.add(hm.repo('acme/tiny-qwen2-tied', hm.checkpoint(tied)))
+def test_tied_qwen2_resolves_through_the_tied_head_adapter(hub, run):
+    # As Qwen2.5-0.5B: tie_word_embeddings true and no lm_head.weight (#38).
+    hub.add(hm.repo('acme/tiny-qwen2-tied', hm.checkpoint(dict(hm.QWEN2, tie_word_embeddings=True))))
     info = run.json('info', 'acme/tiny-qwen2-tied')
+    expected = reached_up_to('operators_resolved')
+    expected['resource_plan_feasible'] = 'not_evaluated'
+    assert states(info) == expected
+    assert info['capability']['support'] == 'partial'
+    assert info['capability']['adapter'] == 'Qwen2ForCausalLM'
+    assert not diagnosis(info, 'architecture')
+
+
+def test_adapter_rejection_is_diagnosed_with_the_feature(hub, run):
+    # A tied config that also serializes the head: its bytes are never assumed equal.
+    tied = dict(hm.QWEN2, tie_word_embeddings=True)
+    hub.add(hm.repo('acme/tiny-qwen2-both', hm.checkpoint(tied, shapes=hm.tensors(tied, tied=False))))
+    info = run.json('info', 'acme/tiny-qwen2-both')
     assert states(info) == reached_up_to('metadata_parsed')
     assert info['capability']['support'] == 'unknown'
-    assert any('tie_word_embeddings' in d['message'] for d in diagnosis(info, 'architecture'))
+    assert any('lm_head.weight' in d['message'] for d in diagnosis(info, 'architecture'))
 
 
 def test_non_bf16_dtype_stops_before_operators_resolved(hub, run):

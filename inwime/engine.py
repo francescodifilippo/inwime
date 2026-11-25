@@ -3,7 +3,8 @@
 One `Coordinatore` per process. It owns the active model, its tokenizer, the verified identity
 of its files and the only worker thread that computes; the HTTP layer never touches the
 runtime. Under it, each request gets its own session of the Percorso congelato (the
-`inwime_runtime` Qwen2 adapter), whose `core.Coordinator` is the Gestore delle regioni:
+`inwime_runtime` Qwen2 adapter; for a tied head, the same session over the additive catalog of
+`qwen2_tied`), whose `core.Coordinator` is the Gestore delle regioni:
 memory reservations, leases and weight I/O stay there. An imported Checkpoint is opened by the
 frozen loader as is; one installed in the Hugging Face cache goes through `snapshot.py`, which
 hands the same session a catalog of the verified blobs.
@@ -27,10 +28,12 @@ from pathlib import Path
 from inwime_runtime.core import CheckpointError, Coordinator
 from inwime_runtime.llama import llama_plan, read_config
 from inwime_runtime.math_cpu import NativeMath, ScalarMath
-from inwime_runtime.qwen2 import Qwen2Catalog, Qwen2Runtime
+from inwime_runtime.qwen2 import Qwen2Runtime
+from inwime_runtime.safetensors_source import SafetensorsSource
 from inwime_runtime.tokenizer import LlamaTokenizer
 
 from . import catalog, chat, kernel, snapshot
+from .qwen2_tied import TiedQwen2Catalog, qwen2_catalog
 from .generation import Sampling, TextStream
 
 
@@ -75,12 +78,14 @@ class CatalogQwen2Runtime(Qwen2Runtime):
 
     The body is `Qwen2Runtime.__init__` with its defaults (tiles of 262144 elements, synchronous
     I/O, default budget) minus the construction of the catalog: same plan, same Gestore delle
-    regioni, same computation, all inherited unchanged."""
+    regioni, same computation, all inherited unchanged. The catalog is the frozen one or the
+    tied-head one of `qwen2_tied`."""
 
-    def __init__(self, catalog, capacity, *, integrity, math_backend):
+    def __init__(self, catalog, capacity, *, integrity, math_backend, tile_elements=262144,
+                 read_elements=262144):
         self.catalog = catalog
         self.spec, self.capacity = catalog.spec, capacity
-        self.plan = llama_plan(catalog, capacity, 262144, 262144, 'sync')
+        self.plan = llama_plan(catalog, capacity, tile_elements, read_elements, 'sync')
         self.math_backend = math_backend
         self.control = Coordinator(catalog, self.plan, None, None, integrity=integrity,
                                    math_backend=math_backend)
@@ -218,12 +223,13 @@ class Coordinatore:
             raise NotServable('cannot read config.json: %s' % error) from error
         if config.get('model_type') != 'qwen2':
             raise NotServable('model_type %r is not served by this version: the HTTP tracer serves '
-                              'Qwen2 Checkpoint accepted by the Percorso congelato'
+                              'Qwen2 Checkpoint, with a tied or untied head'
                               % (config.get('model_type'),))
         self.math = math_backend()
+        self.tied = config.get('tie_word_embeddings') is True
         try:
             if self.manifest is not None:
-                self.catalog = Qwen2Catalog(snapshot.snapshot_source(self.manifest))
+                self.catalog = qwen2_catalog(snapshot.snapshot_source(self.manifest))
             with self._session(1, 'full') as runtime:
                 self.verified = dict(runtime.control.stamps)
                 self.context = runtime.spec.context
@@ -231,7 +237,7 @@ class Coordinatore:
                 self.integrity_read_bytes = stats['integrity_read_bytes']
                 self.integrity_read_ns = stats['integrity_read_ns']
         except (OSError, ValueError, KeyError) as error:
-            # CheckpointError is a ValueError: tied head, missing descriptor, checksum mismatch.
+            # CheckpointError is a ValueError: unsupported config, missing descriptor, checksum mismatch.
             raise NotServable('%s: %s' % (type(error).__name__, error)) from error
         try:
             self.tokenizer = LlamaTokenizer(self.directory)
@@ -248,6 +254,10 @@ class Coordinatore:
     def _session(self, capacity, integrity):
         if self.catalog is not None:
             return CatalogQwen2Runtime(self.catalog, capacity, integrity=integrity, math_backend=self.math)
+        if self.tied:
+            # An imported directory, read again for each session as `Qwen2Runtime` does.
+            return CatalogQwen2Runtime(TiedQwen2Catalog(SafetensorsSource(self.directory)), capacity,
+                                       integrity=integrity, math_backend=self.math)
         return Qwen2Runtime(self.directory, capacity=capacity, integrity=integrity, math_backend=self.math)
 
     # -- requests -----------------------------------------------------------------------------
@@ -350,7 +360,8 @@ class Coordinatore:
                 'prompt_tokens': len(ids), 'completion_tokens': len(generated),
                 'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
                                 'sampling': sampling.describe(),
-                                'computation': {'path': 'percorso congelato', 'kernel': self.math.name}}}
+                                'computation': {'path': 'percorso congelato', 'kernel': self.math.name,
+                                                'head': 'tied' if self.tied else 'untied'}}}
 
 
 class Job:

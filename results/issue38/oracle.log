@@ -1,0 +1,20 @@
+case 0 stock_fp32: FULL/PASS, tokens equal
+case 0 full64: FULL/PASS, tokens equal
+case 1 stock_fp32: FULL/PASS, tokens equal
+case 1 full64: FULL/PASS, tokens equal
+case 2 stock_fp32: FULL/PASS, tokens equal
+case 2 full64: FULL/PASS, tokens equal
+{"verdicts": {"stock_fp32": {"numerical": "PASS", "token_parity": "PASS"}, "full64": {"numerical": "PASS", "token_parity": "PASS"}}, "rendering_parity": "PASS"}
+	Command being timed: "env HF_HUB_OFFLINE=1 .venv-oracle7/bin/python -m tools.tied38_oracle --motore $GATE/motore --output $GATE/oracle.json"
+	User time (seconds): 89.13
+	System time (seconds): 60.09
+	Percent of CPU this job got: 268%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:55.66
+	Maximum resident set size (kbytes): 5295116
+	Major (requiring I/O) page faults: 13274
+	Minor (reclaiming a frame) page faults: 4595215
+	Voluntary context switches: 18444
+	Involuntary context switches: 624
+	File system inputs: 2132640
+	File system outputs: 0
+	Exit status: 0

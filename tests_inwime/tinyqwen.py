@@ -12,16 +12,38 @@ from pathlib import Path
 TOOLS = Path(__file__).resolve().parents[1]/'tools'
 
 
-def generator():
+EMBEDDING, HEAD = 'model.embed_tokens.weight', 'lm_head.weight'
+HEADS = ('untied', 'tied', 'duplicated')
+
+
+def generator(head='untied'):
+    """A private instance of the M10 generator (`tools/fixture_qwen10.py`, pinned, never edited).
+
+    `head` extends it additively for #38, by rebinding the module globals that `write` and
+    `default_split` look up at call time in this instance only; the file and every other
+    instance keep the historical output.
+    - 'untied': the historical generator, unchanged.
+    - 'tied': `tie_word_embeddings` true and no `lm_head.weight`, as Qwen2.5-0.5B serializes it.
+    - 'duplicated': the untied twin of 'tied': `lm_head.weight` holds the embedding's values.
+    """
+    if head not in HEADS:
+        raise ValueError('head must be one of %s' % (HEADS,))
     spec = importlib.util.spec_from_file_location('fixture_qwen10', TOOLS/'fixture_qwen10.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    shapes, value = module.shapes, module.value
+    if head == 'tied':
+        module.CONFIG = dict(module.CONFIG, tie_word_embeddings=True)
+        module.shapes = lambda config=module.CONFIG: {
+            name: shape for name, shape in shapes(config).items() if name != HEAD}
+    elif head == 'duplicated':
+        module.value = lambda name, index, width: value(EMBEDDING if name == HEAD else name, index, width)
     return module
 
 
-def write(directory):
+def write(directory, head='untied'):
     from tokenizers import Tokenizer, models, pre_tokenizers
-    fixture = generator()
+    fixture = generator(head)
     directory = fixture.write(directory)
     vocab = {'<|bos|>': 0, '<|endoftext|>': 1, **{'t%d' % i: i for i in range(2, fixture.CONFIG['vocab_size'])}}
     tokenizer = Tokenizer(models.WordLevel(vocab, unk_token='<|endoftext|>'))
@@ -46,15 +68,16 @@ QWEN_SPLIT = (r"(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}| ?[^
               r"|\s*[\r\n]+|\s+(?!\S)|\s+")
 
 
-def write_chat(directory, generation=None, template=CHAT_TEMPLATE):
+def write_chat(directory, generation=None, template=CHAT_TEMPLATE, head='untied'):
     """The fixture weights, with a vocabulary of 512, served as a Qwen2.5 chat model: a byte-level
     BPE tokenizer with the pipeline of Qwen2.5's tokenizer.json (NFC, Qwen split, ByteLevel), its
     merges trained on the chat template's own text so prompts stay short, the real Qwen2.5 chat
     template, two EOS ids, and a context of 1024 positions. `generation`: extra
-    generation_config.json fields; `template` None: a Checkpoint without chat template."""
+    generation_config.json fields; `template` None: a Checkpoint without chat template; `head`:
+    see `generator`."""
     from tokenizers import Regex, Tokenizer, decoders, normalizers, pre_tokenizers, trainers
     from tokenizers.models import BPE
-    fixture = generator()
+    fixture = generator(head)
     directory = fixture.write(directory, config=dict(fixture.CONFIG, vocab_size=CHAT_VOCAB_SIZE,
                                                      max_position_embeddings=1024, bos_token_id=0,
                                                      eos_token_id=CHAT_EOS[0]))

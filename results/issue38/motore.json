@@ -1,0 +1,390 @@
+{
+  "schema": "inwime-tied38-motore-v1",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775",
+  "snapshot_dir": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+  "max_tokens": 8,
+  "load": {
+    "seconds": 2.6894752990920097,
+    "integrity_read_bytes": 988097824,
+    "kernel": "c-fp64-ordered",
+    "tied": true
+  },
+  "cases": [
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "What is the capital of Italy?"
+        }
+      ],
+      "prompt_token_ids": [
+        151644,
+        8948,
+        198,
+        2610,
+        525,
+        1207,
+        16948,
+        11,
+        3465,
+        553,
+        54364,
+        14817,
+        13,
+        1446,
+        525,
+        264,
+        10950,
+        17847,
+        13,
+        151645,
+        198,
+        151644,
+        872,
+        198,
+        3838,
+        374,
+        279,
+        6722,
+        315,
+        15344,
+        30,
+        151645,
+        198,
+        151644,
+        77091,
+        198
+      ],
+      "completion_token_ids": [
+        785,
+        6722,
+        315,
+        15344,
+        374,
+        21718,
+        13,
+        151645
+      ],
+      "text": "The capital of Italy is Rome.",
+      "finish_reason": "stop",
+      "computation": {
+        "path": "percorso congelato",
+        "kernel": "c-fp64-ordered",
+        "head": "tied"
+      },
+      "sampling": {
+        "temperature": {
+          "value": 0,
+          "source": "client"
+        },
+        "top_p": {
+          "value": 0.8,
+          "source": "generation_config"
+        },
+        "top_k": {
+          "value": 20,
+          "source": "generation_config"
+        },
+        "repetition_penalty": {
+          "value": 1.0,
+          "source": "client"
+        },
+        "seed": {
+          "value": 1518884962380658567,
+          "source": "server"
+        },
+        "stop": {
+          "value": [],
+          "source": "default"
+        }
+      },
+      "motore_seconds": 39.246176853077486,
+      "capture": {
+        "seconds": 41.12420279486105,
+        "chunks": [
+          36,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "inference_read_bytes": 43474962432,
+        "integrity_read_bytes": 988097824,
+        "reserved_peak_bytes": 69260433
+      },
+      "arrays": "case0.npz",
+      "arrays_sha256": "c0b5f836a6ed260ef4f40433dfb2c0c0a357ddb168f06a58fe18e8b69614b92b",
+      "shapes": {
+        "logits": [
+          44,
+          151936
+        ],
+        "hidden": [
+          24,
+          44,
+          896
+        ],
+        "kv": [
+          24,
+          2,
+          44,
+          128
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Scrivi una frase sul mare."
+        }
+      ],
+      "prompt_token_ids": [
+        151644,
+        8948,
+        198,
+        2610,
+        525,
+        1207,
+        16948,
+        11,
+        3465,
+        553,
+        54364,
+        14817,
+        13,
+        1446,
+        525,
+        264,
+        10950,
+        17847,
+        13,
+        151645,
+        198,
+        151644,
+        872,
+        198,
+        65508,
+        32820,
+        5093,
+        90329,
+        25774,
+        54218,
+        13,
+        151645,
+        198,
+        151644,
+        77091,
+        198
+      ],
+      "completion_token_ids": [
+        1,
+        8747,
+        326,
+        8565,
+        11,
+        2525,
+        650,
+        1079
+      ],
+      "text": "\"La luna, come un am",
+      "finish_reason": "length",
+      "computation": {
+        "path": "percorso congelato",
+        "kernel": "c-fp64-ordered",
+        "head": "tied"
+      },
+      "sampling": {
+        "temperature": {
+          "value": 0,
+          "source": "client"
+        },
+        "top_p": {
+          "value": 0.8,
+          "source": "generation_config"
+        },
+        "top_k": {
+          "value": 20,
+          "source": "generation_config"
+        },
+        "repetition_penalty": {
+          "value": 1.0,
+          "source": "client"
+        },
+        "seed": {
+          "value": 7724644167718783664,
+          "source": "server"
+        },
+        "stop": {
+          "value": [],
+          "source": "default"
+        }
+      },
+      "motore_seconds": 38.89955730596557,
+      "capture": {
+        "seconds": 41.78734716400504,
+        "chunks": [
+          36,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "inference_read_bytes": 43474962432,
+        "integrity_read_bytes": 988097824,
+        "reserved_peak_bytes": 69260433
+      },
+      "arrays": "case1.npz",
+      "arrays_sha256": "a44c0d6a434020ae06b6792bd30fa7c3a015dac4106809951e381e789566e5ac",
+      "shapes": {
+        "logits": [
+          44,
+          151936
+        ],
+        "hidden": [
+          24,
+          44,
+          896
+        ],
+        "kv": [
+          24,
+          2,
+          44,
+          128
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a concise assistant."
+        },
+        {
+          "role": "user",
+          "content": "Name three primary colors."
+        }
+      ],
+      "prompt_token_ids": [
+        151644,
+        8948,
+        198,
+        2610,
+        525,
+        264,
+        63594,
+        17847,
+        13,
+        151645,
+        198,
+        151644,
+        872,
+        198,
+        675,
+        2326,
+        6028,
+        7987,
+        13,
+        151645,
+        198,
+        151644,
+        77091,
+        198
+      ],
+      "completion_token_ids": [
+        19641,
+        6028,
+        7987,
+        525,
+        2518,
+        11,
+        6303,
+        11
+      ],
+      "text": "Three primary colors are red, blue,",
+      "finish_reason": "length",
+      "computation": {
+        "path": "percorso congelato",
+        "kernel": "c-fp64-ordered",
+        "head": "tied"
+      },
+      "sampling": {
+        "temperature": {
+          "value": 0,
+          "source": "client"
+        },
+        "top_p": {
+          "value": 0.8,
+          "source": "generation_config"
+        },
+        "top_k": {
+          "value": 20,
+          "source": "generation_config"
+        },
+        "repetition_penalty": {
+          "value": 1.0,
+          "source": "client"
+        },
+        "seed": {
+          "value": 5124410739107935035,
+          "source": "server"
+        },
+        "stop": {
+          "value": [],
+          "source": "default"
+        }
+      },
+      "motore_seconds": 26.820784399984404,
+      "capture": {
+        "seconds": 28.43352944497019,
+        "chunks": [
+          24,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "inference_read_bytes": 31618154496,
+        "integrity_read_bytes": 988097824,
+        "reserved_peak_bytes": 51429009
+      },
+      "arrays": "case2.npz",
+      "arrays_sha256": "d355d9adc06c41e97cb2a8b256e9e943e3212dc0cdcea3e68281491c022b2aff",
+      "shapes": {
+        "logits": [
+          32,
+          151936
+        ],
+        "hidden": [
+          24,
+          32,
+          896
+        ],
+        "kv": [
+          24,
+          2,
+          32,
+          128
+        ]
+      }
+    }
+  ],
+  "peak_rss_bytes": 414445568,
+  "host": {
+    "python": "3.14.4",
+    "machine": "x86_64",
+    "kernel_release": "6.18.58.1-microsoft-standard-WSL2"
+  }
+}

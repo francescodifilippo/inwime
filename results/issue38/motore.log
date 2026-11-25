@@ -1,0 +1,16 @@
+case 0: 36 prompt + 8 completion tokens, 'The capital of Italy is Rome.' (39 s served, 41 s captured)
+case 1: 36 prompt + 8 completion tokens, '"La luna, come un am' (39 s served, 42 s captured)
+case 2: 24 prompt + 8 completion tokens, 'Three primary colors are red, blue,' (27 s served, 28 s captured)
+	Command being timed: "env PYTHONPATH=. INWIME_CPU_KERNEL=build/libinwime_cpu.so .venv-product/bin/python -m tools.tied38_motore --output $GATE/motore"
+	User time (seconds): 196.10
+	System time (seconds): 24.93
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:40.08
+	Maximum resident set size (kbytes): 404732
+	Major (requiring I/O) page faults: 20
+	Minor (reclaiming a frame) page faults: 186282
+	Voluntary context switches: 3035
+	Involuntary context switches: 1204
+	File system inputs: 225816
+	File system outputs: 24
+	Exit status: 0

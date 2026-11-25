@@ -42,19 +42,19 @@ TOKENIZER_SETS = (('tokenizer.json',), ('tokenizer.model',), ('spiece.model',), 
 # Diagnostic hints only: which config values each adapter's profile expects. The acceptance
 # decision always comes from the adapter itself (`resolve_graph`).
 PROFILES = {
-    'Qwen2ForCausalLM': {'tie_word_embeddings': False, 'hidden_act': 'silu', 'rope_scaling': None,
-                         'use_sliding_window': False, 'use_mrope': False},
+    'Qwen2ForCausalLM': {'hidden_act': 'silu', 'rope_scaling': None, 'use_sliding_window': False,
+                         'use_mrope': False},
     'LlamaForCausalLM': {'tie_word_embeddings': True, 'hidden_act': 'silu', 'rope_scaling': None,
                          'attention_bias': False, 'mlp_bias': False, 'pretraining_tp': 1},
 }
-PROFILE_DESCRIPTION = {'Qwen2ForCausalLM': 'Qwen2ForCausalLM with an untied head',
+PROFILE_DESCRIPTION = {'Qwen2ForCausalLM': 'Qwen2ForCausalLM with a tied or untied head',
                        'LlamaForCausalLM': 'LlamaForCausalLM with a tied head'}
 
 
 def adapters():
     from inwime_runtime.llama import LlamaCatalog
-    from inwime_runtime.qwen2 import Qwen2Catalog
-    return {'LlamaForCausalLM': LlamaCatalog, 'Qwen2ForCausalLM': Qwen2Catalog}
+    from .qwen2_tied import qwen2_catalog
+    return {'LlamaForCausalLM': LlamaCatalog, 'Qwen2ForCausalLM': qwen2_catalog}
 
 
 def provider_limits():
