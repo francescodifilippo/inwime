@@ -1,5 +1,6 @@
 /* Leaf operators of the Percorso additivo; contract and status codes in inwime_ops.h.
- * Separate from the pinned src/cpu_kernel.c, which stays unchanged.
+ * Outside src/: the M10 protocol (gate H) pins that whole tree, so the pinned src/cpu_kernel.c
+ * and every other file there stay as they were.
  * Each loop mirrors the Python reference of inwime/ops.py operation for operation.
  */
 #include "inwime_ops.h"

@@ -445,12 +445,12 @@ def test_an_operator_that_fails_the_gate_is_served_by_the_python_reference(run, 
     if shutil.which('cc') is None:
         pytest.skip('no C compiler')
     root = Path(__file__).resolve().parents[1]
-    source = (root/'src/inwime_ops.c').read_text().replace(        # reversed sum, linear only
+    source = (root/'native/inwime_ops.c').read_text().replace(        # reversed sum, linear only
         'for (size_t j = 0; j < number; ++j) total += w[i+j]*xp[j];',
         'for (size_t j = number; j-- > 0;) total += w[i+j]*xp[j];')
     (tmp_path/'ops.c').write_text(source)
     subprocess.run(['cc', '-O2', '-std=c11', '-fPIC', '-shared', '-ffp-contract=off', '-fno-builtin',
-                    '-I', str(root/'src'), str(tmp_path/'ops.c'), '-o', str(tmp_path/'libops.so'), '-lm'],
+                    '-I', str(root/'native'), str(tmp_path/'ops.c'), '-o', str(tmp_path/'libops.so'), '-lm'],
                    check=True)
     tokens, computation = additive_completion(run, home, active, {'INWIME_OPS_KERNEL': str(tmp_path/'libops.so')})
     assert tokens == [21, 32, 28, 14, 24]

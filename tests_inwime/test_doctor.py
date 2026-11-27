@@ -238,7 +238,7 @@ def compile_operators(tmp_path, source):
     src, lib = tmp_path/'ops.c', tmp_path/'libops.so'
     src.write_text(source)
     subprocess.run(['cc', '-O2', '-std=c11', '-fPIC', '-shared', '-ffp-contract=off', '-fno-builtin',
-                    '-I', str(ROOT/'src'), str(src), '-o', str(lib), '-lm'], check=True)
+                    '-I', str(ROOT/'native'), str(src), '-o', str(lib), '-lm'], check=True)
     return lib
 
 
@@ -250,7 +250,7 @@ def test_operators_disabled_fall_back_to_python_with_warning(host):
 
 
 def test_operator_kernel_passes_the_gate(host, tmp_path):
-    lib = compile_operators(tmp_path, (ROOT/'src/inwime_ops.c').read_text())
+    lib = compile_operators(tmp_path, (ROOT/'native/inwime_ops.c').read_text())
     report = doctor.report(**host.kwargs(env=host.kwargs()['env'] | {'INWIME_OPS_KERNEL': str(lib)}))
     assert report['operators']['native'] is True
     assert check(report, 'operator-kernel')['status'] == 'ok'
@@ -259,7 +259,7 @@ def test_operator_kernel_passes_the_gate(host, tmp_path):
 
 def test_an_operator_that_reorders_its_sum_is_replaced_and_fails_the_check(host, tmp_path):
     # Same API, reversed accumulation order in the linear operator only.
-    source = (ROOT/'src/inwime_ops.c').read_text().replace(
+    source = (ROOT/'native/inwime_ops.c').read_text().replace(
         'for (size_t j = 0; j < number; ++j) total += w[i+j]*xp[j];',
         'for (size_t j = number; j-- > 0;) total += w[i+j]*xp[j];')
     assert 'j-- > 0' in source

@@ -33,7 +33,7 @@ from .kernel import find_library
 
 OK, NONFINITE, CANCELLED, INVALID = 0, 1, 2, 3
 NAMES = ('linear', 'rms_denominators', 'rms_scale', 'add', 'rope', 'attention', 'silu_mul')
-ABI_VERSION = 1            # INWIME_OPS_ABI_VERSION of src/inwime_ops.h
+ABI_VERSION = 1            # INWIME_OPS_ABI_VERSION of native/inwime_ops.h
 ENV = 'INWIME_OPS_KERNEL'  # explicit library path, or 'off' to force the Python reference
 
 
@@ -164,7 +164,7 @@ def _rows(positions, stride, length):
 
 
 class NativeOps:
-    """The C leaf kernels of `src/inwime_ops.c` through ctypes; ctypes releases the GIL.
+    """The C leaf kernels of `native/inwime_ops.c` through ctypes; ctypes releases the GIL.
 
     Every pointer is checked against its arena before the call: an FP64 `array`, writable and
     contiguous, long enough for every row the call touches. The kernel checks the dimensions again."""

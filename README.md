@@ -9,7 +9,7 @@ python3 -m venv ~/.venvs/inwime && ~/.venvs/inwime/bin/pip install .   # oppure:
 ~/.venvs/inwime/bin/inwime doctor          # audit non distruttivo; --json per il report versionato
 ```
 
-Con un compilatore C l'installazione include due librerie native: il kernel FP64 di M10, compilato senza modifiche, e gli operatori del Percorso additivo (`src/inwime_ops.c`, [#41](https://github.com/francescodifilippo/inwime/issues/41)). Senza compilatore resta il fallback Python, molto più lento. `inwime doctor` mostra:
+Con un compilatore C l'installazione include due librerie native: il kernel FP64 di M10, compilato senza modifiche, e gli operatori del Percorso additivo (`native/inwime_ops.c`, [#41](https://github.com/francescodifilippo/inwime/issues/41)). Senza compilatore resta il fallback Python, molto più lento. `inwime doctor` mostra:
 - CPU e memoria applicativa, con i limiti cgroup v2;
 - sotto WSL2, la RAM fisica dell'host e lo spazio fisico del volume che contiene il VHDX;
 - lo spazio utilizzabile al netto di un margine di 30 GiB (`--host-margin-gib`);

@@ -26,10 +26,11 @@ fixture.
   `attention`, `silu_mul`) in due implementazioni con la stessa convenzione di chiamata: il
   riferimento Python, che riordina per blocchi i cicli del Percorso congelato senza cambiare
   l'ordine delle operazioni su alcun elemento, e i kernel C via ctypes.
-- `src/inwime_ops.c` e l'header versionato `src/inwime_ops.h` (`INWIME_OPS_ABI_VERSION 1`):
+- `native/inwime_ops.c` e l'header versionato `native/inwime_ops.h` (`INWIME_OPS_ABI_VERSION 1`):
   kernel a foglia secondo l'ADR 0002, senza allocazioni, I/O, thread o stato globale. Compilati
-  con `-O3 -fno-fast-math -ffp-contract=off -fno-builtin`. Il kernel pinned `src/cpu_kernel.c`
-  non cambia. L'attention calcola ogni score due volte, come il Percorso congelato: nessun buffer
+  con `-O3 -fno-fast-math -ffp-contract=off -fno-builtin`. Stanno fuori da `src/` perché il
+  protocollo M10 (gate H, `tests/test_increment10_protocol.py`) vieta qualunque file nuovo o
+  modificato in quell'albero: il kernel pinned `src/cpu_kernel.c` non cambia. L'attention calcola ogni score due volte, come il Percorso congelato: nessun buffer
   cresce con il contesto.
 - `inwime/gate.py`: all'avvio del Motore ogni operatore nativo e il suo riferimento girano sugli
   stessi casi deterministici, e stato e byte di output devono coincidere. I casi coprono tile che

@@ -63,7 +63,7 @@ jobs:
               problems.append('wheel lacks the native operators')
           if not any(n.endswith('.dist-info/licenses/LICENSE') for n in wheel):
               problems.append('wheel lacks LICENSE')
-          for source in ('src/cpu_kernel.c', 'src/inwime_ops.c', 'src/inwime_ops.h'):
+          for source in ('src/cpu_kernel.c', 'native/inwime_ops.c', 'native/inwime_ops.h'):
               if not any(n.endswith(source) for n in sdist):
                   problems.append('sdist lacks ' + source)
           leaked = [n for n in wheel if n.split('/')[0] in ('tests', 'tests_inwime', 'tools', 'checkpoints', 'results')]
