@@ -22,7 +22,7 @@ GUARD = str(Path(__file__).resolve().parent/'netguard')
 SCRUBBED = ('HF_TOKEN', 'HUGGING_FACE_HUB_TOKEN', 'HF_HUB_OFFLINE', 'TRANSFORMERS_OFFLINE',
             'HF_TOKEN_PATH', 'HF_HUB_CACHE', 'HUGGINGFACE_HUB_CACHE', 'XDG_CACHE_HOME', 'HTTP_PROXY',
             'HTTPS_PROXY', 'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'INWIME_HOME',
-            'XDG_DATA_HOME', 'INWIME_FAKE_FREE_BYTES')
+            'XDG_DATA_HOME', 'INWIME_FAKE_FREE_BYTES', 'INWIME_OPS_KERNEL')
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ class Run:
         full = {k: v for k, v in os.environ.items() if k not in SCRUBBED}
         full.update(HOME=str(self.home), HF_HOME=str(self.home/'.cache/huggingface'),
                     HF_ENDPOINT=endpoint or self.hub.endpoint, HF_HUB_DISABLE_TELEMETRY='1',
-                    HF_HUB_DISABLE_PROGRESS_BARS='1', NO_PROXY='*', INWIME_CPU_KERNEL='off',
+                    HF_HUB_DISABLE_PROGRESS_BARS='1', NO_PROXY='*', INWIME_CPU_KERNEL='off', INWIME_OPS_KERNEL='off',
                     INWIME_NETGUARD_LOG=str(self.guard_log),
                     PYTHONPATH=os.pathsep.join((GUARD, PACKAGE_PARENT)))
         if token:

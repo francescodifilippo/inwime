@@ -230,3 +230,42 @@ def test_cgroup_without_any_limit_is_unlimited_not_unknown(host):
 def test_cgroup_with_unreadable_limits_is_unknown(host):
     group = doctor.report(**host.kwargs())['memory']['cgroup']     # v2 path, but no files
     assert group['memory_limit'] == 'unknown'
+
+
+def compile_operators(tmp_path, source):
+    if shutil.which('cc') is None:
+        pytest.skip('no C compiler')
+    src, lib = tmp_path/'ops.c', tmp_path/'libops.so'
+    src.write_text(source)
+    subprocess.run(['cc', '-O2', '-std=c11', '-fPIC', '-shared', '-ffp-contract=off', '-fno-builtin',
+                    '-I', str(ROOT/'src'), str(src), '-o', str(lib), '-lm'], check=True)
+    return lib
+
+
+def test_operators_disabled_fall_back_to_python_with_warning(host):
+    report = doctor.report(**host.kwargs())
+    assert report['operators']['native'] is False
+    assert {o['implementation'] for o in report['operators']['operators'].values()} == {'python-fp64'}
+    assert check(report, 'operator-kernel')['status'] == 'warn'
+
+
+def test_operator_kernel_passes_the_gate(host, tmp_path):
+    lib = compile_operators(tmp_path, (ROOT/'src/inwime_ops.c').read_text())
+    report = doctor.report(**host.kwargs(env=host.kwargs()['env'] | {'INWIME_OPS_KERNEL': str(lib)}))
+    assert report['operators']['native'] is True
+    assert check(report, 'operator-kernel')['status'] == 'ok'
+    assert 'operators c-fp64-ordered-ops' in doctor.render(report)
+
+
+def test_an_operator_that_reorders_its_sum_is_replaced_and_fails_the_check(host, tmp_path):
+    # Same API, reversed accumulation order in the linear operator only.
+    source = (ROOT/'src/inwime_ops.c').read_text().replace(
+        'for (size_t j = 0; j < number; ++j) total += w[i+j]*xp[j];',
+        'for (size_t j = number; j-- > 0;) total += w[i+j]*xp[j];')
+    assert 'j-- > 0' in source
+    lib = compile_operators(tmp_path, source)
+    report = doctor.report(**host.kwargs(env=host.kwargs()['env'] | {'INWIME_OPS_KERNEL': str(lib)}))
+    operators = report['operators']['operators']
+    assert operators['linear']['implementation'] == 'python-fp64' and operators['linear']['passed'] is False
+    assert operators['attention']['implementation'] == 'c-fp64-ordered-ops'
+    assert check(report, 'operator-kernel')['status'] == 'fail' and report['status'] == 'fail'

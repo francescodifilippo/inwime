@@ -1,9 +1,10 @@
-"""Test-only pacing of the Percorso congelato inside an `inwime serve` subprocess.
+"""Test-only pacing of the runtime inside an `inwime serve` subprocess.
 
 Run as `python -m pacer serve ...` with INWIME_PACER_DIR set. The tiny fixture computes a
 request in milliseconds; to observe a request while it waits or computes, this wrapper holds
-the frozen runtime at its own cancellation checks and logs what the worker does. The product
-code is unchanged: only the frozen runtime and the public `Coordinatore.generate` are wrapped.
+the runtime at its own cancellation checks and logs what the worker does. The product code is
+unchanged: only the runtimes (the frozen and the additive one, which share the Gestore delle
+regioni and its `check_cancelled`) and the public `Coordinatore.generate` are wrapped.
 
 Gate files in INWIME_PACER_DIR, checked at every `check_cancelled` of the runtime:
 - `hold-prefill`, `hold-decode`: the worker waits there while the file exists, unless the
@@ -30,7 +31,7 @@ import threading
 import time
 
 from inwime_runtime import core, decoder, llama
-from inwime import engine
+from inwime import additive, engine
 
 DIRECTORY = Path(os.environ['INWIME_PACER_DIR'])
 _lock = threading.Lock()
@@ -46,23 +47,22 @@ def ids(tokens):
     return ' '.join(map(str, tokens))
 
 
-_prefill = llama.LlamaRuntime.prefill
-
-
-def prefill(self, tokens, *, cancel_event=None):
-    kind = 'decode' if self.length else 'prefill'
-    _state.phase, _state.held, _state.seen = kind, False, False
-    record('%s %s' % (kind, ids(tokens)))
-    try:
-        return _prefill(self, tokens, cancel_event=cancel_event)
-    except CancelledError:
-        record('cancelled '+kind)
-        raise
-    except Exception:
-        record('failed '+kind)
-        raise
-    finally:
-        _state.phase = None
+def paced_prefill(original):
+    def prefill(self, tokens, **kwargs):
+        kind = 'decode' if self.length else 'prefill'
+        _state.phase, _state.held, _state.seen = kind, False, False
+        record('%s %s' % (kind, ids(tokens)))
+        try:
+            return original(self, tokens, **kwargs)
+        except CancelledError:
+            record('cancelled '+kind)
+            raise
+        except Exception:
+            record('failed '+kind)
+            raise
+        finally:
+            _state.phase = None
+    return prefill
 
 
 _check_cancelled = core.Coordinator.check_cancelled
@@ -87,12 +87,11 @@ def check_cancelled(self):
     return _check_cancelled(self)
 
 
-_close = decoder.CPURuntime.close
-
-
-def close(self):
-    _close(self)
-    record('closed length=%d failed=%s' % (self.length, self.failed))
+def recorded_close(original):
+    def close(self):
+        original(self)
+        record('closed length=%d failed=%s' % (self.length, self.failed))
+    return close
 
 
 _generate = engine.Coordinatore.generate
@@ -118,9 +117,11 @@ def prepared(original):
 
 engine.Coordinatore.prepare_completion = prepared(engine.Coordinatore.prepare_completion)
 engine.Coordinatore.prepare_chat = prepared(engine.Coordinatore.prepare_chat)
-llama.LlamaRuntime.prefill = prefill
+llama.LlamaRuntime.prefill = paced_prefill(llama.LlamaRuntime.prefill)
+additive.AdditiveQwen2Runtime.prefill = paced_prefill(additive.AdditiveQwen2Runtime.prefill)
 core.Coordinator.check_cancelled = check_cancelled
-decoder.CPURuntime.close = close
+decoder.CPURuntime.close = recorded_close(decoder.CPURuntime.close)
+additive.AdditiveQwen2Runtime.close = recorded_close(additive.AdditiveQwen2Runtime.close)
 engine.Coordinatore.generate = generate
 
 if __name__ == '__main__':

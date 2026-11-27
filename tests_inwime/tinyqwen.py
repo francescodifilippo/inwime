@@ -131,11 +131,23 @@ def kernel_path():
     return found or (built if built.is_file() else None)
 
 
+def ops_kernel_path():
+    """The native operators of the Percorso additivo: packaged, or built by `make ops-kernel`."""
+    from inwime import ops
+    found = ops.locate({})
+    built = TOOLS.parent/'build'/'libinwime_ops.so'
+    return found or (built if built.is_file() else None)
+
+
 def kernel_env():
-    """Server environment using the native kernel when there is one (bit-identical to the Python
-    fallback by its self-test; four times faster on long fixture prompts)."""
-    path = kernel_path()
-    return {'INWIME_CPU_KERNEL': str(path)} if path else {}
+    """Server environment using the native kernels when there are some (bit-identical to the Python
+    fallback by their self-test and gate; much faster on long fixture prompts)."""
+    env = {}
+    if kernel_path():
+        env['INWIME_CPU_KERNEL'] = str(kernel_path())
+    if ops_kernel_path():
+        env['INWIME_OPS_KERNEL'] = str(ops_kernel_path())
+    return env
 
 
 def runtime(directory, capacity):

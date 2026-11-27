@@ -73,7 +73,7 @@ class FakeHost:
 
     def kwargs(self, **extra):
         out = dict(root=self.root, env={'WSL_DISTRO_NAME': 'Ubuntu', 'HOME': str(self.linux/'home'),
-                                        'INWIME_CPU_KERNEL': 'off'},
+                                        'INWIME_CPU_KERNEL': 'off', 'INWIME_OPS_KERNEL': 'off'},
                    statvfs=self.statvfs, runner=self.runner, access=lambda p, mode: True)
         out.update(extra)
         return out
