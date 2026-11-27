@@ -456,3 +456,9 @@ def test_an_operator_that_fails_the_gate_is_served_by_the_python_reference(run, 
     assert tokens == [21, 32, 28, 14, 24]
     assert computation['operators']['linear'] == 'python-fp64'
     assert computation['operators']['attention'] == 'c-fp64-ordered-ops'
+
+
+def test_the_rollback_switch_serves_the_same_tokens_through_the_percorso_congelato(run, home, active):
+    tokens, computation = additive_completion(run, home, active, {'INWIME_COMPUTE_PATH': 'frozen'})
+    assert tokens == [21, 32, 28, 14, 24]
+    assert computation['path'] == 'percorso congelato' and 'operators' not in computation

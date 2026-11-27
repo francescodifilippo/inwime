@@ -17,17 +17,22 @@ ENV = 'INWIME_CPU_KERNEL'  # explicit library path, or 'off' to force the Python
 FALLBACK = ScalarMath.name
 
 
-def locate(env=None):
+def find_library(env, variable, stem):
+    """`variable` of `env` (a path, or 'off' for none), else the library `stem` packaged here."""
     env = os.environ if env is None else env
-    override = env.get(ENV)
+    override = env.get(variable)
     if override:
         return None if override == 'off' else Path(override)
     here = Path(__file__).resolve().parent
     for suffix in importlib.machinery.EXTENSION_SUFFIXES:
-        candidate = here/('_cpu_kernel'+suffix)
+        candidate = here/(stem+suffix)
         if candidate.is_file():
             return candidate
     return None
+
+
+def locate(env=None):
+    return find_library(env, ENV, '_cpu_kernel')
 
 
 def _fixture(rows=3, columns=37, seed=0x1F2E3D4C):

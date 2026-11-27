@@ -28,11 +28,21 @@ linear in the block and are not interrupted: the runtime checks between calls.
 """
 import ctypes
 import math
-from pathlib import Path
+
+from .kernel import find_library
 
 OK, NONFINITE, CANCELLED, INVALID = 0, 1, 2, 3
 NAMES = ('linear', 'rms_denominators', 'rms_scale', 'add', 'rope', 'attention', 'silu_mul')
 ABI_VERSION = 1            # INWIME_OPS_ABI_VERSION of src/inwime_ops.h
+ENV = 'INWIME_OPS_KERNEL'  # explicit library path, or 'off' to force the Python reference
+
+
+def bad_rope(dim):
+    return dim == 0 or dim % 2 == 1
+
+
+def bad_attention(heads, kv_heads, dim):
+    return dim == 0 or kv_heads == 0 or heads % kv_heads != 0
 
 
 class PythonOps:
@@ -40,6 +50,8 @@ class PythonOps:
     name = 'python-fp64'
 
     def linear(self, w, count, x, xo, xs, y, yo, ys, positions, columns, start, cancel):
+        if not columns:
+            return INVALID
         row, column = divmod(start, columns)
         i = 0
         while i < count:
@@ -61,6 +73,8 @@ class PythonOps:
         return OK
 
     def rms_denominators(self, x, xo, xs, positions, width, eps, out):
+        if not width:
+            return INVALID
         for p in range(positions):
             squared = 0.
             for i in range(xo+p*xs, xo+p*xs+width):
@@ -86,6 +100,8 @@ class PythonOps:
         return OK
 
     def rope(self, v, vo, vs, positions, first, heads, dim, theta):
+        if bad_rope(dim):
+            return INVALID
         half = dim//2
         for p in range(positions):
             position = first+p
@@ -100,14 +116,16 @@ class PythonOps:
         return OK
 
     def attention(self, q, qo, qs, positions, first, kv, ko, vo, kvs, heads, kv_heads, dim,
-                  out, oo, os, cancel):
+                  out, oo, out_stride, cancel):
+        if bad_attention(heads, kv_heads, dim):
+            return INVALID
         group = heads//kv_heads
         for p in range(positions):
             position = first+p
             for head in range(heads):
                 if cancel.value:
                     return CANCELLED
-                kh, qb, ob = head//group, qo+p*qs+head*dim, oo+p*os+head*dim
+                kh, qb, ob = head//group, qo+p*qs+head*dim, oo+p*out_stride+head*dim
 
                 def score(token):
                     base, total = ko+token*kvs+kh*dim, 0.
@@ -202,6 +220,8 @@ class NativeOps:
 
     def rms_denominators(self, x, xo, xs, positions, width, eps, out):
         self._sizes(xs, positions, width)
+        if not width:
+            return INVALID
         if not positions:
             return OK
         return self.kernels['rms_denominators'](self._arena(x, xo, _rows(positions, xs, width)), xs,
@@ -225,21 +245,25 @@ class NativeOps:
 
     def rope(self, v, vo, vs, positions, first, heads, dim, theta):
         self._sizes(vs, positions, first, heads, dim)
+        if bad_rope(dim):
+            return INVALID
         if not positions or not heads:
             return OK
         return self.kernels['rope'](self._arena(v, vo, _rows(positions, vs, heads*dim)), vs, positions,
                                     first, heads, dim, theta)
 
     def attention(self, q, qo, qs, positions, first, kv, ko, vo, kvs, heads, kv_heads, dim,
-                  out, oo, os, cancel):
-        self._sizes(qs, positions, first, kvs, heads, kv_heads, dim, os)
+                  out, oo, out_stride, cancel):
+        self._sizes(qs, positions, first, kvs, heads, kv_heads, dim, out_stride)
+        if bad_attention(heads, kv_heads, dim):
+            return INVALID
         if not positions or not heads:
             return OK
         context = _rows(first+positions, kvs, kv_heads*dim)
         return self.kernels['attention'](
             self._arena(q, qo, _rows(positions, qs, heads*dim)), qs, positions, first,
             self._arena(kv, ko, context), self._arena(kv, vo, context), kvs, heads, kv_heads, dim,
-            self._arena(out, oo, _rows(positions, os, heads*dim)), os, ctypes.byref(cancel))
+            self._arena(out, oo, _rows(positions, out_stride, heads*dim)), out_stride, ctypes.byref(cancel))
 
     def silu_mul(self, gate, up, count):
         self._sizes(count)
@@ -250,18 +274,4 @@ class NativeOps:
 
 def locate(env=None):
     """The operator library: `INWIME_OPS_KERNEL` (a path, or 'off'), else the packaged one."""
-    import importlib.machinery
-    import os
-    env = os.environ if env is None else env
-    override = env.get(ENV)
-    if override:
-        return None if override == 'off' else Path(override)
-    here = Path(__file__).resolve().parent
-    for suffix in importlib.machinery.EXTENSION_SUFFIXES:
-        candidate = here/('_ops_kernel'+suffix)
-        if candidate.is_file():
-            return candidate
-    return None
-
-
-ENV = 'INWIME_OPS_KERNEL'
+    return find_library(env, ENV, '_ops_kernel')

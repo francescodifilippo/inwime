@@ -190,3 +190,21 @@ def test_a_cancel_signal_set_before_the_call_stops_it_before_any_read(heads):
         assert r.control.stats()['inference_read_bytes'] == 0 and r.length == 0
         signal.clear()
         assert signal.flag.value == 0 and not signal.is_set()
+
+
+@pytest.mark.parametrize('maths', MATHS, ids='-'.join)
+@pytest.mark.parametrize('head,twin', [('untied', 'untied'), ('tied', 'duplicated')])
+@pytest.mark.parametrize('chunks,block', [([5, 1, 1, 1], 32), ([8], 3), ([7, 1], 2)])
+def test_the_served_configuration_gives_the_frozen_last_logits_and_kv(heads, head, twin, chunks, block, maths):
+    """As the Motore runs it: no trace, head and final norm on the last position of each call only."""
+    frozen = frozen_steps(heads[twin], chunks, tile=262144)
+    catalog = qwen2_catalog(SafetensorsSource(heads[head]))
+    start = 0
+    with AdditiveQwen2Runtime(catalog, len(SEQUENCE), block=block, integrity='full',
+                              math_backend=expand(maths[0]), ops=ops(maths[1])) as r:
+        assert r.plan.required['output'] == r.spec.vocab*8
+        for size, step in zip(chunks, frozen, strict=True):
+            with r.prefill(SEQUENCE[start:start+size]) as out:
+                assert bytes(out.logits) == step['logits'][start+size-1]
+                assert tuple(bytes(v) for pair in out.kv for v in pair) == step['kv']
+            start += size

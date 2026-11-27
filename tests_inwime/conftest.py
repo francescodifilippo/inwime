@@ -22,7 +22,7 @@ GUARD = str(Path(__file__).resolve().parent/'netguard')
 SCRUBBED = ('HF_TOKEN', 'HUGGING_FACE_HUB_TOKEN', 'HF_HUB_OFFLINE', 'TRANSFORMERS_OFFLINE',
             'HF_TOKEN_PATH', 'HF_HUB_CACHE', 'HUGGINGFACE_HUB_CACHE', 'XDG_CACHE_HOME', 'HTTP_PROXY',
             'HTTPS_PROXY', 'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'INWIME_HOME',
-            'XDG_DATA_HOME', 'INWIME_FAKE_FREE_BYTES', 'INWIME_OPS_KERNEL')
+            'XDG_DATA_HOME', 'INWIME_FAKE_FREE_BYTES', 'INWIME_OPS_KERNEL', 'INWIME_COMPUTE_PATH')
 
 
 @pytest.fixture

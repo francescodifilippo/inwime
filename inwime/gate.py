@@ -101,18 +101,32 @@ def _silu(impl):
     return [impl.silu_mul(gate, up, len(gate))], (gate,)
 
 
+def _invalid(impl, name):
+    """Geometries the operators refuse (status INVALID) rather than compute: no columns, no width,
+    an odd head dimension, query heads that are not a multiple of the KV heads."""
+    v, flag = array('d', [1.])*64, ctypes.c_int(0)
+    calls = {'linear': lambda: impl.linear(v, 4, v, 0, 4, v, 0, 4, 1, 0, 0, flag),
+             'rms_denominators': lambda: impl.rms_denominators(v, 0, 8, 1, 0, 1e-6, v),
+             'rope': lambda: impl.rope(v, 0, 6, 1, 0, 2, 3, 1e4),
+             'attention': lambda: impl.attention(v, 0, 12, 1, 0, v, 0, 32, 8, 3, 2, 4, v, 0, 12, flag)}
+    return [calls[name]()], (v,)
+
+
 CASES = {
     'linear': {'tiles cutting rows': _linear, 'overflow': lambda i: _linear(i, 1e300),
-               'cancelled': lambda i: _linear(i, cancel=1)},
+               'cancelled': lambda i: _linear(i, cancel=1), 'invalid': lambda i: _invalid(i, 'linear')},
     'rms_denominators': {'unit': lambda i: _rms(i, 1.), 'odd width': lambda i: _rms(i, 1., 83), 'eps scale': lambda i: _rms(i, 1e-3),
-                         'overflow': lambda i: _rms(i, 1e200), 'zeros': _rms_zero},
+                         'overflow': lambda i: _rms(i, 1e200), 'zeros': _rms_zero,
+                         'invalid': lambda i: _invalid(i, 'rms_denominators')},
     'rms_scale': {'strided': _rms_scale},
     'add': {'residual and overflow': _add},
     'rope': {'start': lambda i: _rope(i, 0, 1e6, 64, 2), 'qwen2.5': lambda i: _rope(i, 7, 1e6, 64, 14),
-             'far': lambda i: _rope(i, 32760, 1e6, 128, 2), 'llama base': lambda i: _rope(i, 1000003, 1e4, 6, 3)},
+             'far': lambda i: _rope(i, 32760, 1e6, 128, 2), 'llama base': lambda i: _rope(i, 1000003, 1e4, 6, 3),
+             'invalid': lambda i: _invalid(i, 'rope')},
     'attention': {'gqa': lambda i: _attention(i, 5, 1.), 'exp underflow': lambda i: _attention(i, 40, 30.),
                   'ties': lambda i: _attention(i, 6, 1., ties=True),
-                  'cancelled': lambda i: _attention(i, 2, 1., cancel=1)},
+                  'cancelled': lambda i: _attention(i, 2, 1., cancel=1),
+                  'invalid': lambda i: _invalid(i, 'attention')},
     'silu_mul': {'branches and saturation': _silu},
 }
 

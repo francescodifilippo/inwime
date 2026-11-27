@@ -8,7 +8,9 @@ Two parts, run as separate processes so that each peak RSS is its own:
   Checkpoint: the frozen computation (`CatalogQwen2Runtime`, i.e. `Qwen2Runtime` unchanged over
   the tied catalog of #38) and the additive runtime with the operators the Motore's gate chose,
   in blocks of `--block`. Every logit (all positions, full vocabulary), every residual and the
-  whole KV are compared byte for byte; their SHA256 are reported.
+  whole KV are compared byte for byte; their SHA256 are reported. A third session runs the
+  configuration the Motore serves (no trace, the default block, head and final norm on the last
+  position only): its last logits and KV after every call are compared with the frozen ones.
 - `long`: a prompt of `--tokens` token ids (the tokenized text of docs/VISION_AND_ROADMAP.md,
   repeated and cut) prefilled through a session built exactly as the Motore builds it, then one
   greedy decode: wall times, bytes read, the memory plan by category. For comparison the plan the
@@ -107,6 +109,17 @@ def additive_steps(catalog, math, ops, prompt, completion, block):
     return steps, stats
 
 
+def served_steps(catalog, math, ops, prompt, completion):
+    sequence = prompt+completion
+    steps = []
+    with AdditiveQwen2Runtime(catalog, len(sequence), integrity='metadata', math_backend=math, ops=ops) as r:
+        for call, argument in [(r.prefill, prompt)] + [(r.decode, t) for t in completion]:
+            with call(argument) as out:
+                steps.append(dict(logits=bytes(out.logits), kv=b''.join(bytes(v) for pair in out.kv for v in pair)))
+        block = r.block
+    return steps, block
+
+
 def digest(steps, kind):
     h = hashlib.sha256()
     for step in steps:
@@ -134,11 +147,17 @@ def identity(args):
         begun = time.monotonic()
         additive, additive_stats = additive_steps(m.catalog, m.math, m.ops, prompt, completion, args.block)
         additive_seconds = time.monotonic()-begun
+        served, served_block = served_steps(m.catalog, m.math, m.ops, prompt, completion)
     finally:
         m.close()
     kinds = {kind: dict(identical=all(a[kind] == f[kind] for a, f in zip(additive, frozen, strict=True)),
                         sha256_additive=digest(additive, kind), sha256_frozen=digest(frozen, kind))
              for kind in ('logits', 'residuals', 'kv')}
+    ends = [len(prompt)+i for i in range(len(completion)+1)]     # last position of each call
+    kinds['served_last_logits'] = dict(block=served_block, identical=all(
+        s['logits'] == f['logits'][end-1] for s, f, end in zip(served, frozen, ends, strict=True)))
+    kinds['served_kv'] = dict(block=served_block, identical=all(
+        s['kv'] == f['kv'] for s, f in zip(served, frozen, strict=True)))
     return dict(part='identity', load=load, messages=MESSAGES, prompt_token_ids=prompt,
                 completion_token_ids=completion, text=reply['text'], served_seconds=served,
                 computation=reply['diagnostics']['computation'], block=args.block,

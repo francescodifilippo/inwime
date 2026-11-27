@@ -3,8 +3,10 @@
 One `Coordinatore` per process. It owns the active model, its tokenizer, the verified identity
 of its files and the only worker thread that computes; the HTTP layer never touches the
 runtime. Under it, each request gets its own session of the Percorso additivo (`additive.py`,
-#41): block prefill and the operators of `ops.py`, bit-identical to the Percorso congelato, over
-the frozen Qwen2 catalog for an untied head or the additive one of `qwen2_tied` for a tied head.
+#41): block prefill and the operators of `ops.py`, bit-identical to the Percorso congelato on the
+certified configurations, over the frozen Qwen2 catalog for an untied head or the additive one of
+`qwen2_tied` for a tied head. `INWIME_COMPUTE_PATH=frozen` rolls the Motore back to the previous
+path (ADR 0001): the frozen `Qwen2Runtime` session, one position at a time, unchanged.
 Its `core.Coordinator` is the Gestore delle regioni: memory reservations, leases and weight I/O
 stay there. Each operator is native only if it passed the gate of `gate.py` when the model was
 loaded; otherwise it is the Python reference. An imported Checkpoint is opened by the
@@ -24,6 +26,7 @@ prompts are rendered by Transformers (`chat.py`). The context capacity is the Ch
 """
 import collections
 from concurrent.futures import CancelledError, Future
+import os
 import secrets
 import threading
 from pathlib import Path
@@ -47,6 +50,9 @@ from .generation import Sampling, TextStream
 DEFAULT_CHAT_MAX_TOKENS = 512
 
 DEFAULT_QUEUE_SIZE = 4            # requests waiting behind the one in progress
+
+PATH_ENV = 'INWIME_COMPUTE_PATH'  # 'additive' (default) or 'frozen': the rollback of ADR 0001
+PATHS = {'additive': 'percorso additivo', 'frozen': 'percorso congelato'}
 
 
 class EngineError(Exception):
@@ -230,6 +236,9 @@ class Coordinatore:
             raise NotServable('model_type %r is not served by this version: the HTTP tracer serves '
                               'Qwen2 Checkpoint, with a tied or untied head'
                               % (config.get('model_type'),))
+        self.path = os.environ.get(PATH_ENV) or 'additive'
+        if self.path not in PATHS:
+            raise NotServable('%s=%r: expected one of %s' % (PATH_ENV, self.path, ', '.join(PATHS)))
         self.math = math_backend()
         self.ops, self.operators = gate.evaluate()
         self.tied = config.get('tie_word_embeddings') is True
@@ -261,6 +270,8 @@ class Coordinatore:
         # An imported directory is read again for each session, as `Qwen2Runtime` does.
         adapter = (self.catalog if self.catalog is not None
                    else qwen2_catalog(SafetensorsSource(self.directory)))
+        if self.path == 'frozen':
+            return CatalogQwen2Runtime(adapter, capacity, integrity=integrity, math_backend=self.math)
         return AdditiveQwen2Runtime(adapter, capacity, integrity=integrity, math_backend=self.math,
                                     ops=self.ops)
 
@@ -344,7 +355,9 @@ class Coordinatore:
                 raise changed
             vocab = runtime.spec.vocab
             with runtime.prefill(ids, cancel_event=cancel_event) as result:
-                chosen = sampling.choose(result.logits[:vocab], ids)
+                # The last position's logits: the only ones of the additive path, the last row of the frozen one.
+                logits = result.logits
+                chosen = sampling.choose(logits[len(logits)-vocab:], ids)
             while True:
                 generated.append(chosen)
                 if chosen in self.tokenizer.eos:
@@ -364,11 +377,15 @@ class Coordinatore:
                 'prompt_tokens': len(ids), 'completion_tokens': len(generated),
                 'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
                                 'sampling': sampling.describe(),
-                                'computation': {'path': 'percorso additivo', 'kernel': self.math.name,
-                                                'block_positions': runtime.block,
-                                                'operators': {name: impl.name for name, impl in self.ops.items()},
-                                                'adapter': ('TiedQwen2Catalog (additive, tied head)' if self.tied
-                                                            else 'Qwen2Catalog (frozen)')}}}
+                                'computation': self._computation(runtime)}}
+
+    def _computation(self, runtime):
+        out = {'path': PATHS[self.path], 'kernel': self.math.name,
+               'adapter': 'TiedQwen2Catalog (additive, tied head)' if self.tied else 'Qwen2Catalog (frozen)'}
+        if self.path == 'additive':
+            out.update(block_positions=runtime.block,
+                       operators={name: impl.name for name, impl in self.ops.items()})
+        return out
 
 
 class Job:
