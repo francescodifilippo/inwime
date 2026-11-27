@@ -147,7 +147,7 @@ def identity(args):
         begun = time.monotonic()
         additive, additive_stats = additive_steps(m.catalog, m.math, m.ops, prompt, completion, args.block)
         additive_seconds = time.monotonic()-begun
-        served, served_block = served_steps(m.catalog, m.math, m.ops, prompt, completion)
+        served_runs, served_block = served_steps(m.catalog, m.math, m.ops, prompt, completion)
     finally:
         m.close()
     kinds = {kind: dict(identical=all(a[kind] == f[kind] for a, f in zip(additive, frozen, strict=True)),
@@ -155,9 +155,9 @@ def identity(args):
              for kind in ('logits', 'residuals', 'kv')}
     ends = [len(prompt)+i for i in range(len(completion)+1)]     # last position of each call
     kinds['served_last_logits'] = dict(block=served_block, identical=all(
-        s['logits'] == f['logits'][end-1] for s, f, end in zip(served, frozen, ends, strict=True)))
+        s["logits"] == f["logits"][end-1] for s, f, end in zip(served_runs, frozen, ends, strict=True)))
     kinds['served_kv'] = dict(block=served_block, identical=all(
-        s['kv'] == f['kv'] for s, f in zip(served, frozen, strict=True)))
+        s["kv"] == f["kv"] for s, f in zip(served_runs, frozen, strict=True)))
     return dict(part='identity', load=load, messages=MESSAGES, prompt_token_ids=prompt,
                 completion_token_ids=completion, text=reply['text'], served_seconds=served,
                 computation=reply['diagnostics']['computation'], block=args.block,

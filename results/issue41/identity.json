@@ -1,0 +1,182 @@
+{
+  "part": "identity",
+  "load": {
+    "seconds": 1.6494412710890174,
+    "kernel": "c-fp64-ordered",
+    "tied": true,
+    "operators": {
+      "path": "build/libinwime_ops.so",
+      "native": true,
+      "status": "ok",
+      "detail": "every operator bit-identical to its Python reference",
+      "operators": {
+        "linear": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 4 cases"
+        },
+        "rms_denominators": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 6 cases"
+        },
+        "rms_scale": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        },
+        "add": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        },
+        "rope": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 5 cases"
+        },
+        "attention": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 5 cases"
+        },
+        "silu_mul": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        }
+      }
+    }
+  },
+  "messages": [
+    {
+      "role": "user",
+      "content": "Descrivi in due frasi il ciclo dell'acqua."
+    }
+  ],
+  "prompt_token_ids": [
+    151644,
+    8948,
+    198,
+    2610,
+    525,
+    1207,
+    16948,
+    11,
+    3465,
+    553,
+    54364,
+    14817,
+    13,
+    1446,
+    525,
+    264,
+    10950,
+    17847,
+    13,
+    151645,
+    198,
+    151644,
+    872,
+    198,
+    11065,
+    81,
+    32820,
+    304,
+    4152,
+    1422,
+    10215,
+    3815,
+    89570,
+    24237,
+    6,
+    580,
+    43832,
+    13,
+    151645,
+    198,
+    151644,
+    77091,
+    198
+  ],
+  "completion_token_ids": [
+    12050,
+    89570,
+    24237,
+    6,
+    580,
+    43832
+  ],
+  "text": "Il ciclo dell'acqua",
+  "served_seconds": 11.744043217040598,
+  "computation": {
+    "path": "percorso additivo",
+    "kernel": "c-fp64-ordered",
+    "adapter": "TiedQwen2Catalog (additive, tied head)",
+    "block_positions": 32,
+    "operators": {
+      "linear": "c-fp64-ordered-ops",
+      "rms_denominators": "c-fp64-ordered-ops",
+      "rms_scale": "c-fp64-ordered-ops",
+      "add": "c-fp64-ordered-ops",
+      "rope": "c-fp64-ordered-ops",
+      "attention": "c-fp64-ordered-ops",
+      "silu_mul": "c-fp64-ordered-ops"
+    }
+  },
+  "block": 8,
+  "positions": 49,
+  "calls": 7,
+  "comparison": {
+    "logits": {
+      "identical": true,
+      "sha256_additive": "a7a5233319f0e5c8d48ba2abd90843aaf18770ec12990bf3faabbd774fe7be31",
+      "sha256_frozen": "a7a5233319f0e5c8d48ba2abd90843aaf18770ec12990bf3faabbd774fe7be31"
+    },
+    "residuals": {
+      "identical": true,
+      "sha256_additive": "a2c33ae24a0eb1eb6b5964431b1881fbd3de185961fc2ac267964a06ab9550a4",
+      "sha256_frozen": "a2c33ae24a0eb1eb6b5964431b1881fbd3de185961fc2ac267964a06ab9550a4"
+    },
+    "kv": {
+      "identical": true,
+      "sha256_additive": "d52c60f5be2d645bec69e0542155091b24a9817b5c4d81075174d8d709c73799",
+      "sha256_frozen": "d52c60f5be2d645bec69e0542155091b24a9817b5c4d81075174d8d709c73799"
+    },
+    "served_last_logits": {
+      "block": 32,
+      "identical": true
+    },
+    "served_kv": {
+      "block": 32,
+      "identical": true
+    }
+  },
+  "verdict": "PASS",
+  "frozen": {
+    "seconds": 44.51524906908162,
+    "inference_read_bytes": 48415299072,
+    "reserved_bytes": 76690193
+  },
+  "additive": {
+    "seconds": 17.22298923903145,
+    "inference_read_bytes": 11856874240,
+    "reserved_bytes": 16805895,
+    "note": "all_logits: head and final norm on every position, for the comparison"
+  },
+  "model": "Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775",
+  "host": {
+    "python": "3.14.4",
+    "machine": "x86_64",
+    "kernel_release": "6.18.58.1-microsoft-standard-WSL2",
+    "cpus": 20,
+    "load_average_before": [
+      0.78466796875,
+      0.98193359375,
+      1.103515625
+    ],
+    "threads": "1 (single-threaded kernels)",
+    "temperature_and_power": "NOT MEASURED"
+  },
+  "peak_rss_bytes": 418541568
+}
