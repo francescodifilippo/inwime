@@ -99,6 +99,16 @@ elemento, alle soglie M10 (fp32 atol 2e-3 rtol 2e-4, fp64 atol 2e-5 rtol 2e-6), 
 Transformers né PyTorch. Utilizzo massimo della soglia: `stock_fp32` 0,8% (residual), `full64`
 sotto 1e-6. Un confronto con i valori della fixture sbagliata fallisce.
 
+## Regressione M7–M10
+
+Suite storica `tests/` al commit `9dbde14`: **1260 passed**, l'inventario pinnato di M10, incluso il
+gate H (`src/` e `inwime_runtime/` invariati rispetto alla base). In locale `/tmp` (tmpfs) aveva
+meno dei 2 GiB di riserva richiesti da `test_checkpoint5`, quindi la suite è girata con
+`--basetemp` su un disco fisico fuori dal repository; una `--basetemp` dentro il repository fa
+fallire i test dell'inventario, che ricostruiscono un progetto nella directory temporanea.
+Suite del prodotto `tests_inwime/`: 266 passed, 2 skipped (librerie pacchettizzate assenti nel
+checkout di sorgente; la CI le esegue).
+
 ## Memoria, I/O e tempi
 
 | Misura | Identità (49 posizioni) | Prompt lungo (5.317 token) |
