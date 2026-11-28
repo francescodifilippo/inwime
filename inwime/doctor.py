@@ -1,4 +1,4 @@
-"""`inwime doctor`: a non-destructive audit of the host, its memory, storage and CPU kernel.
+"""`inwime doctor`: a non-destructive audit of the host, its memory, storage and CPU kernels.
 
 The report distinguishes measured facts from what could not be read: anything
 unavailable is ``None`` with status 'unknown', never a guess. Nothing is written,
@@ -9,7 +9,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import __version__, kernel, probe, storage, wsl_host
+from . import __version__, gate, kernel, probe, storage, wsl_host
 
 SCHEMA = 'inwime-doctor/1'
 
@@ -45,7 +45,7 @@ def report(*, root='/', env=None, paths=None, host_query=True, margin_bytes=stor
                generated_utc=datetime.now(timezone.utc).isoformat(timespec='seconds'),
                system=system, cpu=probe.cpu(root), memory=memory,
                host_query=dict(enabled=bool(system['wsl'] and host_query), available=host is not None),
-               storage=entries, cpu_kernel=kernel.describe(env))
+               storage=entries, cpu_kernel=kernel.describe(env), operators=gate.describe(env))
     out['checks'] = checks(out)
     out['status'] = max((c['status'] for c in out['checks']), key=SEVERITY.index, default='ok')
     return out
@@ -65,6 +65,7 @@ def checks(r):
     add('platform', 'ok' if tested else 'warn',
         f"{s['os']} {s['machine']}" + ('' if tested else ': untested platform, support is experimental'))
     add('cpu-kernel', k['status'], k['detail'])
+    add('operator-kernel', r['operators']['status'], r['operators']['detail'])
     if s['wsl']:
         q = r['host_query']
         add('wsl-host', 'ok' if q['available'] else 'unknown',
@@ -151,7 +152,9 @@ def render(r):
              + (f" | headroom {size(group.get('headroom_bytes'))}" if group.get('memory_limit') == 'limited' else '')
              + ' | ' + limits(m.get('rlimits')),
              f"CPU kernel {r['cpu_kernel']['implementation']}"
-             + (f" ({r['cpu_kernel']['path']})" if r['cpu_kernel']['path'] else '')]
+             + (f" ({r['cpu_kernel']['path']})" if r['cpu_kernel']['path'] else ''),
+             '         operators ' + ', '.join(sorted({o['implementation'] for o in r['operators']['operators'].values()}))
+             + (f" ({r['operators']['path']})" if r['operators']['path'] else '')]
     for e in r['storage']:
         lines.append(f"Storage  {e['path']} -> {e['backing']} on {e['mount_point']} ({e['fstype']})"
                      f" | free {size(e['physical_free_bytes'])} physical, {size(e['linux_free_bytes'])} in Linux"

@@ -11,6 +11,7 @@ import os
 import stat
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -413,3 +414,51 @@ def test_an_installed_shard_relinked_to_another_blob_is_refused(run, hub, home, 
     refused = serve_command(run, home)
     assert refused.returncode == 13, refused.stderr
     assert 'listening' not in refused.stdout and 'Traceback' not in refused.stderr
+
+
+def additive_completion(run, home, active, env):
+    s = Server(run, home, env=env)
+    try:
+        status, body = s.request('POST', '/v1/completions', {'model': active, 'prompt': 't3 t5 t7 t11',
+                                                             'max_tokens': 5, 'inwime_diagnostics': True})
+    finally:
+        s.stop()
+    assert status == 200, body
+    return body['inwime']['completion_token_ids'], body['inwime']['computation']
+
+
+@pytest.mark.parametrize('kernels', ['python', 'native'])
+def test_the_motore_serves_the_frozen_tokens_through_the_percorso_additivo(run, home, active, kernels):
+    env = tinyqwen.kernel_env() if kernels == 'native' else {}
+    if kernels == 'native' and 'INWIME_OPS_KERNEL' not in env:
+        pytest.skip('operator kernel not built (make ops-kernel)')
+    tokens, computation = additive_completion(run, home, active, env)
+    assert tokens == [21, 32, 28, 14, 24]          # the frozen greedy literal above
+    assert computation['path'] == 'percorso additivo'
+    expected = 'c-fp64-ordered-ops' if kernels == 'native' else 'python-fp64'
+    assert set(computation['operators'].values()) == {expected}
+    assert computation['block_positions'] >= 1
+
+
+def test_an_operator_that_fails_the_gate_is_served_by_the_python_reference(run, home, active, tmp_path):
+    import shutil
+    if shutil.which('cc') is None:
+        pytest.skip('no C compiler')
+    root = Path(__file__).resolve().parents[1]
+    source = (root/'native/inwime_ops.c').read_text().replace(        # reversed sum, linear only
+        'for (size_t j = 0; j < number; ++j) total += w[i+j]*xp[j];',
+        'for (size_t j = number; j-- > 0;) total += w[i+j]*xp[j];')
+    (tmp_path/'ops.c').write_text(source)
+    subprocess.run(['cc', '-O2', '-std=c11', '-fPIC', '-shared', '-ffp-contract=off', '-fno-builtin',
+                    '-I', str(root/'native'), str(tmp_path/'ops.c'), '-o', str(tmp_path/'libops.so'), '-lm'],
+                   check=True)
+    tokens, computation = additive_completion(run, home, active, {'INWIME_OPS_KERNEL': str(tmp_path/'libops.so')})
+    assert tokens == [21, 32, 28, 14, 24]
+    assert computation['operators']['linear'] == 'python-fp64'
+    assert computation['operators']['attention'] == 'c-fp64-ordered-ops'
+
+
+def test_the_rollback_switch_serves_the_same_tokens_through_the_percorso_congelato(run, home, active):
+    tokens, computation = additive_completion(run, home, active, {'INWIME_COMPUTE_PATH': 'frozen'})
+    assert tokens == [21, 32, 28, 14, 24]
+    assert computation['path'] == 'percorso congelato' and 'operators' not in computation

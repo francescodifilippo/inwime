@@ -1,0 +1,113 @@
+{
+  "part": "long",
+  "load": {
+    "seconds": 1.6345560001209378,
+    "kernel": "c-fp64-ordered",
+    "tied": true,
+    "operators": {
+      "path": "build/libinwime_ops.so",
+      "native": true,
+      "status": "ok",
+      "detail": "every operator bit-identical to its Python reference",
+      "operators": {
+        "linear": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 3 cases"
+        },
+        "rms_denominators": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 5 cases"
+        },
+        "rms_scale": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        },
+        "add": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        },
+        "rope": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 4 cases"
+        },
+        "attention": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 4 cases"
+        },
+        "silu_mul": {
+          "implementation": "c-fp64-ordered-ops",
+          "passed": true,
+          "detail": "bit-identical to the Python reference on 1 cases"
+        }
+      }
+    }
+  },
+  "prompt_tokens": 5317,
+  "prompt_source": "docs/VISION_AND_ROADMAP.md tokenized, repeated, cut",
+  "prompt_sha256": "175b872f3f52223ab75319029982db80b02783f43464191e2e151c4fc8a09fb3",
+  "block": 32,
+  "operators": {
+    "linear": "c-fp64-ordered-ops",
+    "rms_denominators": "c-fp64-ordered-ops",
+    "rms_scale": "c-fp64-ordered-ops",
+    "add": "c-fp64-ordered-ops",
+    "rope": "c-fp64-ordered-ops",
+    "attention": "c-fp64-ordered-ops",
+    "silu_mul": "c-fp64-ordered-ops"
+  },
+  "kernel": "c-fp64-ordered",
+  "prefill_seconds": 1309.1903885928914,
+  "prefill_tokens_per_second": 4.061288599677755,
+  "decode_seconds": 1.1887018599081784,
+  "greedy_tokens": [
+    1619,
+    16597
+  ],
+  "prefill_inference_read_bytes": 119819469312,
+  "total_inference_read_bytes": 120807536640,
+  "additive_plan_bytes": {
+    "weights": 2097152,
+    "staging": 524288,
+    "activations": 3637248,
+    "kv": 261390336,
+    "accumulators": 256,
+    "workspace": 0,
+    "metadata": 1142727,
+    "output": 1215488,
+    "requests": 0
+  },
+  "additive_plan_total": 270007495,
+  "frozen_plan_bytes_not_run": {
+    "weights": 2097152,
+    "staging": 524288,
+    "activations": 113664,
+    "kv": 522780672,
+    "accumulators": 520,
+    "workspace": 0,
+    "metadata": 1823625,
+    "output": 7378831360,
+    "requests": 0
+  },
+  "frozen_plan_total_not_run": 7906171281,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775",
+  "host": {
+    "python": "3.14.4",
+    "machine": "x86_64",
+    "kernel_release": "6.18.58.1-microsoft-standard-WSL2",
+    "cpus": 20,
+    "load_average_before": [
+      0.67529296875,
+      1.0078125,
+      1.20947265625
+    ],
+    "threads": "1 (single-threaded kernels)",
+    "temperature_and_power": "NOT MEASURED"
+  },
+  "peak_rss_bytes": 496640000
+}

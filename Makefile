@@ -33,3 +33,12 @@ build/libinwime_cpu.so: src/cpu_kernel.c
 cpu-kernel: build/libinwime_cpu.so
 
 .PHONY: cpu-kernel
+
+# Operators of the Percorso additivo (#41); separate from the pinned kernel above.
+build/libinwime_ops.so: native/inwime_ops.c native/inwime_ops.h
+	mkdir -p build
+	$(CC) -O3 -std=c11 -fPIC -shared -fno-fast-math -ffp-contract=off -fno-builtin -Wall -Wextra -Wpedantic $< -o $@ -lm
+
+ops-kernel: build/libinwime_ops.so
+
+.PHONY: ops-kernel

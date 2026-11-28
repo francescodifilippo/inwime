@@ -2,25 +2,31 @@
 
 One `Coordinatore` per process. It owns the active model, its tokenizer, the verified identity
 of its files and the only worker thread that computes; the HTTP layer never touches the
-runtime. Under it, each request gets its own session of the Percorso congelato (the
-`inwime_runtime` Qwen2 adapter; for a tied head, the same session over the additive catalog of
-`qwen2_tied`), whose `core.Coordinator` is the Gestore delle regioni:
-memory reservations, leases and weight I/O stay there. An imported Checkpoint is opened by the
+runtime. Under it, each request gets its own session of the Percorso additivo (`additive.py`,
+#41): block prefill and the operators of `ops.py`, bit-identical to the Percorso congelato on the
+certified configurations, over the frozen Qwen2 catalog for an untied head or the additive one of
+`qwen2_tied` for a tied head. `INWIME_COMPUTE_PATH=frozen` rolls the Motore back to the previous
+path (ADR 0001): the frozen `Qwen2Runtime` session, one position at a time, unchanged.
+Its `core.Coordinator` is the Gestore delle regioni: memory reservations, leases and weight I/O
+stay there. Each operator is native only if it passed the gate of `gate.py` when the model was
+loaded; otherwise it is the Python reference. An imported Checkpoint is opened by the
 frozen loader as is; one installed in the Hugging Face cache goes through `snapshot.py`, which
 hands the same session a catalog of the verified blobs.
 
 The frozen runtime is bound to the thread that creates it, so every runtime is created, used
 and closed on the worker thread. Requests run one at a time in arrival order, behind a bounded
 queue; a cancelled request stops at the next cancellation check of the runtime (before each
-layer and each weight read), which rolls back its candidate KV.
+layer, each weight read and each operator call, and inside the native linear and attention
+loops), and publishes nothing.
 
-Tokens are chosen by `generation.Sampling` on the frozen FP64 logits; at temperature 0 it is the
+Tokens are chosen by `generation.Sampling` on the FP64 logits of the last position; at temperature 0 it is the
 M10 greedy rule of `inwime_runtime.tokenizer.greedy` (the lowest token id wins a tie). Chat
 prompts are rendered by Transformers (`chat.py`). The context capacity is the Checkpoint's
 `max_position_embeddings`; the memory-based capacity plan comes with #42.
 """
 import collections
 from concurrent.futures import CancelledError, Future
+import os
 import secrets
 import threading
 from pathlib import Path
@@ -32,17 +38,21 @@ from inwime_runtime.qwen2 import Qwen2Runtime
 from inwime_runtime.safetensors_source import SafetensorsSource
 from inwime_runtime.tokenizer import LlamaTokenizer
 
-from . import catalog, chat, kernel, snapshot
-from .qwen2_tied import TiedQwen2Catalog, qwen2_catalog
+from . import catalog, chat, gate, kernel, snapshot
+from .additive import AdditiveQwen2Runtime, CancelSignal
+from .qwen2_tied import qwen2_catalog
 from .generation import Sampling, TextStream
 
 
-# Chat token limit when the client sets none. OpenAI's is the rest of the context, but the
-# Percorso congelato holds FP64 logits for its whole capacity (prompt + limit): for a 32k-context
-# Qwen2.5 that would be tens of GB. Until the capacity plan (#42), a fixed limit.
+# Chat token limit when the client sets none. OpenAI's is the rest of the context, but a session
+# reserves FP64 KV for its whole capacity (prompt + limit): for a 32k-context Qwen2.5-7B that
+# would be gigabytes. Until the capacity plan (#42), a fixed limit.
 DEFAULT_CHAT_MAX_TOKENS = 512
 
 DEFAULT_QUEUE_SIZE = 4            # requests waiting behind the one in progress
+
+PATH_ENV = 'INWIME_COMPUTE_PATH'  # 'additive' (default) or 'frozen': the rollback of ADR 0001
+PATHS = {'additive': 'percorso additivo', 'frozen': 'percorso congelato'}
 
 
 class EngineError(Exception):
@@ -226,7 +236,11 @@ class Coordinatore:
             raise NotServable('model_type %r is not served by this version: the HTTP tracer serves '
                               'Qwen2 Checkpoint, with a tied or untied head'
                               % (config.get('model_type'),))
+        self.path = os.environ.get(PATH_ENV) or 'additive'
+        if self.path not in PATHS:
+            raise NotServable('%s=%r: expected one of %s' % (PATH_ENV, self.path, ', '.join(PATHS)))
         self.math = math_backend()
+        self.ops, self.operators = gate.evaluate()
         self.tied = config.get('tie_word_embeddings') is True
         try:
             if self.manifest is not None:
@@ -253,13 +267,13 @@ class Coordinatore:
             self.generation_config = {}
 
     def _session(self, capacity, integrity):
-        if self.catalog is not None:
-            return CatalogQwen2Runtime(self.catalog, capacity, integrity=integrity, math_backend=self.math)
-        if self.tied:
-            # An imported directory, read again for each session as `Qwen2Runtime` does.
-            return CatalogQwen2Runtime(TiedQwen2Catalog(SafetensorsSource(self.directory)), capacity,
-                                       integrity=integrity, math_backend=self.math)
-        return Qwen2Runtime(self.directory, capacity=capacity, integrity=integrity, math_backend=self.math)
+        # An imported directory is read again for each session, as `Qwen2Runtime` does.
+        adapter = (self.catalog if self.catalog is not None
+                   else qwen2_catalog(SafetensorsSource(self.directory)))
+        if self.path == 'frozen':
+            return CatalogQwen2Runtime(adapter, capacity, integrity=integrity, math_backend=self.math)
+        return AdditiveQwen2Runtime(adapter, capacity, integrity=integrity, math_backend=self.math,
+                                    ops=self.ops)
 
     # -- requests -----------------------------------------------------------------------------
     #
@@ -341,7 +355,9 @@ class Coordinatore:
                 raise changed
             vocab = runtime.spec.vocab
             with runtime.prefill(ids, cancel_event=cancel_event) as result:
-                chosen = sampling.choose(result.logits[(len(ids)-1)*vocab:len(ids)*vocab], ids)
+                # The last position's logits: the only ones of the additive path, the last row of the frozen one.
+                logits = result.logits
+                chosen = sampling.choose(logits[len(logits)-vocab:], ids)
             while True:
                 generated.append(chosen)
                 if chosen in self.tokenizer.eos:
@@ -361,9 +377,15 @@ class Coordinatore:
                 'prompt_tokens': len(ids), 'completion_tokens': len(generated),
                 'diagnostics': {'prompt_token_ids': ids, 'completion_token_ids': generated,
                                 'sampling': sampling.describe(),
-                                'computation': {'path': 'percorso congelato', 'kernel': self.math.name,
-                                                'adapter': ('TiedQwen2Catalog (additive, tied head)' if self.tied
-                                                            else 'Qwen2Catalog (frozen)')}}}
+                                'computation': self._computation(runtime)}}
+
+    def _computation(self, runtime):
+        out = {'path': PATHS[self.path], 'kernel': self.math.name,
+               'adapter': 'TiedQwen2Catalog (additive, tied head)' if self.tied else 'Qwen2Catalog (frozen)'}
+        if self.path == 'additive':
+            out.update(block_positions=runtime.block,
+                       operators={name: impl.name for name, impl in self.ops.items()})
+        return out
 
 
 class Job:
@@ -372,7 +394,7 @@ class Job:
     def __init__(self, function, *args):
         self.function, self.args = function, args
         self.future = Future()
-        self.cancel_event = threading.Event()
+        self.cancel_event = CancelSignal()      # also seen inside the native operators
         self.coordinatore = None
 
     def result(self):

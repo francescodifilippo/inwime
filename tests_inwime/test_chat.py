@@ -6,12 +6,18 @@ References are independent of the server: Transformers' own `apply_chat_template
 prompt, and the Percorso congelato called directly for the tokens.
 """
 import json
+import os
+from pathlib import Path
+import threading
 import time
 
 import pytest
 
 import tinyqwen
+from conftest import GUARD, PACKAGE_PARENT
 from serving import Server, assert_openai_error, stream
+
+TESTS = str(Path(__file__).resolve().parent)
 
 CONVERSATION = [
     {'role': 'system', 'content': 'be brief.'},
@@ -153,18 +159,31 @@ def test_include_usage_adds_a_final_usage_chunk(chat_server):
     assert all(c['usage'] is None for c in content)
 
 
-def test_keepalive_comments_repeat_while_the_request_waits_and_never_look_like_progress(run, home, chat_checkpoint):
+def test_keepalive_comments_repeat_while_the_request_waits_and_never_look_like_progress(
+        run, home, chat_checkpoint, tmp_path):
     model = make_active(run, chat_checkpoint)
-    server = Server(run, home, args=('--keepalive-seconds', '0.1'), env=tinyqwen.kernel_env())
+    # The pacer (pacer.py) stalls the worker inside the first request's prefill while this gate
+    # file exists, so the streamed request waits in the queue for as long as the test decides.
+    gates = tmp_path/'pacer'
+    gates.mkdir()
+    (gates/'stall-prefill').touch()
+    server = Server(run, home, args=('--keepalive-seconds', '0.1'), module='pacer', env=dict(
+        tinyqwen.kernel_env(), INWIME_PACER_DIR=str(gates),
+        PYTHONPATH=os.pathsep.join((GUARD, TESTS, PACKAGE_PARENT))))
     server.model = model
     try:
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(1) as pool:
-            # A long prompt (the tools preamble) keeps the worker busy for seconds.
             busy = pool.submit(server.request, 'POST', '/v1/chat/completions', {
                 'model': model, 'messages': CONVERSATION[1:], 'tools': TOOLS, 'max_tokens': 1})
-            time.sleep(1)                   # let it reach the worker first
+            deadline = time.monotonic()+30
+            while 'held prefill' not in ((gates/'events').read_text() if (gates/'events').exists() else ''):
+                assert time.monotonic() < deadline, 'the first request never reached the worker'
+                time.sleep(0.01)
+            release = threading.Timer(1.0, (gates/'stall-prefill').unlink)
+            release.start()
             s = stream(server, '/v1/chat/completions', chat_body(server, stream=True, max_tokens=2))
+            release.join()
             assert busy.result()[0] == 200
         first_data = next(i for i, e in enumerate(s.events) if e[0] == 'data')
         waiting = s.events[:first_data]

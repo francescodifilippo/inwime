@@ -9,11 +9,11 @@ python3 -m venv ~/.venvs/inwime && ~/.venvs/inwime/bin/pip install .   # oppure:
 ~/.venvs/inwime/bin/inwime doctor          # audit non distruttivo; --json per il report versionato
 ```
 
-Con un compilatore C l'installazione include il kernel nativo FP64 di M10, compilato senza modifiche. Senza compilatore resta il fallback Python, molto più lento. `inwime doctor` mostra:
+Con un compilatore C l'installazione include due librerie native: il kernel FP64 di M10, compilato senza modifiche, e gli operatori del Percorso additivo (`native/inwime_ops.c`, [#41](https://github.com/francescodifilippo/inwime/issues/41)). Senza compilatore resta il fallback Python, molto più lento. `inwime doctor` mostra:
 - CPU e memoria applicativa, con i limiti cgroup v2;
 - sotto WSL2, la RAM fisica dell'host e lo spazio fisico del volume che contiene il VHDX;
 - lo spazio utilizzabile al netto di un margine di 30 GiB (`--host-margin-gib`);
-- l'esito del self-test bit per bit del kernel.
+- l'esito del self-test bit per bit del kernel e del gate degli operatori: ogni operatore nativo che non dà gli stessi bit del riferimento Python su questo host è sostituito dal riferimento (`INWIME_OPS_KERNEL=off` li disattiva tutti).
 
 I dati non rilevabili compaiono come `unknown`. I nomi utente nei percorsi sono oscurati per default (`--show-paths` li mostra).
 
@@ -115,7 +115,7 @@ Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni process
 - **Rete:** il server ascolta solo su loopback. Un indirizzo diverso richiede `--host` insieme a `--allow-non-loopback`.
 - **API key:** è obbligatoria come bearer. Il primo avvio la genera in `<Registro dei modelli>/server/api-key`, con permessi 0600. Il server non la stampa e non la registra. Il server non parte se il file è accessibile ad altri utenti. I log di accesso sono disattivati.
 - **`GET /v1/models`:** restituisce il modello attivo.
-- **`POST /v1/chat/completions`:** il prompt è renderizzato con il chat template del Checkpoint da `AutoTokenizer.apply_chat_template()` di Transformers 5.24.0, sempre con `trust_remote_code=False`. Testo e token ID sono quelli di Transformers, inclusi ruoli `system`, `user`, `assistant` e `tool`, `tools` e `add_generation_prompt`. Le parti di contenuto di tipo testo vengono unite in una stringa. Un Checkpoint senza chat template riceve 400 `chat_template_unavailable` sulla chat; `/v1/completions` resta disponibile. Il limite di token è `max_tokens` o `max_completion_tokens`. Se mancano entrambi vale 512, o il resto del contesto se è minore: il Percorso congelato tiene i `logits` FP64 per l'intera capacità, quindi il resto di un contesto da 32k token richiederebbe decine di GB. Il limite cambierà con il piano di capacità ([#42](https://github.com/francescodifilippo/inwime/issues/42)).
+- **`POST /v1/chat/completions`:** il prompt è renderizzato con il chat template del Checkpoint da `AutoTokenizer.apply_chat_template()` di Transformers 5.24.0, sempre con `trust_remote_code=False`. Testo e token ID sono quelli di Transformers, inclusi ruoli `system`, `user`, `assistant` e `tool`, `tools` e `add_generation_prompt`. Le parti di contenuto di tipo testo vengono unite in una stringa. Un Checkpoint senza chat template riceve 400 `chat_template_unavailable` sulla chat; `/v1/completions` resta disponibile. Il limite di token è `max_tokens` o `max_completion_tokens`. Se mancano entrambi vale 512, o il resto del contesto se è minore: una sessione riserva la KV FP64 per l'intera capacità, quindi il resto di un contesto da 32k token richiederebbe gigabyte. Il limite cambierà con il piano di capacità ([#42](https://github.com/francescodifilippo/inwime/issues/42)).
 - **`POST /v1/completions`:** il prompt è tokenizzato con `tokenizer.json`, come nel Percorso congelato. Se mancano `max_tokens` e `max_completion_tokens`, il limite vale 16, come in OpenAI.
 - **Streaming SSE (`"stream": true`):** header e un primo commento `: keepalive` partono prima che la richiesta raggiunga il worker. Finché non c'è testo nuovo del modello, segue un commento ogni 15 s (`--keepalive-seconds`). I commenti non contengono dati e non simulano progressi. `stream_options.include_usage` aggiunge un ultimo chunk con `usage` e `choices` vuoto. Lo stream termina con `data: [DONE]`. Un errore durante il calcolo arriva come evento `{"error": ...}`, seguito da `[DONE]`.
 - **Campionamento:** `temperature`, `top_p`, `top_k`, `repetition_penalty`, `seed` e `stop` seguono questa precedenza:
@@ -139,11 +139,11 @@ Il server espone un'API compatibile con OpenAI, servita dal Motore. Ogni process
 - **Integrità:** all'avvio il server calcola lo SHA256 di ogni file di pesi e stampa i byte letti. Ogni richiesta riapre i file e controlla che dispositivo, inode, dimensione e date coincidano con quelli verificati. Se un file è cambiato, la richiesta riceve 500 `checkpoint_changed` fino al riavvio. Lo SHA256 non viene ricalcolato a ogni richiesta.
 
 Limiti di questa versione:
-- Il calcolo usa il Percorso congelato: un token per volta e un solo thread.
-- Il server accetta solo Checkpoint Qwen2 con testa non tied e con `tokenizer.json`. I Qwen2.5 piccoli con testa tied arrivano con [#38](https://github.com/francescodifilippo/inwime/issues/38).
+- Il calcolo usa il Percorso additivo ([#41](https://github.com/francescodifilippo/inwime/issues/41), ADR 0001): prefill a blocchi di 32 posizioni, `logits` solo sull'ultima posizione, operatori nativi in C, un solo thread. È bit-identico al Percorso congelato sulle configurazioni certificate ([evidenze](results/issue41/README.md)). Il multithreading arriva con [#43](https://github.com/francescodifilippo/inwime/issues/43). `INWIME_COMPUTE_PATH=frozen` riporta il server al Percorso congelato (rollback dell'ADR 0001).
+- Il server accetta solo Checkpoint Qwen2, con testa tied o non tied, e con `tokenizer.json`.
 - Un Checkpoint installato con `models install` viene servito dalla cache Hugging Face senza scriverci nulla. All'avvio il server controlla che ogni file di pesi punti al blob verificato dall'installazione. Un Checkpoint importato con `models import` deve invece avere il descrittore del runtime (`safetensors.json`).
-- La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la memoria del Percorso congelato cresce con prompt + limite di token.
-- Una richiesta cancellata si ferma solo al successivo controllo del runtime: il calcolo tra due controlli (attention di un layer, o il prodotto su una tile di pesi) non si interrompe a metà. Su un modello grande e un contesto lungo l'attesa può essere sensibile; i controlli dentro i kernel nativi arrivano con il Percorso additivo.
+- La capacità di contesto è `max_position_embeddings` del Checkpoint. Il piano di capacità basato sulla memoria arriva con [#42](https://github.com/francescodifilippo/inwime/issues/42). Fino ad allora la KV cresce con prompt + limite di token; la memoria temporanea dipende solo dal blocco.
+- Una richiesta cancellata si ferma al successivo controllo: prima di ogni lettura di pesi, di ogni layer e di ogni operatore, e dentro gli operatori nativi `linear` (a ogni segmento di riga di una tile) e `attention` (a ogni coppia posizione, head). Gli altri operatori, lineari nel blocco, non si interrompono a metà.
 - Le chiamate `<tool_call>` del modello restano testo; la loro conversione in `tool_calls` OpenAI arriva con [#44](https://github.com/francescodifilippo/inwime/issues/44).
 
 Codici di uscita di `serve`:

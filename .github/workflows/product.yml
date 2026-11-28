@@ -44,8 +44,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Build the historical kernel (bit-identity reference)
-        run: make cpu-kernel
+      - name: Build the historical kernel (bit-identity reference) and the additive operators
+        run: make cpu-kernel ops-kernel
 
       - name: Build wheel and sdist, check their contents
         run: |
@@ -59,10 +59,13 @@ jobs:
           problems = []
           if not any(n.startswith('inwime/_cpu_kernel') and n.endswith('.so') for n in wheel):
               problems.append('wheel lacks the native kernel')
+          if not any(n.startswith('inwime/_ops_kernel') and n.endswith('.so') for n in wheel):
+              problems.append('wheel lacks the native operators')
           if not any(n.endswith('.dist-info/licenses/LICENSE') for n in wheel):
               problems.append('wheel lacks LICENSE')
-          if not any(n.endswith('src/cpu_kernel.c') for n in sdist):
-              problems.append('sdist lacks the kernel source')
+          for source in ('src/cpu_kernel.c', 'native/inwime_ops.c', 'native/inwime_ops.h'):
+              if not any(n.endswith(source) for n in sdist):
+                  problems.append('sdist lacks ' + source)
           leaked = [n for n in wheel if n.split('/')[0] in ('tests', 'tests_inwime', 'tools', 'checkpoints', 'results')]
           if leaked:
               problems.append('wheel contains non-package files: %s' % leaked[:5])
@@ -79,6 +82,7 @@ jobs:
           "$RUNNER_TEMP/inwime/bin/inwime" --version
           "$RUNNER_TEMP/inwime/bin/inwime" doctor --json --no-host-query > doctor.json
           "$RUNNER_TEMP/inwime/bin/python" -c "import json, sys; r = json.load(open('doctor.json')); k = r['cpu_kernel']; print(r['status'], k['implementation'], k['self_test']); sys.exit(not k['native'])"
+          "$RUNNER_TEMP/inwime/bin/python" -c "import json, sys; o = json.load(open('doctor.json'))['operators']; print(o['status'], o['detail']); sys.exit(o['status'] != 'ok' or not o['native'])"
 
       # The chat tests run Transformers' AutoTokenizer and apply_chat_template in this venv,
       # where the step above proved torch absent.
@@ -94,6 +98,7 @@ jobs:
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/nocc/bin/inwime" doctor --json --no-host-query > nocc.json
           "$RUNNER_TEMP/nocc/bin/python" -c "import json, sys; k = json.load(open('nocc.json'))['cpu_kernel']; print(k['implementation'], k['detail']); sys.exit(k['native'] or k['implementation'] != 'python-fp64')"
+          "$RUNNER_TEMP/nocc/bin/python" -c "import json, sys; o = json.load(open('nocc.json'))['operators']; print(o['detail']); sys.exit(o['native'] or {v['implementation'] for v in o['operators'].values()} != {'python-fp64'})"
 
       - name: Attach product reports
         if: always()
